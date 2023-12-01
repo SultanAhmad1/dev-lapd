@@ -1,12 +1,14 @@
 import React, { useContext, useEffect, useState } from 'react'
 import HomeContext from '../contexts/HomeContext'
 import Link from 'next/link'
-import { getAmountConvertToFloatWithFixed, getCountryCurrencySymbol } from '../global/Store'
+import { getAmountConvertToFloatWithFixed, getCountryCurrencySymbol, setLocalStorage } from '../global/Store'
 import moment from 'moment'
 import { BRAND_GUID, DELIVERY_ID, axiosPrivate } from '../global/Axios'
+import { useRouter } from 'next/navigation'
 
 export default function Cart() 
 {
+    const route = useRouter()
     const {
         selectedFilter,
         storeName,
@@ -22,9 +24,6 @@ export default function Cart()
         postcodefororderamount
     } = useContext(HomeContext)
 
-    const [redirecturl, setRedirecturl] = useState("/")
-    const [isaddpromocodebtntoggle, setIsaddpromocodebtntoggle] = useState(false)
-
     const [subtotalOrderAmount, setSubtotalOrderAmount] = useState(0)
     const [totalOrderAmount, setTotalOrderAmount] = useState(0)
     
@@ -35,7 +34,9 @@ export default function Cart()
     const [discountvalue, setDiscountValue] = useState(0)
 
     const [amountdiscountmessage, setAmountDiscountMessage] = useState("")
-
+    // Boolean States
+    const [isaddpromocodebtntoggle, setIsaddpromocodebtntoggle] = useState(false)
+    const [isordersubtotallessthanordervalue, setIsordersubtotallessthanordervalue] = useState(true)
     // Coupon Code States
     const [coupon, setCoupon] = useState("")
     const [isappliedbtnactive, setIsappliedbtnactive] = useState(true)
@@ -79,6 +80,10 @@ export default function Cart()
                 }
 
                 // Stage - II match the index and get related data.
+                if(amountDiscounts[workingIndex] === undefined)
+                {
+                    workingIndex -= 1
+                }
                 if(parseInt(amountDiscounts[workingIndex]?.delivery_matrix_rows?.length) > parseInt(0))
                 {
                     if(parseFloat(subTotalArgument) >= parseFloat(amountDiscounts[workingIndex].need_to_spend))
@@ -99,7 +104,7 @@ export default function Cart()
                     else
                     {
                         const getAmountDiscountDifference = (parseFloat(subTotalArgument) >= parseFloat(amountDiscounts[workingIndex].need_to_spend)) ? parseFloat(subTotalArgument) - parseFloat(amountDiscounts[workingIndex].need_to_spend) : parseFloat(amountDiscounts[workingIndex].need_to_spend) - parseFloat(subTotalArgument)
-                        const amountText = <span>Spend <strong>{getCountryCurrencySymbol()}{parseFloat(getAmountDiscountDifference).toFixed(2)}</strong> more to get <strong>{(amountDiscounts[workingIndex].discount_type === "M") && getCountryCurrencySymbol()} {amountDiscounts[workingIndex].value} {(amountDiscounts[workingIndex].discount_type === "P") && "%"}</strong></span>
+                        const amountText = <span>Spend <strong>{getCountryCurrencySymbol()}{parseFloat(getAmountDiscountDifference).toFixed(2)}</strong> more to get <strong>{(amountDiscounts[workingIndex].discount_type === "M") && getCountryCurrencySymbol()} {amountDiscounts[workingIndex].value} {(amountDiscounts[workingIndex].discount_type === "P") && "%"} off</strong></span>
                         setAmountDiscountMessage(amountText)
                         setDiscountValue(0)
                     }
@@ -123,70 +128,77 @@ export default function Cart()
         setSubtotalOrderAmount(getAmountConvertToFloatWithFixed(totalValue,2))
         
         // Calculate the Delivery Fee
-        console.log("Inside the cart:", selectedFilter);
+        // console.log("Inside the cart:", selectedFilter);
         // If the User select the delivery, then delivery fee will be charge.
-        if(parseFloat(totalValue) >= parseFloat(deliverymatrix?.order_value))
-            {
-
-            if(deliverymatrix?.above_order_value === null)
-            {
-                const textMessage = <strong>Free Delivery</strong>
-                setDeliverymessage(textMessage)
-                const fee = getAmountConvertToFloatWithFixed(0,2)
-                setDeliveryfee(fee)
-            }
-            else
-            {
-                const fee = getAmountConvertToFloatWithFixed(deliverymatrix?.above_order_value, 2)
-                setDeliveryfee(fee)
-            }
-
-            if(parseFloat(deliverymatrix?.delivery_matrix_row_values) > parseFloat(0))
-            {
-                for(const deliveryMatrixRowValues of deliverymatrix?.delivery_matrix_row_values)
+        
+        if(selectedFilter?.id == DELIVERY_ID)
+        {
+            if(parseFloat(totalValue) >= parseFloat(deliverymatrix?.order_value))
                 {
-                    if(parseFloat(totalValue) >= parseFloat(deliveryMatrixRowValues?.min_order_value))
+    
+                if(deliverymatrix?.above_order_value === null)
+                {
+                    const textMessage = <strong>Free Delivery</strong>
+                    setDeliverymessage(textMessage)
+                    const fee = getAmountConvertToFloatWithFixed(0,2)
+                    setDeliveryfee(fee)
+                }
+                else
+                {
+                    const fee = getAmountConvertToFloatWithFixed(deliverymatrix?.above_order_value, 2)
+                    setDeliveryfee(fee)
+                }
+    
+                if(parseFloat(deliverymatrix?.delivery_matrix_row_values) > parseFloat(0))
+                {
+                    for(const deliveryMatrixRowValues of deliverymatrix?.delivery_matrix_row_values)
                     {
-                        if(deliveryMatrixRowValues?.above_minimum_order_value === null)
+                        if(parseFloat(totalValue) >= parseFloat(deliveryMatrixRowValues?.min_order_value))
                         {
-                            const textMessage = <strong>Free Delivery</strong>
-                            setDeliverymessage(textMessage)
-                            const fee = getAmountConvertToFloatWithFixed(0,2)
-                            setDeliveryfee(fee)
+                            if(deliveryMatrixRowValues?.above_minimum_order_value === null)
+                            {
+                                const textMessage = <strong>Free Delivery</strong>
+                                setDeliverymessage(textMessage)
+                                const fee = getAmountConvertToFloatWithFixed(0,2)
+                                setDeliveryfee(fee)
+                            }
+                            else
+                            {
+                                const fee = parseFloat(deliveryMatrixRowValues?.above_minimum_order_value).toFixed(2)
+                                setDeliveryfee(fee)
+                            }
                         }
                         else
                         {
-                            const fee = parseFloat(deliveryMatrixRowValues?.above_minimum_order_value).toFixed(2)
-                            setDeliveryfee(fee)
+                            const getDifference = parseFloat(deliveryMatrixRowValues?.min_order_value) - parseFloat(totalValue)
+                            const textMessage = <span >Spend <strong>{getCountryCurrencySymbol()}{parseFloat(getDifference).toFixed(2)}</strong> more to get <strong>Free Delivery</strong></span>
+                            setDeliverymessage(textMessage)
                         }
-                        
-                    }
-                    else
-                    {
-                        const getDifference = parseFloat(deliveryMatrixRowValues?.min_order_value) - parseFloat(totalValue)
-                        const textMessage = <span>Spend <strong>{getCountryCurrencySymbol()}{parseFloat(getDifference).toFixed(2)}</strong> more to get <strong>Free Delivery</strong></span>
-                        setDeliverymessage(textMessage)
                     }
                 }
+            }
+            else
+            {
+                // const textMessage = <span>Minimum order is <strong>{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(deliverymatrix?.order_value, 2)}</strong> to your postcode <strong>{postcode}</strong></span>
+                const textMessage = <span style={{color: "red", background: "#eda7a7", textAlign: "center", padding:"10px"}}>Minimum order is <strong>{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(deliverymatrix?.order_value, 2)}</strong> to your postcode</span>
+                setDeliverymessage(textMessage)
+                const fee = getAmountConvertToFloatWithFixed(deliverymatrix?.above_order_value, 2)
+                setDeliveryfee(fee)
+                setIsordersubtotallessthanordervalue(!isordersubtotallessthanordervalue)
             }
         }
         else
         {
-            const textMessage = <span>Minimum order is <strong>{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(deliverymatrix?.order_value, 2)}</strong> at your postcode <strong>{postcode}</strong></span>
-            setDeliverymessage(textMessage)
-            const fee = getAmountConvertToFloatWithFixed(deliverymatrix?.above_order_value, 2)
-            setDeliveryfee(fee)
+            setDeliveryfee(0)
+            setIsordersubtotallessthanordervalue(true)
         }
 
-        if(selectedFilter?.id !== DELIVERY_ID)
-        {
-            setDeliveryfee(0)
-        }
         
         setTotalOrderAmount(getAmountConvertToFloatWithFixed(totalValue,2))
         // Order Amount Calculate
         getOrderAmount(getAmountConvertToFloatWithFixed(totalValue,2))
       }
+      setLocalStorage('cart',cartdata)
     }, [cartdata])
     
     const handlePromoCodeToggle = () =>
@@ -201,7 +213,7 @@ export default function Cart()
 
     const handleAddItems = () =>
     {
-        setRedirecturl("/")
+        route.push("/")
         setIscartbtnclicked(false)
     }
 
@@ -239,6 +251,7 @@ export default function Cart()
         setIsaddpromocodebtntoggle(!isaddpromocodebtntoggle)
     }
 
+    console.log("Selected Filter",selectedFilter);
     return (
         <>
             <div className="cart-level-one-div">
@@ -421,11 +434,11 @@ export default function Cart()
                                                 
                                                 <li className="bobpcheckout-sutotals">
                                                     <div className="albcaqcheckout">
-                                                    <div className="bobpbqbrb1checkout">Discount</div>
+                                                        <div className="bobpbqbrb1checkout">Discount</div>
                                                     </div>
                                                     
                                                     <div className="bobpbqbrb1checkout">
-                                                    <span className="">{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(discountvalue,2)}</span>
+                                                        <span className="">{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(discountvalue,2)}</span>
                                                     </div>
                                                 </li>
                                             
@@ -433,7 +446,7 @@ export default function Cart()
                                                 
                                                 <li className="bobpcheckout-sutotals">
                                                     <div className="albcaqcheckout">
-                                                    <div className="bobpbqbrb1checkout">Delivery</div>
+                                                    <div className="bobpbqbrb1checkout">{selectedFilter?.name}</div>
                                                     </div>
                                                     
                                                     <div className="bobpbqbrb1checkout">
@@ -482,10 +495,13 @@ export default function Cart()
                                         <div className="akgzcheckout">
                                             <div className="atbaagcheckout">
                                                 <div className="">
-                                                    <Link className="fwbrbocheckout-place-order" href='/place-order'>Checkout</Link>
+                                                    {
+                                                        isordersubtotallessthanordervalue &&
+                                                        <Link className="fwbrbocheckout-place-order" href='/place-order'>Checkout</Link>
+                                                    }
                                                     <div style={{height: "10px"}}></div>
 
-                                                    <Link className="fwbrbocheckout-add" onClick={handleAddItems} href={redirecturl}>
+                                                    <button className="fwbrbocheckout-add" onClick={handleAddItems} >
                                                         <div className="c7c6crcheckout">
                                                             <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                                                             <path d="m16.6666 11.0007h-3.6667v-3.66672h-2v3.66672h-3.66665v2h3.66665v3.6666h2v-3.6666h3.6667z" fill="currentColor">
@@ -494,7 +510,7 @@ export default function Cart()
                                                         </div>
                                                         <div className="spacer _4"></div>
                                                         <div className="bodgdfdhcheckout-add-div">Add items</div>
-                                                    </Link>
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>

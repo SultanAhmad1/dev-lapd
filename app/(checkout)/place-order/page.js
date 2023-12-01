@@ -24,9 +24,6 @@ function UserForm()
     setIsdeliverychangedbtnclicked
   } = useContext(HomeContext)
 
-  // Boolean States
-  const [ispostcodetyped, setIspostcodetyped] = useState(false)
-
   //   const navigate = useNavigate()
   const handlePayNow = () =>
   {
@@ -1024,7 +1021,6 @@ function UserForm()
               <div className="modal-delivery-details-level-one-div-dialog-header">
                 <div className="delivery-empty-div"></div>
                 {
-                  ispostcodetyped === false &&
                   <button className="delivery-modal-close-button">
                     <div className="delivery-modal-close-button-svg-div" onClick={() => setIschangepostcodeclicked(!ischangepostcodeclicked)}>
                       <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
@@ -1039,7 +1035,7 @@ function UserForm()
               </div>
               {ischangepostcodeclicked && (
                 <>
-                  <PostcodeModal setIschangepostcodeclicked={setIschangepostcodeclicked} setIspostcodetyped={setIspostcodetyped}/>
+                  <PostcodeModal/>
                 </>
               )}
 

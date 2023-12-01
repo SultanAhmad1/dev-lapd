@@ -1,6 +1,7 @@
 import React, { useContext } from 'react'
 import HomeContext from '../contexts/HomeContext'
 import moment from 'moment'
+import { setLocalStorage } from '../global/Store'
 
 function FilterLocationTime() 
 {
@@ -20,6 +21,7 @@ function FilterLocationTime()
     const handleOrderType = (id) => {
         const updateFilter = filters?.find((findFilter) => findFilter?.id === id)
         setSelectedFilter(updateFilter)
+        setLocalStorage('filter',updateFilter)
     }
 
     return (

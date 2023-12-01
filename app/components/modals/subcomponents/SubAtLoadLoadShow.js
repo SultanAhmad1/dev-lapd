@@ -1,7 +1,7 @@
 import HomeContext from '@/app/contexts/HomeContext'
 import { BRAND_GUID, axiosPrivate } from '@/app/global/Axios'
 import React, { useContext, useEffect, useState } from 'react'
-import { find_matching_postcode, getAtFirstLoadModalShow, getStoreName, setAtFirstLoadModalShow, setStoreName } from '@/app/global/Store'
+import { find_matching_postcode, getAtFirstLoadModalShow, getStoreName, setAtFirstLoadModalShow, setLocalStorage, setStoreName } from '@/app/global/Store'
 function SubAtLoadLoadShow() 
 {
    
@@ -44,8 +44,8 @@ function SubAtLoadLoadShow()
               console.log("Success repsonse:", response.data);
             
             find_matching_postcode(matrix, validpostcode, setDeliverymatrix)
-            window.localStorage.setItem('address',JSON.stringify(response?.data?.data))
-            window.localStorage.setItem('user_valid_postcode', validpostcode)
+            setLocalStorage('address',response?.data?.data)
+            setLocalStorage('user_valid_postcode', validpostcode)
         
             setAvailablestores(response.data?.data?.availableStore)
             
@@ -91,7 +91,7 @@ function SubAtLoadLoadShow()
             store: storeName,
             telephone: storeTelephone
         }
-        window.localStorage.setItem('user_selected_store', JSON.stringify(selectedStoreData))
+        setLocalStorage('user_selected_store', selectedStoreData)
     }
 
     return (
@@ -101,7 +101,7 @@ function SubAtLoadLoadShow()
 
                 <div className="modal-delivery-details-level-one-div-dialog">
     
-                    <div className="modal-delivery-details-level-one-div-dialog-header">
+                    {/* <div className="modal-delivery-details-level-one-div-dialog-header">
                         <div className="delivery-empty-div"></div>
                         <button className="delivery-modal-close-button">
                             
@@ -112,7 +112,7 @@ function SubAtLoadLoadShow()
                             </div>
 
                         </button>
-                    </div>
+                    </div> */}
 
                     <div className="deliver-to-body-content">
                         <h1 className="deliver-to-body-content-h1">Order Food Now</h1>

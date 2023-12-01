@@ -10,8 +10,7 @@ import React, { useContext, useEffect, useState } from 'react'
 function productDetails({params}) 
 {
     const router = useRouter()
-    const{setBrandlogo,setIscartbtnclicked,setCartdata} = useContext(HomeContext)
-
+    const{setBrandlogo,setIscartbtnclicked,setCartdata,cartdata} = useContext(HomeContext)
     // const {setIsitemclicked, handleInput} = useContext(HomeContext)
     const [isitemclicked, setIsitemclicked] = useState(false)
     const [isaccordianclicked, setIsaccordianclicked] = useState(true)
@@ -24,7 +23,7 @@ function productDetails({params})
 
     const [quantity, setQuantity] = useState(1)
     const [itemprice, setItemprice] = useState(0)
-    console.log("Get the parameter:", params);
+    // console.log("Get the parameter:", params);
 
     const [selectedModifierId, setselectedModifierId] = useState(0)
     const [selectedModifierItemId, setSelectedModifierItemId] = useState(0)
@@ -47,7 +46,7 @@ function productDetails({params})
             }
     
             const response = await axiosPrivate.post(`/menu`, data);
-            console.log("Success repsonse:", JSON.parse(response.data?.data?.menu.menu_json_log));
+            // console.log("Success repsonse:", JSON.parse(response.data?.data?.menu.menu_json_log));
             const convertToJSobj = JSON.parse(response.data?.data?.menu.menu_json_log)
 
             const getSingleCategory = convertToJSobj?.categories?.find((category) => category.slug === params.category)

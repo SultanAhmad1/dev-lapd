@@ -92,7 +92,9 @@ export default function RootLayout({ children })
       console.log("Success repsonse:", JSON.parse(response.data?.data?.menu.menu_json_log));
       const convertToJSobj = JSON.parse(response.data?.data?.menu.menu_json_log)
       setMenu(convertToJSobj)
-      setSelectedFilter(convertToJSobj.filters[0])
+      
+      const getFilterDataFromObj = JSON.parse(window.localStorage.getItem('filter'))
+      setSelectedFilter(getFilterDataFromObj === null ? convertToJSobj.filters[0] : getFilterDataFromObj)
       setFilters(convertToJSobj.filters)
       setNavigationcategories(convertToJSobj.categories)
       setNavmobileindex(convertToJSobj.categories[0].id)
@@ -177,7 +179,7 @@ export default function RootLayout({ children })
     }
     else
     {
-      setPostcode(window.localStorage.getItem('user_valid_postcode'))
+      setPostcode(JSON.parse(window.localStorage.getItem('user_valid_postcode')))
       const parseToJSobj = JSON.parse(getSelectStore)
       setStoreGUID(parseToJSobj.display_id)
       setStoreName(parseToJSobj.store)
@@ -200,6 +202,10 @@ export default function RootLayout({ children })
           }
         }
       }
+
+      // setCart Data from local storage
+      const cartDataFromLocalStorage = JSON.parse(window.localStorage.getItem('cart'))
+      setCartdata((cartDataFromLocalStorage === null) ? [] : cartDataFromLocalStorage)
     }
   }, []);
 

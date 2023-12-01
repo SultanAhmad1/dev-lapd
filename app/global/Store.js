@@ -88,7 +88,6 @@ export function find_matching_postcode(matrixArgument, postcodeArgument, setStat
     } 
 
     setState(finalMatch)
-    console.log("Here is the final match:", finalMatch);
 }
 
 export function getCountryCurrencySymbol()
@@ -99,4 +98,9 @@ export function getCountryCurrencySymbol()
 export function getAmountConvertToFloatWithFixed(amount, number)
 {
     return parseFloat(amount).toFixed(number)
+}
+
+export function setLocalStorage(keyName,data)
+{
+    return window.localStorage.setItem(`${keyName}`,JSON.stringify(data))
 }
