@@ -1,16 +1,16 @@
 import HomeContext from '@/app/contexts/HomeContext'
 import { BRAND_GUID, axiosPrivate } from '@/app/global/Axios'
-import { find_matching_postcode } from '@/app/global/Store'
+import { find_matching_postcode, setLocalStorage } from '@/app/global/Store'
 import { useRouter } from 'next/navigation'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useState, useEffect } from 'react'
 
-function PostcodeModal({setIschangepostcodeclicked, setIspostcodetyped}) 
+function PostcodeModal() 
 {
     // use Next Navigation Router to navigate on home page
     const router = useRouter()
 
     // React Context
-    const {setPostcode,dayname,daynumber,setStoreName,setStreet1,setStreet2,setDeliverymatrix,setIscartbtnclicked} = useContext(HomeContext)
+    const {setIsdeliverybtnclicked,setPostcodefororderamount,deliverymatrix,setPostcode,dayname,daynumber,setStoreName,setStreet1,setStreet2,setDeliverymatrix,setIscartbtnclicked} = useContext(HomeContext)
 
     // Boolean States
     const [isgobtnclickable, setIsgobtnclickable] = useState(false)
@@ -18,6 +18,7 @@ function PostcodeModal({setIschangepostcodeclicked, setIspostcodetyped})
     // Get Value States
     const [updatedvalidpostcode, setUpdatedvalidpostcode] = useState("")
     const [availablestores, setAvailablestores] = useState([])
+    const [tempaddress, setTempaddress] = useState([])
     // Get Error States
     const [postcodeerror, setPostcodeerror] = useState("")
 
@@ -44,23 +45,26 @@ function PostcodeModal({setIschangepostcodeclicked, setIspostcodetyped})
             //   console.log("Success repsonse:", response.data);
             
             find_matching_postcode(matrix, updatedvalidpostcode, setDeliverymatrix)
-            window.localStorage.setItem('address',JSON.stringify(response?.data?.data))
-            window.localStorage.setItem('user_valid_postcode', updatedvalidpostcode)
         
+            setTempaddress(response?.data?.data)
             setAvailablestores(response.data?.data?.availableStore)
-            setPostcode(updatedvalidpostcode)
 
             setIsgobtnclickable(!isgobtnclickable)
         } catch (error) {
           setPostcodeerror(error?.response?.data?.postcode)
           setIsgobtnclickable(!isgobtnclickable)
-          setIspostcodetyped(false)
         }
     };
 
+    // useEffect(() => {
+    //     if(deliverymatrix !== null)
+    //     {
+    
+    //     }
+    // }, [deliverymatrix])
+
     const handleGoBtnClicked = () =>
     {
-        setIspostcodetyped(true)
         fetchPostcodeData()
     }
 
@@ -80,15 +84,24 @@ function PostcodeModal({setIschangepostcodeclicked, setIspostcodetyped})
                 }
             }
         }
+
+        setLocalStorage('address',tempaddress)
+        setLocalStorage('user_valid_postcode', updatedvalidpostcode)
+
+        setPostcodefororderamount(deliverymatrix?.postcode)
+        setLocalStorage('delivery_matrix', deliverymatrix)
+
+        setPostcode(updatedvalidpostcode)
+
         const selectedStoreData = {
             display_id: storeGUID,
             store: storeName,
             telephone: storeTelephone
         }
-        window.localStorage.setItem('user_selected_store', JSON.stringify(selectedStoreData))
-        setIschangepostcodeclicked(false)
+        setLocalStorage('user_selected_store', selectedStoreData)
         router.push("/")
         setIscartbtnclicked(true)
+        setIsdeliverybtnclicked(false)
     }
 
     return (
