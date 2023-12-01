@@ -1,9 +1,9 @@
 import React, { useContext } from 'react'
 import HomeContext from '../contexts/HomeContext'
 
-function MobileTopBar() 
+function MobileTopBar({handleCategoryClick,isscrolled,scrollPosition}) 
 {
-    const {navcategories,navmobileindex,isscrolled,scrollPosition, setNavmobileindex} = useContext(HomeContext)
+    const {navigationcategories,navmobileindex} = useContext(HomeContext)
   return (
     <div className={`top-bar ${isscrolled ? 'scrolled' : ''}`}>
         <div className="top-bar-div-level-one">
@@ -18,15 +18,15 @@ function MobileTopBar()
                     <div className="alaqbbbcnocqavlcakawtopbar-div"   >
 
                     {
-                        navcategories?.map((navcat, index) => 
+                        navigationcategories?.map((category, index) => 
                         {
-                        return(
-                        <a style={{transform: `translate3d(-${scrollPosition}px, 0px,0px)`}}  key={navcat.id} href={`#section${navcat.id}`} className={`bycsc0ctnmalc8bcc6nptopbar-div ${navmobileindex === navcat.id ? "np" : ""}`} onClick={() => setNavmobileindex(navcat.id)}>
-                            <div className="bycsd3d4topbar-div">
-                            {navcat.name}
-                            </div>
-                        </a>
-                        )
+                            return(
+                                <button style={{transform: `translate3d(-${scrollPosition}px, 0px,0px)`}}  key={category.id} className={`bycsc0ctnmalc8bcc6nptopbar-div ${navmobileindex === category.id ? "np" : ""}`} onClick={() => handleCategoryClick(category.id)}>
+                                    <div className="bycsd3d4topbar-div">
+                                        {category.title}
+                                    </div>
+                                </button>
+                            )
                         })
                     }
 

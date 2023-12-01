@@ -12,6 +12,7 @@ import AtLoadModalShow from './components/modals/AtLoadModalShow'
 import DeliveryModal from './components/modals/DeliveryModal'
 import AvailableStoresShow from './components/modals/AvailableStoresShow'
 import moment from 'moment/moment'
+import { BRAND_GUID, PARTNER_ID, axiosPrivate } from './global/Axios'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -22,7 +23,24 @@ const inter = Inter({ subsets: ['latin'] })
 
 export default function RootLayout({ children }) 
 {
+  // Header Bar buttons to be displayed.
+  const [brandlogo, setBrandlogo] = useState("../gallery/uber-eat.svg")
+  const [headerUserBtnDisplay, setHeaderUserBtnDisplay] = useState(true)
+  const [headerPostcodeBtnDisplay, setHeaderPostcodeBtnDisplay] = useState(true)
+  const [headerSearchBarDisplay, setHeaderSearchBarDisplay] = useState(false)
+  const [headerCartBtnDisplay, setHeaderCartBtnDisplay] = useState(true)
+  
+  // FilterLocationTime Component States
+  const [storeGUID, setStoreGUID] = useState(0)
+  const [storeName, setStoreName] = useState("")
+  const [storetodaydayname, setStoretodaydayname] = useState("")
+  const [storetodayopeningtime, setStoretodayopeningtime] = useState("")
+  const [storetodayclosingtime, setStoretodayclosingtime] = useState("")
+
   const [iscartbtnclicked, setIscartbtnclicked] = useState(false)
+
+  const [selectedcategoryid, setSelectedcategoryid] = useState(0)
+  const [selecteditemid, setSelecteditemid] = useState(0)
 
   const [firstname, setFirstname] = useState("Sultan")
   const [lastname, setLastname] = useState("Ahmad")
@@ -31,11 +49,13 @@ export default function RootLayout({ children })
   const [dayname, setDayname] = useState("")
   const [daynumber, setDaynumber] = useState(0)
   // HomeContext Data
-  const [postcode, setPostcode] = useState("SK7 6BN")
-  const [street1, setStreet1] = useState("Chatsworth Rd,")
-  const [street2, setStreet2] = useState("Hazel Grover, Stockport")
+  const [postcodefororderamount, setPostcodefororderamount] = useState("")
+  const [postcode, setPostcode] = useState("")
+  const [street1, setStreet1] = useState("")
+  const [street2, setStreet2] = useState("")
+  const [deliverymatrix, setDeliverymatrix] = useState(null)
 
-  const [atfirstload, setAtfirstload] = useState(true)
+  const [atfirstload, setAtfirstload] = useState(false)
 
   const [isdeliverybtnclicked, setIsdeliverybtnclicked] = useState(false);
   const [isdeliverychangedbtnclicked, setIsdeliverychangedbtnclicked] = useState(false);
@@ -46,12 +66,49 @@ export default function RootLayout({ children })
   const [isitemclicked, setIsitemclicked] = useState(false)
   const [isquickviewclicked, setIsquickviewclicked] = useState(false)
 
-  const [ismodifierclicked, setIsmodifierclicked] = useState(false)
-
   const [ischeckoutclicked, setIscheckoutclicked] = useState(false)
 
   // Button states
   const [isgobtnclicked, setIsgobtnclicked] = useState(false)
+
+  const [Menu, setMenu] = useState([])
+  const [selectedFilter, setSelectedFilter] = useState(null)
+  const [filters, setFilters] = useState([])
+
+  const [navigationcategories, setNavigationcategories] = useState([])
+  const [navmobileindex, setNavmobileindex] = useState(0)
+  const [ismenuavailable, setIsmenuavailable] = useState(true)
+
+  const [cartdata, setCartdata] = useState([])
+
+  const fetchMenu = async () => {
+    try {
+      const data = {
+        brand: BRAND_GUID,
+        partner: PARTNER_ID
+      }
+
+      const response = await axiosPrivate.post(`/menu`, data);
+      console.log("Success repsonse:", JSON.parse(response.data?.data?.menu.menu_json_log));
+      const convertToJSobj = JSON.parse(response.data?.data?.menu.menu_json_log)
+      setMenu(convertToJSobj)
+      setSelectedFilter(convertToJSobj.filters[0])
+      setFilters(convertToJSobj.filters)
+      setNavigationcategories(convertToJSobj.categories)
+      setNavmobileindex(convertToJSobj.categories[0].id)
+
+      const getDayInformation = convertToJSobj.menus[0].service_availability?.find((dayinformation) => dayinformation.day_of_week === moment().format('dddd').toLowerCase())
+      console.log("Getting the day information:", getDayInformation);
+      setStoretodaydayname(moment().format('dddd'))
+      setStoretodayopeningtime(getDayInformation.time_periods[0].start_time)
+      setStoretodayclosingtime(getDayInformation.time_periods[0].end_time)
+    } 
+    catch (error) 
+    {
+      console.error('Error fetching data:', error);
+      setIsmenuavailable(false)
+    }
+  };
 
   let options = '';
 
@@ -67,7 +124,7 @@ export default function RootLayout({ children })
     {
       qtySelect[i].innerHTML = options
     }
-  }, [isitemclicked,isquickviewclicked,iscartbtnclicked,ismodifierclicked])
+  }, [isitemclicked,isquickviewclicked,iscartbtnclicked])
 
   const handleItemClicked = () =>
   {
@@ -81,10 +138,7 @@ export default function RootLayout({ children })
     setIsitemclicked(false)
   }
 
-  const handleInput = (type) =>
-  {
-    setIsmodifierclicked(true)
-  }
+  
 
   const handleItemModalOff = (event) =>
   {
@@ -99,188 +153,128 @@ export default function RootLayout({ children })
   }
   // HomeContext Data End
   // const {iscartbtnclicked, setIscartbtnclicked} = useContext(HomeContext)
-  const navcategories = [
-    {
-    id: 1,
-    name: 'Feature item1'
-    },
-    {
-      id: 2,
-      name: 'Feature item2'
-    },
-    {
-      id: 3,
-      name: 'Feature item3'
-    },
-    {
-      id: 4,
-      name: 'Feature item4'
-    },
-    {
-      id: 5,
-      name: 'Feature item5'
-    },
-    {
-      id: 6,
-      name: 'Feature item6'
-    },
-    {
-      id: 7,
-      name: 'Feature item7'
-    }
-  ]  
+
 
   // const contentRef = useRef(null);
-
-  const [navigationcategories, setNavigationcategories] = useState([])
   
   // const [contentWidth, setContentWidth] = useState(0);
-
-  const [isscrolled, setIsScrolled] = useState(false)
-  const [scrollPosition, setScrollPosition] = useState(0);
-  const [navmobileindex, setNavmobileindex] = useState(0)
-
-  const [ordertypeselect, setOrdertypeselect] = useState(1)
-
-  const handleScroll = () => {
-    // Check if the user has scrolled down (you can adjust the threshold as needed)
-    if (window.scrollY > 200) {
-      setIsScrolled(true);
-      const currentPosition = window.scrollY;
-      // Determine which section is currently in view
-      const active = navcategories?.find((section, index) => {
-        const nextSection = navcategories[index + 1];
-        if (nextSection) {
-          return currentPosition >= document.getElementById(`section${section.id}`)?.offsetTop 
-          &&
-            currentPosition < document.getElementById(`section${nextSection.id}`)?.offsetTop;
-        }
-        return currentPosition >= document.getElementById(`section${section.id}`)?.offsetTop;
-      });
-
-      setNavmobileindex(active ? active.id : navmobileindex);
-
-      setScrollPosition(currentPosition / 10);
-    } else{
-      setIsScrolled(false);
-    }
-  };
   
-  useEffect(() => {
+  useEffect(() => 
+  {
     const dayNumber = moment().day();
 
     // Get the current day name
     const dayName = moment().format('dddd');
 
+    console.log("Day Name", dayName, "Day number", dayNumber);
     setDayname(dayName)
     setDaynumber(dayNumber)
+    fetchMenu()
+    const getSelectStore = window.localStorage.getItem('user_selected_store')
+    if(getSelectStore === null)
+    {
+      setAtfirstload(true)
+    }
+    else
+    {
+      setPostcode(window.localStorage.getItem('user_valid_postcode'))
+      const parseToJSobj = JSON.parse(getSelectStore)
+      setStoreGUID(parseToJSobj.display_id)
+      setStoreName(parseToJSobj.store)
 
-    setNavmobileindex(navcategories[0].id)
-    setNavigationcategories(navcategories)
-    
-    // Add a scroll event listener to track scrolling
-    window.addEventListener('scroll', handleScroll);
+      const address = JSON.parse(window.localStorage.getItem('address'))
+      const getDeliveryMatrix = JSON.parse(window.localStorage.getItem('delivery_matrix'))
 
-    // if (contentRef.current) {
-    //   setContentWidth(navcategories.length * contentRef.current.offsetWidth);
-    // }
+      setDeliverymatrix(getDeliveryMatrix)
+      setPostcodefororderamount(getDeliveryMatrix?.postcode)
 
-    const tabs = document.querySelectorAll(".alaqbtbbh6h7avh8akawanothernav bycsd3d4topbar-div");
-    // const rightArrow = document.querySelector(
-    //   ".scrollable-tabs-container .right-arrow svg"
-    // );
-    // const leftArrow = document.querySelector(
-    //   ".scrollable-tabs-container .left-arrow svg"
-    // );
-    const tabsList = document.querySelector(".alaqbbbcnocqavlcakawtopbar-div");
-    // const leftArrowContainer = document.querySelector(
-    //   ".scrollable-tabs-container .left-arrow"
-    // );
-    // const rightArrowContainer = document.querySelector(
-    //   ".scrollable-tabs-container .right-arrow"
-    // );
-
-    const removeAllActiveClasses = () => {
-      tabs.forEach((tab) => {
-        tab.classList.remove("active");
-      });
-    };
-
-    tabs.forEach((tab) => {
-      tab.addEventListener("click", () => {
-        removeAllActiveClasses();
-        tab.classList.add("active");
-      });
-    });
-
-    const manageIcons = () => {
-      if (tabsList.scrollLeft >= 20) {
-        // leftArrowContainer.classList.add("active");
-      } else {
-        // leftArrowContainer.classList.remove("active");
+      const parseToJSobjAvailableStore = address?.availableStore
+      if(parseInt(parseToJSobjAvailableStore.length) > parseInt(0))
+      {
+        for(const store of parseToJSobjAvailableStore)
+        {
+          if(parseToJSobj.display_id === store?.location_guid)
+          {
+            setStreet1(store?.user_street1)
+            setStreet2(store?.user_street2)
+          }
+        }
       }
-
-      let maxScrollValue = tabsList.scrollWidth - tabsList.clientWidth - 20;
-      // console.log("scroll width: ", tabsList.scrollWidth);
-      // console.log("client width: ", tabsList.clientWidth);
-
-      if (tabsList.scrollLeft >= maxScrollValue) {
-        // rightArrowContainer.classList.remove("active");
-      } else {
-        // rightArrowContainer.classList.add("active");
-      }
-    };
-
-    // rightArrow.addEventListener("click", () => {
-    //   tabsList.scrollLeft += 200;
-    //   manageIcons();
-    // });
-
-    // leftArrow.addEventListener("click", () => {
-    //   tabsList.scrollLeft -= 200;
-    //   manageIcons();
-    // });
-
-    tabsList?.addEventListener("scroll", manageIcons);
-
-    let dragging = false;
-
-    const drag = (e) => {
-      if (!dragging) return;
-      tabsList.classList.add("dragging");
-      tabsList.scrollLeft -= e.movementX; 
-    };
-
-    tabsList?.addEventListener("mousedown", () => {
-      dragging = true;
-    });
-
-    tabsList?.addEventListener("mousemove", drag);
-
-    document.addEventListener("mouseup", () => {
-      dragging = false;
-      tabsList?.classList.remove("dragging");
-    });
- 
-    // Clean up the event listener when the component unmounts
-    return () => {
-      window.removeEventListener('scroll', handleScroll);
-      // setContentWidth(0)
-    };
-
+    }
   }, []);
 
-  const handleOrderType = (id) =>
-  {
-    setOrdertypeselect(id)
-  }
-  
-  console.log("is delivery btn clicked: ", isdeliverybtnclicked);
+  console.log("Cart Data:", cartdata);
   return (
     <html lang="en">
       <HeadMetaData />
       <body className="body-tag">
-        <HomeContext.Provider value={{dayname,daynumber,setIsgobtnclicked, firstname,lastname,iscartbtnclicked,ordertypeselect, setOrdertypeselect,navcategories,navmobileindex,isscrolled,scrollPosition,setAtfirstload,postcode, setPostcode, street1, setStreet1, street2, setStreet2,isdeliverychangedbtnclicked, setIsdeliverychangedbtnclicked,ischeckoutclicked, setIscheckoutclicked,iscartitemdottedbtnclicked,setIscartitemdottedbtnclicked,iscartfull,iscartbtnclicked,setIscartbtnclicked, ismodifierclicked,setIsmodifierclicked,setIsitemclicked, setIsdeliverybtnclicked, setIscartbtnclicked, handleInput, setNavmobileindex}}>
+        <HomeContext.Provider 
+          value={{
+            selectedFilter,
+            setSelectedFilter,
+            filters,
+            setFilters,
+            selectedcategoryid,
+            setSelectedcategoryid,
+            selecteditemid,
+            setSelecteditemid,
+            brandlogo,
+            setBrandlogo,
+            storeGUID,
+            storeName,
+            storetodaydayname,
+            storetodayopeningtime,
+            storetodayclosingtime,
+            setStoreGUID,
+            setStoreName,
+            setStoretodaydayname,
+            setStoretodayopeningtime,
+            setStoretodayclosingtime,
+            Menu,
+            navigationcategories, 
+            navmobileindex, 
+            ismenuavailable, 
+            setNavigationcategories, 
+            setNavmobileindex, 
+            setIsmenuavailable, 
+            headerSearchBarDisplay,
+            setHeaderSearchBarDisplay,
+            headerPostcodeBtnDisplay, 
+            headerCartBtnDisplay, 
+            headerUserBtnDisplay,
+            setHeaderPostcodeBtnDisplay, 
+            setHeaderCartBtnDisplay, 
+            setHeaderUserBtnDisplay,
+            dayname,
+            daynumber,
+            setIsgobtnclicked, 
+            firstname,
+            lastname,
+            setAtfirstload,
+            postcode, 
+            setPostcode, 
+            street1, 
+            setStreet1, 
+            street2, 
+            setStreet2,
+            isdeliverychangedbtnclicked, 
+            setIsdeliverychangedbtnclicked,
+            ischeckoutclicked, 
+            setIscheckoutclicked,
+            iscartitemdottedbtnclicked,
+            setIscartitemdottedbtnclicked,
+            iscartfull,
+            iscartbtnclicked,
+            setIscartbtnclicked, 
+            setIsitemclicked, 
+            setIsdeliverybtnclicked, 
+            setCartdata,
+            cartdata,
+            deliverymatrix,
+            setDeliverymatrix,
+            postcodefororderamount,
+            setPostcodefororderamount
+          }}>
           <Header />
           {children}
           {atfirstload && <AtLoadModalShow />}

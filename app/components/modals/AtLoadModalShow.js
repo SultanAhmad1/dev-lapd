@@ -12,7 +12,7 @@ function AtLoadModalShow()
                     <div className="modal-delivery-details-level-one-div-dialog">
                         <div></div>
 
-                        <div className="modal-delivery-details-level-one-div-dialog-header">
+                        {/* <div className="modal-delivery-details-level-one-div-dialog-header">
                             <div className="delivery-empty-div"></div>
                             <button className="delivery-modal-close-button">
                                 <div
@@ -37,7 +37,7 @@ function AtLoadModalShow()
                                     </svg>
                                 </div>
                             </button>
-                        </div>
+                        </div> */}
                         <SubAtLoadLoadShow />
                     </div>
 
