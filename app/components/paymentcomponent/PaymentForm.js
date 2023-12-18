@@ -15,15 +15,18 @@ const PaymentForm = ({orderId}) =>
     settotalOrderAmountValue
   } = useContext(HomeContext)
 
-    
+  const [loader, setLoader] = useState(true)   
   const stripe = useStripe();
   const elements = useElements();
   const [paymentError, setPaymentError] = useState(null);
 
-  console.log("Stripe: ", stripe);
+  // console.log("Stripe: ", stripe);
   useEffect(() => {
     const orderTotalFromLocalStorage = JSON.parse(window.localStorage.getItem('total_order_value_storage'))
     settotalOrderAmountValue(orderTotalFromLocalStorage === null ? getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) : getAmountConvertToFloatWithFixed(JSON.parse(orderTotalFromLocalStorage),2))
+    setTimeout(() => {
+      setLoader(false)
+    }, 3000);
   }, [])
   
   const hitSmsAndEmailCall = async () =>
@@ -38,10 +41,10 @@ const PaymentForm = ({orderId}) =>
         pathname: pathname
       } 
 
-      console.log("Data: ", data);
+      // console.log("Data: ", data);
       const response = await axiosPrivate.post(`/send-sms-and-email`, data)
-      console.log("Success response:", response);
-
+      // console.log("Success response:", response);
+      setLoader(false)
       // if(response?.data?.status === "success")
       // {
         router.push(`/track-order/${orderId}`)
@@ -52,6 +55,7 @@ const PaymentForm = ({orderId}) =>
     {
       console.log("Handle Error:", error);
       window.alert(error?.response?.data?.error)
+      setLoader(false)
       router.push(`/track-order/${orderId}`)
     }
   }
@@ -67,7 +71,7 @@ const PaymentForm = ({orderId}) =>
       const response = await axiosPrivate.post(`/update-order-after-successfully-payment-save`, data)
 
       
-      console.log('Order is updated:', response);
+      // console.log('Order is updated:', response);
 
       // Here need to hit sms and email call.
 
@@ -85,9 +89,11 @@ const PaymentForm = ({orderId}) =>
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
-    console.log("Order total amount:", getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) * 100);
-    if (!stripe || !elements) {
+    setLoader(true)
+    // console.log("Order total amount:", getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) * 100);
+    if (!stripe || !elements) 
+    {
+      setLoader(false)
       return;
     }
 
@@ -118,7 +124,7 @@ const PaymentForm = ({orderId}) =>
         if (result.error) {
           setPaymentError(result.error.message);
         } else {
-          console.log('Payment successful:', result.paymentIntent);
+          // console.log('Payment successful:', result.paymentIntent);
           afterPaymentSavedOrderUpdate(result.paymentIntent.amount)
         }
       }

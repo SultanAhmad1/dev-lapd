@@ -43,7 +43,7 @@ function TrackOrder({params})
                     guid: params?.order,
                 }   
                 const response = await axiosPrivate.post(`/website-track-order`,data)
-                // console.log("Track Order Response:", response);
+                console.log("Track Order Response:", response);
     
                 setBrand(response?.data?.data?.trackOrder?.brand)
                 setLocation(response?.data?.data?.trackOrder?.location)
@@ -246,11 +246,8 @@ function TrackOrder({params})
                                                                                                                         {
                                                                                                                             secondaryProductModifier?.quantity > 0 ?
                                                                                                                             <>
-                                                                                                                                <div className="bodgdfcheckout-qty">
-                                                                                                                                    {parseInt(secondaryProductModifier?.quantity)}
-                                                                                                                                </div>
                                                                                                                                 <span className="albodgbqcvcheckout-li-modi-detail">
-                                                                                                                                    {secondaryProductModifier?.product_name} ({getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(secondaryProductModifier?.quantity * secondaryProductModifier?.price,2)})
+                                                                                                                                {parseInt(secondaryProductModifier?.quantity)} x {secondaryProductModifier?.product_name} ({getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(secondaryProductModifier?.quantity * secondaryProductModifier?.price,2)})
                                                                                                                                     <div></div>
                                                                                                                                 </span>
                                                                                                                             </>

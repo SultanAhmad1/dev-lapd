@@ -1,4 +1,5 @@
 "use client"
+import Loader from "@/app/components/modals/Loader";
 import PostcodeModal from "@/app/components/modals/PostcodeModal";
 import HomeContext from "@/app/contexts/HomeContext";
 import { BRAND_GUID, PARTNER_ID, axiosPrivate } from "@/app/global/Axios";
@@ -36,6 +37,7 @@ function UserForm()
     daynumber
   } = useContext(HomeContext)
 
+  const [loader, setLoader] = useState(true)
 
   // Button Name Change State
   const [doornumbertext, setDoornumbertext] = useState("Add")
@@ -177,7 +179,7 @@ function UserForm()
 
   const handleLogin = () =>
   {
-    console.log("I am login button");
+    // console.log("I am login button");
     setIsauth(false)
     navigate("/login")
   }
@@ -206,7 +208,7 @@ function UserForm()
       }  
 
       const response = await axiosPrivate.post(`/website-delivery-time`, data);
-      console.log("Success delivery time:", response?.data?.data?.brandDeliveryEstimatePartner);
+      // console.log("Success delivery time:", response?.data?.data?.brandDeliveryEstimatePartner);
 
       // Write logic if the closing is up or come closer than show information.
       var startTime = response?.data?.data?.brandDeliveryEstimatePartner?.start_time
@@ -225,15 +227,18 @@ function UserForm()
       var time_from = new Date(time_from_temp);
       var time_to = new Date(time_to_temp);               
 
-      console.log("Time Form :", time_from, " Time to:", time_to);
-      if (Date.parse(time_from) > Date.parse(d)) {
-          time_from.setMinutes(time_from.getMinutes() + parseInt(deliveryTo));
-          var start_time = new Date(time_from);
-          start_time = start_time.getHours() + ':' + round15(start_time.getMinutes());
-      } else {
-          d.setMinutes(d.getMinutes() + parseInt(deliveryTo));
-          var start_time = new Date(d);
-          start_time = start_time.getHours() + ':' + round15(start_time.getMinutes());
+      // console.log("Time Form :", time_from, " Time to:", time_to);
+      if (Date.parse(time_from) > Date.parse(d)) 
+      {
+        time_from.setMinutes(time_from.getMinutes() + parseInt(deliveryTo));
+        var start_time = new Date(time_from);
+        start_time = start_time.getHours() + ':' + round15(start_time.getMinutes());
+      } 
+      else 
+      {
+        d.setMinutes(d.getMinutes() + parseInt(deliveryTo));
+        var start_time = new Date(d);
+        start_time = start_time.getHours() + ':' + round15(start_time.getMinutes());
       }
       var current_date = new Date();
       // Changed to brand closing time + max delivery time at 4/6/2021
@@ -243,30 +248,36 @@ function UserForm()
         setIsTimeToClosed(true)
         return;
       }
-      console.log("To time:", time_to, "brand delivery_to", deliveryTo);
+      // console.log("To time:", time_to, "brand delivery_to", deliveryTo);
       time_to.setMinutes(time_to.getMinutes() + parseInt(deliveryTo) - 1);
       let end_time = new Date(time_to);
      
       end_time = end_time.getHours() + ':' + end_time.getMinutes();
-      if(start_time == '23:60'){
-          end_time = start_time;
+      if(start_time == '23:60')
+      {
+        end_time = start_time;
       }
 
-      if(parseFloat(end_time.split(':')[0]) == 0){
-          end_time = '23:59';
-      }
-      if(start_time.split(':')[1].length == 1){
-          start_time = start_time.split(':')[0]+':'+start_time.split(':')[1]+'0';
+      if(parseFloat(end_time.split(':')[0]) == 0)
+      {
+        end_time = '23:59';
       }
 
-      if(parseFloat(start_time.split(':')[1]) == 60){
-          var temp_time = start_time.split(':')[0]+':59';
+      if(start_time.split(':')[1].length == 1)
+      {
+        start_time = start_time.split(':')[0]+':'+start_time.split(':')[1]+'0';
       }
-      else{
-          var temp_time = start_time;
+
+      if(parseFloat(start_time.split(':')[1]) == 60)
+      {
+        var temp_time = start_time.split(':')[0]+':59';
+      }
+      else
+      {
+        var temp_time = start_time;
       }
       // temp_time = tConvert(temp_time);
-      console.log("Delivery time:", temp_time);
+      // console.log("Delivery time:", temp_time);
 
       setDeliveryTime(temp_time)
       setOpeningtime(temp_time)
@@ -279,21 +290,28 @@ function UserForm()
 
       }
 
+      setTimeout(() => {
+        setLoader(false)
+      }, 3000);
     } catch (error) {
       console.log("Error:", error);
+      setTimeout(() => {
+        setLoader(false)
+      }, 3000);
     }
   }
 
   useEffect(() => {
     const placeOrderLocalStorageTotal = JSON.parse(window.localStorage.getItem('total_order_value_storage'))
-    console.log("Order value total:", getAmountConvertToFloatWithFixed(JSON.parse(placeOrderLocalStorageTotal),2));
+    // console.log("Order value total:", getAmountConvertToFloatWithFixed(JSON.parse(placeOrderLocalStorageTotal),2));
     settotalOrderAmountValue(placeOrderLocalStorageTotal === null ? totalOrderAmountValue : getAmountConvertToFloatWithFixed(JSON.parse(placeOrderLocalStorageTotal),2))
 
     setIscartbtnclicked(false)
     fetchLocationDeliveryEstimate()
+
   }, [])
  
-  console.log("Handle Delivery Time", deliverytime);
+  // console.log("Handle Delivery Time", deliverytime);
 
   const fetchCustomerLoginDetails = async () =>
   {
@@ -362,7 +380,7 @@ function UserForm()
     const deliveryFeeLocalStorage = (JSON.parse(window.localStorage.getItem('delivery_fee')) === null) ? null : getAmountConvertToFloatWithFixed(JSON.parse(window.localStorage.getItem('delivery_fee')),2)
 
     const updatedDeliveryTime = moment(`${moment().format('YYYY-MM-DD')} ${deliverytime}`, 'YYYY-MM-DD HH:mm:ss')
-    console.log("Updated delivery Time:", updatedDeliveryTime._i, "Store GUID:", storeGUID);
+    // console.log("Updated delivery Time:", updatedDeliveryTime._i, "Store GUID:", storeGUID);
     try 
     {
       const data = {
@@ -392,9 +410,9 @@ function UserForm()
         // delivery_estimate_time: moment(deliverytime, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
         delivery_fee: deliveryFeeLocalStorage
       }
-      console.log("Data:", data);
+      // console.log("Data:", data);
       const response = await axiosPrivate.post(`/store-customer-details`,data)  
-      console.log("Response success:", response);
+      // console.log("Response success:", response);
       if(response?.data?.status === "success")
       {
         setLocalStorage('cart',[])
@@ -1362,6 +1380,8 @@ function UserForm()
           </div>
         </div>
       }
+
+      <Loader loader={loader}/>
     </>
   )
 }

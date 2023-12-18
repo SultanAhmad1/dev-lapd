@@ -4,7 +4,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { find_matching_postcode, getAtFirstLoadModalShow, getStoreName, setAtFirstLoadModalShow, setLocalStorage, setStoreName } from '@/app/global/Store'
 import { useRouter } from 'next/navigation'
 import moment from 'moment'
-function SubAtLoadLoadShow() 
+function SubAtLoadLoadShow({setLoader}) 
 {
    const route = useRouter()
     const {
@@ -41,17 +41,20 @@ function SubAtLoadLoadShow()
     const [availablestores, setAvailablestores] = useState([])
     const handlePostCode = (event) =>
     {   
+        const countPostcodeLength = event.target.value
         setValidpostcode(event.target.value.toUpperCase())
         setPostcodeerror("")
-    }
 
-    useEffect(() => {
-      if(parseInt(validpostcode.length) > parseInt(0))
-      {
-        setIsgobtnclickable(true)
-        setAtFirstLoadModalShow(true)
-      }
-    }, [validpostcode])
+        if(parseInt(countPostcodeLength.length) > parseInt(3))
+        {
+          setIsgobtnclickable(true)
+          setAtFirstLoadModalShow(true)
+        }
+        else
+        {
+          setIsgobtnclickable(false)
+        }
+    }
 
     const fetchPostcodeData = async () => {
         try 
@@ -65,7 +68,7 @@ function SubAtLoadLoadShow()
             // console.log("The Data:", data);
             const response = await axiosPrivate.post(`/ukpostcode-website`, data);
             const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows
-              console.log("Success repsonse:", response.data);
+            //   console.log("Success repsonse:", response.data?.data);
             
             find_matching_postcode(matrix, validpostcode, setDeliverymatrix)
             setLocalStorage('address',response?.data?.data)
@@ -75,9 +78,25 @@ function SubAtLoadLoadShow()
             
             setIsgobtnclickable(false)
             setPostcode(validpostcode)
+            setTimeout(() => {
+                setLoader(false)
+            }, 1000);
+
+            // if the available store location is equal to one then click on handleLocationSelect 
+            // if the available store location is greater than the 1 then let the user select.
+            setTimeout(() => {
+                if(parseInt(response.data?.data?.availableStore.length) === parseInt(1))
+                {
+                    handleLocationSelect(response.data?.data?.availableStore[0]?.location_guid,response.data?.data?.availableStore[0]?.location_name, response.data?.data?.availableStore[0]?.telephone)
+                }
+            }, 2000);
+           
         } catch (error) {
           setPostcodeerror(error?.response?.data?.postcode)
           setIsgobtnclickable(false)
+          setTimeout(() => {
+            setLoader(false)
+            }, 1000);
         }
     };
 
@@ -92,6 +111,7 @@ function SubAtLoadLoadShow()
     
     const handleGoBtn = () =>
     {
+        setLoader(true)
         fetchPostcodeData();
     }
 
@@ -107,7 +127,7 @@ function SubAtLoadLoadShow()
       }
 
       const response = await axiosPrivate.post(`/menu`, data);
-      console.log("Success repsonse:", JSON.parse(response.data?.data?.menu.menu_json_log));
+    //   console.log("Success repsonse:", JSON.parse(response.data?.data?.menu.menu_json_log));
       const convertToJSobj = JSON.parse(response.data?.data?.menu.menu_json_log)
       setMenu(convertToJSobj)
       
@@ -136,7 +156,7 @@ function SubAtLoadLoadShow()
 
     const handleLocationSelect = (storeGUID,storeName, storeTelephone) =>
     {
-        console.log("Store guid:", storeGUID);
+        // console.log("Store guid:", storeGUID);
         setStoreName(storeName)
         setAtfirstload(false)
         setStoreGUID(storeGUID)
