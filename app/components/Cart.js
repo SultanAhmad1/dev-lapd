@@ -10,6 +10,7 @@ export default function Cart()
 {
     const route = useRouter()
     const {
+        settotalOrderAmountValue,
         selectedFilter,
         storeName,
         cartdata,
@@ -52,9 +53,9 @@ export default function Cart()
                 postcode: postcodefororderamount
             }
 
-            // console.log("Filter data:", filterData);
+            console.log("Filter data:", filterData);
             const response = await axiosPrivate.post(`/apply-amount-discount`,filterData)
-            // console.log("Success data:", response);
+            console.log("Amount Discount Success data:", response);
             
             const amountDiscounts = response?.data?.data?.applyAmountDiscount
 
@@ -84,30 +85,28 @@ export default function Cart()
                 {
                     workingIndex -= 1
                 }
-                if(parseInt(amountDiscounts[workingIndex]?.delivery_matrix_rows?.length) > parseInt(0))
+             
+                if(parseFloat(subTotalArgument) >= parseFloat(amountDiscounts[workingIndex].need_to_spend))
                 {
-                    if(parseFloat(subTotalArgument) >= parseFloat(amountDiscounts[workingIndex].need_to_spend))
+                    setLocalStorage('order_amount_number', amountDiscounts[workingIndex].amount_guid)
+                    if(amountDiscounts[workingIndex].discount_type === "P")
                     {
-                        
-                        if(amountDiscounts[workingIndex].discount_type === "P")
-                        {
-                            const getThePercentage = (amountDiscounts[workingIndex].value / 100)
-                            const getDiscount = parseFloat(subTotalArgument) * parseFloat(getThePercentage)
-                            setDiscountValue(getAmountConvertToFloatWithFixed(getDiscount,2))
-                        }
-                        else
-                        {
-                            const getDiscount = parseFloat(subTotalArgument) - parseFloat(amountDiscounts[workingIndex].value)
-                            setDiscountValue(getAmountConvertToFloatWithFixed(getDiscount,2))
-                        }
+                        const getThePercentage = (amountDiscounts[workingIndex].value / 100)
+                        const getDiscount = parseFloat(subTotalArgument) * parseFloat(getThePercentage)
+                        setDiscountValue(getAmountConvertToFloatWithFixed(getDiscount,2))
                     }
                     else
                     {
-                        const getAmountDiscountDifference = (parseFloat(subTotalArgument) >= parseFloat(amountDiscounts[workingIndex].need_to_spend)) ? parseFloat(subTotalArgument) - parseFloat(amountDiscounts[workingIndex].need_to_spend) : parseFloat(amountDiscounts[workingIndex].need_to_spend) - parseFloat(subTotalArgument)
-                        const amountText = <span>Spend <strong>{getCountryCurrencySymbol()}{parseFloat(getAmountDiscountDifference).toFixed(2)}</strong> more to get <strong>{(amountDiscounts[workingIndex].discount_type === "M") && getCountryCurrencySymbol()} {amountDiscounts[workingIndex].value} {(amountDiscounts[workingIndex].discount_type === "P") && "%"} off</strong></span>
-                        setAmountDiscountMessage(amountText)
-                        setDiscountValue(0)
+                        const getDiscount = parseFloat(subTotalArgument) - parseFloat(amountDiscounts[workingIndex].value)
+                        setDiscountValue(getAmountConvertToFloatWithFixed(getDiscount,2))
                     }
+                }
+                else
+                {
+                    const getAmountDiscountDifference = (parseFloat(subTotalArgument) >= parseFloat(amountDiscounts[workingIndex].need_to_spend)) ? parseFloat(subTotalArgument) - parseFloat(amountDiscounts[workingIndex].need_to_spend) : parseFloat(amountDiscounts[workingIndex].need_to_spend) - parseFloat(subTotalArgument)
+                    const amountText = <span>Spend <strong>{getCountryCurrencySymbol()}{parseFloat(getAmountDiscountDifference).toFixed(2)}</strong> more to get <strong>{(amountDiscounts[workingIndex].discount_type === "M") && getCountryCurrencySymbol()} {amountDiscounts[workingIndex].value} {(amountDiscounts[workingIndex].discount_type === "P") && "%"} off</strong></span>
+                    setAmountDiscountMessage(amountText)
+                    setDiscountValue(0)
                 }
             }
         } catch (error) {
@@ -125,13 +124,16 @@ export default function Cart()
         {
             totalValue = parseFloat(totalValue) + parseFloat(total?.total_order_amount)
         }
+        
+        setLocalStorage('sub_order_total_local',JSON.stringify(getAmountConvertToFloatWithFixed(totalValue,2)))
+
         setSubtotalOrderAmount(getAmountConvertToFloatWithFixed(totalValue,2))
         
         // Calculate the Delivery Fee
         // console.log("Inside the cart:", selectedFilter);
         // If the User select the delivery, then delivery fee will be charge.
         
-        if(selectedFilter?.id == DELIVERY_ID)
+        if(selectedFilter?.id === DELIVERY_ID)
         {
             if(parseFloat(totalValue) >= parseFloat(deliverymatrix?.order_value))
                 {
@@ -251,6 +253,12 @@ export default function Cart()
         setIsaddpromocodebtntoggle(!isaddpromocodebtntoggle)
     }
 
+    useEffect(() => {
+        setLocalStorage('total_order_value_storage',JSON.stringify((getAmountConvertToFloatWithFixed((parseFloat(subtotalOrderAmount) + parseFloat(deliveryfee)) - parseFloat(discountvalue),2))))
+        setLocalStorage('delivery_fee',getAmountConvertToFloatWithFixed(deliveryfee,2))
+        settotalOrderAmountValue(getAmountConvertToFloatWithFixed((parseFloat(subtotalOrderAmount) + parseFloat(deliveryfee)) - parseFloat(discountvalue),2))
+    }, [subtotalOrderAmount,deliveryfee,discountvalue])
+    
     console.log("Selected Filter",selectedFilter);
     return (
         <>
@@ -301,12 +309,43 @@ export default function Cart()
                                                                                             modifier?.modifier_secondary_items?.map((item,index) =>
                                                                                             {
                                                                                                 return(
-                                                                                                    (item?.is_item_select) &&
-                                                                                                    <li className="bheyezebalf0checkout-item-li ez" key={index}>
-                                                                                                        <span className="bodgdfcvcheckout-li-modi-title">{modifier?.title}:</span>
-                                                                                                        <div className="spacer _4"></div>
-                                                                                                        <span className="albodgbqcvcheckout-li-modi-detail">{item?.title} ({item?.country_price_symbol}{item?.price})<div></div></span>
-                                                                                                    </li>
+                                                                                                    (item?.item_select_to_sale) &&
+                                                                                                    <>
+                                                                                                        <li className="bheyezebalf0checkout-item-li ez" key={index}>
+                                                                                                            <span className="bodgdfcvcheckout-li-modi-title">{modifier?.title}:</span>
+                                                                                                            <div className="spacer _4"></div>
+                                                                                                            <span className="albodgbqcvcheckout-li-modi-detail">{item?.title} ({item?.country_price_symbol}{item?.price})<div></div></span>
+                                                                                                        </li>
+
+                                                                                                        {
+                                                                                                            parseInt(item?.secondary_item_modifiers.length) > parseInt(0) &&
+                                                                                                            item?.secondary_item_modifiers?.map((secondaryModifierItems, indexSecondModifier) =>
+                                                                                                            {
+                                                                                                                return(
+                                                                                                                    secondaryModifierItems?.secondary_items_modifier_items?.map((secondItem, indexSecondItem) =>
+                                                                                                                    {
+                                                                                                                        return(
+                                                                                                                            <li className="bheyezebalf0checkout-item-li ez" key={index + indexSecondModifier + indexSecondItem}>
+                                                                                                                                <span className="bodgdfcvcheckout-li-modi-title">{secondaryModifierItems?.title}:</span>
+                                                                                                                                <div className="spacer _4"></div>
+                                                                                                                                {
+                                                                                                                                    (secondItem.counter > 0) ?
+                                                                                                                                    <>
+                                                                                                                                        <div class="bodgdfcheckout-qty">{ secondItem.counter}</div>
+                                                                                                                                        <span className="albodgbqcvcheckout-li-modi-detail">{secondItem?.title} ({secondItem?.country_price_symbol}{getAmountConvertToFloatWithFixed(parseFloat(secondItem.counter) * parseFloat(secondItem?.price_info),2)})<div></div></span>
+                                                                                                                                    </>
+                                                                                                                                    :
+                                                                                                                                    <span className="albodgbqcvcheckout-li-modi-detail">{secondItem?.title} ({secondItem?.country_price_symbol}{secondItem?.price_info})<div></div></span>
+                                                                                                                                }
+                                                                                                                                
+                                                                                                                            </li>
+                                                                                                                        )
+                                                                                                                    })
+                                                                                                                )
+                                                                                                            })
+                                                                                                        }
+                                                                                                    </>
+
                                                                                                 )
                                                                                             })
                                                                                         )
@@ -438,7 +477,7 @@ export default function Cart()
                                                     </div>
                                                     
                                                     <div className="bobpbqbrb1checkout">
-                                                        <span className="">{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(discountvalue,2)}</span>
+                                                        <span className="">-{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(discountvalue,2)}</span>
                                                     </div>
                                                 </li>
                                             
@@ -450,7 +489,7 @@ export default function Cart()
                                                     </div>
                                                     
                                                     <div className="bobpbqbrb1checkout">
-                                                        <span className="">{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(deliveryfee,2)}</span>
+                                                        <span className="">+{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(deliveryfee,2)}</span>
                                                     </div>
                                                 </li>
                                             </ul>

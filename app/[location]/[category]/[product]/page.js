@@ -1,5 +1,6 @@
 "use client";
 
+import Loader from '@/app/components/modals/Loader';
 import HomeContext from '@/app/contexts/HomeContext';
 import { BRAND_GUID, PARTNER_ID, axiosPrivate } from '@/app/global/Axios';
 import { getAmountConvertToFloatWithFixed, getCountryCurrencySymbol } from '@/app/global/Store';
@@ -9,8 +10,10 @@ import React, { useContext, useEffect, useState } from 'react'
 
 function productDetails({params}) 
 {
+    const [loader, setLoader] = useState(true)
+
     const router = useRouter()
-    const{setBrandlogo,setIscartbtnclicked,setCartdata,cartdata} = useContext(HomeContext)
+    const{storeGUID,setBrandlogo,setIscartbtnclicked,setCartdata,cartdata} = useContext(HomeContext)
     // const {setIsitemclicked, handleInput} = useContext(HomeContext)
     const [isitemclicked, setIsitemclicked] = useState(false)
     const [isaccordianclicked, setIsaccordianclicked] = useState(true)
@@ -40,18 +43,22 @@ function productDetails({params})
     const filterItem = async () => {
         try 
         {
+            const getStoreIDFromLocalStorage = JSON.parse(window.localStorage.getItem('user_selected_store'))
+            // console.log("Local storage:", getStoreIDFromLocalStorage);
             const data = {
+                location: (getStoreIDFromLocalStorage !== null) ? getStoreIDFromLocalStorage?.display_id: storeGUID,
                 brand: BRAND_GUID,
                 partner: PARTNER_ID
             }
-    
+            
+            // console.log("Single product:", data);
             const response = await axiosPrivate.post(`/menu`, data);
             // console.log("Success repsonse:", JSON.parse(response.data?.data?.menu.menu_json_log));
             const convertToJSobj = JSON.parse(response.data?.data?.menu.menu_json_log)
 
             const getSingleCategory = convertToJSobj?.categories?.find((category) => category.slug === params.category)
             const getItemFromCategory = getSingleCategory?.items?.find((item) => item.slug === params.product)
-
+            
             const updateModifier = getItemFromCategory?.modifier_group?.map((modifier) =>
             {
                 if(modifier?.select_single_option === 1 && (modifier?.min_permitted === 1 && modifier?.max_permitted === 1))
@@ -70,14 +77,17 @@ function productDetails({params})
                                             ...secondItemModiItem,
                                             activeClass: "ob",
                                             total_price: 0,
-                                            is_item_select: false
+                                            is_item_select: false,
+                                            item_select_to_sale: false,
                                         }
                                     })
 
                                     
                                     return{
                                         ...secondItemModifier,
+                                        valid_class: "default_check",
                                         is_second_item_modifier_clicked: true,
+                                        is_modifier_selected: false,
                                         secondary_items_modifier_items: updateSecondaryItemModifierItem
                                     }
                                 }
@@ -90,16 +100,19 @@ function productDetails({params})
                                             activeClass: "mche",
                                             // total_price: secondItemModiItem?.price_info,
                                             total_price: 0,
-                                            is_item_select: false
+                                            is_item_select: false,
+                                            item_select_to_sale: false,
                                         }
                                     })
 
                                     
                                     return{
                                         ...secondItemModifier,
+                                        valid_class: "default_check",
                                         modifier_counter: 0,
                                         is_modifier_clickable: false,
                                         is_second_item_modifier_clicked: true,
+                                        is_modifier_selected: false,
                                         secondary_items_modifier_items: updateSecondaryItemModifierItem
                                     }
                                 }
@@ -111,16 +124,19 @@ function productDetails({params})
                                             counter: 0,
                                             // total_price: secondItemModiItem?.price_info,
                                             total_price: 0,
-                                            is_item_select: true
+                                            is_item_select: true,
+                                            item_select_to_sale: false,
                                         }
                                     })
 
                                     
                                     return{
                                         ...secondItemModifier,
+                                        valid_class: "default_check",
                                         modifier_counter: 0,
                                         is_modifier_clickable: false,
                                         is_second_item_modifier_clicked: true,
+                                        is_modifier_selected: false,
                                         secondary_items_modifier_items: updateSecondaryItemModifierItem
                                     }
                                 }
@@ -132,7 +148,8 @@ function productDetails({params})
                                 is_item_select: false,
                                 // total_price: modifieritem?.price,
                                 total_price: 0,
-                                secondary_item_modifiers: updateNestedItems
+                                secondary_item_modifiers: updateNestedItems,
+                                item_select_to_sale: false,
                             }
                         }
                         return{
@@ -141,11 +158,14 @@ function productDetails({params})
                             // total_price: modifieritem?.price,
                             total_price: 0,
                             is_item_select: false,
+                            item_select_to_sale: false,
                         }
                     })
                     return{
                         ...modifier,
+                        valid_class: "default_check",
                         is_toggle_active: true,
+                        is_modifier_selected: false,
                         modifier_secondary_items: modifier_secondary_items
                     }
                 }
@@ -165,14 +185,17 @@ function productDetails({params})
                                             ...secondItemModiItem,
                                             activeClass: "ob",
                                             total_price: 0,
-                                            is_item_select: false
+                                            is_item_select: false,
+                                            item_select_to_sale: false,
                                         }
                                     })
 
                                     
                                     return{
                                         ...secondItemModifier,
+                                        valid_class: "default_check",
                                         is_second_item_modifier_clicked: true,
+                                        is_modifier_selected: false,
                                         secondary_items_modifier_items: updateSecondaryItemModifierItem
                                     }
                                 }
@@ -184,16 +207,19 @@ function productDetails({params})
                                             ...secondItemModiItem,
                                             activeClass: "mche",
                                             total_price: 0,
-                                            is_item_select: false
+                                            is_item_select: false,
+                                            item_select_to_sale: false,
                                         }
                                     })
 
                                     
                                     return{
                                         ...secondItemModifier,
+                                        valid_class: "default_check",
                                         modifier_counter: 0,
                                         is_modifier_clickable: false,
                                         is_second_item_modifier_clicked: true,
+                                        is_modifier_selected: false,
                                         secondary_items_modifier_items: updateSecondaryItemModifierItem
                                     }
                                 }
@@ -204,16 +230,19 @@ function productDetails({params})
                                             ...secondItemModiItem,
                                             counter: 0,
                                             total_price: 0,
-                                            is_item_select: true
+                                            is_item_select: true,
+                                            item_select_to_sale: false,
                                         }
                                     })
 
                                     
                                     return{
                                         ...secondItemModifier,
+                                        valid_class: "default_check",
                                         modifier_counter: 0,
                                         is_modifier_clickable: false,
                                         is_second_item_modifier_clicked: true,
+                                        is_modifier_selected: false,
                                         secondary_items_modifier_items: updateSecondaryItemModifierItem
                                     }
                                 }
@@ -225,7 +254,8 @@ function productDetails({params})
                                 // total_price: modifieritem?.price,
                                 total_price: 0,
                                 is_item_select: false,
-                                secondary_item_modifiers: updateNestedItems
+                                secondary_item_modifiers: updateNestedItems,
+                                item_select_to_sale: false,
                             }
                         }
                         return{
@@ -233,14 +263,17 @@ function productDetails({params})
                             activeClass: "mche",
                             // total_price: modifieritem?.price,
                             total_price: 0,
-                            is_item_select: false
+                            is_item_select: false,
+                            item_select_to_sale: false,
                         }
                     })
                     return{
                         ...modifier,
+                        valid_class: "default_check",
                         is_toggle_active: true,
                         modifier_counter: 0,
                         is_modifier_clickable: false,
+                        is_modifier_selected: false,
                         modifier_secondary_items: modifier_secondary_items
                     }
                 }
@@ -259,14 +292,17 @@ function productDetails({params})
                                             ...secondItemModiItem,
                                             activeClass: "ob",
                                             total_price: 0,
-                                            is_item_select: false
+                                            is_item_select: false,
+                                            item_select_to_sale: false,
                                         }
                                     })
 
                                     
                                     return{
                                         ...secondItemModifier,
+                                        valid_class: "default_check",
                                         is_second_item_modifier_clicked: true,
+                                        is_modifier_selected: false,
                                         secondary_items_modifier_items: updateSecondaryItemModifierItem
                                     }
                                 }
@@ -278,16 +314,19 @@ function productDetails({params})
                                             ...secondItemModiItem,
                                             total_price: 0,
                                             activeClass: "mche",
-                                            is_item_select: false
+                                            is_item_select: false,
+                                            item_select_to_sale: false,
                                         }
                                     })
 
                                     
                                     return{
                                         ...secondItemModifier,
+                                        valid_class: "default_check",
                                         modifier_counter: 0,
                                         is_modifier_clickable: false,
                                         is_second_item_modifier_clicked: true,
+                                        is_modifier_selected: false,
                                         secondary_items_modifier_items: updateSecondaryItemModifierItem
                                     }
                                 }
@@ -298,16 +337,19 @@ function productDetails({params})
                                             ...secondItemModiItem,
                                             counter: 0,
                                             total_price: 0,
-                                            is_item_select: true
+                                            is_item_select: true,
+                                            item_select_to_sale: false,
                                         }
                                     })
 
                                     
                                     return{
                                         ...secondItemModifier,
+                                        valid_class: "default_check",
                                         modifier_counter: 0,
                                         is_modifier_clickable: false,
                                         is_second_item_modifier_clicked: true,
+                                        is_modifier_selected: false,
                                         secondary_items_modifier_items: updateSecondaryItemModifierItem
                                     }
                                 }
@@ -319,7 +361,8 @@ function productDetails({params})
                                 is_item_select: true,
                                 // total_price: modifieritem?.price,
                                 total_price: 0,
-                                secondary_item_modifiers: updateNestedItems
+                                secondary_item_modifiers: updateNestedItems,
+                                item_select_to_sale: false,
                             }
                         }
                         return{
@@ -327,26 +370,37 @@ function productDetails({params})
                             counter: 0,
                             // total_price: modifieritem?.price,
                             total_price: 0,
-                            is_item_select: true
+                            is_item_select: true,
+                            item_select_to_sale: false,
                         }
                     })
                     return{
                         ...modifier,
+                        valid_class: "default_check",
                         is_toggle_active: true,
                         modifier_counter: 0,
                         is_modifier_clickable: false,
+                        is_modifier_selected: false,
                         modifier_secondary_items: modifier_secondary_items
                     }
                 }
             })
             getItemFromCategory.modifier_group = updateModifier
-            console.log("Update item:", getItemFromCategory);
+            // console.log("Update item:", getItemFromCategory);
+
+            // console.log("Update modifier groups:", updateModifier);
             setSingleitem(getItemFromCategory)
             setItemprice(parseFloat(getItemFromCategory?.price).toFixed(2))
+            setTimeout(() => {
+                setLoader(false)
+            }, 3000);
         } 
         catch (error) 
         {
           console.error('Error fetching data:', error);
+          setTimeout(() => {
+            setLoader(false)
+        }, 3000);
         //   setIsmenuavailable(false)
         }
       };
@@ -361,7 +415,7 @@ function productDetails({params})
 
     const handleRadioInput = (modifierId, itemId, itemName ,secondaryItemModifierCounter) =>
     {
-        console.log("Handle Radio input: ", modifierId, "Item id:", itemId, " Secondary item Modifier:", secondaryItemModifierCounter);
+        // console.log("Handle Radio input: ", modifierId, "Item id:", itemId, " Secondary item Modifier:", secondaryItemModifierCounter);
         if(parseInt(secondaryItemModifierCounter) > parseInt(0))
         {
             
@@ -370,6 +424,7 @@ function productDetails({params})
             // console.log("Nested Modifiers: ", findModifierItemNestedModifierItem);
             // setnestedmodifieritemhasmodifier(findModifierItemNestedModifierItem)
 
+            console.log("Modifier item selected:", modifierId, "selected item:", itemId);
             setselectedModifierId(modifierId)
             setSelectedModifierItemId(itemId)
             setSelectedModifierItemPrice(parseFloat(findModifierItemNestedModifierItem?.total_price))
@@ -401,6 +456,8 @@ function productDetails({params})
                     return{
                         ...modifier,
                         selected_item_name: itemName,
+                        is_modifier_selected: true,
+                        valid_class: (parseInt(modifier.min_permitted) > parseInt(0) && modifier.valid_class === "error_check") ? "success_check" : "success_check",
                         modifier_secondary_items: modifier?.modifier_secondary_items?.map((seconditems) =>
                         {
                             if(itemId === seconditems?.id)
@@ -408,7 +465,8 @@ function productDetails({params})
                                 return{
                                     ...seconditems,
                                     activeClass: "nv",
-                                    is_item_select: true
+                                    is_item_select: true,
+                                    item_select_to_sale: true,
                                 }
                             }
                             return{
@@ -416,6 +474,7 @@ function productDetails({params})
                                 activeClass: "ob",
                                 is_item_select: false,
                                 total_price: 0,
+                                item_select_to_sale: false,
                                 secondary_item_modifiers: seconditems?.secondary_item_modifiers?.map((secondaryModifier) =>
                                 {
                                     return{
@@ -428,7 +487,7 @@ function productDetails({params})
                                                     ...secondaryItem,
                                                     activeClass: "ob",
                                                     total_price: 0,
-                                                    is_item_select: false
+                                                    is_item_select: false,
                                                 }
                                             }
                                             else if(secondaryModifier?.select_single_option === 1 && (secondaryModifier?.min_permitted === 0 && secondaryModifier?.max_permitted >= 1))
@@ -504,13 +563,15 @@ function productDetails({params})
                                 return{
                                     ...seconditems,
                                     activeClass: (seconditems.activeClass === "mche" || seconditems.activeClass === "mchw") ? "mch" : "mche",
-                                    is_item_select: (seconditems.is_item_select === true) ? false : true
+                                    is_item_select: (seconditems.is_item_select === true) ? false : true,
+                                    item_select_to_sale: (seconditems.item_select_to_sale === true) ? false : true,
                                 }
                             }
                             return{
                                 ...seconditems,
                                 activeClass: (seconditems.activeClass === "mche" || seconditems.activeClass === "mchw") ? "mche" : "mch",
-                                is_item_select: (seconditems.is_item_select === false) ? false : true
+                                is_item_select: (seconditems.is_item_select === false) ? false : true,
+                                item_select_to_sale: (seconditems.item_select_to_sale === false) ? false : true,
                             }
                         })
                     }
@@ -520,7 +581,49 @@ function productDetails({params})
             })
         }
         // check the max_permit and make related
-        setSingleitem(updateItem)
+        // count the number of item_selected in checkboxes.
+        let countItemSelected = 0
+        for(const countSelecteitem of updateItem.modifier_group)
+        {
+            if(countSelecteitem?.select_single_option === 1 && (countSelecteitem?.min_permitted === 0 && countSelecteitem?.max_permitted >= 1))
+            {
+                if(parseInt(countSelecteitem?.modifier_secondary_items.length) > parseInt(0))
+                {
+                    for(const countItem of countSelecteitem?.modifier_secondary_items)
+                    {
+                        if(countItem?.is_item_select)
+                        {
+                            countItemSelected += 1
+                        }
+                    }
+                }
+            }
+        }
+
+        const makeModifierIsSelected = {
+            ...updateItem,
+            modifier_group: updateItem?.modifier_group?.map((modifier) =>
+            {
+                if(modifier?.id === modifierId)
+                {
+                    let addClass = modifier.valid_class
+                    if(parseInt(countItemSelected) > parseInt(0))
+                    {
+                        if(parseInt(modifier.min_permitted) > parseInt(0) && modifier.valid_class === "error_check")
+                        {
+                            addClass = "success_check"
+                        }
+                    }
+                    return{
+                        ...modifier,
+                        is_modifier_selected: (parseInt(countItemSelected) > parseInt(0)) ? true : false,
+                        valid_class: addClass,
+                    }
+                }
+                return modifier
+            })
+        }
+        setSingleitem(makeModifierIsSelected)
 
         for(const updateItemModifier of updateItem.modifier_group)
         {
@@ -556,14 +659,15 @@ function productDetails({params})
             ...singleitem,
             modifier_group: singleitem?.modifier_group?.map((modifier) =>
             {
-
                 if(modifierId === modifier?.id)
                 {
                     return{
                         ...modifier,
+                        valid_class: (parseInt(modifier.min_permitted) > parseInt(0) && modifier.valid_class === "error_check") ? "success_check" : "success_check",
                         modifier_counter: 1 + modifier?.modifier_counter,
                         is_modifier_clickable: (modifier?.modifier_counter < modifier.max_permitted ) ? false : true,
                         permitt_max: modifier.max_permitted,
+                        is_modifier_selected: true,
                         modifier_secondary_items: modifier?.modifier_secondary_items?.map((seconditems) =>
                         {
                             if(itemId === seconditems?.id)
@@ -573,7 +677,8 @@ function productDetails({params})
                                     return{
                                         ...seconditems,
                                         counter: 1 + seconditems.counter,
-                                        is_item_select: false
+                                        is_item_select: false,
+                                        item_select_to_sale: true
                                     }
                                 // }
                                 // else
@@ -588,7 +693,8 @@ function productDetails({params})
                             return{
                                 ...seconditems,
                                 counter: (seconditems.counter > 0) ? seconditems.counter : 0,
-                                is_item_select: (seconditems.is_item_select === true) ? true : false
+                                is_item_select: (seconditems.is_item_select === true) ? true : false,
+                                item_select_to_sale: (seconditems.item_select_to_sale === true) ? true : false,
                             }
                         })
                     }
@@ -597,6 +703,7 @@ function productDetails({params})
                 return modifier
             })
         }
+
         setSingleitem(updateItem)
 
         let totalAmount = itemprice
@@ -652,16 +759,19 @@ function productDetails({params})
                         {
                             if(itemId === seconditems?.id)
                             {
+                                let getCounter = (seconditems.counter > 0) ? seconditems.counter - 1 : 0
                                 return{
                                     ...seconditems,
                                     counter: (seconditems.counter > 0) ? seconditems.counter - 1 : 0,
-                                    is_item_select: (seconditems.counter === 0) ? true : false
+                                    is_item_select: (seconditems.counter === 0) ? true : false,
+                                    item_select_to_sale: (getCounter > 0) ? true : false,
                                 }
                             }
                             return{
                                 ...seconditems,
                                 counter: (seconditems.counter > 0) ? seconditems.counter : 0,
-                                is_item_select: (seconditems.counter === 0) ? true : false
+                                is_item_select: (seconditems.counter === 0) ? true : false,
+                                item_select_to_sale: (seconditems.counter > 0) ? true : false,
                             }
                         })
                     }
@@ -670,7 +780,36 @@ function productDetails({params})
                 return modifier
             })
         }
-        setSingleitem(updateItem)
+
+        // is modifier selected make sure ture or false, will help to save information into dabase.
+        const updateModifierItemSelected = {
+            ...updateItem,
+            modifier_group: updateItem?.modifier_group?.map((decModifierItemSelected) =>
+            {
+                if(modifierId === decModifierItemSelected?.id)
+                {
+                    let addClass = decModifierItemSelected.valid_class
+                    if(decModifierItemSelected?.modifier_counter === 0)
+                    {
+                        if(decModifierItemSelected.valid_class === "error_check")
+                        {
+                            addClass = "success_check"
+                        }
+                        else
+                        {
+                            addClass = "default_check"
+                        }
+                    }
+                    return{
+                        ...decModifierItemSelected,
+                        is_modifier_selected: (parseInt(decModifierItemSelected?.modifier_counter) > parseInt(0)) ? true : false,
+                        valid_class:  addClass,
+                    }
+                }
+                return decModifierItemSelected
+            })
+        }
+        setSingleitem(updateModifierItemSelected)
     }
     
     const handleModalRadioInput = (modifierId, itemId, secondaryModifierId, secondaryItemId) =>
@@ -712,6 +851,7 @@ function productDetails({params})
                 {
                     return{
                         ...modifier,
+                        is_modifier_selected: true,
                         modifier_secondary_items: modifier?.modifier_secondary_items?.map((item) =>
                         {
                             if(itemId === item?.id)
@@ -724,20 +864,24 @@ function productDetails({params})
                                         {
                                             return{
                                                 ...secondaryModifier,
+                                                valid_class: (parseInt(secondaryModifier.min_permitted) > parseInt(0) && secondaryModifier.valid_class === "error_check") ? "success_check" : "success_check",
+                                                is_modifier_selected: true,
                                                 secondary_items_modifier_items: secondaryModifier?.secondary_items_modifier_items?.map((secondaryItem) => {
                                                     if(secondaryItemId === secondaryItem?.id)
                                                     {
                                                         return{
                                                             ...secondaryItem,
                                                             activeClass: "nv",
-                                                            is_item_select: true
+                                                            is_item_select: true,
+                                                            item_select_to_sale: true
                                                         }
                                                     }
                                                     
                                                     return{
                                                         ...secondaryItem,
                                                         activeClass: "ob",
-                                                        is_item_select: false
+                                                        is_item_select: false,
+                                                        item_select_to_sale: false
                                                     }
                                                 })
                                             }
@@ -781,7 +925,7 @@ function productDetails({params})
                                     if(updateSecondaryItem?.id === secondaryItemId)
                                     {
                                         const newTotalPlus = parseFloat(totalAmount) + parseFloat(updateSecondaryItem?.price_info)
-                                        console.log("Plus the radio modal value:", newTotalPlus, " The value: ", parseFloat(updateSecondaryItem?.price_info));
+                                        // console.log("Plus the radio modal value:", newTotalPlus, " The value: ", parseFloat(updateSecondaryItem?.price_info));
                                         totalAmount = newTotalPlus
                                     }
                                 }
@@ -827,14 +971,16 @@ function productDetails({params})
                                                         return{
                                                             ...secondaryItem,
                                                             activeClass: (secondaryItem.activeClass === "mche" || secondaryItem.activeClass === "mchw") ? "mch" : "mche",
-                                                            is_item_select: (secondaryItem.is_item_select === true) ? false : true
+                                                            is_item_select: (secondaryItem.is_item_select === true) ? false : true,
+                                                            item_select_to_sale: (secondaryItem.item_select_to_sale === true) ? true : false,
                                                         }
                                                     }
                                                     
                                                     return{
                                                         ...secondaryItem,
                                                         activeClass: (secondaryItem.activeClass === "mche" || secondaryItem.activeClass === "mchw") ? "mche" : "mch",
-                                                        is_item_select: (secondaryItem.is_item_select === false) ? false : true
+                                                        is_item_select: (secondaryItem.is_item_select === false) ? false : true,
+                                                        item_select_to_sale: (secondaryItem.item_select_to_sale === false) ? false : true,
                                                     }
                                                 })
                                             }
@@ -858,7 +1004,96 @@ function productDetails({params})
                 return modifier
             })
         }
-        setSingleitem(updateItem)
+
+        let countItemSelected = 0
+        for(const countModifier of updateItem.modifier_group)
+        {
+            if(modifierId === countModifier?.id)
+           {
+                if(parseInt(countModifier?.modifier_secondary_items.length) > parseInt(0))
+                {
+                    for(const secondItem of countModifier?.modifier_secondary_items)
+                    {
+                        if(itemId === secondItem?.id)
+                        {
+                            if(parseInt(secondItem?.secondary_item_modifiers.length) > parseInt(0))
+                            {
+                                for(const secondModifier of secondItem?.secondary_item_modifiers)
+                                {
+                                    if(secondaryModifierId === secondModifier?.id)
+                                    {
+                                        if(parseInt(secondModifier?.secondary_items_modifier_items.length) > parseInt(0))
+                                        {
+                                            for(const secondModfierItems of secondModifier?.secondary_items_modifier_items)
+                                            {
+                                                if(secondModfierItems?.is_item_select)
+                                                {
+                                                    countItemSelected += 1
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // return secondModifier
+                                }
+                            }
+                        }
+                        // return secondItem
+                    }
+                }
+           }
+        //    return countModifier
+        }
+       
+        const makeModifierSelected = {
+            ...updateItem,
+            modifier_group: updateItem?.modifier_group?.map((modifier) =>
+            {
+                if(modifierId === modifier.id)
+                {
+                    return{
+                        ...modifier,
+                        modifier_secondary_items: modifier?.modifier_secondary_items?.map((secondItem) =>
+                        {
+                            if(itemId === secondItem.id)
+                            {
+                                return{
+                                    ...secondItem,
+                                    secondary_item_modifiers: secondItem?.secondary_item_modifiers?.map((secondModifier) =>
+                                    {
+                                        if(secondaryModifierId === secondModifier.id)
+                                        {
+                                            let addClass = secondModifier.valid_class
+
+                                            if(parseInt(countItemSelected) > parseInt(0))
+                                            {
+                                                if(parseInt(secondModifier.min_permitted) > parseInt(0) && secondModifier.valid_class === "error_check")
+                                                {
+                                                    addClass = "success_check"
+                                                }
+                                            }
+
+                                            return{
+                                                ...secondModifier,
+                                                is_modifier_selected: (parseInt(countItemSelected) > parseInt(0)) ? true : false,
+                                                valid_class: addClass,
+                                            }
+                                        }
+
+                                        return secondModifier
+                                    })
+                                }
+                            }
+                            return secondItem
+                        })
+                    }
+                }   
+
+                return modifier
+            })
+        }
+
+        setSingleitem(makeModifierSelected)
 
         let totalAmount = selectedModifierItemPrice
         for(const updateItemModifier of updateItem.modifier_group)
@@ -911,9 +1146,6 @@ function productDetails({params})
                 {
                     return{
                         ...modifier,
-                        // modifier_counter: 1 + modifier?.modifier_counter,
-                        // is_modifier_clickable: (modifier?.modifier_counter < modifier.max_permitted ) ? false : true,
-                        // permitt_max: modifier.max_permitted,
                         modifier_secondary_items: modifier?.modifier_secondary_items?.map((seconditems) =>
                         {
                             if(itemId === seconditems?.id)
@@ -929,25 +1161,25 @@ function productDetails({params})
                                                    modifier_counter: 1 + secondItemModifier?.modifier_counter,
                                                     is_modifier_clickable: (parseInt(secondItemModifier?.max_permitted) === parseInt(secondItemModifier?.modifier_counter)) ? true : false,
                                                     permitt_max: secondItemModifier.max_permitted,
+                                                    is_modifier_selected: true,
+                                                    valid_class: (parseInt(secondItemModifier.min_permitted) > parseInt(0) && secondItemModifier.valid_class === "error_check") ? "success_check" : "success_check",
                                                     secondary_items_modifier_items: secondItemModifier?.secondary_items_modifier_items?.map((secondaryItem) =>
                                                     {
-                                                        // if()
-                                                        // {
-
-                                                        // }
                                                         if(secondItemId === secondaryItem?.id)
                                                         {
                                                             return{
                                                                 ...secondaryItem,
                                                                 counter: 1 + secondaryItem.counter,
-                                                                is_item_select: false
+                                                                is_item_select: false,
+                                                                item_select_to_sale: true
                                                             }
                                                         }
 
                                                         return{
                                                             ...secondaryItem,
                                                             counter: (secondaryItem.counter > 0) ? secondaryItem.counter : 0,
-                                                            is_item_select: (secondaryItem.is_item_select === true) ? true : false
+                                                            is_item_select: (secondaryItem.is_item_select === true) ? true : false,
+                                                            item_select_to_sale: (secondaryItem.item_select_to_sale === true) ? true : false,
                                                         }
                                                     })
                                             }
@@ -956,7 +1188,6 @@ function productDetails({params})
                                         return secondItemModifier
                                      
                                     })
-                                    
                                 }
                             }
 
@@ -1050,9 +1281,6 @@ function productDetails({params})
                 {
                     return{
                         ...modifier,
-                        // modifier_counter: 1 + modifier?.modifier_counter,
-                        // is_modifier_clickable: (modifier?.modifier_counter < modifier.max_permitted ) ? false : true,
-                        // permitt_max: modifier.max_permitted,
                         modifier_secondary_items: modifier?.modifier_secondary_items?.map((seconditems) =>
                         {
                             if(itemId === seconditems?.id)
@@ -1070,23 +1298,22 @@ function productDetails({params})
                                                     permitt_max: secondItemModifier.max_permitted,
                                                     secondary_items_modifier_items: secondItemModifier?.secondary_items_modifier_items?.map((secondaryItem) =>
                                                     {
-                                                        // if()
-                                                        // {
-
-                                                        // }
                                                         if(secondItemId === secondaryItem?.id)
                                                         {
+                                                            let getMobileDecrement = (secondaryItem.counter > 0) ? secondaryItem.counter - 1 : 0
                                                             return{
                                                                 ...secondaryItem,
                                                                 counter: (secondaryItem.counter > 0) ? secondaryItem.counter - 1 : 0,
-                                                                is_item_select: (secondaryItem.counter > 0) ? false : true
+                                                                is_item_select: (secondaryItem.counter > 0) ? false : true,
+                                                                item_select_to_sale: (getMobileDecrement > 0) ? true : false,
                                                             }
                                                         }
 
                                                         return{
                                                             ...secondaryItem,
                                                             counter: (secondaryItem.counter > 0) ? secondaryItem.counter : 0,
-                                                            is_item_select: (secondaryItem.is_item_select === true) ? true : false
+                                                            is_item_select: (secondaryItem.is_item_select === true) ? true : false,
+                                                            item_select_to_sale: (secondaryItem.item_select_to_sale === true) ? true : false,
                                                         }
                                                     })
                                             }
@@ -1112,26 +1339,11 @@ function productDetails({params})
                 return modifier
             })
         }
-        setSingleitem(updateItem)
-    }
 
-    const handleQuantity = (event) =>
-    {
-        
-        setQuantity(event.target.value)
-    }
-
-    const handleSaveBtn = (modifierId, itemId) =>
-    {
-        console.log("Modifier Id:", modifierId, " selected item id:", itemId);
-        const newTotal = parseFloat(itemprice) + parseFloat(selectedModifierItemPrice)
-        setItemprice(parseFloat(newTotal).toFixed(2))
-
-        const updateSecondaryItemPriceTotal = {
-            ...singleitem,
-            modifier_group: singleitem?.modifier_group?.map((modifier) =>
+        const updatedModifierSelected = {
+            ...updateItem,
+            modifier_group: updateItem?.modifier_group?.map((modifier) =>
             {
-
                 if(modifierId === modifier?.id)
                 {
                     return{
@@ -1142,7 +1354,33 @@ function productDetails({params})
                             {
                                 return{
                                     ...seconditems,
-                                    total_price: parseFloat(selectedModifierItemPrice)
+                                    secondary_item_modifiers: seconditems?.secondary_item_modifiers?.map((secondItemModifier) =>
+                                    {
+                                        if(secondModifierId === secondItemModifier?.id)
+                                        {
+                                            let addClass = secondItemModifier.valid_class
+                                            if(secondItemModifier?.modifier_counter === 0)
+                                            {
+                                                if(secondItemModifier.valid_class === "error_check")
+                                                {
+                                                    addClass = "success_check"
+                                                }
+                                                else
+                                                {
+                                                    addClass = "default_check"
+                                                }
+                                            }
+                                            return{
+                                                ...secondItemModifier,
+                                                is_modifier_selected: (parseInt(secondItemModifier?.modifier_counter) > parseInt(0)) ? true : false,
+                                                valid_class: addClass,
+                                            }
+                                        }
+
+                                        return secondItemModifier
+                                     
+                                    })
+                                    
                                 }
                             }
 
@@ -1154,8 +1392,138 @@ function productDetails({params})
                 return modifier
             })
         }
-        setSingleitem(updateSecondaryItemPriceTotal)
-        setIsmodifierclicked(false)
+        setSingleitem(updatedModifierSelected)
+    }
+
+    const handleQuantity = (event) =>
+    {
+        setQuantity(event.target.value)
+    }
+
+    const handleSaveBtn = (modifierId, itemId) =>
+    {
+        if(singleitem)
+        {
+            let countMinPermiModifier = 0
+            for(const parentModifier of singleitem.modifier_group)
+            {
+                if(modifierId === parentModifier.id)
+                {
+                    for(const selectedItem of parentModifier.modifier_secondary_items)
+                    {
+                        if(itemId === selectedItem.id)
+                        {
+                            for(const childModi of selectedItem.secondary_item_modifiers)
+                            {
+                                if(parseInt(childModi.min_permitted) > parseInt(0) && childModi?.is_modifier_selected === false)
+                                {
+                                    countMinPermiModifier += 1
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            console.log("Save btn clicked: ", countMinPermiModifier);
+
+            if(parseInt(countMinPermiModifier) > parseInt(0))
+            {
+                let getTheCounter = 0
+                const updateNestModifierError = {
+                    ...singleitem,
+                    modifier_group: singleitem?.modifier_group?.map((modifier) =>
+                    {
+                        if(modifierId === modifier?.id)
+                        {
+                            return {
+                                ...modifier,
+                                modifier_secondary_items: modifier?.modifier_secondary_items?.map((secondItem) =>
+                                {
+                                    if(itemId === secondItem.id)
+                                    {
+                                        return{
+                                            ...secondItem,
+                                            secondary_item_modifiers: secondItem?.secondary_item_modifiers?.map((nestedModifier) =>
+                                            {
+                                                let addClass = nestedModifier?.valid_class
+                                                if(parseInt(nestedModifier?.min_permitted) > parseInt(0) && nestedModifier.is_modifier_selected === false)
+                                                {
+                                                    addClass = "error_check"
+                                                    getTheCounter += 1
+                                                }
+        
+                                                return{
+                                                    ...nestedModifier,
+                                                    valid_class: addClass
+                                                }
+                                            })
+                                        }
+                                    }
+                                    return secondItem
+                                })
+                            }
+                        }
+                        return modifier
+                    })
+                }
+
+                const updateClassError = {
+                    ...updateNestModifierError,
+                    modifier_group: updateNestModifierError?.modifier_group?.map((updateModifierClass) =>
+                    {
+                        if(modifierId === updateModifierClass.id)
+                        {
+                            return{
+                                ...updateModifierClass,
+                                valid_class: getTheCounter > 0 ? "error_check" : "success_check"
+                            }
+                        }
+                        return updateModifierClass
+                    })
+                }
+
+                setSingleitem(updateClassError)
+            }
+            else
+            {
+                // console.log("Modifier Id:", modifierId, " selected item id:", itemId);
+                const newTotal = parseFloat(itemprice) + parseFloat(selectedModifierItemPrice)
+                setItemprice(parseFloat(newTotal).toFixed(2))
+        
+                const updateSecondaryItemPriceTotal = {
+                    ...singleitem,
+                    modifier_group: singleitem?.modifier_group?.map((modifier) =>
+                    {
+        
+                        if(modifierId === modifier?.id)
+                        {
+                            return{
+                                ...modifier,
+                                is_modifier_selected: true,
+                                valid_class: "success_check",
+                                modifier_secondary_items: modifier?.modifier_secondary_items?.map((seconditems) =>
+                                {
+                                    if(itemId === seconditems?.id)
+                                    {
+                                        return{
+                                            ...seconditems,
+                                            total_price: parseFloat(selectedModifierItemPrice)
+                                        }
+                                    }
+        
+                                    return seconditems
+                                })
+                            }
+                        }
+                      
+                        return modifier
+                    })
+                }
+                setSingleitem(updateSecondaryItemPriceTotal)
+                setIsmodifierclicked(false)
+            }
+        }
     }
 
     useEffect(() => {
@@ -1257,18 +1625,58 @@ function productDetails({params})
       }
     }, [ishandlemodalcheckiputclicked])
     
+    // Website Cart Button
     const handleAddtoCart = () =>
     {
-        const addTotalAmount = {
-            ...singleitem,
-            total_order_amount: parseFloat(quantity * itemprice).toFixed(2),
-            quantity: parseInt(quantity),
-            is_cart_modal_clicked: false
+        if(singleitem)
+        {
+            // Count the number of modifier is min_permit is greater than zero.
+
+            let countMinPermit = 0
+            for(const minPermit of singleitem?.modifier_group)
+            {
+                if(parseInt(minPermit?.min_permitted) > parseInt(0) && minPermit?.is_modifier_selected === false)
+                {
+                    countMinPermit += 1
+                }
+            }
+
+            if(parseInt(countMinPermit) > parseInt(0))
+            {
+                const addErrorClassinModifier = {
+                    ...singleitem,
+                    modifier_group: singleitem?.modifier_group?.map((addErrorClass) =>
+                    {
+                        let addClass = addErrorClass?.valid_class
+                        if(parseInt(addErrorClass?.min_permitted) > parseInt(0) && addErrorClass.is_modifier_selected === false)
+                        {
+                            addClass = "error_check"
+                        }
+                        return{
+                            ...addErrorClass,
+                            valid_class: addClass
+                        }
+                    })
+                }
+
+                setSingleitem(addErrorClassinModifier)
+            }
+            else
+            {
+                const addTotalAmount = {
+                    ...singleitem,
+                    total_order_amount: parseFloat(quantity * itemprice).toFixed(2),
+                    quantity: parseInt(quantity),
+                    is_cart_modal_clicked: false
+                }
+                setCartdata((prevData) => [...prevData, addTotalAmount])
+                router.push("/")
+                setIscartbtnclicked(true)
+            }
         }
-        setCartdata((prevData) => [...prevData, addTotalAmount])
-        setIscartbtnclicked(true)
     }
 
+    // Mobile Cart Click button
     const handleMobileAddtoCart = () =>
     {
         const addTotalAmount = {
@@ -1282,38 +1690,42 @@ function productDetails({params})
         setIscartbtnclicked(true)
     }
 
-    useEffect(() => {
+    // useEffect(() => {
   
-        if(isaccordianclicked)
-        {
-          var acc = document.getElementsByClassName("accordion");
-          console.log("All acc", acc);
-          var i;
+    //     if(isaccordianclicked)
+    //     {
+    //       var acc = document.getElementsByClassName("accordion");
+    //     //   console.log("All acc", acc);
+    //       var i;
     
-          for (i = 0; i < acc.length; i++) 
-          {
-            acc[i].addEventListener("click", function() 
-            {
-              var panel = this.parentNode.parentNode.nextElementSibling;
-              if (panel.style.display === "block") {
-                panel.style.display = "none";
-                this.children[0].children[0].style.display = 'none'
-                this.children[0].children[1].style.display = 'block'
-              } else {
-                panel.style.display = "block";
-                this.children[0].children[0].style.display = 'block'
-                this.children[0].children[1].style.display = 'none'
-              }
-            });
-          }
+    //       for (i = 0; i < acc.length; i++) 
+    //       {
+    //         acc[i].addEventListener("click", function() 
+    //         {
+    //           var panel = this.parentNode.parentNode.nextElementSibling;
+    //           if (panel.style.display === "block") {
+    //             panel.style.display = "none";
+    //             this.children[0].children[0].style.display = 'none'
+    //             this.children[0].children[1].style.display = 'block'
+    //           } else {
+    //             panel.style.display = "block";
+    //             this.children[0].children[0].style.display = 'block'
+    //             this.children[0].children[1].style.display = 'none'
+    //           }
+    //         });
+    //       }
         
-          setIsaccordianclicked(false)
-        }
-    }, [isaccordianclicked])
+    //       setIsaccordianclicked(false)
+    //     }
+    // }, [isaccordianclicked])
 
+    // Mobile Decrement quantity
     const handleMobileQuantityDecrement = () => 
     {
-        setQuantity((prevData) => prevData - 1)
+        if(quantity > 0)
+        {
+            setQuantity((prevData) => prevData - 1)
+        }
     }
 
     const handleMobileQuantityIncrement = () => 
@@ -1323,7 +1735,7 @@ function productDetails({params})
 
     const handleMobileModifierToggle = (modifierId) =>
     {
-        console.log("Modifier ID:",modifierId);
+        // console.log("Modifier ID:",modifierId);
         const updateModifierToggle = {
             ...singleitem,
             modifier_group: singleitem?.modifier_group?.map((modifierToggle) =>
@@ -1338,7 +1750,7 @@ function productDetails({params})
                 return modifierToggle
             })
         }
-        console.log("Single Item:", updateModifierToggle);
+        // console.log("Single Item:", updateModifierToggle);
 
         setSingleitem(updateModifierToggle)
     }
@@ -1384,7 +1796,119 @@ function productDetails({params})
         }
         setSingleitem(updateSecondaryModifierToggle)
     }
+ 
+    const handleBackArrow = (modifierId, itemId) =>
+    {
+        console.log("Back arrow Modifier item selected:", modifierId, "selected item:", itemId);
+        if(singleitem)
+        {
+            let countMinPermiModifier = 0
+            for(const parentModifier of singleitem.modifier_group)
+            {
+                if(modifierId === parentModifier.id)
+                {
+                    for(const selectedItem of parentModifier.modifier_secondary_items)
+                    {
+                        if(itemId === selectedItem.id)
+                        {
+                            for(const childModi of selectedItem.secondary_item_modifiers)
+                            {
+                                if(parseInt(childModi.min_permitted) > parseInt(0) && childModi?.is_modifier_selected === false)
+                                {
+                                    countMinPermiModifier += 1
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
+            if(parseInt(countMinPermiModifier) > parseInt(0))
+            {
+                let getTheCounter = 0
+                const updateNestModifierError = {
+                    ...singleitem,
+                    modifier_group: singleitem?.modifier_group?.map((modifier) =>
+                    {
+                        if(modifierId === modifier?.id)
+                        {
+                            return {
+                                ...modifier,
+                                modifier_secondary_items: modifier?.modifier_secondary_items?.map((secondItem) =>
+                                {
+                                    if(itemId === secondItem.id)
+                                    {
+                                        return{
+                                            ...secondItem,
+                                            secondary_item_modifiers: secondItem?.secondary_item_modifiers?.map((nestedModifier) =>
+                                            {
+                                                let addClass = nestedModifier?.valid_class
+                                                if(parseInt(nestedModifier?.min_permitted) > parseInt(0) && nestedModifier.is_modifier_selected === false)
+                                                {
+                                                    addClass = "error_check"
+                                                    getTheCounter += 1
+                                                }
+        
+                                                return{
+                                                    ...nestedModifier,
+                                                    valid_class: addClass
+                                                }
+                                            })
+                                        }
+                                    }
+                                    return secondItem
+                                })
+                            }
+                        }
+                        return modifier
+                    })
+                }
+
+                const updateClassError = {
+                    ...updateNestModifierError,
+                    modifier_group: updateNestModifierError?.modifier_group?.map((updateModifierClass) =>
+                    {
+                        if(modifierId === updateModifierClass.id)
+                        {
+                            return{
+                                ...updateModifierClass,
+                                valid_class: getTheCounter > 0 ? "error_check" : "success_check",
+                                is_modifier_selected: getTheCounter > 0 ? false : true
+                            }
+                        }
+                        return updateModifierClass
+                    })
+                }
+
+                setSingleitem(updateClassError)
+            }
+            else
+            {
+                // console.log("Modifier Id:", modifierId, " selected item id:", itemId);
+                let totalSubAmount = 0
+                if(singleitem)
+                {
+                    for(const modifier of singleitem?.modifier_group)
+                    {
+                        if(modifierId === modifier.id)
+                        {
+                            for(const itemTotal of modifier.modifier_secondary_items)
+                            {
+                                if(itemId === itemTotal.id)
+                                {
+                                    totalSubAmount = itemTotal.total_price
+                                }
+                            }
+                        }
+                    }
+                }
+                const newTotal = parseFloat(itemprice) + parseFloat(totalSubAmount)
+                setItemprice(parseFloat(newTotal).toFixed(2))
+                setIsmodifierclicked(false)
+            }
+        }
+        setIsmodifierclicked(false)
+    }
     console.log("Single items udpate:", singleitem);
     return (
         
@@ -1463,7 +1987,7 @@ function productDetails({params})
                                                                     </div>
                                                                 </div>
                                                                 <div className="product-required">
-                                                                    <div className="product-required-div">Required</div>
+                                                                    <div className={`product-required-div ${modifier?.valid_class}`}> {(parseInt(modifier?.min_permitted) > parseInt(0)) ? "Required" : "Optional"}</div>
                                                                 </div>
                                                             </div>
                 
@@ -1525,7 +2049,7 @@ function productDetails({params})
                                                                     </div>
                                                                 </div>
                                                                 <div className="product-required">
-                                                                    <div className="product-required-div">Required</div>
+                                                                    <div className={`product-required-div ${modifier?.valid_class}`}>{(parseInt(modifier?.min_permitted) > parseInt(0)) ? "Required" : "Optional"}</div>
                                                                 </div>
                                                             </div>
 
@@ -1598,6 +2122,9 @@ function productDetails({params})
                                                                     <div className="product-modifier-option">
                                                                         <span>Choose up to {modifier?.max_permitted}</span>
                                                                     </div>
+                                                                </div>
+                                                                <div className="product-required">
+                                                                    <div className={`product-required-div ${modifier?.valid_class}`}>{(parseInt(modifier?.min_permitted) > parseInt(0)) ? "Required" : "Optional"}</div>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -1966,421 +2493,400 @@ function productDetails({params})
             {/* Mobile Responsive */}
             <div>
                 <div>
-                <div className="agassingle-product">
-                    <div  style={{width: "1px", height: "0px", padding: "0px", overflow: "hidden", position: "fixed", top: "1px", left: "1px"}}></div>
-                    <div>
-                        <div className="arc2single-product">
-                        <div className="albfsingle-product">
-                            <div className="akb0cccdsingle-product">
-                            
-                            <div className="ctascusingle-product">
+                    <div className="agassingle-product">
+                        <div  style={{width: "1px", height: "0px", padding: "0px", overflow: "hidden", position: "fixed", top: "1px", left: "1px"}}></div>
+                        <div>
+                            <div className="arc2single-product">
+                            <div className="albfsingle-product">
+                                <div className="akb0cccdsingle-product">
+                                
+                                <div className="ctascusingle-product">
 
-                                <div className="agaksingle-product">
-                                <div className="agasbcbksingle-product"></div>
-                                <div className="akcyczbfsingle-product">
+                                    <div className="agaksingle-product">
+                                    <div className="agasbcbksingle-product"></div>
+                                    <div className="akcyczbfsingle-product">
 
-                                    <div className="d5single-product">
-                                        <Link className="d6aqbfc4single-product-cross-btn" href="/">
-                                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                            <title>X</title>
-                                            <path d="m21.1 5.1-2.2-2.2-6.9 7-6.9-7-2.2 2.2 7 6.9-7 6.9 2.2 2.2 6.9-7 6.9 7 2.2-2.2-7-6.9 7-6.9Z" fill="currentColor"></path></svg>
-                                        </Link>
-                                    </div>
-
-                                    <div className="bre3dpsingle-product">{singleitem?.title}</div>
-                                    <div className="e9single-product"></div>
-                                </div>
-                                </div>
-
-                            </div>
-
-                            <div>
-                                <div className="akbkbxc3single-product">
-                                    <div className="bkeaebalsingle-product">
-                                        <div className="ecsingle-product">
-                                        <div className="akedeebkefsingle-product">
-                                            {/* <img alt="" role="presentation" src="https://tb-static.uber.com/prod/image-proc/processed_images/3bef7aecf15103ae8c8a02cf68277fc8/859baff1d76042a45e319d1de80aec7a.jpeg" className="egbkaeeheisingle-productimg" /> */}
-                                            <img role="presentation" src={singleitem?.image_url} alt={singleitem?.title} className="egbkaeeheisingle-productimg" />
-                                            <div className="agasatbdbcajsingle-product"></div>
+                                        <div className="d5single-product">
+                                            <Link className="d6aqbfc4single-product-cross-btn" href="/">
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                                <title>X</title>
+                                                <path d="m21.1 5.1-2.2-2.2-6.9 7-6.9-7-2.2 2.2 7 6.9-7 6.9 2.2 2.2 6.9-7 6.9 7 2.2-2.2-7-6.9 7-6.9Z" fill="currentColor"></path></svg>
+                                            </Link>
                                         </div>
+
+                                        <div className="bre3dpsingle-product">{singleitem?.title}</div>
+                                        <div className="e9single-product"></div>
+                                    </div>
+                                    </div>
+
+                                </div>
+
+                                <div>
+                                    <div className="akbkbxc3single-product">
+                                        <div className="bkeaebalsingle-product">
+                                            <div className="ecsingle-product">
+                                            <div className="akedeebkefsingle-product">
+                                                {/* <img alt="" role="presentation" src="https://tb-static.uber.com/prod/image-proc/processed_images/3bef7aecf15103ae8c8a02cf68277fc8/859baff1d76042a45e319d1de80aec7a.jpeg" className="egbkaeeheisingle-productimg" /> */}
+                                                <img role="presentation" src={singleitem?.image_url} alt={singleitem?.title} className="egbkaeeheisingle-productimg" />
+                                                <div className="agasatbdbcajsingle-product"></div>
+                                            </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            
-                            <div className="eksingle-product">
-                                {/* <div className="bnelbpemeneoalbfsingle-product">Banoffee Waffle</div> */}
-                                <span data-testid="rich-text" className="fnfofpbnfqbpfrb1single-product-price">{singleitem?.country_price_symbol}{parseFloat(singleitem?.price).toFixed(2)}</span>
-                                <div className="epeqsingle-product-div"></div>
-                                <div className="er">
-                                    <div className="bresbtdqetbxsingle-product">
-                                        {singleitem?.description}
+                                
+                                <div className="eksingle-product">
+                                    {/* <div className="bnelbpemeneoalbfsingle-product">Banoffee Waffle</div> */}
+                                    <span data-testid="rich-text" className="fnfofpbnfqbpfrb1single-product-price">{singleitem?.country_price_symbol}{parseFloat(singleitem?.price).toFixed(2)}</span>
+                                    <div className="epeqsingle-product-div"></div>
+                                    <div className="er">
+                                        <div className="bresbtdqetbxsingle-product">
+                                            {singleitem?.description}
+                                        </div>
                                     </div>
                                 </div>
-                            </div>
 
-                            <ul className="ftsingle-productul">
-                                {
-                                    singleitem?.modifier_group?.map((modifier,index) =>
+                                <ul className="ftsingle-productul">
                                     {
-                                        return(
-                                              // {/* minimum option = '1' and maximum option = 1 and single item select = 1 */}
-                                              (modifier?.select_single_option === 1 && (modifier?.min_permitted === 1 && modifier?.max_permitted === 1)) ?
+                                        singleitem?.modifier_group?.map((modifier,index) =>
+                                        {
+                                            return(
+                                                // {/* minimum option = '1' and maximum option = 1 and single item select = 1 */}
+                                                (modifier?.select_single_option === 1 && (modifier?.min_permitted === 1 && modifier?.max_permitted === 1)) ?
 
-                                                <li key={index}>
-                                                    <div className="fusingle-productlidiv" >
-                                                        <hr className="efeqeofvsingle-product"></hr>
-                
-                                                        <div className="fwsingle-product" onClick={() => handleMobileModifierToggle(modifier?.id)}>
-                                                            <div className="alaqd0fxsingle-product">
-                                                                <div className="alamsingle-product">
-                                                                    <div className="bnfrbpfsingle-product">{modifier?.title}</div>
-                                                                    <div className="bresbtdqfysingle-product">
-                                                                        <span>Choose {modifier?.max_permitted}</span>
-                                                                        <div className="fzsingle-product">
-                                                                            <div className="g0afg1single-product">
-                                                                                {(parseInt(modifier?.min_permitted) === parseInt(0)) ? "Optional" : "Required"}
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div>Choosed: {(parseInt(modifier?.selected_item_name?.length) > parseInt(20) ? modifier?.selected_item_name?.substring(0,20)+"..." : modifier?.selected_item_name)}</div>
-                                                                </div>
-
-                                                                <div className="single-product-svg-div accordion">
-                                                                    <div className="single-product-svg-div-one">
-                                                                        {
-                                                                            (modifier?.is_toggle_active) ?
-                                                                                
-                                                                                <svg className="bottom-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                                                                    <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(180, 12, 12)"></path>
-                                                                                </svg>
-                                                                                
-                                                                            :
-                                                                                <svg className="rigth-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{cursor: "pointer"}}>
-                                                                                    <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(90, 12, 12)"></path>
-                                                                                </svg>
-                                                                        }
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-                
-                                                        {/* Listed Data */}
-                                                        {
-                                                            (modifier?.is_toggle_active) &&
-                                                            <div className="g5single-product">
-                                                                
-                                                                {
-                                                                    modifier?.modifier_secondary_items?.map((mobileSecondItems, index) =>
-                                                                    {
-                                                                        return(
-                                                                            <>
-                                                                                <div className="alakg6bfsingle-product" key={index} onClick={() => handleRadioInput(modifier?.id,mobileSecondItems?.id, mobileSecondItems?.title, parseInt(mobileSecondItems?.secondary_item_modifiers.length))}>
-                                                                                    {
-                                                                                        (parseInt(mobileSecondItems?.secondary_item_modifiers?.length) > parseInt(0)) && 
-                                                                                        <div className="poquickreview-modal">
-                                                                                            <div className="c8c7cuquickreview-modal">
-                                                                                                <svg style={{cursor: "pointer"}} width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="#AFAFAF" transform="rotate(90, 12, 12)"></path></svg>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    }
-                                                                                    <input type="radio" className="radio-input"></input>
-                                        
-                                                                                    <label className={`brbsdpdqbkalbfafg6single-productlable ${mobileSecondItems?.activeClass}`}>
-                                                                                        <div className="spacer _16"></div>
-                                                                                        <div className="e4ald0gisingle-product">
-                                                                                            <div className="ale4amc4gjgkglsingle-product">
-                                                                                                <div className="alaqsingle-product">
-                                                                                                    <div className="alamgmgnsingle-product">
-                                                                                                        <div className="bresdpg4gosingle-product">Add: {mobileSecondItems?.title}</div>
-                                                                                                        <div className="spacer _8"></div>
-                                                                                                        <div className="bresbtdqb1bzsingle-productincdecprice">+{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </label>
-                                                                                </div>
-                
-                                                                                <hr className="efbvgpgq"></hr>
-                                                                            </>
-                                                                        )
-                                                                    })
-                                                                }
-
-                                                                {/* <div className="alakg6bfsingle-product">
-                                                                    <input type="radio" className="radio-input"/>
-                        
-                                                                    <label className="brbsdpdqbkalbfafg6single-productlable ob">
-                                                                        <div className="spacer _16"></div>
-                                                                        <div className="e4ald0gisingle-product">
-                                                                        <div className="ale4amc4gjgkglsingle-product">
-                                                                            <div className="alaqsingle-product">
-                                                                                <div className="alamgmgnsingle-product">
-                                                                                <div className="bresdpg4gosingle-product">Regular - Half - 7" Fresh Waffle</div>
-                                                                                </div>
-                                                                            </div>
-                                                                        </div>
-                                                                        </div>
-                                                                    </label>
-                                                                </div>
-                                                                <hr className="efbvgpgq"></hr> */}
+                                                    <li key={index}>
+                                                        <div className="fusingle-productlidiv" >
+                                                            <hr className="efeqeofvsingle-product"></hr>
                     
-                                                            </div>
-                                                        }
-                
-                                                    </div>
-                                                </li>
-
-                                            :
-                                                // {/* minimum option = '0' and maximum option = 1 and single item select = 1 */}
-                                                (modifier?.select_single_option === 1 && (modifier?.min_permitted === 0 && modifier?.max_permitted >= 1)) ?
-
-                                                <li key={index}>
-                                                    <div className="fusingle-productlidiv">
-                                                        <hr className="efeqeofvsingle-product"></hr>
-                    
-                                                        <div className="fwsingle-product" onClick={() => handleMobileModifierToggle(modifier?.id)}>
-                                                            <div className="alaqd0fxsingle-product">
-                                                                <div className="alamsingle-product">
-                                                                    <div className="bnfrbpfsingle-product">{modifier?.title}</div>
+                                                            <div className="fwsingle-product" onClick={() => handleMobileModifierToggle(modifier?.id)}>
+                                                                <div className="alaqd0fxsingle-product">
+                                                                    <div className="alamsingle-product">
+                                                                        <div className="bnfrbpfsingle-product">{modifier?.title}</div>
                                                                         <div className="bresbtdqfysingle-product">
                                                                             <span>Choose {modifier?.max_permitted}</span>
                                                                             <div className="fzsingle-product">
-                                                                                <div className="g0afg1single-product">
-                                                                                    {(parseInt(modifier?.min_permitted) === parseInt(0)) ? "Optional" : "Required"}
+                                                                                <div className={`g0afg1single-product ${modifier?.valid_class}`}>
+                                                                                    {(parseInt(modifier?.min_permitted) > parseInt(0)) ? "Required" : "Optional"}
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                        <div>Regular - Half - 7" Fresh Waffle</div>
+                                                                        <div>Choosed: {(parseInt(modifier?.selected_item_name?.length) > parseInt(20) ? modifier?.selected_item_name?.substring(0,20)+"..." : modifier?.selected_item_name)}</div>
                                                                     </div>
-                                                                <div className="single-product-svg-div accordion" onClick={() => setIsaccordianclicked(true)}>
-                                                                    <div className="single-product-svg-div-one">
-                                                                        {
-                                                                            (modifier?.is_toggle_active) ?
-                                                                                <svg className="bottom-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                                                                    <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(180, 12, 12)"></path>
-                                                                                </svg>
-                                                                            :
-                                                                                <svg className="rigth-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{cursor: "pointer"}}>
-                                                                                    <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(90, 12, 12)"></path>
-                                                                                </svg>
-                                                                        }
+
+                                                                    <div className="single-product-svg-div accordion">
+                                                                        <div className="single-product-svg-div-one">
+                                                                            {
+                                                                                (modifier?.is_toggle_active) ?
+                                                                                    
+                                                                                    <svg className="bottom-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                                                                        <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(180, 12, 12)"></path>
+                                                                                    </svg>
+                                                                                    
+                                                                                :
+                                                                                    <svg className="rigth-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{cursor: "pointer"}}>
+                                                                                        <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(90, 12, 12)"></path>
+                                                                                    </svg>
+                                                                            }
+                                                                        </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </div>
                     
-                                                        {/* Listed Data */}
-                                                        {
-                                                            modifier?.is_toggle_active &&
-                                                            <div className="g5single-product">
-                                                                
-                                                                {
+                                                            {/* Listed Data */}
+                                                            {
+                                                                <div className={`g5single-product ${modifier?.is_toggle_active && "show"}`}>
+                                                                    
+                                                                    {
+                                                                        modifier?.modifier_secondary_items?.map((mobileSecondItems, index) =>
+                                                                        {
+                                                                            return(
+                                                                                <>
+                                                                                    <div className="alakg6bfsingle-product" key={index} onClick={() => handleRadioInput(modifier?.id,mobileSecondItems?.id, mobileSecondItems?.title, parseInt(mobileSecondItems?.secondary_item_modifiers.length))}>
+                                                                                        {
+                                                                                            (parseInt(mobileSecondItems?.secondary_item_modifiers?.length) > parseInt(0)) && 
+                                                                                            <div className="poquickreview-modal">
+                                                                                                <div className="c8c7cuquickreview-modal">
+                                                                                                    <svg style={{cursor: "pointer"}} width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="#AFAFAF" transform="rotate(90, 12, 12)"></path></svg>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        }
+                                                                                        <input type="radio" className="radio-input"></input>
+                                            
+                                                                                        <label className={`brbsdpdqbkalbfafg6single-productlable ${mobileSecondItems?.activeClass}`}>
+                                                                                            <div className="spacer _16"></div>
+                                                                                            <div className="e4ald0gisingle-product">
+                                                                                                <div className="ale4amc4gjgkglsingle-product">
+                                                                                                    <div className="alaqsingle-product">
+                                                                                                        <div className="alamgmgnsingle-product">
+                                                                                                            <div className="bresdpg4gosingle-product">Add: {mobileSecondItems?.title}</div>
+                                                                                                            <div className="spacer _8"></div>
+                                                                                                            <div className="bresbtdqb1bzsingle-productincdecprice">+{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </label>
+                                                                                    </div>
+                    
+                                                                                    <hr className="efbvgpgq"></hr>
+                                                                                </>
+                                                                            )
+                                                                        })
+                                                                    }
+                        
+                                                                </div>
+                                                            }
+                    
+                                                        </div>
+                                                    </li>
+
+                                                :
+                                                    // {/* minimum option = '0' and maximum option = 1 and single item select = 1 */}
+                                                    (modifier?.select_single_option === 1 && (modifier?.min_permitted === 0 && modifier?.max_permitted >= 1)) ?
+
+                                                    <li key={index}>
+                                                        <div className="fusingle-productlidiv">
+                                                            <hr className="efeqeofvsingle-product"></hr>
+                        
+                                                            <div className="fwsingle-product" onClick={() => handleMobileModifierToggle(modifier?.id)}>
+                                                                <div className="alaqd0fxsingle-product">
+                                                                    <div className="alamsingle-product">
+                                                                        <div className="bnfrbpfsingle-product">{modifier?.title}</div>
+                                                                            <div className="bresbtdqfysingle-product">
+                                                                                <span>Choose {modifier?.max_permitted}</span>
+                                                                                <div className="fzsingle-product">
+                                                                                    <div className={`g0afg1single-product ${modifier?.valid_class}`}>
+                                                                                        {(parseInt(modifier?.min_permitted) > parseInt(0)) ? "Required" : "Optional"}
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                            <div>Regular - Half - 7" Fresh Waffle</div>
+                                                                        </div>
+                                                                    <div className="single-product-svg-div accordion" onClick={() => setIsaccordianclicked(true)}>
+                                                                        <div className="single-product-svg-div-one">
+                                                                            {
+                                                                                (modifier?.is_toggle_active) ?
+                                                                                    <svg className="bottom-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                                                                        <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(180, 12, 12)"></path>
+                                                                                    </svg>
+                                                                                :
+                                                                                    <svg className="rigth-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{cursor: "pointer"}}>
+                                                                                        <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(90, 12, 12)"></path>
+                                                                                    </svg>
+                                                                            }
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                        
+                                                            {/* Listed Data */}
+                                                            {
+                                                                <div className={`g5single-product ${modifier?.is_toggle_active && "show"}`}>
+                                                                    
+                                                                    {
+                                                                        modifier?.modifier_secondary_items?.map((mobileSecondItems, index) =>
+                                                                        {
+                                                                            return(
+                                                                                mobileSecondItems.activeClass !== "mchw" ?
+                                                                                    <div key={index} onClick={() => handleCheckInput(modifier?.id,mobileSecondItems?.id, parseInt(mobileSecondItems?.secondary_item_modifiers.length))}>
+                                                                                        <div className="alakg6bfsingle-product">
+                                                                                            <input type="checkbox" className="checkbox-input"/>
+                                                    
+                                                                                            <label className={`brbsdpdqbkalbfafg6single-productlablecheck ${mobileSecondItems?.activeClass}`}>
+                                                                                                <div className="spacer _16"></div>
+                                                                                                <div className="e4ald0gisingle-product">
+                                                                                                    <div className="ale4amc4gjgkglsingle-product">
+                                                                                                        <div className="alaqsingle-product">
+                                                                                                            <div className="alamgmgnsingle-product">
+                                                                                                                <div className="bresdpg4gosingle-product">Add: {mobileSecondItems?.title}</div>
+                                                                                                                <div className="spacer _8"></div>
+                                                                                                                <div className="bresbtdqb1bzsingle-productincdecprice">+{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </label>
+                                                                                        </div>
+                                                                                        <hr className="efbvgpgq"></hr>
+                                                                                    </div>
+                                                                                :
+                                                                                    <div key={index}>
+                                                                                        <div className="alakg6bfsingle-product">
+                                                                                            <input type="checkbox" className="checkbox-input"/>
+                                                    
+                                                                                            <label className={`brbsdpdqbkalbfafg6single-productlablecheck ${mobileSecondItems?.activeClass}`}>
+                                                                                                <div className="spacer _16"></div>
+                                                                                                <div className="e4ald0gisingle-product">
+                                                                                                    <div className="ale4amc4gjgkglsingle-product">
+                                                                                                        <div className="alaqsingle-product">
+                                                                                                            <div className="alamgmgnsingle-product">
+                                                                                                                <div className="bresdpg4gosingle-product">Add: {mobileSecondItems?.title}</div>
+                                                                                                                <div className="spacer _8"></div>
+                                                                                                                <div className="bresbtdqb1bzsingle-productincdecprice">+{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </label>
+                                                                                        </div>
+                                                                                        <hr className="efbvgpgq"></hr>
+                                                                                    </div>
+                                                                            )
+                                                                        })
+                                                                    }
+                                                                </div>
+                                                            }
+                        
+                                                        </div>
+                                                    </li>
+
+                                                :
+                                                    // (modifier?.select_single_option > 1 && (modifier?.min_permitted === 0 && modifier?.max_permitted > 1)) &&
+                                                    // {/* minimum option = '- / 0' and maximum option = 5 and single item select = 2 */}
+                                                    <li key={index}>
+                                                        <div className="fusingle-productlidiv">
+                                                            <hr className="efeqeofvsingle-product"></hr>
+                    
+                                                            <div className="fwsingle-product" onClick={() => handleMobileModifierToggle(modifier?.id)}>
+                                                                <div className="alaqd0fxsingle-product">
+                                                                    <div className="alamsingle-product">
+                                                                        <div className="bnfrbpfsingle-product">{modifier?.title}</div>
+                                                                        <div className="bresbtdqfysingle-product">
+                                                                            <span>Choose {modifier?.max_permitted}</span>
+                                                                            <div className="fzsingle-product">
+                                                                                <div className={`g0afg1single-product ${modifier?.valid_class}`}>
+                                                                                    {(parseInt(modifier?.min_permitted) > parseInt(0)) ? "Required" : "Optional"}
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                    <div className="single-product-svg-div accordion">
+                                                                        <div className="single-product-svg-div-one">
+                                                                            {
+                                                                                modifier?.is_toggle_active ?
+                                                                                    <svg className="bottom-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                                                                        <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(180, 12, 12)"></path>
+                                                                                    </svg>
+                                                                                :
+                                                                                    <svg className="rigth-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{cursor: "pointer"}}>
+                                                                                        <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(90, 12, 12)"></path>
+                                                                                    </svg>
+                                                                            }
+                            
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                    
+                                                            {/* Listed Data */}
+                                                            {
+                                                                <div className={`g5single-product ${modifier?.is_toggle_active && "show"}`}>
+                                                                    {
                                                                     modifier?.modifier_secondary_items?.map((mobileSecondItems, index) =>
                                                                     {
                                                                         return(
-                                                                            mobileSecondItems.activeClass !== "mchw" ?
-                                                                                <div key={index} onClick={() => handleCheckInput(modifier?.id,mobileSecondItems?.id, parseInt(mobileSecondItems?.secondary_item_modifiers.length))}>
-                                                                                    <div className="alakg6bfsingle-product">
-                                                                                        <input type="checkbox" className="checkbox-input"/>
-                                                
-                                                                                        <label className={`brbsdpdqbkalbfafg6single-productlablecheck ${mobileSecondItems?.activeClass}`}>
-                                                                                            <div className="spacer _16"></div>
-                                                                                            <div className="e4ald0gisingle-product">
-                                                                                                <div className="ale4amc4gjgkglsingle-product">
-                                                                                                    <div className="alaqsingle-product">
-                                                                                                        <div className="alamgmgnsingle-product">
-                                                                                                            <div className="bresdpg4gosingle-product">Add: {mobileSecondItems?.title}</div>
-                                                                                                            <div className="spacer _8"></div>
-                                                                                                            <div className="bresbtdqb1bzsingle-productincdecprice">+{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
-                                                                                                        </div>
-                                                                                                    </div>
+                                                                            <div key={index}>
+                                                                                <div className="alg5bfsingle-product">
+                                                                                    <div className="alaqbfsingle-product">
+                                                                                        <button className="b9bmalambfc4b1gtgugvgwgxgygzh0single-product-incdec-btn" disabled={mobileSecondItems?.is_item_select} onClick={() => handleDecrement(modifier?.id,mobileSecondItems?.id)}>
+                                                                                            <div className="ezfj">
+                                                                                                <div className="fjezh1">
+                                                                                                    <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                                                                                        <path d="m7.33325 13v-2h9.33335v2z" fill="#000000"></path>
+                                                                                                    </svg>
                                                                                                 </div>
                                                                                             </div>
-                                                                                        </label>
-                                                                                    </div>
-                                                                                    <hr className="efbvgpgq"></hr>
-                                                                                </div>
-                                                                            :
-                                                                                <div key={index}>
-                                                                                    <div className="alakg6bfsingle-product">
-                                                                                        <input type="checkbox" className="checkbox-input"/>
-                                                
-                                                                                        <label className={`brbsdpdqbkalbfafg6single-productlablecheck ${mobileSecondItems?.activeClass}`}>
-                                                                                            <div className="spacer _16"></div>
-                                                                                            <div className="e4ald0gisingle-product">
-                                                                                                <div className="ale4amc4gjgkglsingle-product">
-                                                                                                    <div className="alaqsingle-product">
-                                                                                                        <div className="alamgmgnsingle-product">
-                                                                                                            <div className="bresdpg4gosingle-product">Add: {mobileSecondItems?.title}</div>
-                                                                                                            <div className="spacer _8"></div>
-                                                                                                            <div className="bresbtdqb1bzsingle-productincdecprice">+{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
-                                                                                                        </div>
-                                                                                                    </div>
+                                                                                        </button>
+
+                                                                                            <div className="bresbtdqiqsingle-product">{parseInt(mobileSecondItems?.counter)}</div>
+
+                                                                                        <button className="b9bmalambfc4b1gtgugvgwgxgygzh0single-product-incdec-btn" disabled={(parseInt(modifier?.max_permitted) === parseInt(modifier?.modifier_counter)) ? true : false} onClick={() => handleIncrement(modifier?.id,mobileSecondItems?.id)}>
+                                                                                            <div className="ez fj">
+                                                                                                <div className="fj ez h1">
+                                                                                                    <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                                                                                        <path d="m16.6666 11.0007h-3.6667v-3.66672h-2v3.66672h-3.66665v2h3.66665v3.6666h2v-3.6666h3.6667z" fill="#000000"></path>
+                                                                                                    </svg>
                                                                                                 </div>
                                                                                             </div>
-                                                                                        </label>
+                                                                                        </button>
                                                                                     </div>
-                                                                                    <hr className="efbvgpgq"></hr>
+                                        
+                                                                                    <div className="spacer _16"></div>
+                                                                                    <div className="e4ald0ghsingle-productincdec">
+                                                                                        <div className="ale4amc4gigjgksingle-productincdec">
+                                                                                            <div className="alaqsingle-product">
+                                                                                                <div className="alamglgmsingle-productincdec">
+                                                                                                    <div className="bresdpg3gnsingle-productincdecheading">Add: {mobileSecondItems?.title}</div>
+                                                                                                    <div className="spacer _8"></div>
+                                                                                                    <div className="bresbtdqb1bzsingle-productincdecprice">+{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
                                                                                 </div>
+                                                                                <hr className="efbvgogpsingle-producthr"></hr>
+                                                                            </div>
+
                                                                         )
-                                                                    })
-                                                                }
-                                                            </div>
-                                                        }
-                    
-                                                    </div>
-                                                </li>
-
-                                            :
-                                                // (modifier?.select_single_option > 1 && (modifier?.min_permitted === 0 && modifier?.max_permitted > 1)) &&
-                                                // {/* minimum option = '- / 0' and maximum option = 5 and single item select = 2 */}
-                                                <li key={index}>
-                                                    <div className="fusingle-productlidiv">
-                                                        <hr className="efeqeofvsingle-product"></hr>
-                
-                                                        <div className="fwsingle-product" onClick={() => handleMobileModifierToggle(modifier?.id)}>
-                                                            <div className="alaqd0fxsingle-product">
-                                                                <div className="alamsingle-product">
-                                                                    <div className="bnfrbpfsingle-product">{modifier?.title}</div>
-                                                                    <div className="bresbtdqfysingle-product">
-                                                                        <span>Choose {modifier?.max_permitted}</span>
-                                                                        <div className="fzsingle-product">
-                                                                            <div className="g0afg1single-product">
-                                                                                {(parseInt(modifier?.min_permitted) === parseInt(0)) ? "Optional" : "Required"}
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
+                                                                    }) 
+                                                                    }
                                                                 </div>
-                                                                <div className="single-product-svg-div accordion">
-                                                                    <div className="single-product-svg-div-one">
-                                                                        {
-                                                                            modifier?.is_toggle_active ?
-                                                                                <svg className="bottom-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                                                                    <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(180, 12, 12)"></path>
-                                                                                </svg>
-                                                                            :
-                                                                                <svg className="rigth-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{cursor: "pointer"}}>
-                                                                                    <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(90, 12, 12)"></path>
-                                                                                </svg>
-                                                                        }
-                        
-                                                                    </div>
-                                                                </div>
-                                                            </div>
+                                                            }
+                                                            
                                                         </div>
-                
-                                                        {/* Listed Data */}
-                                                        {
-                                                            modifier?.is_toggle_active &&
-                                                            <div className="g5single-product">
-                                                                {
-                                                                modifier?.modifier_secondary_items?.map((mobileSecondItems, index) =>
-                                                                {
-                                                                    return(
-                                                                        <div key={index}>
-                                                                            <div className="alg5bfsingle-product">
-                                                                                <div className="alaqbfsingle-product">
-                                                                                    <button className="b9bmalambfc4b1gtgugvgwgxgygzh0single-product-incdec-btn" disabled={mobileSecondItems?.is_item_select} onClick={() => handleDecrement(modifier?.id,mobileSecondItems?.id)}>
-                                                                                        <div className="ezfj">
-                                                                                            <div className="fjezh1">
-                                                                                                <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                                                                                    <path d="m7.33325 13v-2h9.33335v2z" fill="#000000"></path>
-                                                                                                </svg>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </button>
+                                                    </li>
+                                            )
+                                        })
+                                    }
+                                </ul>
 
-                                                                                        <div className="bresbtdqiqsingle-product">{parseInt(mobileSecondItems?.counter)}</div>
+                                <div className="h2single-product"></div>
+                                <div>
+                                    <div className="albfglh3single-product">
+                                        <div className="akh4gzh5h6bxgtb1h7single-product">
 
-                                                                                    <button className="b9bmalambfc4b1gtgugvgwgxgygzh0single-product-incdec-btn" disabled={(parseInt(modifier?.max_permitted) === parseInt(modifier?.modifier_counter)) ? true : false} onClick={() => handleIncrement(modifier?.id,mobileSecondItems?.id)}>
-                                                                                        <div className="ez fj">
-                                                                                            <div className="fj ez h1">
-                                                                                                <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                                                                                    <path d="m16.6666 11.0007h-3.6667v-3.66672h-2v3.66672h-3.66665v2h3.66665v3.6666h2v-3.6666h3.6667z" fill="#000000"></path>
-                                                                                                </svg>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </button>
-                                                                                </div>
-                                    
-                                                                                <div className="spacer _16"></div>
-                                                                                <div className="e4ald0ghsingle-productincdec">
-                                                                                    <div className="ale4amc4gigjgksingle-productincdec">
-                                                                                        <div className="alaqsingle-product">
-                                                                                            <div className="alamglgmsingle-productincdec">
-                                                                                                <div className="bresdpg3gnsingle-productincdecheading">Add: {mobileSecondItems?.title}</div>
-                                                                                                <div className="spacer _8"></div>
-                                                                                                <div className="bresbtdqb1bzsingle-productincdecprice">+{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
-                                                                                            </div>
-                                                                                        </div>
-                                                                                    </div>
-                                                                                </div>
-                                                                            </div>
-                                                                            <hr className="efbvgogpsingle-producthr"></hr>
-                                                                        </div>
+                                            <div className="agbdh8h4albfsingle-product">
+                                                <button className="e3bubrdpb9h9h0albfc4affoh6hagzf1hbhcdohdhesingle-dec-product" disabled={quantity > 1 ? false : true} onClick={handleMobileQuantityDecrement}>
+                                                    <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" className="hfg0ebhgsingle-product-svg">
+                                                        <path d="M15.833 8.75H4.167v2.5h11.666v-2.5z"></path>
+                                                    </svg>
+                                                </button>
+                                            
+                                                <div style={{width: "48px"}}></div>
+                                            
+                                                <button className="e3bubrdpb9h9h0albfc4affoh6hagzf1hbhcdohdhesingle-inc-product" onClick={handleMobileQuantityIncrement}>
+                                                    <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" className="hfg0ebhgsingle-product-svg">
+                                                        <path d="M15.833 8.75H11.25V4.167h-2.5V8.75H4.167v2.5H8.75v4.583h2.5V11.25h4.583v-2.5z"></path>
+                                                    </svg>
+                                                </button>
+                                            </div>
 
-                                                                    )
-                                                                }) 
-                                                                }
-                                                            </div>
-                                                        }
-                                                        
-                                                    </div>
-                                                </li>
-                                        )
-                                    })
-                                }
-                            </ul>
+                                            <div className="aghhhibre3dpbualc4bfbzbmsingle-product">
+                                                <div>{parseInt(quantity)}</div>
+                                            </div>
 
-                            <div className="h2single-product"></div>
-                            <div>
-                                <div className="albfglh3single-product">
-                                    <div className="akh4gzh5h6bxgtb1h7single-product">
-
-                                        <div className="agbdh8h4albfsingle-product">
-                                            <button className="e3bubrdpb9h9h0albfc4affoh6hagzf1hbhcdohdhesingle-dec-product" disabled={quantity > 1 ? false : true} onClick={handleMobileQuantityDecrement}>
-                                                <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" className="hfg0ebhgsingle-product-svg">
-                                                    <path d="M15.833 8.75H4.167v2.5h11.666v-2.5z"></path>
-                                                </svg>
-                                            </button>
-                                        
-                                            <div style={{width: "48px"}}></div>
-                                        
-                                            <button className="e3bubrdpb9h9h0albfc4affoh6hagzf1hbhcdohdhesingle-inc-product" onClick={handleMobileQuantityIncrement}>
-                                                <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" className="hfg0ebhgsingle-product-svg">
-                                                    <path d="M15.833 8.75H11.25V4.167h-2.5V8.75H4.167v2.5H8.75v4.583h2.5V11.25h4.583v-2.5z"></path>
-                                                </svg>
-                                            </button>
                                         </div>
+                                    </div>
 
-                                        <div className="aghhhibre3dpbualc4bfbzbmsingle-product">
-                                            <div>{parseInt(quantity)}</div>
-                                        </div>
+                                    <div className="epezsingle-product"></div>
+                                    <hr className="efeqhjg2single-producthr"></hr>
+                                </div>
 
+                                <div className="iosignle-product"></div>
+                                <div className="i7single-product"></div>
+                                    <div className="iaibicblidieifigcsctbcsingle-product">
+                                        <button className="e3bubrdpb9ihbkalbfc4afh2iibbijikilgwgxsingle-product" onClick={handleAddtoCart}>
+                                            Add {quantity} to order
+                                            <span className="bre3dpbud6imbfsingle-product-span">&nbsp;•&nbsp;</span>
+                                            {getCountryCurrencySymbol()} {getAmountConvertToFloatWithFixed(quantity * itemprice,2)}
+                                        </button>
                                     </div>
                                 </div>
-
-                                <div className="epezsingle-product"></div>
-                                <hr className="efeqhjg2single-producthr"></hr>
                             </div>
-
-                            <div className="iosignle-product"></div>
-                            <div className="i7single-product"></div>
-                                <div className="iaibicblidieifigcsctbcsingle-product">
-                                    <button className="e3bubrdpb9ihbkalbfc4afh2iibbijikilgwgxsingle-product" onClick={handleMobileAddtoCart}>
-                                        Add {quantity} to order
-                                        <span className="bre3dpbud6imbfsingle-product-span">&nbsp;•&nbsp;</span>
-                                        {getCountryCurrencySymbol()} {getAmountConvertToFloatWithFixed(quantity * itemprice,2)}
-                                    </button>
-                                </div>
                             </div>
                         </div>
-                        </div>
+                        <div  style={{width: "1px", height: "0px", padding: "0px", overflow: "hidden", position: "fixed", top: "1px", left: "1px"}}></div>
                     </div>
-                    <div  style={{width: "1px", height: "0px", padding: "0px", overflow: "hidden", position: "fixed", top: "1px", left: "1px"}}></div>
-                </div>
                 </div>
             </div>
 
@@ -2408,7 +2914,9 @@ function productDetails({params})
                                                                     <div className="s2akc0modifier-modal">
 
                                                                     <div className="fqs3alaqc5s4ass5c0modifier-modal">
-                                                                        <button aria-label="Go back" className="almodifier-back-btn" onClick={() => setIsmodifierclicked(false)}>
+                                                                        {/* <button aria-label="Go back" className="almodifier-back-btn" onClick={() => setIsmodifierclicked(false)}> */}
+                                                                        
+                                                                        <button aria-label="Go back" className="almodifier-back-btn" onClick={() => handleBackArrow(selectedModifierId, selectedModifierItemId)}>
                                                                             <div className="c8c7cumodifier-back-btn-div">
                                                                                 <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                                                                                     <path d="M20.3333 13.25H7.25L11.8333 19.5H8.91667L3.5 12L8.91667 4.5H11.8333L7.25 10.75H20.3333V13.25Z" fill="currentColor"></path>
@@ -2438,8 +2946,8 @@ function productDetails({params})
                                                                                                             <div className="chcicwd3czmodifier-choose">
                                                                                                                 <span>Choose {secondItemModifier?.max_permitted}</span>
                                                                                                                 <div className="irmodifier-modal">
-                                                                                                                    <div className="isafcbitiuivcymodifier-modal">
-                                                                                                                        {(parseInt(secondItemModifier?.min_permitted) === parseInt(0)) ? "Optional" : "Required"}
+                                                                                                                    <div className={`isafcbitiuivcymodifier-modal ${secondItemModifier?.valid_class}`}>
+                                                                                                                        {(parseInt(secondItemModifier?.min_permitted) > parseInt(0)) ? "Required" : "Optional"}
                                                                                                                     </div>
                                                                                                                 </div>
                                                                                                             </div>
@@ -2464,8 +2972,7 @@ function productDetails({params})
                                                                                                 </div>
                                                                                                 
                                                                                                 {
-                                                                                                    secondItemModifier?.is_second_item_modifier_clicked &&
-                                                                                                    <div className="iwmodifier-data">
+                                                                                                    <div className={`iwmodifier-data ${secondItemModifier?.is_second_item_modifier_clicked && "show"}`}>
                                                                                                         {
                                                                                                             secondItemModifier?.secondary_items_modifier_items?.map((item, index) =>
                                                                                                             {
@@ -2513,8 +3020,8 @@ function productDetails({params})
                                                                                                             <div className="chcicwd3czmodifier-choose">
                                                                                                                 <span>Choose {secondItemModifier?.max_permitted}</span>
                                                                                                                 <div className="irmodifier-modal">
-                                                                                                                    <div className="isafcbitiuivcymodifier-modal">
-                                                                                                                        {(parseInt(secondItemModifier?.min_permitted) === parseInt(0)) ? "Optional" : "Required"}
+                                                                                                                    <div className={`isafcbitiuivcymodifier-modal ${secondItemModifier?.valid_class}`}>
+                                                                                                                        {(parseInt(secondItemModifier?.min_permitted) > parseInt(0)) ? "Required" : "Optional"}
                                                                                                                     </div>
                                                                                                                 </div>
                                                                                                             </div>
@@ -2539,8 +3046,7 @@ function productDetails({params})
                                                                                                 </div>
 
                                                                                                 {
-                                                                                                    secondItemModifier?.is_second_item_modifier_clicked &&
-                                                                                                    <div className="iwmodifier-data">
+                                                                                                    <div className={`iwmodifier-data ${secondItemModifier?.is_second_item_modifier_clicked && "show"}`}>
                                                                                                         {
                                                                                                             secondItemModifier?.secondary_items_modifier_items?.map((item, index) =>
                                                                                                             {
@@ -2611,8 +3117,8 @@ function productDetails({params})
                                                                                                                 <div className="product-modifier-option">
                                                                                                                     <span>Choose up to {secondItemModifier?.max_permitted}</span>
                                                                                                                     <div className="irmodifier-modal">
-                                                                                                                        <div className="isafcbitiuivcymodifier-modal">
-                                                                                                                            {(parseInt(secondItemModifier?.min_permitted) === parseInt(0)) ? "Optional" : "Required"}
+                                                                                                                        <div className={`isafcbitiuivcymodifier-modal ${secondItemModifier?.valid_class}`}>
+                                                                                                                            {(parseInt(secondItemModifier?.min_permitted) > parseInt(0)) ? "Required" : "Optional"}
                                                                                                                         </div>
                                                                                                                     </div>
                                                                                                                 </div>
@@ -2637,8 +3143,7 @@ function productDetails({params})
                                                                                                 </div>
                                                                                                 
                                                                                                 {
-                                                                                                    secondItemModifier?.is_second_item_modifier_clicked &&
-                                                                                                    <div className="hg">
+                                                                                                    <div className={`iwmodifier-data ${secondItemModifier?.is_second_item_modifier_clicked && "show"}`}>
 
                                                                                                         {
                                                                                                             secondItemModifier?.secondary_items_modifier_items?.map((item,index) => 
@@ -2739,6 +3244,7 @@ function productDetails({params})
                     })
                 }
             </>
+            <Loader loader={loader}/>
         </>
     )
 }

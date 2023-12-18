@@ -104,3 +104,25 @@ export function setLocalStorage(keyName,data)
 {
     return window.localStorage.setItem(`${keyName}`,JSON.stringify(data))
 }
+
+export function validatePhoneNumber(phoneNumber) {
+    var res = phoneNumber.charAt(0);
+    if(parseFloat(res) == 0){
+        var phoneNumberPattern = /^\(?(\d{4})\)?[- ]?(\d{3})[- ]?(\d{4})$/;  
+    }else if(res == '+'){
+        if(parseFloat(phoneNumber.charAt(1)) == 4){
+            if(parseFloat(phoneNumber.charAt(2)) == 4){
+                var phoneNumberArr = phoneNumber.split('+44');
+                phoneNumber = phoneNumberArr[1];
+                var phoneNumberPattern = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/;  
+            }else{
+                return false; 
+            }
+        }else{
+            return false; 
+        }
+    }else{
+        return false; 
+    }
+    return phoneNumberPattern.test(phoneNumber); 
+}
