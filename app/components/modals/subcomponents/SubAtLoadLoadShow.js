@@ -1,11 +1,37 @@
 import HomeContext from '@/app/contexts/HomeContext'
-import { BRAND_GUID, axiosPrivate } from '@/app/global/Axios'
+import { BRAND_GUID, PARTNER_ID, axiosPrivate } from '@/app/global/Axios'
 import React, { useContext, useEffect, useState } from 'react'
 import { find_matching_postcode, getAtFirstLoadModalShow, getStoreName, setAtFirstLoadModalShow, setLocalStorage, setStoreName } from '@/app/global/Store'
+import { useRouter } from 'next/navigation'
+import moment from 'moment'
 function SubAtLoadLoadShow() 
 {
-   
-    const {setStoreName,dayname,daynumber,postcode, setPostcode, setAtfirstload, setIsgobtnclicked,setPostcodefororderamount, deliverymatrix,setDeliverymatrix,setStreet1,setStreet2} = useContext(HomeContext)
+   const route = useRouter()
+    const {
+        setMenu,
+        setSelectedFilter,
+        setFilters,
+        setNavigationcategories,
+        setNavmobileindex,
+        setStoretodaydayname,
+        setStoretodayopeningtime,
+        setStoretodayclosingtime,
+        setIsmenuavailable,
+        storeGUID,
+        setStoreGUID,
+        setStoreName,
+        dayname,
+        daynumber,
+        postcode, 
+        setPostcode, 
+        setAtfirstload, 
+        setIsgobtnclicked,
+        setPostcodefororderamount, 
+        deliverymatrix,
+        setDeliverymatrix,
+        setStreet1,
+        setStreet2
+    } = useContext(HomeContext)
 
     const [validpostcode, setValidpostcode] = useState("")
     const [postcodeerror, setPostcodeerror] = useState("")
@@ -26,8 +52,6 @@ function SubAtLoadLoadShow()
         setAtFirstLoadModalShow(true)
       }
     }, [validpostcode])
-
-  
 
     const fetchPostcodeData = async () => {
         try 
@@ -71,10 +95,51 @@ function SubAtLoadLoadShow()
         fetchPostcodeData();
     }
 
+    
+  const fetchMenu = async (storeGUID) => 
+  {
+    try 
+    {
+      const data = {
+        location:storeGUID,
+        brand: BRAND_GUID,
+        partner: PARTNER_ID
+      }
+
+      const response = await axiosPrivate.post(`/menu`, data);
+      console.log("Success repsonse:", JSON.parse(response.data?.data?.menu.menu_json_log));
+      const convertToJSobj = JSON.parse(response.data?.data?.menu.menu_json_log)
+      setMenu(convertToJSobj)
+      
+      const getFilterDataFromObj = JSON.parse(window.localStorage.getItem('filter'))
+      if(getFilterDataFromObj === null)
+      {
+        setLocalStorage('filter',convertToJSobj.filters[0])
+      }
+      setSelectedFilter(getFilterDataFromObj === null ? convertToJSobj.filters[0] : getFilterDataFromObj)
+      setFilters(convertToJSobj.filters)
+      setNavigationcategories(convertToJSobj.categories)
+      setNavmobileindex(convertToJSobj.categories[0].id)
+
+      const getDayInformation = convertToJSobj.menus[0].service_availability?.find((dayinformation) => dayinformation.day_of_week === moment().format('dddd').toLowerCase())
+      // console.log("Getting the day information:", getDayInformation);
+      setStoretodaydayname(moment().format('dddd'))
+      setStoretodayopeningtime(getDayInformation.time_periods[0].start_time)
+      setStoretodayclosingtime(getDayInformation.time_periods[0].end_time)
+    } 
+    catch (error) 
+    {
+      console.error('Error fetching data:', error);
+      setIsmenuavailable(false)
+    }
+  };
+
     const handleLocationSelect = (storeGUID,storeName, storeTelephone) =>
     {
+        console.log("Store guid:", storeGUID);
         setStoreName(storeName)
         setAtfirstload(false)
+        setStoreGUID(storeGUID)
         if(parseInt(availablestores.length) > parseInt(0))
         {
             for(const store of availablestores)
@@ -86,12 +151,14 @@ function SubAtLoadLoadShow()
                 }
             }
         }
+        fetchMenu(storeGUID)
         const selectedStoreData = {
             display_id: storeGUID,
             store: storeName,
             telephone: storeTelephone
         }
         setLocalStorage('user_selected_store', selectedStoreData)
+        route.push("/")
     }
 
     return (

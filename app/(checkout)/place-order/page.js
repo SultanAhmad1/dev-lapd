@@ -1,14 +1,25 @@
 "use client"
 import PostcodeModal from "@/app/components/modals/PostcodeModal";
 import HomeContext from "@/app/contexts/HomeContext";
+import { BRAND_GUID, PARTNER_ID, axiosPrivate } from "@/app/global/Axios";
+import { getAmountConvertToFloatWithFixed, getCountryCurrencySymbol, setLocalStorage, validatePhoneNumber } from "@/app/global/Store";
+import { listtime, round15, tConvert } from "@/app/global/Time";
+import moment from "moment";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useContext, useEffect, useState } from "react";
 
 function UserForm() 
 {
+  const route = useRouter()
 //   const {isauth, setIsauth} = useContext(AuthContext)
   const {
+    totalOrderAmountValue,
+    settotalOrderAmountValue,
+    setIsTimeToClosed,
+    storeGUID,
     cartdata,
+    setCartdata,
     postcode,
     setPostcode,
     street1,
@@ -21,53 +32,112 @@ function UserForm()
     setIscartbtnclicked,
     isdeliverybtnclicked,
     isdeliverychangedbtnclicked,
-    setIsdeliverychangedbtnclicked
+    setIsdeliverychangedbtnclicked,
+    daynumber
   } = useContext(HomeContext)
 
-  //   const navigate = useNavigate()
-  const handlePayNow = () =>
+
+  // Button Name Change State
+  const [doornumbertext, setDoornumbertext] = useState("Add")
+  const [isadddoortext, setIsadddoortext] = useState("Add")
+  const [emailaddbtntext, setEmailaddbtntext] = useState("Save")
+  
+  const [phoneaddbtntext, setPhoneaddbtntext] = useState("Save")
+  const [firstnameaddbtntext, setFirstNameaddbtntext] = useState("Save")
+  
+  // Boolean States
+  const [isadddoororhouseclicked, setIsadddoororhouseclicked] = useState(false)
+  const [isdoorinputdisplayclicked, setIsdoorinputdisplayclicked] = useState(true)
+  
+  const [isadddrivertoggle, setIsadddrivertoggle] = useState(false)
+  const [isadddriverdisplayclicked, setIsadddriverdisplayclicked] = useState(false)
+  
+  const [isemailtoggle, setIsemailtoggle] = useState(true)
+  const [isemailinputtoggle, setIsemailinputtoggle] = useState(true)
+
+  const [isphonetoggle, setIsphonetoggle] = useState(true)
+  const [isphoneinputtoggle, setIsphoneinputtoggle] = useState(true)
+
+  const [isfirstnametoggle, setIsfirstnametoggle] = useState(true)
+  const [isfirtnameinputtoggle, setIsfirtnameinputtoggle] = useState(true)
+  const [iscustomerhaspassword, setIscustomerhaspassword] = useState(false)
+
+  const [isbyemailclicked, setIsbyemailclicked] = useState(false)
+  const [isbysmsclicked, setIsbysmsclicked] = useState(false)
+
+  // Get value states
+  const [doorhousename, setDoorhousename] = useState("")
+  const [driverinstruction, setDriverinstruction] = useState("")
+  const [email, setEmail] = useState("")
+  const [phone, setPhone] = useState("")
+  const [firstname, setFirstName] = useState("")
+  const [lastname, setLastName] = useState("")
+  const [password, setPassword] = useState("")
+
+  const [openingtime, setOpeningtime] = useState("")
+  const [closingtime, setClosingtime] = useState("")
+  const [deliverytimefrom, setDeliverytimefrom] = useState("")
+  const [deliverytimeend, setDeliverytimeend] = useState("")
+
+  const [deliverytime, setDeliveryTime] = useState("")
+  
+  // Message
+  const [Message, setMessage] = useState("")
+  // Error states
+  const [emailError, setEmailError] = useState("")
+  const [phoneError, setPhoneError] = useState("")
+  const [saveMyDetailsError, setSaveMyDetailsError] = useState("")
+  const [PayNowBottomError, setPayNowBottomError] = useState("")
+  const handleDoorHouseClicked = () =>
   {
-    // navigate("/payment")
-    // navigate("/payment");
+    setIsadddoororhouseclicked(!isadddoororhouseclicked)
+    setDoornumbertext( doornumbertext === "Add" ? "Save" : "Add")
+    setIsdoorinputdisplayclicked(!isdoorinputdisplayclicked)
   }
 
-  useEffect(() => {
-    setIscartbtnclicked(false)
-  }, [])
+  const handleDoorOrHouse = (event) =>
+  {
+    setDoorhousename(event.target.value)
+    setIsavefasterdetailsclicked(false)
+  }
 
-  const [isemailtoggle, setIsemailtoggle] = useState(true)
-  const [emailaddbtntext, setEmailaddbtntext] = useState("Save")
-  const [email, setEmail] = useState("")
+  const handleDriverInstruction = () =>
+  {
+    setIsadddrivertoggle(!isadddrivertoggle)
+    setIsadddoortext(isadddoortext === "Add" ? "Save" : "Add")
+    setIsadddriverdisplayclicked(!isadddriverdisplayclicked)
+  }
+
+  const handleDriverInstructionEvent = (event) =>
+  {
+    setDriverinstruction(event.target.value)
+  }
 
   const handleEmailToggle = () =>
   {
     setIsemailtoggle(!isemailtoggle)
     setEmailaddbtntext((emailaddbtntext === "Save") ? "Edit": "Save")
+    setIsemailinputtoggle(!isemailinputtoggle)
   }
 
   const handleUserEmail = (event) =>
   {
     setEmail(event.target.value)
+    setIsavefasterdetailsclicked(false)
   }
-
-  const [isphonetoggle, setIsphonetoggle] = useState(true)
-  const [phoneaddbtntext, setPhoneaddbtntext] = useState("Save")
-  const [phone, setPhone] = useState("")
 
   const handlePhoneToggle = () =>
   {
     setIsphonetoggle(!isphonetoggle)
     setPhoneaddbtntext((phoneaddbtntext === "Save") ? "Edit": "Save")
+    setIsphoneinputtoggle(!isphoneinputtoggle)
   }
 
   const handleUserPhone = (event) =>
   {
     setPhone(event.target.value)
+    setIsavefasterdetailsclicked(false)
   }
-
-  const [isfirstnametoggle, setIsfirstnametoggle] = useState(true)
-  const [firstnameaddbtntext, setFirstNameaddbtntext] = useState("Save")
-  const [firstname, setFirstName] = useState("")
 
   const handleFirstNameToggle = () =>
   {
@@ -78,23 +148,19 @@ function UserForm()
   const handleUserFirstName = (event) =>
   {
     setFirstName(event.target.value)
-  }
-
-  const [islastnametoggle, setIslastnametoggle] = useState(true)
-  const [lastnameaddbtntext, setLastNameaddbtntext] = useState("Save")
-  const [lastname, setLastName] = useState("")
-
-  const handleLastNameToggle = () =>
-  {
-    setIslastnametoggle(!islastnametoggle)
-    setLastNameaddbtntext((lastnameaddbtntext === "Save") ? "Edit": "Save")
+    setIsavefasterdetailsclicked(false)
   }
 
   const handleUserLastName = (event) =>
   {
     setLastName(event.target.value)
+    setIsavefasterdetailsclicked(false)
   }
 
+  const handleDeliveryTime = (event) =>
+  {
+    setDeliveryTime(event.target.value)
+  }
   // Change Postcode and Address states
   const [ispostcodeeditclicked, setIspostcodeeditclicked] = useState(false)
   const [deliverydetailtext, setDeliverydetailtext] = useState("Edit")
@@ -106,14 +172,6 @@ function UserForm()
 
   const [ischangepostcodeclicked, setIschangepostcodeclicked] = useState(false)
 
-  const handleRedirect = () =>
-  {
-
-  }
-
-  const [isscheduleclicked, setIsscheduleclicked] = useState(false)
-
-
   // Save details for Faster Checkout next time
   const [isavefasterdetailsclicked, setIsavefasterdetailsclicked] = useState(false)
 
@@ -124,34 +182,253 @@ function UserForm()
     navigate("/login")
   }
 
-  // marketing checkboxes
-
-  const [isbyemailclicked, setIsbyemailclicked] = useState(false)
-  const [isbysmsclicked, setIsbysmsclicked] = useState(false)
-
-  const [isadddoororhouseclicked, setIsadddoororhouseclicked] = useState(false)
-  const [doornumbertext, setDoornumbertext] = useState("Add")
-
-  const handleDoorHouseClicked = () =>
+  const handleRegisteration = () =>
   {
-    setIsadddoororhouseclicked(!isadddoororhouseclicked)
+
   }
 
-  const [isadddrivertoggle, setIsadddrivertoggle] = useState(false)
-  const [isadddoortext, setIsadddoortext] = useState("Add")
-
-  const handleDriverInstruction = () =>
+  const handlePassword = (event) =>
   {
-    setIsadddrivertoggle(!isadddrivertoggle)
-    setIsadddoortext(isadddoortext === "Add" ? "Save" : "Add")
+    setPassword(event.target.value)
   }
 
-  const handlePassword = () =>
+  const fetchLocationDeliveryEstimate = async () =>
   {
-    setIsavefasterdetailsclicked(true)
+    // Get the current day name
+    try 
+    {
+      const placeOrderGetStoreGUID = JSON.parse(window.localStorage.getItem('user_selected_store'))
+      const data = {
+        location_guid: (placeOrderGetStoreGUID === null) ? storeGUID : placeOrderGetStoreGUID?.display_id,
+        brand_guid: BRAND_GUID,
+        day_number: moment().day(),
+        partner: PARTNER_ID
+      }  
+
+      const response = await axiosPrivate.post(`/website-delivery-time`, data);
+      console.log("Success delivery time:", response?.data?.data?.brandDeliveryEstimatePartner);
+
+      // Write logic if the closing is up or come closer than show information.
+      var startTime = response?.data?.data?.brandDeliveryEstimatePartner?.start_time
+      var endTime = response?.data?.data?.brandDeliveryEstimatePartner?.end_time
+
+      var timeForm = response?.data?.data?.brandDeliveryEstimatePartner?.time_from
+      var deliveryTo = response?.data?.data?.brandDeliveryEstimatePartner?.time_to
+      var d = new Date();
+      var months = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+      if(startTime == '24:00:00'){
+          startTime = '23:59:59'
+      }
+      var time_from_temp = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() + ' ' + startTime;
+      var time_to_temp = months[d.getMonth()] + ' ' + d.getDate() + ', ' + d.getFullYear() + ' ' + endTime;
+
+      var time_from = new Date(time_from_temp);
+      var time_to = new Date(time_to_temp);               
+
+      console.log("Time Form :", time_from, " Time to:", time_to);
+      if (Date.parse(time_from) > Date.parse(d)) {
+          time_from.setMinutes(time_from.getMinutes() + parseInt(deliveryTo));
+          var start_time = new Date(time_from);
+          start_time = start_time.getHours() + ':' + round15(start_time.getMinutes());
+      } else {
+          d.setMinutes(d.getMinutes() + parseInt(deliveryTo));
+          var start_time = new Date(d);
+          start_time = start_time.getHours() + ':' + round15(start_time.getMinutes());
+      }
+      var current_date = new Date();
+      // Changed to brand closing time + max delivery time at 4/6/2021
+
+      if (Date.parse(time_to) < Date.parse(current_date)) 
+      {
+        setIsTimeToClosed(true)
+        return;
+      }
+      console.log("To time:", time_to, "brand delivery_to", deliveryTo);
+      time_to.setMinutes(time_to.getMinutes() + parseInt(deliveryTo) - 1);
+      let end_time = new Date(time_to);
+     
+      end_time = end_time.getHours() + ':' + end_time.getMinutes();
+      if(start_time == '23:60'){
+          end_time = start_time;
+      }
+
+      if(parseFloat(end_time.split(':')[0]) == 0){
+          end_time = '23:59';
+      }
+      if(start_time.split(':')[1].length == 1){
+          start_time = start_time.split(':')[0]+':'+start_time.split(':')[1]+'0';
+      }
+
+      if(parseFloat(start_time.split(':')[1]) == 60){
+          var temp_time = start_time.split(':')[0]+':59';
+      }
+      else{
+          var temp_time = start_time;
+      }
+      // temp_time = tConvert(temp_time);
+      console.log("Delivery time:", temp_time);
+
+      setDeliveryTime(temp_time)
+      setOpeningtime(temp_time)
+      // setOpeningtime(response?.data?.data?.brandDeliveryEstimatePartner?.start_time)
+      setClosingtime(response?.data?.data?.brandDeliveryEstimatePartner?.end_time)
+      setDeliverytimefrom(response?.data?.data?.brandDeliveryEstimatePartner?.time_from)
+      setDeliverytimeend(response?.data?.data?.brandDeliveryEstimatePartner?.time_to)
+      if(parseInt(listtime.length) > parseInt(0))
+      {
+
+      }
+
+    } catch (error) {
+      console.log("Error:", error);
+    }
   }
 
-  console.log("Is save faster details clicked:", isavefasterdetailsclicked);
+  useEffect(() => {
+    const placeOrderLocalStorageTotal = JSON.parse(window.localStorage.getItem('total_order_value_storage'))
+    console.log("Order value total:", getAmountConvertToFloatWithFixed(JSON.parse(placeOrderLocalStorageTotal),2));
+    settotalOrderAmountValue(placeOrderLocalStorageTotal === null ? totalOrderAmountValue : getAmountConvertToFloatWithFixed(JSON.parse(placeOrderLocalStorageTotal),2))
+
+    setIscartbtnclicked(false)
+    fetchLocationDeliveryEstimate()
+  }, [])
+ 
+  console.log("Handle Delivery Time", deliverytime);
+
+  const fetchCustomerLoginDetails = async () =>
+  {
+    try 
+    { 
+      // Use user email or password.
+      const data = {
+        email: email,
+        phone: phone
+      }
+
+      const response = await axiosPrivate.post(`/create-account-faster`, data)
+      console.log("Response: data ", response?.data?.data?.customer);
+      if(response?.data?.data?.customer !== null)
+      {
+        if(response?.data?.data?.customer?.customer_password !== null)
+        {
+          setPassword(response?.data?.data?.customer?.customer_password?.password)
+          setIscustomerhaspassword(true)
+          setMessage("The phone/email you have entered is already registered.")
+        }
+      }
+      else
+      {
+        setMessage("Register yourself to get more coupons and discounts on your favourite meals.")
+      }
+    } 
+    catch (error) 
+    {
+      console.log("Error:", error);
+      if(parseInt(error?.response?.data?.errors?.email?.length) > parseInt(0))
+      {
+        setEmail("")
+        setPhoneError("Enter valid email.")
+      }
+      if(parseInt(error?.response?.data?.errors?.phone?.length) > parseInt(0))
+      {
+        setPhone("")
+        setPhoneError("Enter valid phone number.")
+      }
+      setIsavefasterdetailsclicked(false)
+    }
+  }
+
+  const handleSaveMyDetails = () =>
+  {
+    if(doorhousename === "" || email === "" || phone === "" || firstname === "" || lastname === "")
+    {
+      setSaveMyDetailsError("Please check * (asterisk) mark field and fill them.")
+      setIsavefasterdetailsclicked(false)
+      return
+    }
+
+    setSaveMyDetailsError("")
+    setIsavefasterdetailsclicked(!isavefasterdetailsclicked)
+
+    fetchCustomerLoginDetails()
+  }
+
+  const storeCustomerDetail = async () =>
+  {
+    const subTotalOrderLocal = (JSON.parse(JSON.parse(window.localStorage.getItem('sub_order_total_local'))) === null) ? null : getAmountConvertToFloatWithFixed(JSON.parse(JSON.parse(window.localStorage.getItem('sub_order_total_local'))),2)
+    const localStorageTotal = (JSON.parse(window.localStorage.getItem('total_order_value_storage')) === null) ? null : JSON.parse(window.localStorage.getItem('total_order_value_storage'))
+    const orderAmountDiscountValue = (JSON.parse(window.localStorage.getItem('order_amount_number')) === null) ? null : JSON.parse(window.localStorage.getItem('order_amount_number'))
+    const orderFilter = JSON.parse(window.localStorage.getItem('filter'))
+    const deliveryFeeLocalStorage = (JSON.parse(window.localStorage.getItem('delivery_fee')) === null) ? null : getAmountConvertToFloatWithFixed(JSON.parse(window.localStorage.getItem('delivery_fee')),2)
+
+    const updatedDeliveryTime = moment(`${moment().format('YYYY-MM-DD')} ${deliverytime}`, 'YYYY-MM-DD HH:mm:ss')
+    console.log("Updated delivery Time:", updatedDeliveryTime._i, "Store GUID:", storeGUID);
+    try 
+    {
+      const data = {
+        store: storeGUID,
+        brand: BRAND_GUID,
+        partner: PARTNER_ID,
+        postcode: postcode,
+        street1: street1,
+        street2: street2,
+        doorhousename: doorhousename,
+        password: password,
+        driverinstruction: driverinstruction,
+        email: email,
+        phone: phone,
+        firstname: firstname,
+        lastname: lastname,
+        deliverytime: deliverytime,
+        isbyemailclicked: isbyemailclicked,
+        isbysmsclicked: isbysmsclicked,
+        sub_total_order: subTotalOrderLocal,
+        total_order: localStorageTotal === null ? getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) : getAmountConvertToFloatWithFixed(JSON.parse(localStorageTotal),2),
+        order: cartdata,
+        orderAmountDiscount_guid: orderAmountDiscountValue,
+        filterId: (orderFilter === null) ? selectedFilter?.id : orderFilter.id,
+        filterName: (orderFilter === null) ? selectedFilter?.name : orderFilter.name,
+        delivery_estimate_time: updatedDeliveryTime._i,
+        // delivery_estimate_time: moment(deliverytime, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
+        delivery_fee: deliveryFeeLocalStorage
+      }
+      console.log("Data:", data);
+      const response = await axiosPrivate.post(`/store-customer-details`,data)  
+      console.log("Response success:", response);
+      if(response?.data?.status === "success")
+      {
+        setLocalStorage('cart',[])
+        setLocalStorage('order_amount_number',null)
+        setCartdata([])
+        route.push(`/payment/${response?.data?.data?.order?.external_order_id}`)
+      }
+    } 
+    catch (error) 
+    {
+      console.log("Error:", error);
+    }
+  }
+
+  const handlePayNow = () =>
+  {
+    if(parseInt(doorhousename.length) === parseInt(0) || parseInt(email.length) === parseInt(0) || parseInt(phone.length) === parseInt(0) || parseInt(firstname.length) === parseInt(0) || parseInt(lastname.length) === parseInt(0))
+    {
+      setPayNowBottomError("Please check * (asterisk) mark field and fill them.")
+      return
+    }
+
+    let checkNumber = validatePhoneNumber(phone)
+    if(!checkNumber)
+    {
+      setIsavefasterdetailsclicked(false)
+      setPayNowBottomError("Kindly enter valid contact number!.")
+      return;
+    }
+    setPayNowBottomError("")
+    storeCustomerDetail()
+  }
+
+  console.log("Handle Payment total:", totalOrderAmountValue);
   return (
     <>
       <div className='e5ald0m1m2amc5checkout-desk'>
@@ -210,7 +487,7 @@ function UserForm()
                   </div>
 
                   <div className='d1g1checkout-desk'>
-                    <a className="allzc5checkout-desk" >
+                    <div className="allzc5checkout-desk" >
                       <div className="kgcheckout-desk">
                         <svg aria-hidden="true" focusable="false" viewBox="0 0 26 26" className="cxcwd0d1checkout-svg">
                           <path fillRule="evenodd" clipRule="evenodd" d="M18.958 7.042a5.958 5.958 0 11-11.916 0 5.958 5.958 0 0111.916 0zM3.25 21.667c0-3.575 2.925-6.5 6.5-6.5h6.5c3.575 0 6.5 2.925 6.5 6.5v3.25H3.25v-3.25z"></path>
@@ -221,18 +498,19 @@ function UserForm()
                         <span className="chd2cjd3b1checkout-desk">Add door number <span style={{color: "red"}}>*</span></span>
                          <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
                             <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
-                              {email}
+                              {doorhousename}
                             </span>
                           </p>
                       </div>
-                      
+                    
                       <button className="chcicjckhacheckout-desk-btn" onClick={handleDoorHouseClicked}>{doornumbertext}</button>
-                    </a>
+                      
+                    </div>
 
                     {
-                      isadddoororhouseclicked &&
+                      isdoorinputdisplayclicked &&
                       <div className="btaucheckout-window">
-                        <input type="text" placeholder="Enter door number or name" value="12" className="door_number" onChange={handleUserEmail}/>
+                        <input type="text" placeholder="Enter door number or name" value={doorhousename} className={`door_number ${parseInt(doorhousename.length) > parseInt(0) ? "parse-success" : "parse-erorr"}`} onChange={handleDoorOrHouse}/>
                       </div>
                     }
                     <div className="alcheckout-desk">
@@ -251,15 +529,20 @@ function UserForm()
                       
                       <div className="alamd1g1checkout-desk">
                         <span className="chd2cjd3b1checkout-desk">Add driver instructions</span>
+                        <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                            <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
+                              {driverinstruction}
+                            </span>
+                          </p>
                       </div>
                       
                       <button className="chcicjckhacheckout-desk-btn" onClick={handleDriverInstruction}>{isadddoortext}</button>
                     </a>
 
                     {
-                      isadddrivertoggle &&
+                      isadddriverdisplayclicked &&
                       <div className="btaucheckout-window">
-                        <textarea placeholder="Add delivery instructions" rows="2" aria-label="Add delivery instructions" onChange={handleUserEmail} className="door_number" spellcheck="false"></textarea>
+                        <textarea placeholder="Add delivery instructions" rows="2" aria-label="Add delivery instructions" value={driverinstruction} onChange={handleDriverInstructionEvent} className="door_number" spellcheck="false"></textarea>
                       </div>
                     }
 
@@ -295,9 +578,19 @@ function UserForm()
                   </a>
 
                   {
-                    isemailtoggle &&
+                    isemailinputtoggle &&
                     <div className="btaucheckout-window">
-                      <input type="email" placeholder="Enter email" value={email} className="email-checkout" onChange={handleUserEmail}/>
+                      <input type="email" required placeholder="Enter email" value={email} className={`email-checkout ${parseInt(email.length) > parseInt(0)  ? "parse-success" : "parse-erorr"}`} onChange={handleUserEmail}/>
+                      {/* {
+                        parseInt(emailError.length) > parseInt(0) &&
+                        <>
+                          <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
+                          
+                          <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
+                            <span style={{color: "red"}}>* This field is required.</span>
+                          </div>
+                        </>
+                      } */}
                     </div>
                   }
                   <div className="alcheckout-desk">
@@ -327,9 +620,9 @@ function UserForm()
                   </a>
 
                   {
-                    isphonetoggle &&
+                    isphoneinputtoggle &&
                     <div className="btaucheckout-window">
-                      <input type="number" placeholder="Enter phone number" value={phone} className="email-checkout" onChange={handleUserPhone}/>
+                      <input type="number" placeholder="Enter phone number" value={phone} className={`email-checkout ${parseInt(phone.length) > parseInt(0)  ? "parse-success" : "parse-erorr"}`} onChange={handleUserPhone}/>
                     </div>
                   }
                   <div className="alcheckout-desk">
@@ -362,11 +655,11 @@ function UserForm()
                     isfirstnametoggle &&
                     <>
                       <div className="btaucheckout-window">
-                        <input type="text" style={{marginBottom: "4px"}} placeholder="Enter first name" value={firstname} className="email-checkout" onChange={handleUserFirstName}/>
+                        <input type="text" style={{marginBottom: "4px"}} placeholder="Enter first name" value={firstname} className={`email-checkout ${parseInt(firstname.length) > parseInt(0)  ? "parse-success" : "parse-erorr"}`} onChange={handleUserFirstName}/>
                       </div>
 
                       <div className="btaucheckout-window">
-                        <input type="text" placeholder="Enter last name" value={lastname} className="email-checkout" onChange={handleUserLastName}/>
+                        <input type="text" placeholder="Enter last name" value={lastname} className={`email-checkout ${parseInt(lastname.length) > parseInt(0)  ? "parse-success" : "parse-erorr"}`} onChange={handleUserLastName}/>
                       </div>
                     </>
                   }
@@ -380,9 +673,8 @@ function UserForm()
               <hr className='edfhmthtcheckout-desk'></hr>
               <div className='mimjepmkmlmmcheckout-desk'>
                 <h3 className="eik5ekk6checkout-desk">
-                  <span className="d1chekcout-desk-span">Delivey Estimate</span>
+                  <span className="d1chekcout-desk-span">Delivery Estimate</span>
                 </h3>
-                {/* <div className='g8checkout-desk' onClick={() => setIsscheduleclicked(true)}> */}
                 <div className='g8checkout-desk'>
                   <div className='oagdalc5o7obc9b1npcheckout-desk'>
                     <div className='ale7c5k8hbocheckout-desk'>
@@ -394,13 +686,16 @@ function UserForm()
                         <div className="alc5checkout-desk">
                           <span className="chd2cjd3checkout-desk-span">Schedule</span>
                         </div>
-                        <select className="bubvbwbdbxbybkaubzc0checkout-window-input">
-                          <option>4:45 PM</option>
-                          <option>5:00 PM</option>
-                          <option>5:15 PM</option>
-                          <option>5:30 PM</option>
-                          <option>5:45 PM</option>
-                          <option>6:00 PM</option>
+                        <select value={moment(deliverytime,"HH:mm").format("HH:mm")} className="bubvbwbdbxbybkaubzc0checkout-window-input" onChange={handleDeliveryTime}>
+                          {
+                            listtime?.map((time, index) =>
+                            {
+                              return(
+                                (moment(time?.time,"HH:mm").format("HH:mm") >= moment(openingtime,"HH:mm").format("HH:mm") && moment(closingtime,"HH:mm").format("HH:mm") >= moment(time?.time,"HH:mm").format("HH:mm"))&&
+                                <option key={index} value={time?.time}>{moment(time?.time,"HH:mm A").format("HH:mm A")}</option>
+                              )
+                            })
+                          }
                         </select>
                       </h3>
                     </div>
@@ -409,8 +704,11 @@ function UserForm()
                 </div>
               </div>
 
+              {
+                parseInt(saveMyDetailsError.length) > parseInt(0) &&
+                <p style={{color: "red", background: "#eda7a7", textAlign: "center", padding:"10px", marginBottom: "10px"}}>{saveMyDetailsError}</p>
+              }
               <div className='mimjepmkmlmmcheckout-desk'>
-                
                 <div className="allzc5checkout-desk">
                   <div className="f2checkout-desk">
                     <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
@@ -418,7 +716,8 @@ function UserForm()
                     </svg>
                   </div> 
                   <input type="checkbox" className="agaxlqdflacheckout-desk-input"></input>
-                  <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isavefasterdetailsclicked ? "mch" : ""}`} onClick={() => setIsavefasterdetailsclicked(!isavefasterdetailsclicked)}>
+                  {/* <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isavefasterdetailsclicked ? "mch" : ""}`} onClick={() => setIsavefasterdetailsclicked(!isavefasterdetailsclicked)}> */}
+                  <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isavefasterdetailsclicked ? "mch" : ""}`} onClick={handleSaveMyDetails}>
                     <div className="spacer _16"></div>
                     <div className="d1alfwllcheckout-desk">
                       <div className="ald1ame7lmlncheckout-desk">
@@ -438,16 +737,22 @@ function UserForm()
                     <div className='chcicwd3undersavefastercheckout'>
                       <div className='toundersavefastercheckout'>
                         <div className="eik4ekk5g8undersavefastercheckout">
-                          <span className="h3euh4eimfekfdundersavefastercheckout-span">The phone number you have entered is already registered.</span>
+                          <span className="h3euh4eimfekfdundersavefastercheckout-span">{Message}</span>
                         </div>
-
-                        <div className="btaundersavefastercheckout">
-                          <label className='password-label'><span style={{color: "red"}}>*</span>Password: </label>
-                          <input type="password" placeholder="Enter password" value="****" className="undersavecheckoutinput" onChange={handlePassword}/>
-                        </div>
-
+                        {
+                          iscustomerhaspassword === false &&
+                          <div className="btaundersavefastercheckout">
+                            <label className='password-label'><span style={{color: "red"}}>*</span>Password: </label>
+                            <input type="password" placeholder="Enter password" value={password} className="undersavecheckoutinput" onChange={handlePassword}/>
+                          </div>
+                        }
                         <div className='alh2amenc9jdundersavefastercheckout'>
-                          <button className='agloundersavefastercheckout'>Login</button>
+                          {
+                            iscustomerhaspassword ?
+                              <button className='agloundersavefastercheckout' onClick={handleLogin}>Login</button>
+                            :
+                              <button className='agloundersavefastercheckout' onClick={handleRegisteration}>Register</button>
+                          }
                           <button className='coasgundersavefastercheckout' onClick={() => setIsavefasterdetailsclicked(!isavefasterdetailsclicked)}>Continue as guest user</button>
                         </div>
                       </div>
@@ -516,8 +821,12 @@ function UserForm()
           <div className="d1g1checkout-desk">
             <div className='gmgngoalamgpcheckout-desk'>
             <div className="gqcheckout-desk">
+              {
+                parseInt(PayNowBottomError.length) > parseInt(0) &&
+                <p style={{color: "red", background: "#eda7a7", textAlign: "center", padding:"10px", marginBottom: "10px"}}>{PayNowBottomError}</p>
+              }
               <div className='boh7bqh8checkout-desk'>
-                <a className="h7brboe1checkout-btn" href="/payment">Pay Now</a>
+                <button className="h7brboe1checkout-btn" onClick={handlePayNow}>Pay Now</button>
               </div>
             </div>
             <div className="eeb0checkout-desk">
@@ -527,7 +836,7 @@ function UserForm()
                   <div className='albcaqcheckout'>
                     Total
                   </div>
-                  £ 14.93
+                  {getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(totalOrderAmountValue,2)}
                 </div>
 
                 <div className='itcheckout-desk'>
@@ -569,445 +878,455 @@ function UserForm()
         </div>
       </div>
 
-      <>
-        <div className="afcheckout">
-          <div className="">
-              <div className="cwcxcyczd0d1checkout">
-                <div className="hmg1checkout-desk">
-                  <div className="hmg1mhb0checkout-desk">
-                    <div className='mimjepmkmlmmcheckout-desk'>
-                      <h3 className="eik5ekk6checkout-desk">
-                        <span className="d1chekcout-desk-span">Delivery Details</span>
-                      </h3>
-                      <span style={{color: "red" , fontSize: "300"}}>*Fields marked with an asterisk must be filled in to proceed.</span>
-                      <div>
-                        <div className='d1g1checkout-desk'>
-                            <a className="allzc5checkout-desk" >
-                                <div className="kgcheckout-desk">
-                                <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
-                                    <g clipPath="url(#clip0)">
-                                    <path d="M17.583 5.166a7.896 7.896 0 00-11.166 0c-3.084 3.083-3.084 8.167 0 11.25L12 21.999l5.583-5.666c3.084-3 3.084-8.084 0-11.167zM12 12.416c-.917 0-1.667-.75-1.667-1.667 0-.916.75-1.666 1.667-1.666s1.667.75 1.667 1.666c0 .917-.75 1.667-1.667 1.667z"></path>
-                                    </g>
-                                    <defs>
-                                    <clipPath id="clip0">
-                                        <path transform="translate(2 2)" d="M0 0h20v20H0z"></path>
-                                    </clipPath>
-                                    </defs>
-                                </svg>
-                                </div>
-                                
-                                <div className="alamd1g1checkout-desk">
-                                <span className="chd2cjd3b1checkout-desk">{postcode}</span>
-                                <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                                    <span style={{fontFamily:"UberMoveText", color:"#545454"}}>
-                                    {street1} {street2}
-                                    </span>
-                                </p>
-                                </div>
-                                
-                                <button className="chcicjckhacheckout-desk-btn" onClick={handlePostcodeEdit}>{deliverydetailtext}</button>
-                            </a>
-                            {
-                                ispostcodeeditclicked &&
-                                <div className="btautrackorder-postcode-edit">
-                                <input type='text' className='strtpostcode' value={street1}></input>
-                                <input type='text' className='strtpostcode' value={street2}></input>
-                                <div className='strtpostcode-btn'>
-                                    <input type='text' className='strtpostcode' value={postcode}></input>
-                                    <button className='change_postcode_btn' onClick={() => setIschangepostcodeclicked(!ischangepostcodeclicked)}>Change postcode</button>
-                                </div>
-                                </div>
-                            }
-                            <div className="alcheckout-desk">
-                                <div className="spacer _40"></div>
-                                <div className="edhtb9d1checkout-desk"></div>
-                            </div>
+      <div className="afcheckout">
+        <div className="">
+          <div className="cwcxcyczd0d1checkout">
+            <div className="hmg1checkout-desk">
+              <div className="hmg1mhb0checkout-desk">
+                <div className='mimjepmkmlmmcheckout-desk'>
+                  <h3 className="eik5ekk6checkout-desk">
+                    <span className="d1chekcout-desk-span">Delivery Details</span>
+                  </h3>
+                  <span style={{color: "red" , fontSize: "300"}}>*Fields marked with an asterisk must be filled in to proceed.</span>
+                  <div>
+                    <div className='d1g1checkout-desk'>
+                      <a className="allzc5checkout-desk" >
+                          <div className="kgcheckout-desk">
+                          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
+                              <g clipPath="url(#clip0)">
+                              <path d="M17.583 5.166a7.896 7.896 0 00-11.166 0c-3.084 3.083-3.084 8.167 0 11.25L12 21.999l5.583-5.666c3.084-3 3.084-8.084 0-11.167zM12 12.416c-.917 0-1.667-.75-1.667-1.667 0-.916.75-1.666 1.667-1.666s1.667.75 1.667 1.666c0 .917-.75 1.667-1.667 1.667z"></path>
+                              </g>
+                              <defs>
+                              <clipPath id="clip0">
+                                  <path transform="translate(2 2)" d="M0 0h20v20H0z"></path>
+                              </clipPath>
+                              </defs>
+                          </svg>
+                          </div>
+                          
+                          <div className="alamd1g1checkout-desk">
+                          <span className="chd2cjd3b1checkout-desk">{postcode}</span>
+                          <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                              <span style={{fontFamily:"UberMoveText", color:"#545454"}}>
+                              {street1} {street2}
+                              </span>
+                          </p>
+                          </div>
+                          
+                          <button className="chcicjckhacheckout-desk-btn" onClick={handlePostcodeEdit}>{deliverydetailtext}</button>
+                      </a>
+                      {
+                        ispostcodeeditclicked &&
+                        <div className="btautrackorder-postcode-edit">
+                          <input type='text' className='strtpostcode' value={street1}></input>
+                          <input type='text' className='strtpostcode' value={street2}></input>
+                          <div className='strtpostcode-btn'>
+                              <input type='text' className='strtpostcode' value={postcode}></input>
+                              <button className='change_postcode_btn' onClick={() => setIschangepostcodeclicked(!ischangepostcodeclicked)}>Change postcode</button>
+                          </div>
                         </div>
-
-                        <div className='d1g1checkout-desk'>
-                          <a className="allzc5checkout-desk" >
-                            <div className="kgcheckout-desk">
-                              <svg aria-hidden="true" focusable="false" viewBox="0 0 26 26" className="cxcwd0d1checkout-svg">
-                                <path fillRule="evenodd" clipRule="evenodd" d="M18.958 7.042a5.958 5.958 0 11-11.916 0 5.958 5.958 0 0111.916 0zM3.25 21.667c0-3.575 2.925-6.5 6.5-6.5h6.5c3.575 0 6.5 2.925 6.5 6.5v3.25H3.25v-3.25z"></path>
-                              </svg>
-                            </div>
-                              
-                            <div className="alamd1g1checkout-desk">
-                              <span className="chd2cjd3b1checkout-desk">Add door number <span style={{color: "red"}}>*</span></span>
-                              {/* <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                                <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
-                                Add driver instructions
-                                </span>
-                              </p> */}
-                            </div>
-                            {
-                              isadddoororhouseclicked ?
-                                <button className="chcicjckhacheckout-desk-btn" onClick={handleDoorHouseClicked}>Save</button>
-                              :
-                                <button className="chcicjckhacheckout-desk-btn" onClick={handleDoorHouseClicked}>Add</button>
-                            }
-                          </a>
-
-                            {
-                              isadddoororhouseclicked &&
-                              <div className="btaucheckout-window">
-                              <input type="text" placeholder="Enter door number or name" value="12" className="door_number" onChange={handleUserEmail}/>
-                                {/* <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
-                                
-                                <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
-                                    <span style={{color: "red"}}>* This field is required.</span>
-                                </div> */}
-                              </div>
-                            }
-
-                            <div className="alcheckout-desk">
-                              <div className="spacer _40"></div>
-                              <div className="edhtb9d1checkout-desk"></div>
-                            </div>
+                      }
+                        <div className="alcheckout-desk">
+                          <div className="spacer _40"></div>
+                          <div className="edhtb9d1checkout-desk"></div>
                         </div>
+                    </div>
 
-                        <div className='d1g1checkout-desk'>
-                          <a className="allzc5checkout-desk" >
-                            <div className="kgcheckout-desk">
-                              <svg aria-hidden="true" focusable="false" viewBox="0 0 26 26" className="cxcwd0d1checkout-svg">
-                                <path fillRule="evenodd" clipRule="evenodd" d="M18.958 7.042a5.958 5.958 0 11-11.916 0 5.958 5.958 0 0111.916 0zM3.25 21.667c0-3.575 2.925-6.5 6.5-6.5h6.5c3.575 0 6.5 2.925 6.5 6.5v3.25H3.25v-3.25z"></path>
-                              </svg>
-                            </div>
+                    <div className='d1g1checkout-desk'>
+                      <div className="allzc5checkout-desk" >
+                        <div className="kgcheckout-desk">
+                          <svg aria-hidden="true" focusable="false" viewBox="0 0 26 26" className="cxcwd0d1checkout-svg">
+                            <path fillRule="evenodd" clipRule="evenodd" d="M18.958 7.042a5.958 5.958 0 11-11.916 0 5.958 5.958 0 0111.916 0zM3.25 21.667c0-3.575 2.925-6.5 6.5-6.5h6.5c3.575 0 6.5 2.925 6.5 6.5v3.25H3.25v-3.25z"></path>
+                          </svg>
+                        </div>
+                          
+                        <div className="alamd1g1checkout-desk">
+                          <span className="chd2cjd3b1checkout-desk">Add door number <span style={{color: "red"}}>*</span></span>
+                          <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                            <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
+                              {doorhousename}
+                            </span>
+                          </p>
+                        </div>
+                      
+                          <button className="chcicjckhacheckout-desk-btn" onClick={handleDoorHouseClicked}>{doornumbertext}</button>
+                      </div>
+
+                        {
+                          isdoorinputdisplayclicked &&
+                          <div className="btaucheckout-window">
+                          <input type="text" placeholder="Enter door number or name" value={doorhousename} className={`door_number ${parseInt(doorhousename.length) > parseInt(0) ? "parse-success" : "parse-erorr"}`} onChange={handleDoorOrHouse}/>
+                            {/* <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
                             
-                            <div className="alamd1g1checkout-desk">
-                              <span className="chd2cjd3b1checkout-desk">Add driver instructions</span>
-                              {/* <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                                <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
-                                Add driver instructions
-                                </span>
-                              </p> */}
-                            </div>
-                            <button className="chcicjckhacheckout-desk-btn" onClick={handleDriverInstruction}>{isadddoortext}</button>
-                          </a>
-                          {
-                            isadddrivertoggle &&
-                            <div className="btaucheckout-window">
-                              {/* <textarea placeholder="Add delivery instructions" className="door_number" ></textarea> */}
-                              <textarea placeholder="Add delivery instructions" rows="2" aria-label="Add delivery instructions" onChange={handleUserEmail} className="door_number" spellcheck="false"></textarea>
-                              {/* <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
-                              
-                              <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
+                            <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
                                 <span style={{color: "red"}}>* This field is required.</span>
-                              </div> */}
+                            </div> */}
+                          </div>
+                        }
+
+                        <div className="alcheckout-desk">
+                          <div className="spacer _40"></div>
+                          <div className="edhtb9d1checkout-desk"></div>
+                        </div>
+                    </div>
+
+                    <div className='d1g1checkout-desk'>
+                      <a className="allzc5checkout-desk" >
+                        <div className="kgcheckout-desk">
+                          <svg aria-hidden="true" focusable="false" viewBox="0 0 26 26" className="cxcwd0d1checkout-svg">
+                            <path fillRule="evenodd" clipRule="evenodd" d="M18.958 7.042a5.958 5.958 0 11-11.916 0 5.958 5.958 0 0111.916 0zM3.25 21.667c0-3.575 2.925-6.5 6.5-6.5h6.5c3.575 0 6.5 2.925 6.5 6.5v3.25H3.25v-3.25z"></path>
+                          </svg>
+                        </div>
+                        
+                        <div className="alamd1g1checkout-desk">
+                          <span className="chd2cjd3b1checkout-desk">Add driver instructions</span>
+                          <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                            <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
+                              {driverinstruction}
+                            </span>
+                          </p>
+                        </div>
+                        <button className="chcicjckhacheckout-desk-btn" onClick={handleDriverInstruction}>{isadddoortext}</button>
+                      </a>
+                      {
+                        isadddriverdisplayclicked &&
+                        <div className="btaucheckout-window">
+                          {/* <textarea placeholder="Add delivery instructions" className="door_number" ></textarea> */}
+                          <textarea placeholder="Add delivery instructions" rows="2" aria-label="Add delivery instructions" value={driverinstruction} onChange={handleDriverInstructionEvent} className="door_number" spellcheck="false"></textarea>
+                          {/* <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
+                          
+                          <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
+                            <span style={{color: "red"}}>* This field is required.</span>
+                          </div> */}
+                        </div>
+                      }
+                    </div>
+                  </div>
+                </div>
+
+                <hr className='edfhmthtcheckout-desk'></hr>
+                <div className='mimjepmkmlmmcheckout-desk'>
+                  <h3 className="eik5ekk6checkout-desk">
+                    <span className="d1chekcout-desk-span">Contact Details</span>
+                  </h3>
+                  <div className='d1g1checkout-desk'>
+                    <a className="allzc5checkout-desk">
+                      <div className="f2checkout-desk">
+                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
+                          <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
+                        </svg>
+                      </div>
+                    
+                      <div className="alamd1g1checkout-desk">
+                        <span className="chd2cjd3b1checkout-desk">Add email address <span style={{color: "red"}}>*</span></span> 
+                        <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                          <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
+                              {email}
+                          </span>
+                        </p>
+                      </div>
+                    
+                      <button className="chcicjckhacheckout-desk-btn" onClick={handleEmailToggle}>{emailaddbtntext}</button>
+                    </a>
+
+                    {
+                    isemailinputtoggle &&
+                    <div className="btaucheckout-window">
+                        <input type="email" required placeholder="Enter email" value={email} className={`email-checkout ${parseInt(email.length) > parseInt(0)  ? "parse-success" : "parse-erorr"}`} onChange={handleUserEmail}/>
+                        {/* {
+                          parseInt(emailError.length) > parseInt(0) &&
+                          <>
+                            <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
+                            
+                            <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
+                              <span style={{color: "red"}}>* This field is required.</span>
                             </div>
+                          </>
+                        } */}
+                    </div>
+                    }
+                    <div className="alcheckout-desk">
+                      <div className="spacer _40"></div>
+                      <div className="edhtb9d1checkout-desk"></div>
+                    </div>
+                  </div>
+
+                  <div className='d1g1checkout-desk'>
+                    <a className="allzc5checkout-desk">
+                      <div className="f2checkout-desk">
+                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
+                          <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
+                        </svg>
+                      </div>
+                    
+                      <div className="alamd1g1checkout-desk">
+                        <span className="chd2cjd3b1checkout-desk">Add phone number <span style={{color: "red"}}>*</span></span>
+                        <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                          <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
+                              {phone}
+                          </span>
+                        </p>
+                      </div>
+                      <button className="chcicjckhacheckout-desk-btn" onClick={handlePhoneToggle}>{phoneaddbtntext}</button>
+                    </a>
+
+                    {
+                    isphoneinputtoggle &&
+                    <div className="btaucheckout-window">
+                      <input type="number" placeholder="Enter phone number" value={phone} className={`email-checkout ${parseInt(phone.length) > parseInt(0)  ? "parse-success" : "parse-erorr"}`} onChange={handleUserPhone}/>
+                      {/* <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
+                      
+                      <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
+                      <span style={{color: "red"}}>* This field is required.</span>
+                      </div> */}
+                    </div>
+                    }
+                    <div className="alcheckout-desk">
+                      <div className="spacer _40"></div>
+                      <div className="edhtb9d1checkout-desk"></div>
+                    </div>
+                  </div>
+
+                  <div className='d1g1checkout-desk'>
+                    <a className="allzc5checkout-desk">
+                      <div className="f2checkout-desk">
+                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
+                          <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
+                        </svg>
+                      </div>
+                  
+                      <div className="alamd1g1checkout-desk">
+                        <span className="chd2cjd3b1checkout-desk">Add name <span style={{color: "red"}}>*</span></span>
+                        <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                          <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
+                              {firstname} {lastname}
+                          </span>
+                        </p>
+                      </div>
+                      <button className="chcicjckhacheckout-desk-btn" onClick={handleFirstNameToggle}>{firstnameaddbtntext}</button>
+                    </a>
+
+                    {
+                      isfirstnametoggle &&
+                      <>
+                        <div className="btaucheckout-window">
+                        <input type="text" placeholder="Enter first name" style={{marginBottom: "4px"}} value={firstname} className={`email-checkout ${parseInt(firstname.length) > parseInt(0)  ? "parse-success" : "parse-erorr"}`} onChange={handleUserFirstName}/>
+                        {/* <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
+                        
+                        <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
+                            <span style={{color: "red"}}>* This field is required.</span>
+                        </div> */}
+                        </div>
+
+                        <div className="btaucheckout-window">
+                        <input type="text" placeholder="Enter last name" value={lastname} className={`email-checkout ${parseInt(lastname.length) > parseInt(0)  ? "parse-success" : "parse-erorr"}`} onChange={handleUserLastName}/>
+                        {/* <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
+
+                        <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
+                            <span style={{color: "red"}}>* This field is required.</span>
+                        </div> */}
+                        </div>
+                      </>
+                    }
+                    <div className="alcheckout-desk">
+                      <div className="spacer _40"></div>
+                      <div className="edhtb9d1checkout-desk"></div>
+                    </div>
+                  </div>
+                </div>
+
+                <hr className='edfhmthtcheckout-desk'></hr>
+                <div className='mimjepmkmlmmcheckout-desk'>
+                  <h3 className="eik5ekk6checkout-desk">
+                      <span className="d1chekcout-desk-span">Delivery Estimate</span>
+                  </h3>
+                  <div className='g8checkout-desk'>
+                    <div className='oagdalc5o7obc9b1npcheckout-desk'>
+                      <div className='ale7c5k8hbocheckout-desk'>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><title>Calendar</title><path fillRule="evenodd" clipRule="evenodd" d="M23 8V4h-3V1h-3v3H7V1H4v3H1v4h22Zm0 15H1V10h22v13ZM8 14H5v3h3v-3Z" fill="currentColor"></path></svg>
+                      </div>
+
+                      <div className='ald0fwc5checkout-desk'>
+                        <h3 className="alamk3checkout-desk-h3">
+                          <div className="alc5checkout-desk">
+                            <span className="chd2cjd3checkout-desk-span">Schedule</span>
+                          </div>
+                          <select value={moment(deliverytime,"HH:mm A").format("HH:mm A")} className="bubvbwbdbxbybkaubzc0checkout-window-input" onChange={handleDeliveryTime}>
+                            {
+                              listtime?.map((time, index) =>
+                              {
+                                return(
+                                  (moment(time?.time,"HH:mm").format("HH:mm") >= moment(openingtime,"HH:mm").format("HH:mm") && moment(closingtime,"HH:mm").format("HH:mm") >= moment(time?.time,"HH:mm").format("HH:mm"))&&
+                                  <option key={index} value={time?.time}>{moment(time?.time,"HH:mm A").format("HH:mm A")}</option>
+                                )
+                              })
+                            }
+                          </select>
+                        </h3>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                {
+                  parseInt(saveMyDetailsError.length) > parseInt(0) &&
+                  <p style={{color: "red", background: "#eda7a7", textAlign: "center", padding:"10px", marginBottom: "10px"}}>{saveMyDetailsError}</p>
+                }
+                <div className='mimjepmkmlmmcheckout-desk'>
+                  <div className="allzc5checkout-desk">
+                    <div className="f2checkout-desk">
+                      <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
+                          <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
+                      </svg>
+                      </div> 
+                      <input type="checkbox" className="agaxlqdflacheckout-desk-input"></input>
+                      {/* <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isavefasterdetailsclicked ? "mch" : ""}`} onClick={() => setIsavefasterdetailsclicked(!isavefasterdetailsclicked)}> handleSaveMyDetails */}
+                      <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isavefasterdetailsclicked ? "mch" : ""}`} onClick={handleSaveMyDetails}> 
+                        <div className="spacer _16"></div>
+                        <div className="d1alfwllcheckout-desk">
+                          <div className="ald1ame7lmlncheckout-desk">
+                            <div className="alaqcheckout-desk">
+                              <div className="alamjiencheckout-desk">
+                                <div className="chcicjckh6checkout-desk">Save my details for faster checkout next time</div>
+                                <div className="spacer _8"></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+                  
+                  {
+                  isavefasterdetailsclicked &&
+                    <div className='chcicwd3undersavefastercheckout'>
+                      <div className='toundersavefastercheckout'>
+                        <div className="eik4ekk5g8undersavefastercheckout">
+                          <span className="h3euh4eimfekfdundersavefastercheckout-span">{Message}</span>
+                        </div>
+
+                        {
+                          iscustomerhaspassword === false &&
+                          <div className="btaundersavefastercheckout">
+                            <label className='password-label'><span style={{color: "red"}}>*</span>Password: </label>
+                            <input type="password" placeholder="Enter password" value={password} className="undersavecheckoutinput" onChange={handlePassword}/>
+                          </div>
+                        }
+
+                        <div className='alh2amenc9jdundersavefastercheckout'>
+                          {
+                            iscustomerhaspassword ?
+                              <button className='agloundersavefastercheckout' onClick={handleLogin}>Login</button>
+                            :
+                              <button className='agloundersavefastercheckout' onClick={handleRegisteration}>Register</button>
                           }
+                          <button className='coasgundersavefastercheckout' onClick={() => setIsavefasterdetailsclicked(!isavefasterdetailsclicked)}>Continue as guest user</button>
                         </div>
                       </div>
                     </div>
-
-                      <hr className='edfhmthtcheckout-desk'></hr>
-                      <div className='mimjepmkmlmmcheckout-desk'>
-                        <h3 className="eik5ekk6checkout-desk">
-                          <span className="d1chekcout-desk-span">Contact Details</span>
-                        </h3>
-                        <div className='d1g1checkout-desk'>
-                          <a className="allzc5checkout-desk">
-                            <div className="f2checkout-desk">
-                              <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
-                                <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
-                              </svg>
-                            </div>
-                          
-                            <div className="alamd1g1checkout-desk">
-                              <span className="chd2cjd3b1checkout-desk">Add email address <span style={{color: "red"}}>*</span></span> 
-                              <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                                <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
-                                    {email}
-                                </span>
-                              </p>
-                            </div>
-                          
-                            <button className="chcicjckhacheckout-desk-btn" onClick={handleEmailToggle}>{emailaddbtntext}</button>
-                          </a>
-
-                          {
-                          isemailtoggle &&
-                          <div className="btaucheckout-window">
-                              <input type="email" placeholder="Enter email" value={email} className="email-checkout" onChange={handleUserEmail}/>
-                              {/* <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
-                              
-                              <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
-                              <span style={{color: "red"}}>* This field is required.</span>
-                              </div> */}
-                          </div>
-                          }
-                          <div className="alcheckout-desk">
-                            <div className="spacer _40"></div>
-                            <div className="edhtb9d1checkout-desk"></div>
-                          </div>
-                        </div>
-
-                        <div className='d1g1checkout-desk'>
-                            <a className="allzc5checkout-desk">
-                                <div className="f2checkout-desk">
-                                    <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
-                                    <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
-                                    </svg>
-                                </div>
-                            
-                                <div className="alamd1g1checkout-desk">
-                                    <span className="chd2cjd3b1checkout-desk">Add phone number <span style={{color: "red"}}>*</span></span>
-                                    <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                                    <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
-                                        {phone}
-                                    </span>
-                                    </p>
-                                </div>
-                            
-                                <button className="chcicjckhacheckout-desk-btn" onClick={handlePhoneToggle}>{phoneaddbtntext}</button>
-                            </a>
-
-                            {
-                            isphonetoggle &&
-                            <div className="btaucheckout-window">
-                                <input type="number" placeholder="Enter phone number" value={phone} className="email-checkout" onChange={handleUserPhone}/>
-                                {/* <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
-                                
-                                <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
-                                <span style={{color: "red"}}>* This field is required.</span>
-                                </div> */}
-                            </div>
-                            }
-                            <div className="alcheckout-desk">
-                                <div className="spacer _40"></div>
-                                <div className="edhtb9d1checkout-desk"></div>
-                            </div>
-                        </div>
-
-                        <div className='d1g1checkout-desk'>
-                            <a className="allzc5checkout-desk">
-                                <div className="f2checkout-desk">
-                                    <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
-                                    <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
-                                    </svg>
-                                </div>
-                            
-                                <div className="alamd1g1checkout-desk">
-                                    <span className="chd2cjd3b1checkout-desk">Add name <span style={{color: "red"}}>*</span></span>
-                                    <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                                    <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
-                                        {firstname} {lastname}
-                                    </span>
-                                    </p>
-                                </div>
-                            
-                                <button className="chcicjckhacheckout-desk-btn" onClick={handleFirstNameToggle}>{firstnameaddbtntext}</button>
-                            </a>
-
-                            {
-                                isfirstnametoggle &&
-                                <>
-                                    <div className="btaucheckout-window">
-                                    <input type="text" placeholder="Enter first name" style={{marginBottom: "4px"}} value={firstname} className="email-checkout" onChange={handleUserFirstName}/>
-                                    {/* <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
-                                    
-                                    <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
-                                        <span style={{color: "red"}}>* This field is required.</span>
-                                    </div> */}
-                                    </div>
-
-                                    <div className="btaucheckout-window">
-                                    <input type="text" placeholder="Enter last name" value={lastname} className="email-checkout" onChange={handleUserLastName}/>
-                                    {/* <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
-
-                                    <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
-                                        <span style={{color: "red"}}>* This field is required.</span>
-                                    </div> */}
-                                    </div>
-                                </>
-                            }
-                            <div className="alcheckout-desk">
-                                <div className="spacer _40"></div>
-                                <div className="edhtb9d1checkout-desk"></div>
-                            </div>
-                        </div>
-                      </div>
-
-                      <hr className='edfhmthtcheckout-desk'></hr>
-                      <div className='mimjepmkmlmmcheckout-desk'>
-                      <h3 className="eik5ekk6checkout-desk">
-                          <span className="d1chekcout-desk-span">Delivery Estimate</span>
-                      </h3>
-                      <div className='g8checkout-desk'>
-                          <div className='oagdalc5o7obc9b1npcheckout-desk'>
-                          <div className='ale7c5k8hbocheckout-desk'>
-                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><title>Calendar</title><path fillRule="evenodd" clipRule="evenodd" d="M23 8V4h-3V1h-3v3H7V1H4v3H1v4h22Zm0 15H1V10h22v13ZM8 14H5v3h3v-3Z" fill="currentColor"></path></svg>
-                          </div>
-
-                          <div className='ald0fwc5checkout-desk'>
-                              <h3 className="alamk3checkout-desk-h3">
-                              <div className="alc5checkout-desk">
-                                  <span className="chd2cjd3checkout-desk-span">Schedule</span>
-                              </div>
-                              <select className="bubvbwbdbxbybkaubzc0checkout-window-input">
-                                  <option>4:45 PM</option>
-                                  <option>5:00 PM</option>
-                                  <option>5:15 PM</option>
-                                  <option>5:30 PM</option>
-                                  <option>5:45 PM</option>
-                                  <option>6:00 PM</option>
-                              </select>
-                              </h3>
-                          </div>
-
-                          </div>
-                      </div>
-                      </div>
-
-                      <div className='mimjepmkmlmmcheckout-desk'>
-                      
-                      <div className="allzc5checkout-desk">
-                          <div className="f2checkout-desk">
-                          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
-                              <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
-                          </svg>
-                          </div> 
-                          <input type="checkbox" className="agaxlqdflacheckout-desk-input"></input>
-                          <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isavefasterdetailsclicked ? "mch" : ""}`} onClick={() => setIsavefasterdetailsclicked(!isavefasterdetailsclicked)}>
-                          <div className="spacer _16"></div>
-                          <div className="d1alfwllcheckout-desk">
-                              <div className="ald1ame7lmlncheckout-desk">
-                              <div className="alaqcheckout-desk">
-                                  <div className="alamjiencheckout-desk">
-                                  <div className="chcicjckh6checkout-desk">Save my details for faster checkout next time</div>
-                                  <div className="spacer _8"></div>
-                                  </div>
-                              </div>
-                              </div>
-                          </div>
-                          </label>
-                      </div>
-                      
-                      </div>
-                      
-                      {
-                      isavefasterdetailsclicked &&
-                      <>
-                          <div className='chcicwd3undersavefastercheckout'>
-                          <div className='toundersavefastercheckout'>
-                              <div className="eik4ekk5g8undersavefastercheckout">
-                              <span className="h3euh4eimfekfdundersavefastercheckout-span">The phone number you have entered is already registered.</span>
-                              </div>
-
-                              <div className="btaundersavefastercheckout">
-                              <label className='password-label'><span style={{color: "red"}}>*</span>Password: </label>
-                              <input type="password" placeholder="Enter password" value="****" className="undersavecheckoutinput" onChange={handlePassword}/>
-                              </div>
-
-                              <div className='alh2amenc9jdundersavefastercheckout'>
-                              {/* <button className='agloundersavefastercheckout' onClick={handleLogin}>Login</button> */}
-                              <button className='agloundersavefastercheckout'>Login</button>
-                              <button className='coasgundersavefastercheckout' onClick={() => setIsavefasterdetailsclicked(!isavefasterdetailsclicked)}>Continue as guest user</button>
-                              </div>
-                          </div>
-                          </div>
-                      </>
-                      }
-                      
-                      <hr className='edfhmthtcheckout-desk'></hr>
-                      <div className='mimjepmkmlmmcheckout-desk'>
-                      <div className='d1g1checkout-desk'>
-                          <div className="allzc5checkout-desk">
-
+                  }
+                  
+                  <hr className='edfhmthtcheckout-desk'></hr>
+                  <div className='mimjepmkmlmmcheckout-desk'>
+                    <div className='d1g1checkout-desk'>
+                        <div className="allzc5checkout-desk">
                           <div className="alamd1g1checkout-desk">
-                              <span className="chd2cjd3b1checkout-desk">
+                            <span className="chd2cjd3b1checkout-desk">
                               When you place your order, we will send you occasional marketing offers and promotions. Please select below if you do not want to receive this marketing.
-                              </span>
+                            </span>
                           </div>
-                          </div>
-                      
-                          <div className="almycheckout-desk">
+                        </div>
+                    
+                        <div className="almycheckout-desk">
                           <div className="allzc5checkout-desk" onClick={() => setIsbyemailclicked(!isbyemailclicked)}>
-                              <input type="checkbox" className="agaxlqdflacheckout-desk-input"></input>
-                              <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isbyemailclicked ? "mch" : ""}`}>
+                            <input type="checkbox" className="agaxlqdflacheckout-desk-input"></input>
+                            <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isbyemailclicked ? "mch" : ""}`}>
                               <div className="spacer _16"></div>
                               <div className="d1alfwllcheckout-desk">
-                                  <div className="ald1ame7lmlncheckout-desk">
+                                <div className="ald1ame7lmlncheckout-desk">
                                   <div className="alaqcheckout-desk">
-                                      <div className="alamjiencheckout-desk">
+                                    <div className="alamjiencheckout-desk">
                                       <div className="chcicjckh6checkout-desk">By Email &nbsp;</div>
                                       <div className="spacer _8"></div>
-                                      </div>
+                                    </div>
                                   </div>
-                                  </div>
+                                </div>
                               </div>
-                              </label>
+                            </label>
                           </div>
 
                           <div className='spacer _48'></div>
                           <div className="allzc5checkout-desk" onClick={() => setIsbysmsclicked(!isbysmsclicked)}>
-                              <input type="checkbox" className="agaxlqdflacheckout-desk-input"></input>
-                              <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isbysmsclicked ? "mch" : ""}`}>
+                            <input type="checkbox" className="agaxlqdflacheckout-desk-input"></input>
+                            <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isbysmsclicked ? "mch" : ""}`}>
                               <div className="spacer _16"></div>
                               <div className="d1alfwllcheckout-desk">
-                                  <div className="ald1ame7lmlncheckout-desk">
+                                <div className="ald1ame7lmlncheckout-desk">
                                   <div className="alaqcheckout-desk">
-                                      <div className="alamjiencheckout-desk">
+                                    <div className="alamjiencheckout-desk">
                                       <div className="chcicjckh6checkout-desk">By SMS &nbsp;</div>
                                       <div className="spacer _8"></div>
-                                      </div>
+                                    </div>
                                   </div>
-                                  </div>
+                                </div>
                               </div>
-                              </label>
+                            </label>
                           </div>
-                          </div>
-                      </div>
-                      
-                      </div>
+                        </div>
+                    </div>
                   </div>
-                  <div></div>
                 </div>
-              </div>
-          </div>
-
-          <div className="dtcxcybgd0d1checkout">
-            <div className="bocubqcve9checkout">
-              <div className="bocubqcvb1checkout">
-                <span className="bocubqcvgycheckout">
-                    <span className="bocudfdhgy">ALLERGIES:&nbsp; &nbsp;</span> 
-                    If you or someone you’re ordering for has an allergy, please contact the merchant directly to let them know.
-                </span>
-              </div>
-            </div>
-            <div className="dxgvcheck"></div>
-
-            <div className="bocubqcve9checkout">
-              <div className="bocubqcvb1checkout">
-                <span className="bocubqcvgycheckout">
-                  If you’re not around when the delivery person arrives, they’ll leave your order at the door. By placing your order, you agree to take full responsibility for it once it’s delivered. Orders containing alcohol or other restricted items may not be eligible for leave at door and will be returned to the store if you are not available.
-                </span>
-              </div>
-            </div>
-            <div className="dxgvcheck"></div>
-
-            <div className="bocubqcve9checkout">
-              <div className="bocubqcvb1checkout">
-                <span className="bocubqcvgycheckout">
-                  Whilst we, and our restaurant partners, have safety measures to mitigate food safety risk, couriers may be delivering more than one order so we cannot eliminate the risk of cross-contamination from allergens.
-                </span>
-              </div>
-            </div>
-            <div className="dxgvcheck"></div>
-          </div>
-
-          <div className="">
-            <div className="akgzcheckout">
-                <div className="atbaagcheckout">
-                <div className="">
-                  <Link className="fwbrbocheckout-place-order" href="/payment">Pay Now</Link>
-                  <div style={{height: "10px"}}></div>
-                </div>
-                </div>
+                <div></div>
             </div>
           </div>
         </div>
-      </>
+
+        <div className="dtcxcybgd0d1checkout">
+          <div className="bocubqcve9checkout">
+            <div className="bocubqcvb1checkout">
+              <span className="bocubqcvgycheckout">
+                <span className="bocudfdhgy">ALLERGIES:&nbsp; &nbsp;</span> 
+                  If you or someone you’re ordering for has an allergy, please contact the merchant directly to let them know.
+              </span>
+            </div>
+          </div>
+          <div className="dxgvcheck"></div>
+
+          <div className="bocubqcve9checkout">
+            <div className="bocubqcvb1checkout">
+              <span className="bocubqcvgycheckout">
+                If you’re not around when the delivery person arrives, they’ll leave your order at the door. By placing your order, you agree to take full responsibility for it once it’s delivered. Orders containing alcohol or other restricted items may not be eligible for leave at door and will be returned to the store if you are not available.
+              </span>
+            </div>
+          </div>
+          <div className="dxgvcheck"></div>
+
+          <div className="bocubqcve9checkout">
+            <div className="bocubqcvb1checkout">
+              <span className="bocubqcvgycheckout">
+                Whilst we, and our restaurant partners, have safety measures to mitigate food safety risk, couriers may be delivering more than one order so we cannot eliminate the risk of cross-contamination from allergens.
+              </span>
+            </div>
+          </div>
+          <div className="dxgvcheck"></div>
+        </div>
+
+        <div className="">
+          <div className="akgzcheckout">
+            <div className="atbaagcheckout">
+              <div className="">
+                {
+                  parseInt(PayNowBottomError.length) > parseInt(0) &&
+                  <p style={{color: "red", background: "#eda7a7", textAlign: "center", padding:"10px", marginBottom: "10px"}}>{PayNowBottomError}</p>
+                }
+                <button className="fwbrbocheckout-place-order" onClick={handlePayNow}>Pay Now</button>
+                <div style={{height: "10px"}}></div>
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      </div>
       {/* Modal Testing */}
 
       {
@@ -1015,203 +1334,32 @@ function UserForm()
         <div className="modal-delivery-details">
           <div className="modal-delivery-details-level-one-div">
             <div className="modal-delivery-details-level-one-div-height"></div>
-            <div className="modal-delivery-details-level-one-div-dialog">
-              <div></div>
+              <div className="modal-delivery-details-level-one-div-dialog">
+                <div></div>
 
-              <div className="modal-delivery-details-level-one-div-dialog-header">
-                <div className="delivery-empty-div"></div>
-                {
-                  <button className="delivery-modal-close-button">
-                    <div className="delivery-modal-close-button-svg-div" onClick={() => setIschangepostcodeclicked(!ischangepostcodeclicked)}>
-                      <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                        <path
-                          d="m19.5831 6.24931-1.8333-1.83329-5.75 5.83328-5.75-5.83328-1.8333 1.83329 5.8333 5.74999-5.8333 5.75 1.8333 1.8333 5.75-5.8333 5.75 5.8333 1.8333-1.8333-5.8333-5.75z"
-                          fill="#000000"
-                        ></path>
-                      </svg>
-                    </div>
-                  </button>
-                }
-              </div>
-              {ischangepostcodeclicked && (
-                <>
-                  <PostcodeModal/>
-                </>
-              )}
-
-              {/* {ispostcodeeditclicked === false && (
-                <>
-                  <div className="modal-delivery-details-level-one-div-dialog-body">
-                    <h1 className="dialog-modal-body-h1">
-                      Delivery details
-                    </h1>
-
-                    <div className="dialog-modal-body-content">
-                      <div className="spacer _8"></div>
-                      <div className="dialog-modal-body-content-nested-div">
-                        <div className="location-svg-postcode-address-nested">
-                          <div className="dialog-location-svg-div">
-                            <div className="dialog-location-svg-div-nested">
-                              <svg
-                                width="24px"
-                                height="24px"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                xmlns="http://www.w3.org/2000/svg"
-                                aria-hidden="true"
-                                focusable="false"
-                              >
-                                <path
-                                  d="M17.5834 5.16602C14.5001 2.08268 9.50008 2.08268 6.41675 5.16602C3.33341 8.24935 3.33341 13.3327 6.41675 16.416L12.0001 21.9993L17.5834 16.3327C20.6667 13.3327 20.6667 8.24935 17.5834 5.16602ZM12.0001 12.416C11.0834 12.416 10.3334 11.666 10.3334 10.7493C10.3334 9.83268 11.0834 9.08268 12.0001 9.08268C12.9167 9.08268 13.6667 9.83268 13.6667 10.7493C13.6667 11.666 12.9167 12.416 12.0001 12.416Z"
-                                  fill="currentColor"
-                                ></path>
-                              </svg>
-                            </div>
-                          </div>
-
-                          <div className="postcode-address-change-button">
-                            <div className="delivery-postcode-address">
-                              <div className="delivery-postcode">
-                                {postcode}
-                              </div>
-                              <div className="delivery-address">
-                                {street1} {street2}
-                              </div>
-                            </div>
-                            <div className="spacer _8"></div>
-                            <a
-                              className="postocde-change-button"
-                              onClick={() =>
-                                setIsdeliverychangedbtnclicked(true)
-                              }
-                            >
-                              Change
-                            </a>
-                            <div className="spacer _16"></div>
-                          </div>
-                        </div>
+                <div className="modal-delivery-details-level-one-div-dialog-header">
+                  <div className="delivery-empty-div"></div>
+                  {
+                    <button className="delivery-modal-close-button">
+                      <div className="delivery-modal-close-button-svg-div" onClick={() => setIschangepostcodeclicked(!ischangepostcodeclicked)}>
+                        <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                          <path
+                            d="m19.5831 6.24931-1.8333-1.83329-5.75 5.83328-5.75-5.83328-1.8333 1.83329 5.8333 5.74999-5.8333 5.75 1.8333 1.8333 5.75-5.8333 5.75 5.8333 1.8333-1.8333-5.8333-5.75z"
+                            fill="#000000"
+                          ></path>
+                        </svg>
                       </div>
-                    </div>
-
-                    <button className="delivery-modal-done-button">
-                      Done
                     </button>
-                  </div>
-                </>
-              )} */}
-            </div>
+                  }
+                </div>
+                {ischangepostcodeclicked && (
+                  <>
+                    <PostcodeModal/>
+                  </>
+                )}
+              </div>
             <div className="modal-delivery-details-level-one-div-height"></div>
           </div>
-        </div>
-      }
-
-      {/* Delivery Estimate Schedule */}
-      {
-        isscheduleclicked &&
-        <div className='agasatd5srschedule'>
-          <div style={{width: "1px", height: "0px", padding: "0px", overflow: "hidden", position: "fixed", top: "1px", left: "1px"}}></div>
-          <div>
-            <div className='arjbd5e8asathfschedule'>
-              <div className='alc5e7bzlrsshfjcjddpjfjgjhshedule'>
-                <div className='akb0stsusvswjthkjusxjocfdpt4jrjgjhszt0lgalamdxc0schedule'>
-                  <button className="kukvkwkxschedule-close" onClick={() => setIsscheduleclicked(false)}>
-                    <svg width="10" height="10" viewBox="0 0 10 10" xmlns="http://www.w3.org/2000/svg" style={{stroke: "currentcolor"}}>
-                      <path d="M9 1L5 5M1 9L5 5M5 5L1 1M5 5L9 9" strokeWidth="2" strokeLinecap="round"></path>
-                    </svg>
-                  </button>
-
-                  <div className='t3joschedule'>
-
-                    <div className='frasjzschedule'>
-                      <div className='agbzschedule'>
-                        <div className='agase8bzalc5b0t5t6t7axschdule'></div>
-                        <div className='akgit8c5fwbziuh0eoepafschedule'>
-                          <div className="t9schedule">
-                            <button className="cyaqc5e7qqschedule" onClick={() => setIsscheduleclicked(false)}>
-                              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                                <title>X</title>
-                                <path d="m21.1 5.1-2.2-2.2-6.9 7-6.9-7-2.2 2.2 7 6.9-7 6.9 2.2 2.2 6.9-7 6.9 7 2.2-2.2-7-6.9 7-6.9Z" fill="currentColor"></path>
-                            </svg>
-                            </button>
-                          </div>
-
-                          <div className="chj5cjschedule">Schedule delivery</div>
-                          <div className='tjschedule'></div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className='chcicwd3schedule'>
-                      <div className='toschedule'>
-                        <div className="eik4ekk5g8schedule">
-                          <span className="h3euh4eimfekfdschedule-span">Schedule delivery</span>
-                        </div>
-
-                        <div className='alh2amenc9jdschedule'>
-                          <label className='aqalc5c9jshrolbzaffwnfschedule'>
-                            
-                            <div className="u2h0b1chd2cjd3d0schedule">
-                              <div className="alfwschedule">
-                                <div className="alame7schedule">
-                                  <span className="h3euh4chd2schedule">4:15 PM - 4:45 PM</span>
-                                </div>
-                                <div className="alame7schedule"></div>
-                              </div>
-                            </div>
-
-                            <div className="c5iztctatbtdschedule">
-                              <div className="b0tctatbschedule"></div>
-                            </div>
-                            
-                            <input type="radio" className="aoapjsjuschedule-input" checked/>
-
-                          </label>
-
-                          <label className='aqalc5c9jshrolbzaffwnfschedule'>
-                            
-                            <div className="u2h0b1chd2cjd3d0schedule">
-                              <div className="alfwschedule">
-                                <div className="alame7schedule">
-                                  <span className="h3euh4chd2schedule">5:00 PM - 6:45 PM</span>
-                                </div>
-                                <div className="alame7schedule"></div>
-                              </div>
-                            </div>
-
-                            <div className="c5iztctatbtdsempchedule">
-                              <div className="b0tctatbempschedule"></div>
-                            </div>
-                            
-                            <input type="radio" className="aoapjsjuschedule-input"/>
-
-                          </label>
-
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="kirckgi1pmpnu9uac0schedule">
-                      <button className="cyaqc5e7qqqsschedule">
-                        <span className="bbcvschedule">
-                          <span className="bdeuh4chschedule">Schedule</span>
-                        </span>
-                      </button>
-                      
-                      <div className="daemschedule"></div>
-                      
-                      <button className="cyaqc5e7qsschedule">
-                        <span className="bbcvschedule">
-                          <span className="bdeuh4chschedule">Cancel</span>
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-
-                </div>
-              </div>
-            </div>
-          </div>
-          <div style={{width: "1px", height: "0px", padding: "0px", overflow: "hidden", position: "fixed", top: "1px", left: "1px"}}></div>
         </div>
       }
     </>

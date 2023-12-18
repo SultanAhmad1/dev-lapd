@@ -13,6 +13,9 @@ import DeliveryModal from './components/modals/DeliveryModal'
 import AvailableStoresShow from './components/modals/AvailableStoresShow'
 import moment from 'moment/moment'
 import { BRAND_GUID, PARTNER_ID, axiosPrivate } from './global/Axios'
+import StoreClosedModal from './components/modals/StoreClosedModal'
+import { setLocalStorage } from './global/Store'
+import Loader from './components/modals/Loader'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -23,6 +26,7 @@ const inter = Inter({ subsets: ['latin'] })
 
 export default function RootLayout({ children }) 
 {
+  const [loader, setLoader] = useState(true)
   // Header Bar buttons to be displayed.
   const [brandlogo, setBrandlogo] = useState("../gallery/uber-eat.svg")
   const [headerUserBtnDisplay, setHeaderUserBtnDisplay] = useState(true)
@@ -54,7 +58,10 @@ export default function RootLayout({ children })
   const [street1, setStreet1] = useState("")
   const [street2, setStreet2] = useState("")
   const [deliverymatrix, setDeliverymatrix] = useState(null)
+  const [totalOrderAmountValue, settotalOrderAmountValue] = useState(0)
 
+  // Boolean States
+  const [isTimeToClosed, setIsTimeToClosed] = useState(false)
   const [atfirstload, setAtfirstload] = useState(false)
 
   const [isdeliverybtnclicked, setIsdeliverybtnclicked] = useState(false);
@@ -62,10 +69,8 @@ export default function RootLayout({ children })
   const [iscartfull, setIscartfull] = useState(true)
 
   const [iscartitemdottedbtnclicked, setIscartitemdottedbtnclicked] = useState(false)
-
   const [isitemclicked, setIsitemclicked] = useState(false)
   const [isquickviewclicked, setIsquickviewclicked] = useState(false)
-
   const [ischeckoutclicked, setIscheckoutclicked] = useState(false)
 
   // Button states
@@ -81,9 +86,12 @@ export default function RootLayout({ children })
 
   const [cartdata, setCartdata] = useState([])
 
-  const fetchMenu = async () => {
-    try {
+  const fetchMenu = async (storeID) => 
+  {
+    try 
+    {
       const data = {
+        location:storeID,
         brand: BRAND_GUID,
         partner: PARTNER_ID
       }
@@ -94,13 +102,17 @@ export default function RootLayout({ children })
       setMenu(convertToJSobj)
       
       const getFilterDataFromObj = JSON.parse(window.localStorage.getItem('filter'))
+      if(getFilterDataFromObj === null)
+      {
+        setLocalStorage('filter',convertToJSobj.filters[0])
+      }
       setSelectedFilter(getFilterDataFromObj === null ? convertToJSobj.filters[0] : getFilterDataFromObj)
       setFilters(convertToJSobj.filters)
       setNavigationcategories(convertToJSobj.categories)
       setNavmobileindex(convertToJSobj.categories[0].id)
 
       const getDayInformation = convertToJSobj.menus[0].service_availability?.find((dayinformation) => dayinformation.day_of_week === moment().format('dddd').toLowerCase())
-      console.log("Getting the day information:", getDayInformation);
+      // console.log("Getting the day information:", getDayInformation);
       setStoretodaydayname(moment().format('dddd'))
       setStoretodayopeningtime(getDayInformation.time_periods[0].start_time)
       setStoretodayclosingtime(getDayInformation.time_periods[0].end_time)
@@ -111,22 +123,6 @@ export default function RootLayout({ children })
       setIsmenuavailable(false)
     }
   };
-
-  let options = '';
-
-  for(let i = 1; i < 100; i++)
-  {
-      options += `<option value${i}" className="co">${i}</option>`
-  }
-
-  useEffect(() => 
-  {
-    let qtySelect = document.querySelectorAll(`.qty-select`)  
-    for(let i = 0; i < qtySelect.length; i++)
-    {
-      qtySelect[i].innerHTML = options
-    }
-  }, [isitemclicked,isquickviewclicked,iscartbtnclicked])
 
   const handleItemClicked = () =>
   {
@@ -163,25 +159,39 @@ export default function RootLayout({ children })
   
   useEffect(() => 
   {
+    const url = new URL(window.location.href)
+    var pathnameArray = url.pathname.split("/").filter(function(segment) {
+      return segment !== ""; // Filter out empty segments
+    });
+
     const dayNumber = moment().day();
 
     // Get the current day name
     const dayName = moment().format('dddd');
 
-    console.log("Day Name", dayName, "Day number", dayNumber);
     setDayname(dayName)
     setDaynumber(dayNumber)
-    fetchMenu()
+    
     const getSelectStore = window.localStorage.getItem('user_selected_store')
     if(getSelectStore === null)
     {
-      setAtfirstload(true)
+      if(pathnameArray[0] === 'track-order' || pathnameArray[0] === 'review-order')
+      {
+        setAtfirstload(false)  
+        setHeaderCartBtnDisplay(false)
+        setHeaderPostcodeBtnDisplay(false)
+      }
+      else
+      {
+        setAtfirstload(true)
+      }
     }
     else
     {
       setPostcode(JSON.parse(window.localStorage.getItem('user_valid_postcode')))
       const parseToJSobj = JSON.parse(getSelectStore)
-      setStoreGUID(parseToJSobj.display_id)
+      fetchMenu((parseToJSobj === null) ? storeGUID : parseToJSobj.display_id)
+      setStoreGUID((parseToJSobj === null) ? storeGUID : parseToJSobj.display_id)
       setStoreName(parseToJSobj.store)
 
       const address = JSON.parse(window.localStorage.getItem('address'))
@@ -207,15 +217,28 @@ export default function RootLayout({ children })
       const cartDataFromLocalStorage = JSON.parse(window.localStorage.getItem('cart'))
       setCartdata((cartDataFromLocalStorage === null) ? [] : cartDataFromLocalStorage)
     }
-  }, []);
 
-  console.log("Cart Data:", cartdata);
+    // Set a timeout to clear localStorage after 20 minutes (20 * 60 * 1000 milliseconds)
+    const timeoutId = setTimeout(() => {
+      // Clear all items in localStorage
+      localStorage.clear();
+      window.location.reload()
+    }, 30 * 60 * 1000);
+
+    setLoader(false)
+    // Clear the timeout if the component is unmounted before 20 minutes
+    return () => clearTimeout(timeoutId);
+  }, []);
+  
   return (
     <html lang="en">
       <HeadMetaData />
       <body className="body-tag">
         <HomeContext.Provider 
           value={{
+            totalOrderAmountValue,
+            settotalOrderAmountValue,
+            setIsTimeToClosed,
             selectedFilter,
             setSelectedFilter,
             filters,
@@ -231,6 +254,7 @@ export default function RootLayout({ children })
             storetodaydayname,
             storetodayopeningtime,
             storetodayclosingtime,
+            setMenu,
             setStoreGUID,
             setStoreName,
             setStoretodaydayname,
@@ -286,13 +310,14 @@ export default function RootLayout({ children })
           {atfirstload && <AtLoadModalShow />}
           {iscartbtnclicked && <Cart />}
           {isdeliverybtnclicked && <DeliveryModal />}
-          {isgobtnclicked && <AvailableStoresShow />}
+          {/* {isgobtnclicked && <AvailableStoresShow />} */}
+          {isTimeToClosed && <StoreClosedModal />}
           <Footer />
+          {/* <span className='loader'></span> */}
+          <Loader loader={loader}/>
         </HomeContext.Provider>
+   
       </body>
-      {/* <div>
-        <div className="loader"></div>
-      </div> */}
     </html>
   )
 }
