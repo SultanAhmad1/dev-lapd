@@ -345,7 +345,7 @@ function TrackOrder({params})
                                                             </div>
 
                                                             <div className="bobpbqbrb1checkout">
-                                                                <span className="">+{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(trackorders?.service_charge,2)}</span>
+                                                                <span className="">{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(trackorders?.service_charge,2)}</span>
                                                             </div>
                                                         </li>
 
@@ -355,7 +355,7 @@ function TrackOrder({params})
                                                             </div>
 
                                                             <div className="bobpbqbrb1checkout">
-                                                                <span className="">-{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(discountamount, 2)}</span>
+                                                                <span className="">({getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(discountamount, 2)})</span>
                                                             </div>
                                                         </li>
 
@@ -367,7 +367,7 @@ function TrackOrder({params})
                                                             </div>
 
                                                             <div className="bobpbqbrb1checkout">
-                                                                <span className="">+{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(trackorders?.delivery_charge,2)}</span>
+                                                                <span className="">{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(trackorders?.delivery_charge,2)}</span>
                                                             </div>
                                                         </li>
                                                     </ul>
@@ -410,7 +410,8 @@ function TrackOrder({params})
                                                                 <span className="chd2cjd3b1mytrackorder-desk">Store</span>
                                                                 <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3mytrackorder-desk">
                                                                     <span style={{ fontFamily: "UberMoveText", color: "#545454" }}>
-                                                                        {(brand !== null) && brand?.name} {(location !== null) && location?.name}
+                                                                        {/* {(brand !== null) && brand?.name} {(location !== null) && location?.name} */}
+                                                                        {(location !== null) && location?.name}
                                                                     </span>
                                                                 </p>
                                                             </div>

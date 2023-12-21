@@ -408,6 +408,7 @@ function productDetails({params})
     useEffect(() => {
         setBrandlogo("/gallery/uber-eat.svg")
         filterItem()
+
       return () => {
         setBrandlogo("../gallery/uber-eat.svg")
       }
@@ -1735,7 +1736,8 @@ function productDetails({params})
 
     const handleMobileModifierToggle = (modifierId) =>
     {
-        // console.log("Modifier ID:",modifierId);
+        
+        console.log("Modifier ID:",modifierId);
         const updateModifierToggle = {
             ...singleitem,
             modifier_group: singleitem?.modifier_group?.map((modifierToggle) =>
@@ -2330,164 +2332,6 @@ function productDetails({params})
                     </div>
                 </div>
                 {/* Items bough together */}
-                <div className="bz">
-                    <ul className="items-ul">
-                        <li className="item-lists">
-                            <div className="item-title">
-                                <h3 className="item-title-h3">Items bought together</h3>
-                            </div>
-                            <div className="item-list-empty-div"></div>
-
-                            <ul className="items-list-nested-ul">
-                                <li className="items-list-nested-list" onClick={() => setIsitemclicked(true)}>
-                                    <div className="items-nested-div">
-                                        <div className="items-nested-div-one">
-                                        <div className="item-detail-style">
-                                            <div className="item-detail">
-                                                <div className="item-title">
-                                                    <span>Banoffee Waffle</span>
-                                                </div>
-                                                
-                                                <div className="item-price">
-                                                <span className="item-price-span">£3.45</span>
-                                                </div>
-
-                                                <div className="item-description-style">
-                                                <div className="item-description">
-                                                    <span className="item-description-span">
-                                                    The classic dynamic duo, slices of fresh banana and toffee fudge sauce, finished with a sprinkle of chocolate curls.
-                                                    </span>
-                                                </div>
-                                                </div>
-
-                                            </div>
-
-                                            <div className="item-img-style">
-                                            <div className="lazyload-wrapper">
-                                                <img className="item-img" src="https://tb-static.uber.com/prod/image-proc/processed_images/3bef7aecf15103ae8c8a02cf68277fc8/859baff1d76042a45e319d1de80aec7a.jpeg"></img>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        {/* <div className="item-review">
-                                            <a className="quick-review-btn" onClick={handleQuickViewClicked}>Quick view</a>
-                                        </div> */}
-                                        </div>
-                                    </div>
-                                </li>
-
-                                <li className="items-list-nested-list" onClick={() => setIsitemclicked(true)}>
-                                    <div className="items-nested-div">
-                                        <div className="items-nested-div-one">
-                                        <div className="item-detail-style">
-                                            <div className="item-detail">
-                                                <div className="item-title">
-                                                    <span>Banoffee Waffle</span>
-                                                </div>
-                                                
-                                                <div className="item-price">
-                                                <span className="item-price-span">£3.45</span>
-                                                </div>
-
-                                                <div className="item-description-style">
-                                                <div className="item-description">
-                                                    <span className="item-description-span">
-                                                    The classic dynamic duo, slices of fresh banana and toffee fudge sauce, finished with a sprinkle of chocolate curls.
-                                                    </span>
-                                                </div>
-                                                </div>
-
-                                            </div>
-
-                                            <div className="item-img-style">
-                                            <div className="lazyload-wrapper">
-                                                <img className="item-img" src="https://tb-static.uber.com/prod/image-proc/processed_images/3bef7aecf15103ae8c8a02cf68277fc8/859baff1d76042a45e319d1de80aec7a.jpeg"></img>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        {/* <div className="item-review">
-                                            <a className="quick-review-btn" onClick={handleQuickViewClicked}>Quick view</a>
-                                        </div> */}
-                                        </div>
-                                    </div>
-                                </li>
-
-                                <li className="items-list-nested-list" onClick={() => setIsitemclicked(true)}>
-                                    <div className="items-nested-div">
-                                        <div className="items-nested-div-one">
-                                        <div className="item-detail-style">
-                                            <div className="item-detail">
-                                                <div className="item-title">
-                                                    <span>Banoffee Waffle</span>
-                                                </div>
-                                                
-                                                <div className="item-price">
-                                                <span className="item-price-span">£3.45</span>
-                                                </div>
-
-                                                <div className="item-description-style">
-                                                <div className="item-description">
-                                                    <span className="item-description-span">
-                                                    The classic dynamic duo, slices of fresh banana and toffee fudge sauce, finished with a sprinkle of chocolate curls.
-                                                    </span>
-                                                </div>
-                                                </div>
-
-                                            </div>
-
-                                            <div className="item-img-style">
-                                            <div className="lazyload-wrapper">
-                                                <img className="item-img" src="https://tb-static.uber.com/prod/image-proc/processed_images/3bef7aecf15103ae8c8a02cf68277fc8/859baff1d76042a45e319d1de80aec7a.jpeg"></img>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        {/* <div className="item-review">
-                                            <a className="quick-review-btn" onClick={handleQuickViewClicked}>Quick view</a>
-                                        </div> */}
-                                        </div>
-                                    </div>
-                                </li>
-
-                                <li className="items-list-nested-list" onClick={() => setIsitemclicked(true)}>
-                                    <div className="items-nested-div">
-                                        <div className="items-nested-div-one">
-                                        <div className="item-detail-style">
-                                            <div className="item-detail">
-                                                <div className="item-title">
-                                                    <span>Banoffee Waffle</span>
-                                                </div>
-                                                
-                                                <div className="item-price">
-                                                <span className="item-price-span">£3.45</span>
-                                                </div>
-
-                                                <div className="item-description-style">
-                                                <div className="item-description">
-                                                    <span className="item-description-span">
-                                                    The classic dynamic duo, slices of fresh banana and toffee fudge sauce, finished with a sprinkle of chocolate curls.
-                                                    </span>
-                                                </div>
-                                                </div>
-
-                                            </div>
-
-                                            <div className="item-img-style">
-                                            <div className="lazyload-wrapper">
-                                                <img className="item-img" src="https://tb-static.uber.com/prod/image-proc/processed_images/3bef7aecf15103ae8c8a02cf68277fc8/859baff1d76042a45e319d1de80aec7a.jpeg"></img>
-                                            </div>
-                                            </div>
-                                        </div>
-                                        {/* <div className="item-review">
-                                            <a className="quick-review-btn" onClick={handleQuickViewClicked}>Quick view</a>
-                                        </div> */}
-                                        </div>
-                                    </div>
-                                </li>
-                            </ul>
-                        </li>
-                    </ul>
-                </div>
-                <div className="da je"></div>
-                <div className="e5 e6"></div>
             </div>
 
             {/* Mobile Responsive */}
@@ -2570,7 +2414,10 @@ function productDetails({params})
                                                                                 </div>
                                                                             </div>
                                                                         </div>
-                                                                        <div>Choosed: {(parseInt(modifier?.selected_item_name?.length) > parseInt(20) ? modifier?.selected_item_name?.substring(0,20)+"..." : modifier?.selected_item_name)}</div>
+                                                                        {
+                                                                            (! modifier?.is_toggle_active) &&
+                                                                            <div>{(parseInt(modifier?.selected_item_name?.length) > parseInt(20) ? modifier?.selected_item_name?.substring(0,20)+"..." : modifier?.selected_item_name)}</div>
+                                                                        }
                                                                     </div>
 
                                                                     <div className="single-product-svg-div accordion">
@@ -2594,7 +2441,7 @@ function productDetails({params})
                     
                                                             {/* Listed Data */}
                                                             {
-                                                                <div className={`g5single-product ${modifier?.is_toggle_active && "show"}`}>
+                                                                <div className={`g5single-product ${modifier?.is_toggle_active ? "show" : "fade"}`}>
                                                                     
                                                                     {
                                                                         modifier?.modifier_secondary_items?.map((mobileSecondItems, index) =>
@@ -2660,7 +2507,16 @@ function productDetails({params})
                                                                                     </div>
                                                                                 </div>
                                                                             </div>
-                                                                            <div>Regular - Half - 7" Fresh Waffle</div>
+                                                                            {
+                                                                                (! modifier?.is_toggle_active) &&
+                                                                                modifier?.modifier_secondary_items?.map((displaySelectedItems, index) =>
+                                                                                {
+                                                                                    return(
+                                                                                        (displaySelectedItems?.is_item_select) &&
+                                                                                        <div key={index}>{(parseInt(displaySelectedItems?.title?.length) > parseInt(20) ? displaySelectedItems?.title?.substring(0,20)+"..." : displaySelectedItems?.title)}</div>
+                                                                                    )
+                                                                                })
+                                                                            }
                                                                         </div>
                                                                     <div className="single-product-svg-div accordion" onClick={() => setIsaccordianclicked(true)}>
                                                                         <div className="single-product-svg-div-one">
@@ -2681,7 +2537,7 @@ function productDetails({params})
                         
                                                             {/* Listed Data */}
                                                             {
-                                                                <div className={`g5single-product ${modifier?.is_toggle_active && "show"}`}>
+                                                                <div className={`g5single-product ${modifier?.is_toggle_active ? "show" : "fade"}`}>
                                                                     
                                                                     {
                                                                         modifier?.modifier_secondary_items?.map((mobileSecondItems, index) =>
@@ -2759,6 +2615,16 @@ function productDetails({params})
                                                                                 </div>
                                                                             </div>
                                                                         </div>
+                                                                        {
+                                                                            (! modifier?.is_toggle_active) &&
+                                                                            modifier?.modifier_secondary_items?.map((displaySelectedItems, index) =>
+                                                                            {
+                                                                                return(
+                                                                                    (parseInt(displaySelectedItems?.counter) > parseInt(0)) &&
+                                                                                    <div key={index}>{(parseInt(displaySelectedItems?.title?.length) > parseInt(20) ? displaySelectedItems?.title?.substring(0,20)+"..." : displaySelectedItems?.title)}</div>
+                                                                                )
+                                                                            })
+                                                                        }
                                                                     </div>
                                                                     <div className="single-product-svg-div accordion">
                                                                         <div className="single-product-svg-div-one">
@@ -2780,7 +2646,7 @@ function productDetails({params})
                     
                                                             {/* Listed Data */}
                                                             {
-                                                                <div className={`g5single-product ${modifier?.is_toggle_active && "show"}`}>
+                                                                <div className={`g5single-product ${modifier?.is_toggle_active ? "show" : "fade"}`}>
                                                                     {
                                                                     modifier?.modifier_secondary_items?.map((mobileSecondItems, index) =>
                                                                     {
@@ -2935,7 +2801,7 @@ function productDetails({params})
                                                                                 return(
                                                                                     (secondItemModifier?.select_single_option === 1 && (secondItemModifier?.min_permitted === 1 && secondItemModifier?.max_permitted === 1)) ? 
 
-                                                                                        <li key={index}>
+                                                                                        <li key={index} className='mb-10'>
                                                                                             <div className="k5modifier-modal-item">
                                                                                                 <div>
                                                                                                     <hr className="edipiqgdmodifier-hr"></hr>
@@ -2951,6 +2817,16 @@ function productDetails({params})
                                                                                                                     </div>
                                                                                                                 </div>
                                                                                                             </div>
+                                                                                                            {
+                                                                                                                (! secondItemModifier?.is_second_item_modifier_clicked) &&
+                                                                                                                secondItemModifier?.secondary_items_modifier_items?.map((displaySelectedItem, index) =>
+                                                                                                                {
+                                                                                                                    return(
+                                                                                                                        (displaySelectedItem?.is_item_select) &&
+                                                                                                                        <div key={index}>{(parseInt(displaySelectedItem?.title?.length) > parseInt(20) ? displaySelectedItem?.title?.substring(0,20)+"..." : displaySelectedItem?.title)}</div>
+                                                                                                                    )
+                                                                                                                })
+                                                                                                            }
                                                                                                         </div>
                                 
                                                                                                         <div className="single-product-svg-div accordion">
@@ -2972,7 +2848,7 @@ function productDetails({params})
                                                                                                 </div>
                                                                                                 
                                                                                                 {
-                                                                                                    <div className={`iwmodifier-data ${secondItemModifier?.is_second_item_modifier_clicked && "show"}`}>
+                                                                                                    <div className={`iwmodifier-data ${secondItemModifier?.is_second_item_modifier_clicked ? "show" : "fade"}`}>
                                                                                                         {
                                                                                                             secondItemModifier?.secondary_items_modifier_items?.map((item, index) =>
                                                                                                             {
@@ -3009,7 +2885,7 @@ function productDetails({params})
 
                                                                                     :
                                                                                     (secondItemModifier?.select_single_option === 1 && (secondItemModifier?.min_permitted === 0 && secondItemModifier?.max_permitted >= 1)) ? 
-                                                                                        <li key={index}>
+                                                                                        <li key={index} className='mb-10'>
                                                                                             <div className="k5modifier-modal-item">
                                                                                                 <div>
                                                                                                     <hr className="edipiqgdmodifier-hr"></hr>
@@ -3025,6 +2901,16 @@ function productDetails({params})
                                                                                                                     </div>
                                                                                                                 </div>
                                                                                                             </div>
+                                                                                                            {
+                                                                                                                (! secondItemModifier?.is_second_item_modifier_clicked) &&
+                                                                                                                secondItemModifier?.secondary_items_modifier_items?.map((dispayItemCounter, index) =>
+                                                                                                                {
+                                                                                                                    return(
+                                                                                                                        (dispayItemCounter?.is_item_select) &&
+                                                                                                                        <div key={index}>{(parseInt(dispayItemCounter?.title?.length) > parseInt(20) ? dispayItemCounter?.title?.substring(0,20)+"..." : dispayItemCounter?.title)}</div>
+                                                                                                                    )
+                                                                                                                })
+                                                                                                            }
                                                                                                         </div>
 
                                                                                                         <div className="single-product-svg-div accordion">
@@ -3046,7 +2932,7 @@ function productDetails({params})
                                                                                                 </div>
 
                                                                                                 {
-                                                                                                    <div className={`iwmodifier-data ${secondItemModifier?.is_second_item_modifier_clicked && "show"}`}>
+                                                                                                    <div className={`iwmodifier-data ${secondItemModifier?.is_second_item_modifier_clicked ? "show" : "fade"}`}>
                                                                                                         {
                                                                                                             secondItemModifier?.secondary_items_modifier_items?.map((item, index) =>
                                                                                                             {
@@ -3107,7 +2993,7 @@ function productDetails({params})
                                                                                             </div>
                                                                                         </li>
                                                                                     :
-                                                                                        <li key={index}>
+                                                                                        <li key={index} className='mb-10'>
                                                                                             <div>
                                                                                                 <div>
                                                                                                     <hr className="product_hr"></hr>
@@ -3122,6 +3008,16 @@ function productDetails({params})
                                                                                                                         </div>
                                                                                                                     </div>
                                                                                                                 </div>
+                                                                                                                {
+                                                                                                                    (! secondItemModifier?.is_second_item_modifier_clicked) &&
+                                                                                                                    secondItemModifier?.secondary_items_modifier_items?.map((dispayItemCounter, index) =>
+                                                                                                                    {
+                                                                                                                        return(
+                                                                                                                            parseInt(dispayItemCounter?.counter) > parseInt(0) &&
+                                                                                                                            <div key={index}>{(parseInt(dispayItemCounter?.title?.length) > parseInt(20) ? dispayItemCounter?.title?.substring(0,20)+"..." : dispayItemCounter?.title)}</div>
+                                                                                                                        )
+                                                                                                                    })
+                                                                                                                }
                                                                                                             </div>
 
                                                                                                             <div className="single-product-svg-div accordion">
@@ -3143,7 +3039,7 @@ function productDetails({params})
                                                                                                 </div>
                                                                                                 
                                                                                                 {
-                                                                                                    <div className={`iwmodifier-data ${secondItemModifier?.is_second_item_modifier_clicked && "show"}`}>
+                                                                                                    <div className={`iwmodifier-data ${secondItemModifier?.is_second_item_modifier_clicked ? "show" : "fade"}`}>
 
                                                                                                         {
                                                                                                             secondItemModifier?.secondary_items_modifier_items?.map((item,index) => 
@@ -3216,7 +3112,7 @@ function productDetails({params})
 
                                                                     <div className="fqdvb5afprmodifier-modal">
                                                                         <button className="gacxchcjc9modifier-modal-save-btn" onClick={() => handleSaveBtn(selectedModifierId, selectedModifierItemId)}>
-                                                                            Save
+                                                                            Update
                                                                             <span className="chgacjcxcypwc5modifier-modal-save-span">&nbsp;•&nbsp;</span>
                                                                            
                                                                             {getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(selectedModifierItemPrice,2)}

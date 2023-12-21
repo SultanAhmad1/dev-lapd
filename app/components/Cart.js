@@ -58,16 +58,15 @@ export default function Cart()
             console.log("Amount Discount Success data:", response);
             
             const amountDiscounts = response?.data?.data?.applyAmountDiscount
-
             let workingIndex = 0
             if(parseInt(amountDiscounts.length) > parseInt(0))
             {
                 // Stage - I get the Index.
                 for (let index = 0; index < parseInt(amountDiscounts.length); index++) 
                 {
-                    if(parseFloat(subTotalArgument) >= parseFloat(amountDiscounts[index]?.need_to_spend))
+                    if(parseInt(subTotalArgument) >= parseInt(amountDiscounts[index]?.need_to_spend))
                     {
-                        if(parseFloat(subTotalArgument) >= parseFloat(amountDiscounts[++index]?.need_to_spend))
+                        if(parseInt(subTotalArgument) >= parseInt(amountDiscounts[++index]?.need_to_spend))
                         {
                             workingIndex = ++index;
                             break;
@@ -86,7 +85,7 @@ export default function Cart()
                     workingIndex -= 1
                 }
              
-                if(parseFloat(subTotalArgument) >= parseFloat(amountDiscounts[workingIndex].need_to_spend))
+                if(parseInt(subTotalArgument) >= parseInt(amountDiscounts[workingIndex].need_to_spend))
                 {
                     setLocalStorage('order_amount_number', amountDiscounts[workingIndex].amount_guid)
                     if(amountDiscounts[workingIndex].discount_type === "P")
@@ -103,7 +102,7 @@ export default function Cart()
                 }
                 else
                 {
-                    const getAmountDiscountDifference = (parseFloat(subTotalArgument) >= parseFloat(amountDiscounts[workingIndex].need_to_spend)) ? parseFloat(subTotalArgument) - parseFloat(amountDiscounts[workingIndex].need_to_spend) : parseFloat(amountDiscounts[workingIndex].need_to_spend) - parseFloat(subTotalArgument)
+                    const getAmountDiscountDifference = (parseInt(subTotalArgument) >= parseInt(amountDiscounts[workingIndex].need_to_spend)) ? parseFloat(subTotalArgument) - parseFloat(amountDiscounts[workingIndex].need_to_spend) : parseFloat(amountDiscounts[workingIndex].need_to_spend) - parseFloat(subTotalArgument)
                     const amountText = <span>Spend <strong>{getCountryCurrencySymbol()}{parseFloat(getAmountDiscountDifference).toFixed(2)}</strong> more to get <strong>{(amountDiscounts[workingIndex].discount_type === "M") && getCountryCurrencySymbol()} {amountDiscounts[workingIndex].value} {(amountDiscounts[workingIndex].discount_type === "P") && "%"} off</strong></span>
                     setAmountDiscountMessage(amountText)
                     setDiscountValue(0)
@@ -186,7 +185,7 @@ export default function Cart()
                 setDeliverymessage(textMessage)
                 const fee = getAmountConvertToFloatWithFixed(deliverymatrix?.above_order_value, 2)
                 setDeliveryfee(fee)
-                setIsordersubtotallessthanordervalue(!isordersubtotallessthanordervalue)
+                setIsordersubtotallessthanordervalue(false)
             }
         }
         else
@@ -259,7 +258,26 @@ export default function Cart()
         settotalOrderAmountValue(getAmountConvertToFloatWithFixed((parseFloat(subtotalOrderAmount) + parseFloat(deliveryfee)) - parseFloat(discountvalue),2))
     }, [subtotalOrderAmount,deliveryfee,discountvalue])
     
-    console.log("Selected Filter",selectedFilter);
+
+    const handleEditItem = (findByIndex,storeName, categorySlug, itemSlug) =>
+    {
+        setLocalStorage("set_index",findByIndex)
+        const updateCartModal = cartdata?.map((cart, index) =>
+        {
+            if(findByIndex === index)
+            {
+                return{
+                    ...cart,
+                    is_cart_modal_clicked: false
+                }
+            }
+            return cart
+        })
+        setCartdata(updateCartModal)
+        setIscartbtnclicked(false)
+        route.push(`${storeName}/${categorySlug}/${itemSlug}/edit`)
+    }
+
     return (
         <>
             <div className="cart-level-one-div">
@@ -364,7 +382,7 @@ export default function Cart()
                                                                     {
                                                                         cart?.is_cart_modal_clicked && 
                                                                         <div className="cart-item-clear-or-add-modal">
-                                                                            <Link className="cart-add-item-btn" href={`${storeName}/${cart?.category_slug}/${cart?.slug}`}>
+                                                                            <a className="cart-add-item-btn" onClick={() => handleEditItem(index,storeName, cart?.category_slug, cart?.slug)}>
                                                                                 <div className="cart-add-item-svg-div">
                                                                                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" className="cart-add-item-svg">
                                                                                         <path d="m46.84 5.32-4.16-4.16a4 4 0 0 0-5.58 0C1.7 36.55 3.65 34.52 3.53 34.88S3 36.78 0 46.72A1 1 0 0 0 1 48c.21 0 12.08-3.45 12.39-3.68s-2.75 2.79 33.45-33.42a4 4 0 0 0 0-5.58zM35 6.05 42 13l-1.37 1.37-6.97-6.95zM10.45 38.91l-1-.34-.34-1L35 11.61 36.39 13zm21.8-30.08 1.36 1.37L7.79 36l-1.71-1zM3.32 42.67a7.68 7.68 0 0 1 2 2l-2.85.84zm4 1.42a9.88 9.88 0 0 0-3.43-3.43l1.16-3.94 2 1.23c.88 2.62.38 2.08 2.94 2.94l1.23 2zM13 41.92l-1-1.71 25.8-25.82 1.37 1.36zM45.43 9.49l-2.07 2.07-6.92-6.92 2.07-2.07a1.94 1.94 0 0 1 2.75 0l4.17 4.17a1.94 1.94 0 0 1 0 2.75z"/>
@@ -373,7 +391,7 @@ export default function Cart()
                                                                                 <div className="cart-item-btn-text">
                                                                                     Edit item
                                                                                 </div>
-                                                                            </Link>
+                                                                            </a>
                                                                         
                                                                             <li className="cart-remove-item-list" onClick={() => removeItem(index)}>
                                                                                 <div className="cart-remove-item-svg-div">
@@ -477,7 +495,7 @@ export default function Cart()
                                                     </div>
                                                     
                                                     <div className="bobpbqbrb1checkout">
-                                                        <span className="">-{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(discountvalue,2)}</span>
+                                                        <span className="">({getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(discountvalue,2)})</span>
                                                     </div>
                                                 </li>
                                             
@@ -489,7 +507,7 @@ export default function Cart()
                                                     </div>
                                                     
                                                     <div className="bobpbqbrb1checkout">
-                                                        <span className="">+{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(deliveryfee,2)}</span>
+                                                        <span className="">{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(deliveryfee,2)}</span>
                                                     </div>
                                                 </li>
                                             </ul>

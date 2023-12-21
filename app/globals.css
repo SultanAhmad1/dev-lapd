@@ -65,14 +65,15 @@
 }
 
 .chcicwd3cz-time{
-  /* text-align: center;
+  text-align: center;
   -webkit-box-pack: center;
   justify-content: center;
       display: -webkit-box;
     display: -moz-box;
     display: -ms-flexbox;
     display: -webkit-flex;
-    display: flex; */
+    display: flex;
+  
   line-height: 20px;
   color: #545454;
   font-weight: normal;
@@ -3863,6 +3864,9 @@ input {
 
 .iwmodifier-data {
   padding: 16px 0px;
+}
+.mb-10{
+  margin-bottom: 10px;
 }
 
 .alakixc5modifier-data {
@@ -8369,7 +8373,7 @@ ul.track-steps {
 .loader-details {
   position: fixed;
   overflow: auto;
-  z-index: 4;
+  z-index: 10;
   height: 100vh;
   right: 0;
   left: 0;
@@ -8422,6 +8426,22 @@ ul.track-steps {
 
 
 @media screen and (max-width: 900px) {
+
+  .show{
+    display: block;
+    transition: all ease-in-out 0.4s;
+  }
+
+  .fade{
+    display: none;
+    transition: all ease-in-out 0.4s;
+  }
+
+  .deliver-to-body-content {
+    width: unset;
+    /*width: 100%;*/
+    /* padding: 24px; */
+  }
 
   .m3m4m5gim6payment-desk {
     /* grid-template-columns: 200px; */
@@ -8552,6 +8572,30 @@ ul.track-steps {
     display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
+  }
+
+  .c2c3c1afc4-delivery-type
+  {
+    padding: unset;
+    min-width: unset;
+    max-width: 600px;
+    margin: 0 auto;
+    box-sizing: 0 auto;
+  }
+
+  .chcicjckotalou-delivery-type
+  {
+    display: inline;
+  }
+
+  .chcicwd3cz-time
+  {
+    padding-left: 80px;
+  }
+
+  .cmakp3p4-delivery-type 
+  {
+    width: 374px;
   }
 
   .item-details {
@@ -9117,9 +9161,14 @@ ul.track-steps {
   }
 
   .show{
-    display: none;
+    display: block;
+    transition: all ease-in-out 0.4s;
   }
 
+  .fade{
+    display: none;
+    transition: all ease-in-out 0.4s;
+  }
   .alakg6bfsingle-product {
     -webkit-box-orient: horizontal;
     -webkit-box-direction: reverse;
@@ -9671,9 +9720,9 @@ ul.track-steps {
     margin-top: 0px;
   }
 
-  .iwmodifier-data {
+  /* .iwmodifier-data {
     display: block;
-  }
+  } */
 
   .hg {
     display: none;
