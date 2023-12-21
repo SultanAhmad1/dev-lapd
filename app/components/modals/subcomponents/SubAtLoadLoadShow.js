@@ -81,15 +81,6 @@ function SubAtLoadLoadShow({setLoader})
             setTimeout(() => {
                 setLoader(false)
             }, 1000);
-
-            // if the available store location is equal to one then click on handleLocationSelect 
-            // if the available store location is greater than the 1 then let the user select.
-            setTimeout(() => {
-                if(parseInt(response.data?.data?.availableStore.length) === parseInt(1))
-                {
-                    handleLocationSelect(response.data?.data?.availableStore[0]?.location_guid,response.data?.data?.availableStore[0]?.location_name, response.data?.data?.availableStore[0]?.telephone)
-                }
-            }, 2000);
            
         } catch (error) {
           setPostcodeerror(error?.response?.data?.postcode)
@@ -116,43 +107,43 @@ function SubAtLoadLoadShow({setLoader})
     }
 
     
-  const fetchMenu = async (storeGUID) => 
-  {
-    try 
+    const fetchMenu = async (storeGUID) => 
     {
-      const data = {
-        location:storeGUID,
-        brand: BRAND_GUID,
-        partner: PARTNER_ID
-      }
+        try 
+        {
+        const data = {
+            location:storeGUID,
+            brand: BRAND_GUID,
+            partner: PARTNER_ID
+        }
 
-      const response = await axiosPrivate.post(`/menu`, data);
-    //   console.log("Success repsonse:", JSON.parse(response.data?.data?.menu.menu_json_log));
-      const convertToJSobj = JSON.parse(response.data?.data?.menu.menu_json_log)
-      setMenu(convertToJSobj)
-      
-      const getFilterDataFromObj = JSON.parse(window.localStorage.getItem('filter'))
-      if(getFilterDataFromObj === null)
-      {
-        setLocalStorage('filter',convertToJSobj.filters[0])
-      }
-      setSelectedFilter(getFilterDataFromObj === null ? convertToJSobj.filters[0] : getFilterDataFromObj)
-      setFilters(convertToJSobj.filters)
-      setNavigationcategories(convertToJSobj.categories)
-      setNavmobileindex(convertToJSobj.categories[0].id)
+        const response = await axiosPrivate.post(`/menu`, data);
+        //   console.log("Success repsonse:", JSON.parse(response.data?.data?.menu.menu_json_log));
+        const convertToJSobj = JSON.parse(response.data?.data?.menu.menu_json_log)
+        setMenu(convertToJSobj)
+        
+        const getFilterDataFromObj = JSON.parse(window.localStorage.getItem('filter'))
+        if(getFilterDataFromObj === null)
+        {
+            setLocalStorage('filter',convertToJSobj.filters[0])
+        }
+        setSelectedFilter(getFilterDataFromObj === null ? convertToJSobj.filters[0] : getFilterDataFromObj)
+        setFilters(convertToJSobj.filters)
+        setNavigationcategories(convertToJSobj.categories)
+        setNavmobileindex(convertToJSobj.categories[0].id)
 
-      const getDayInformation = convertToJSobj.menus[0].service_availability?.find((dayinformation) => dayinformation.day_of_week === moment().format('dddd').toLowerCase())
-      // console.log("Getting the day information:", getDayInformation);
-      setStoretodaydayname(moment().format('dddd'))
-      setStoretodayopeningtime(getDayInformation.time_periods[0].start_time)
-      setStoretodayclosingtime(getDayInformation.time_periods[0].end_time)
-    } 
-    catch (error) 
-    {
-      console.error('Error fetching data:', error);
-      setIsmenuavailable(false)
-    }
-  };
+        const getDayInformation = convertToJSobj.menus[0].service_availability?.find((dayinformation) => dayinformation.day_of_week === moment().format('dddd').toLowerCase())
+        // console.log("Getting the day information:", getDayInformation);
+        setStoretodaydayname(moment().format('dddd'))
+        setStoretodayopeningtime(getDayInformation.time_periods[0].start_time)
+        setStoretodayclosingtime(getDayInformation.time_periods[0].end_time)
+        } 
+        catch (error) 
+        {
+        console.error('Error fetching data:', error);
+        setIsmenuavailable(false)
+        }
+    };
 
     const handleLocationSelect = (storeGUID,storeName, storeTelephone) =>
     {
@@ -181,6 +172,19 @@ function SubAtLoadLoadShow({setLoader})
         route.push("/")
     }
 
+
+    useEffect(() => {
+        // if the available store location is equal to one then click on handleLocationSelect 
+        // if the available store location is greater than the 1 then let the user select.
+
+        setTimeout(() => {
+            if(parseInt(availablestores.length) === parseInt(1))
+            {
+                handleLocationSelect(availablestores[0]?.location_guid,availablestores[0]?.location_name, availablestores[0]?.telephone)
+            }
+        }, 2000);
+    }, [availablestores])
+    
     return (
         <div className="modal-delivery-details">
             <div className="modal-delivery-details-level-one-div">

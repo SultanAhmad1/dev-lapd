@@ -149,13 +149,14 @@ function UserForm()
 
   const handleUserFirstName = (event) =>
   {
-    setFirstName(event.target.value)
+    
+    setFirstName(event.target.value.replace(/^\w/, (c) => c.toUpperCase()))
     setIsavefasterdetailsclicked(false)
   }
 
   const handleUserLastName = (event) =>
   {
-    setLastName(event.target.value)
+    setLastName(event.target.value.replace(/^\w/, (c) => c.toUpperCase()))
     setIsavefasterdetailsclicked(false)
   }
 
@@ -410,7 +411,7 @@ function UserForm()
         // delivery_estimate_time: moment(deliverytime, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
         delivery_fee: deliveryFeeLocalStorage
       }
-      // console.log("Data:", data);
+      console.log("Data:", data);
       const response = await axiosPrivate.post(`/store-customer-details`,data)  
       // console.log("Response success:", response);
       if(response?.data?.status === "success")
@@ -418,20 +419,28 @@ function UserForm()
         setLocalStorage('cart',[])
         setLocalStorage('order_amount_number',null)
         setCartdata([])
+        setLoader(false)
         route.push(`/payment/${response?.data?.data?.order?.external_order_id}`)
       }
     } 
     catch (error) 
     {
       console.log("Error:", error);
+      setTimeout(() => {
+        setLoader(false)
+      }, 2000);
     }
   }
 
   const handlePayNow = () =>
   {
+    setLoader(true)
     if(parseInt(doorhousename.length) === parseInt(0) || parseInt(email.length) === parseInt(0) || parseInt(phone.length) === parseInt(0) || parseInt(firstname.length) === parseInt(0) || parseInt(lastname.length) === parseInt(0))
     {
       setPayNowBottomError("Please check * (asterisk) mark field and fill them.")
+      setTimeout(() => {
+        setLoader(false)
+      }, 2000);
       return
     }
 
@@ -440,13 +449,16 @@ function UserForm()
     {
       setIsavefasterdetailsclicked(false)
       setPayNowBottomError("Kindly enter valid contact number!.")
+      setTimeout(() => {
+        setLoader(false)
+      }, 2000);
       return;
     }
     setPayNowBottomError("")
     storeCustomerDetail()
   }
 
-  console.log("Handle Payment total:", totalOrderAmountValue);
+  // console.log("Amount Discount",(JSON.parse(window.localStorage.getItem('order_amount_number')) === null) ? null : JSON.parse(window.localStorage.getItem('order_amount_number')),"Handle Payment total:", totalOrderAmountValue,"Cart data:", cartdata);
   return (
     <>
       <div className='e5ald0m1m2amc5checkout-desk'>

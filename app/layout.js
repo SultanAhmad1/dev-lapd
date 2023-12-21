@@ -164,6 +164,7 @@ export default function RootLayout({ children })
       return segment !== ""; // Filter out empty segments
     });
 
+    
     const dayNumber = moment().day();
 
     // Get the current day name
@@ -175,7 +176,8 @@ export default function RootLayout({ children })
     const getSelectStore = window.localStorage.getItem('user_selected_store')
     if(getSelectStore === null)
     {
-      if(pathnameArray[0] === 'track-order' || pathnameArray[0] === 'review-order')
+      console.log("Path name array:", pathnameArray);
+      if(pathnameArray[0] === 'track-order' || pathnameArray[0] === 'review-order' || pathnameArray[0] === 'payment' || pathnameArray[0] === 'place-order')
       {
         setAtfirstload(false)  
         setHeaderCartBtnDisplay(false)
@@ -184,6 +186,8 @@ export default function RootLayout({ children })
       else
       {
         setAtfirstload(true)
+        setHeaderCartBtnDisplay(true)
+        setHeaderPostcodeBtnDisplay(true)
       }
     }
     else
@@ -217,14 +221,13 @@ export default function RootLayout({ children })
       const cartDataFromLocalStorage = JSON.parse(window.localStorage.getItem('cart'))
       setCartdata((cartDataFromLocalStorage === null) ? [] : cartDataFromLocalStorage)
     }
-
     // Set a timeout to clear localStorage after 20 minutes (20 * 60 * 1000 milliseconds)
     const timeoutId = setTimeout(() => {
       // Clear all items in localStorage
       localStorage.clear();
-      window.location.reload()
+      window.location.reload(true)
+      
     }, 30 * 60 * 1000);
-
     setLoader(false)
     // Clear the timeout if the component is unmounted before 20 minutes
     return () => clearTimeout(timeoutId);

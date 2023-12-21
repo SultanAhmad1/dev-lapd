@@ -5,6 +5,7 @@ import { axiosPrivate } from '@/app/global/Axios';
 import HomeContext from '@/app/contexts/HomeContext';
 import { getAmountConvertToFloatWithFixed } from '@/app/global/Store';
 import { useRouter } from 'next/navigation';
+import Loader from '../modals/Loader';
 // import stripePromise from './stripe';
 
 const PaymentForm = ({orderId}) => 
@@ -196,6 +197,7 @@ const PaymentForm = ({orderId}) =>
           </div>
         </div>
       </div>
+      <Loader loader={loader} />
     </>
   )
 };
