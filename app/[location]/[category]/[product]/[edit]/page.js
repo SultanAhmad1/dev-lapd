@@ -42,8 +42,11 @@ function productEdit({params})
 
     // When component load first this useEffect will be used
   useEffect(() => {
-    const getIndex = window.localStorage.getItem('set_index')
-    const getCart = window.localStorage.getItem('cart')
+    // const getIndex = window.localStorage.getItem('set_index')
+    // const getCart = window.localStorage.getItem('cart')
+
+    const getIndex = window.sessionStorage.getItem('set_index')
+    const getCart = window.sessionStorage.getItem('cart')
 
     const parseCart = JSON.parse(getCart)
     const getFilterItem = parseCart?.find((cart,index) => index === JSON.parse(getIndex))
@@ -1300,7 +1303,9 @@ function productEdit({params})
       }
       else
       {
-        const removeIndex = window.localStorage.getItem('set_index')
+        // const removeIndex = window.localStorage.getItem('set_index')
+        const removeIndex = window.sessionStorage.getItem('set_index')
+        
         const filterCartFirst = cartdata?.filter((cart, index) => index !== JSON.parse(removeIndex))
         setCartdata(filterCartFirst)
 

@@ -43,7 +43,8 @@ function productDetails({params})
     const filterItem = async () => {
         try 
         {
-            const getStoreIDFromLocalStorage = JSON.parse(window.localStorage.getItem('user_selected_store'))
+            // const getStoreIDFromLocalStorage = JSON.parse(window.localStorage.getItem('user_selected_store'))
+            const getStoreIDFromLocalStorage = JSON.parse(window.sessionStorage.getItem('user_selected_store'))
             // console.log("Local storage:", getStoreIDFromLocalStorage);
             const data = {
                 location: (getStoreIDFromLocalStorage !== null) ? getStoreIDFromLocalStorage?.display_id: storeGUID,

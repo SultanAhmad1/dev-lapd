@@ -16,14 +16,14 @@ export default function Header()
                     <div className="header-div">
                         {
                             headerUserBtnDisplay &&
-                            <Link className="hamburger-button" href="/">
+                            <a className="hamburger-button" href="/">
                                 {/* <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" className="hamburger-svg">
                                     <path d="M19.167 3.333H.833v2.5h18.334v-2.5zm0 5.834H.833v2.5h18.334v-2.5zM.833 15h18.334v2.5H.833V15z"></path>
                                 </svg> */}
                                 <svg data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 16 16" className="hamburger-svg">
                                     <path d="M8 0a8 8 0 1 0 8 8 8 8 0 0 0-8-8zm0 15a7 7 0 0 1-5.19-2.32 2.71 2.71 0 0 1 1.7-1 13.11 13.11 0 0 0 1.29-.28 2.32 2.32 0 0 0 .94-.34 1.17 1.17 0 0 0-.27-.7 3.61 3.61 0 0 1-1.32-2.87A3.18 3.18 0 0 1 8 4.07a3.18 3.18 0 0 1 2.86 3.42 3.6 3.6 0 0 1-1.32 2.88 1.13 1.13 0 0 0-.27.69 2.68 2.68 0 0 0 .93.31 10.81 10.81 0 0 0 1.28.23 2.63 2.63 0 0 1 1.78 1A7 7 0 0 1 8 15z"/>
                                 </svg>
-                            </Link>
+                            </a>
                         }
                         <div className={`spacer _48`}></div>
                         <Link href="/">
