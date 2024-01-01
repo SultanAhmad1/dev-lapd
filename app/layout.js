@@ -14,7 +14,7 @@ import AvailableStoresShow from './components/modals/AvailableStoresShow'
 import moment from 'moment/moment'
 import { BRAND_GUID, PARTNER_ID, axiosPrivate } from './global/Axios'
 import StoreClosedModal from './components/modals/StoreClosedModal'
-import { setLocalStorage } from './global/Store'
+import { setLocalStorage, setSessionStorage } from './global/Store'
 import Loader from './components/modals/Loader'
 
 const inter = Inter({ subsets: ['latin'] })
@@ -101,10 +101,12 @@ export default function RootLayout({ children })
       const convertToJSobj = JSON.parse(response.data?.data?.menu.menu_json_log)
       setMenu(convertToJSobj)
       
-      const getFilterDataFromObj = JSON.parse(window.localStorage.getItem('filter'))
+      // const getFilterDataFromObj = JSON.parse(window.localStorage.getItem('filter'))
+      const getFilterDataFromObj = JSON.parse(window.sessionStorage.getItem('filter'))
       if(getFilterDataFromObj === null)
       {
-        setLocalStorage('filter',convertToJSobj.filters[0])
+        // setLocalStorage('filter',convertToJSobj.filters[0])
+        setSessionStorage('filter',convertToJSobj.filters[0])
       }
       setSelectedFilter(getFilterDataFromObj === null ? convertToJSobj.filters[0] : getFilterDataFromObj)
       setFilters(convertToJSobj.filters)
@@ -163,8 +165,8 @@ export default function RootLayout({ children })
     var pathnameArray = url.pathname.split("/").filter(function(segment) {
       return segment !== ""; // Filter out empty segments
     });
-
     
+   
     const dayNumber = moment().day();
 
     // Get the current day name
@@ -173,7 +175,8 @@ export default function RootLayout({ children })
     setDayname(dayName)
     setDaynumber(dayNumber)
     
-    const getSelectStore = window.localStorage.getItem('user_selected_store')
+    // const getSelectStore = window.localStorage.getItem('user_selected_store')
+    const getSelectStore = window.sessionStorage.getItem('user_selected_store')
     if(getSelectStore === null)
     {
       console.log("Path name array:", pathnameArray);
@@ -192,14 +195,19 @@ export default function RootLayout({ children })
     }
     else
     {
-      setPostcode(JSON.parse(window.localStorage.getItem('user_valid_postcode')))
+      // setPostcode(JSON.parse(window.localStorage.getItem('user_valid_postcode')))
+      setPostcode(JSON.parse(window.sessionStorage.getItem('user_valid_postcode')))
+
       const parseToJSobj = JSON.parse(getSelectStore)
       fetchMenu((parseToJSobj === null) ? storeGUID : parseToJSobj.display_id)
       setStoreGUID((parseToJSobj === null) ? storeGUID : parseToJSobj.display_id)
       setStoreName(parseToJSobj.store)
 
-      const address = JSON.parse(window.localStorage.getItem('address'))
-      const getDeliveryMatrix = JSON.parse(window.localStorage.getItem('delivery_matrix'))
+      // const address = JSON.parse(window.localStorage.getItem('address'))
+      // const getDeliveryMatrix = JSON.parse(window.localStorage.getItem('delivery_matrix'))
+
+      const address = JSON.parse(window.sessionStorage.getItem('address'))
+      const getDeliveryMatrix = JSON.parse(window.sessionStorage.getItem('delivery_matrix'))
 
       setDeliverymatrix(getDeliveryMatrix)
       setPostcodefororderamount(getDeliveryMatrix?.postcode)
@@ -218,13 +226,15 @@ export default function RootLayout({ children })
       }
 
       // setCart Data from local storage
-      const cartDataFromLocalStorage = JSON.parse(window.localStorage.getItem('cart'))
+      // const cartDataFromLocalStorage = JSON.parse(window.localStorage.getItem('cart'))
+      const cartDataFromLocalStorage = JSON.parse(window.sessionStorage.getItem('cart'))
+
       setCartdata((cartDataFromLocalStorage === null) ? [] : cartDataFromLocalStorage)
     }
     // Set a timeout to clear localStorage after 20 minutes (20 * 60 * 1000 milliseconds)
     const timeoutId = setTimeout(() => {
       // Clear all items in localStorage
-      localStorage.clear();
+      sessionStorage.clear();
       window.location.reload(true)
       
     }, 30 * 60 * 1000);
@@ -316,7 +326,6 @@ export default function RootLayout({ children })
           {/* {isgobtnclicked && <AvailableStoresShow />} */}
           {isTimeToClosed && <StoreClosedModal />}
           <Footer />
-          {/* <span className='loader'></span> */}
           <Loader loader={loader}/>
         </HomeContext.Provider>
    

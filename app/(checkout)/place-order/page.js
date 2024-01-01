@@ -3,7 +3,7 @@ import Loader from "@/app/components/modals/Loader";
 import PostcodeModal from "@/app/components/modals/PostcodeModal";
 import HomeContext from "@/app/contexts/HomeContext";
 import { BRAND_GUID, PARTNER_ID, axiosPrivate } from "@/app/global/Axios";
-import { getAmountConvertToFloatWithFixed, getCountryCurrencySymbol, setLocalStorage, validatePhoneNumber } from "@/app/global/Store";
+import { getAmountConvertToFloatWithFixed, getCountryCurrencySymbol, setLocalStorage, setSessionStorage, validatePhoneNumber } from "@/app/global/Store";
 import { listtime, round15, tConvert } from "@/app/global/Time";
 import moment from "moment";
 import Link from "next/link";
@@ -82,6 +82,8 @@ function UserForm()
   const [deliverytimeend, setDeliverytimeend] = useState("")
 
   const [deliverytime, setDeliveryTime] = useState("")
+
+  const [due, setDue] = useState("due")
   
   // Message
   const [Message, setMessage] = useState("")
@@ -163,6 +165,7 @@ function UserForm()
   const handleDeliveryTime = (event) =>
   {
     setDeliveryTime(event.target.value)
+    setDue("requested")
   }
   // Change Postcode and Address states
   const [ispostcodeeditclicked, setIspostcodeeditclicked] = useState(false)
@@ -200,7 +203,8 @@ function UserForm()
     // Get the current day name
     try 
     {
-      const placeOrderGetStoreGUID = JSON.parse(window.localStorage.getItem('user_selected_store'))
+      // const placeOrderGetStoreGUID = JSON.parse(window.localStorage.getItem('user_selected_store'))
+      const placeOrderGetStoreGUID = JSON.parse(window.sessionStorage.getItem('user_selected_store'))
       const data = {
         location_guid: (placeOrderGetStoreGUID === null) ? storeGUID : placeOrderGetStoreGUID?.display_id,
         brand_guid: BRAND_GUID,
@@ -303,7 +307,8 @@ function UserForm()
   }
 
   useEffect(() => {
-    const placeOrderLocalStorageTotal = JSON.parse(window.localStorage.getItem('total_order_value_storage'))
+    // const placeOrderLocalStorageTotal = JSON.parse(window.localStorage.getItem('total_order_value_storage'))
+    const placeOrderLocalStorageTotal = JSON.parse(window.sessionStorage.getItem('total_order_value_storage'))
     // console.log("Order value total:", getAmountConvertToFloatWithFixed(JSON.parse(placeOrderLocalStorageTotal),2));
     settotalOrderAmountValue(placeOrderLocalStorageTotal === null ? totalOrderAmountValue : getAmountConvertToFloatWithFixed(JSON.parse(placeOrderLocalStorageTotal),2))
 
@@ -374,11 +379,17 @@ function UserForm()
 
   const storeCustomerDetail = async () =>
   {
-    const subTotalOrderLocal = (JSON.parse(JSON.parse(window.localStorage.getItem('sub_order_total_local'))) === null) ? null : getAmountConvertToFloatWithFixed(JSON.parse(JSON.parse(window.localStorage.getItem('sub_order_total_local'))),2)
-    const localStorageTotal = (JSON.parse(window.localStorage.getItem('total_order_value_storage')) === null) ? null : JSON.parse(window.localStorage.getItem('total_order_value_storage'))
-    const orderAmountDiscountValue = (JSON.parse(window.localStorage.getItem('order_amount_number')) === null) ? null : JSON.parse(window.localStorage.getItem('order_amount_number'))
-    const orderFilter = JSON.parse(window.localStorage.getItem('filter'))
-    const deliveryFeeLocalStorage = (JSON.parse(window.localStorage.getItem('delivery_fee')) === null) ? null : getAmountConvertToFloatWithFixed(JSON.parse(window.localStorage.getItem('delivery_fee')),2)
+    // const subTotalOrderLocal = (JSON.parse(JSON.parse(window.localStorage.getItem('sub_order_total_local'))) === null) ? null : getAmountConvertToFloatWithFixed(JSON.parse(JSON.parse(window.localStorage.getItem('sub_order_total_local'))),2)
+    // const localStorageTotal = (JSON.parse(window.localStorage.getItem('total_order_value_storage')) === null) ? null : JSON.parse(window.localStorage.getItem('total_order_value_storage'))
+    // const orderAmountDiscountValue = (JSON.parse(window.localStorage.getItem('order_amount_number')) === null) ? null : JSON.parse(window.localStorage.getItem('order_amount_number'))
+    // const orderFilter = JSON.parse(window.localStorage.getItem('filter'))
+    // const deliveryFeeLocalStorage = (JSON.parse(window.localStorage.getItem('delivery_fee')) === null) ? null : getAmountConvertToFloatWithFixed(JSON.parse(window.localStorage.getItem('delivery_fee')),2)
+
+    const subTotalOrderLocal = (JSON.parse(JSON.parse(window.sessionStorage.getItem('sub_order_total_local'))) === null) ? null : getAmountConvertToFloatWithFixed(JSON.parse(JSON.parse(window.sessionStorage.getItem('sub_order_total_local'))),2)
+    const localStorageTotal = (JSON.parse(window.sessionStorage.getItem('total_order_value_storage')) === null) ? null : JSON.parse(window.sessionStorage.getItem('total_order_value_storage'))
+    const orderAmountDiscountValue = (JSON.parse(window.sessionStorage.getItem('order_amount_number')) === null) ? null : JSON.parse(window.sessionStorage.getItem('order_amount_number'))
+    const orderFilter = JSON.parse(window.sessionStorage.getItem('filter'))
+    const deliveryFeeLocalStorage = (JSON.parse(window.sessionStorage.getItem('delivery_fee')) === null) ? null : getAmountConvertToFloatWithFixed(JSON.parse(window.sessionStorage.getItem('delivery_fee')),2)
 
     const updatedDeliveryTime = moment(`${moment().format('YYYY-MM-DD')} ${deliverytime}`, 'YYYY-MM-DD HH:mm:ss')
     // console.log("Updated delivery Time:", updatedDeliveryTime._i, "Store GUID:", storeGUID);
@@ -408,6 +419,7 @@ function UserForm()
         filterId: (orderFilter === null) ? selectedFilter?.id : orderFilter.id,
         filterName: (orderFilter === null) ? selectedFilter?.name : orderFilter.name,
         delivery_estimate_time: updatedDeliveryTime._i,
+        due: due,
         // delivery_estimate_time: moment(deliverytime, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
         delivery_fee: deliveryFeeLocalStorage
       }
@@ -416,8 +428,12 @@ function UserForm()
       // console.log("Response success:", response);
       if(response?.data?.status === "success")
       {
-        setLocalStorage('cart',[])
-        setLocalStorage('order_amount_number',null)
+        // setLocalStorage('cart',[])
+        // setLocalStorage('order_amount_number',null)
+
+        setSessionStorage('cart',[])
+        setSessionStorage('order_amount_number',null)
+
         setCartdata([])
         setLoader(false)
         route.push(`/payment/${response?.data?.data?.order?.external_order_id}`)

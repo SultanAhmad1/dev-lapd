@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react'
 import HomeContext from '../contexts/HomeContext'
 import Link from 'next/link'
-import { getAmountConvertToFloatWithFixed, getCountryCurrencySymbol, setLocalStorage } from '../global/Store'
+import { getAmountConvertToFloatWithFixed, getCountryCurrencySymbol, setLocalStorage, setSessionStorage } from '../global/Store'
 import moment from 'moment'
 import { BRAND_GUID, DELIVERY_ID, axiosPrivate } from '../global/Axios'
 import { useRouter } from 'next/navigation'
@@ -87,7 +87,8 @@ export default function Cart()
              
                 if(parseInt(subTotalArgument) >= parseInt(amountDiscounts[workingIndex].need_to_spend))
                 {
-                    setLocalStorage('order_amount_number', amountDiscounts[workingIndex].amount_guid)
+                    // setLocalStorage('order_amount_number', amountDiscounts[workingIndex].amount_guid)
+                    setSessionStorage('order_amount_number', amountDiscounts[workingIndex].amount_guid)
                     if(amountDiscounts[workingIndex].discount_type === "P")
                     {
                         const getThePercentage = (amountDiscounts[workingIndex].value / 100)
@@ -124,7 +125,8 @@ export default function Cart()
             totalValue = parseFloat(totalValue) + parseFloat(total?.total_order_amount)
         }
         
-        setLocalStorage('sub_order_total_local',JSON.stringify(getAmountConvertToFloatWithFixed(totalValue,2)))
+        // setLocalStorage('sub_order_total_local',JSON.stringify(getAmountConvertToFloatWithFixed(totalValue,2)))
+        setSessionStorage('sub_order_total_local',JSON.stringify(getAmountConvertToFloatWithFixed(totalValue,2)))
 
         setSubtotalOrderAmount(getAmountConvertToFloatWithFixed(totalValue,2))
         
@@ -199,7 +201,8 @@ export default function Cart()
         // Order Amount Calculate
         getOrderAmount(getAmountConvertToFloatWithFixed(totalValue,2))
       }
-      setLocalStorage('cart',cartdata)
+    //   setLocalStorage('cart',cartdata)
+        setSessionStorage('cart',cartdata)
     }, [cartdata])
     
     const handlePromoCodeToggle = () =>
@@ -253,15 +256,20 @@ export default function Cart()
     }
 
     useEffect(() => {
-        setLocalStorage('total_order_value_storage',JSON.stringify((getAmountConvertToFloatWithFixed((parseFloat(subtotalOrderAmount) + parseFloat(deliveryfee)) - parseFloat(discountvalue),2))))
-        setLocalStorage('delivery_fee',getAmountConvertToFloatWithFixed(deliveryfee,2))
+        // setLocalStorage('total_order_value_storage',JSON.stringify((getAmountConvertToFloatWithFixed((parseFloat(subtotalOrderAmount) + parseFloat(deliveryfee)) - parseFloat(discountvalue),2))))
+        // setLocalStorage('delivery_fee',getAmountConvertToFloatWithFixed(deliveryfee,2))
+
+        setSessionStorage('total_order_value_storage',(getAmountConvertToFloatWithFixed((parseFloat(subtotalOrderAmount) + parseFloat(deliveryfee)) - parseFloat(discountvalue),2)))
+        setSessionStorage('delivery_fee',getAmountConvertToFloatWithFixed(deliveryfee,2))
+
         settotalOrderAmountValue(getAmountConvertToFloatWithFixed((parseFloat(subtotalOrderAmount) + parseFloat(deliveryfee)) - parseFloat(discountvalue),2))
     }, [subtotalOrderAmount,deliveryfee,discountvalue])
     
 
     const handleEditItem = (findByIndex,storeName, categorySlug, itemSlug) =>
     {
-        setLocalStorage("set_index",findByIndex)
+        // setLocalStorage("set_index",findByIndex)
+        setSessionStorage("set_index",findByIndex)
         const updateCartModal = cartdata?.map((cart, index) =>
         {
             if(findByIndex === index)

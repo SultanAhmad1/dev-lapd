@@ -1,6 +1,6 @@
 import HomeContext from '@/app/contexts/HomeContext'
 import { BRAND_GUID, axiosPrivate } from '@/app/global/Axios'
-import { find_matching_postcode, setLocalStorage } from '@/app/global/Store'
+import { find_matching_postcode, setLocalStorage, setSessionStorage } from '@/app/global/Store'
 import { useRouter } from 'next/navigation'
 import React, { useContext, useState, useEffect } from 'react'
 
@@ -85,11 +85,15 @@ function PostcodeModal()
             }
         }
 
-        setLocalStorage('address',tempaddress)
-        setLocalStorage('user_valid_postcode', updatedvalidpostcode)
+        // setLocalStorage('address',tempaddress)
+        // setLocalStorage('user_valid_postcode', updatedvalidpostcode)
+
+        setSessionStorage('address',tempaddress)
+        setSessionStorage('user_valid_postcode', updatedvalidpostcode)
 
         setPostcodefororderamount(deliverymatrix?.postcode)
-        setLocalStorage('delivery_matrix', deliverymatrix)
+        // setLocalStorage('delivery_matrix', deliverymatrix)
+        setSessionStorage('delivery_matrix', deliverymatrix)
 
         setPostcode(updatedvalidpostcode)
 
@@ -98,7 +102,8 @@ function PostcodeModal()
             store: storeName,
             telephone: storeTelephone
         }
-        setLocalStorage('user_selected_store', selectedStoreData)
+        // setLocalStorage('user_selected_store', selectedStoreData)
+        setSessionStorage('user_selected_store', selectedStoreData)
         router.push("/")
         setIscartbtnclicked(true)
         setIsdeliverybtnclicked(false)

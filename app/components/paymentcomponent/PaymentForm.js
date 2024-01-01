@@ -6,6 +6,7 @@ import HomeContext from '@/app/contexts/HomeContext';
 import { getAmountConvertToFloatWithFixed } from '@/app/global/Store';
 import { useRouter } from 'next/navigation';
 import Loader from '../modals/Loader';
+import Link from 'next/link';
 // import stripePromise from './stripe';
 
 const PaymentForm = ({orderId}) => 
@@ -21,10 +22,39 @@ const PaymentForm = ({orderId}) =>
   const elements = useElements();
   const [paymentError, setPaymentError] = useState(null);
 
+  const [isgeterrorfromdatabase, setIsgeterrorfromdatabase] = useState(false)
   // console.log("Stripe: ", stripe);
+  const forceFullyGetOrderPriceFromDatabase = async () =>
+  {
+    try 
+    {
+      const data = {
+        guid: orderId,
+      }  
+      const response = await axiosPrivate.post(`/order-price-to-payable-get`, data)
+      console.log("Get the data:", response.data.data?.orderAmountDetails);
+      setIsgeterrorfromdatabase(response.data.data?.orderAmountDetails === null ? true : false)
+
+      settotalOrderAmountValue(response.data.data?.orderAmountDetails === null ? 0 : response.data.data?.orderAmountDetails?.order_total)
+
+    } 
+    catch (error) 
+    {
+      console.log("There is something went wrong please refresh and try again!.");
+    }
+  }
+
   useEffect(() => {
-    const orderTotalFromLocalStorage = JSON.parse(window.localStorage.getItem('total_order_value_storage'))
-    settotalOrderAmountValue(orderTotalFromLocalStorage === null ? getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) : getAmountConvertToFloatWithFixed(JSON.parse(orderTotalFromLocalStorage),2))
+    // const orderTotalFromLocalStorage = JSON.parse(window.localStorage.getItem('total_order_value_storage'))
+    const orderTotalFromLocalStorage = JSON.parse(window.sessionStorage.getItem('total_order_value_storage'))
+    if(orderTotalFromLocalStorage !== null)
+    {
+      settotalOrderAmountValue(orderTotalFromLocalStorage === null ? getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) : getAmountConvertToFloatWithFixed(JSON.parse(orderTotalFromLocalStorage),2))
+    }
+    else
+    {
+      forceFullyGetOrderPriceFromDatabase()
+    }
     setTimeout(() => {
       setLoader(false)
     }, 3000);
@@ -61,18 +91,18 @@ const PaymentForm = ({orderId}) =>
     }
   }
 
-  const afterPaymentSavedOrderUpdate = async (amount) =>
+  const afterPaymentSavedOrderUpdate = async (paymentIntent) =>
   {
     try 
     {
       const data = {
-          guid: orderId,
-          amount_paid: getAmountConvertToFloatWithFixed(amount / 100,2)
+        guid: orderId,
+        amount_paid: getAmountConvertToFloatWithFixed(paymentIntent.amount / 100,2),
+        stripeid: paymentIntent.id,
       }  
       const response = await axiosPrivate.post(`/update-order-after-successfully-payment-save`, data)
-
       
-      // console.log('Order is updated:', response);
+      console.log('Order is updated:', response);
 
       // Here need to hit sms and email call.
 
@@ -125,8 +155,8 @@ const PaymentForm = ({orderId}) =>
         if (result.error) {
           setPaymentError(result.error.message);
         } else {
-          // console.log('Payment successful:', result.paymentIntent);
-          afterPaymentSavedOrderUpdate(result.paymentIntent.amount)
+          console.log('Payment successful:', result.paymentIntent);
+          afterPaymentSavedOrderUpdate(result.paymentIntent)
         }
       }
     } catch (error) {
@@ -160,41 +190,79 @@ const PaymentForm = ({orderId}) =>
                       </div>
                         
                       <div className="alamd1g1payment-desk">
-                        <span className="chd2cjd3b1payment-desk">Credit or debit card</span>
+                        <span className="chd2cjd3b1payment-desk">{isgeterrorfromdatabase === false ? "Credit or debit card": "Invalid/expire url"}</span>
                       </div>
                     </a>
-
-                    <div className="btaupayment-window">
-                      {/* <input type="email" placeholder="Enter your card" defaultValue="" className="payment_card" /> */}
-                      <CardElement options={{ style: { base: { fontSize: '16px', color: '#424770', '::placeholder': { color: '#aab7c4' } } } }} />
-                      {paymentError && <div style={{background: "#ed5858", color: "white", padding: "12px", borderRadius: "1px", marginTop: "10px"}}>{paymentError}</div>}
-                    </div>
+                    {
+                      isgeterrorfromdatabase === false &&
+                      <div className="btaupayment-window">
+                        {/* <input type="email" placeholder="Enter your card" defaultValue="" className="payment_card" /> */}
+                        <CardElement options={{ style: { base: { fontSize: '16px', color: '#424770', '::placeholder': { color: '#aab7c4' } } } }} />
+                        {paymentError && <div style={{background: "#ed5858", color: "white", padding: "12px", borderRadius: "1px", marginTop: "10px"}}>{paymentError}</div>}
+                      </div>
+                    }
                   </div>
                 </div>
             </div>
             <div></div>
           </div>
-
-          <div className="d1g1payment-desk subpayment-desk">
-            <div className='gmgngoalamgppayment-desk'>
-              <div className="gqpayment-desk">
-                <div className='boh7bqh8payment-desk'>
-                  <button className="h7brboe1payment-btn" disabled={!stripe} onClick={handleSubmit}>Submit</button>
+          
+          {
+            isgeterrorfromdatabase === false
+            ?
+            <>
+            
+              <div className="d1g1payment-desk subpayment-desk">
+                <div className='gmgngoalamgppayment-desk'>
+                  <div className="gqpayment-desk">
+                    <div className='boh7bqh8payment-desk'>
+                      <button className="h7brboe1payment-btn" disabled={!stripe} onClick={handleSubmit}>Submit</button>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
-
-          <div className="sbpayment">
-            <div className="akgzcheckout">
-              <div className="atbaagcheckout">
-                <div className="">
-                  <button className="fwbrbocheckout-place-order" disabled={!stripe} onClick={handleSubmit}>Submit Payment</button>
-                  <div style={{height: "10px"}}></div>
+            
+            
+              <div className="sbpayment">
+                <div className="akgzcheckout">
+                  <div className="atbaagcheckout">
+                    <div className="">
+                      <button className="fwbrbocheckout-place-order" disabled={!stripe} onClick={handleSubmit}>Submit Payment</button>
+                      <div style={{height: "10px"}}></div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+
+            </>
+            
+
+            :
+            <>
+              <div className="d1g1payment-desk subpayment-desk">
+                <div className='gmgngoalamgppayment-desk'>
+                  <div className="gqpayment-desk">
+                    <div className='boh7bqh8payment-desk'>
+                      <a className="h7brboe1payment-btn" style={{backgroundColor: "#000"}} href="/">Continue Menu</a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="sbpayment">
+                <div className="akgzcheckout">
+                  <div className="atbaagcheckout">
+                    <div className="">
+                      <a className="h7brboe1payment-btn" style={{backgroundColor: "#000"}} href="/">Continue Menu</a>
+                      <div style={{height: "10px"}}></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </>
+          }
+
+      
         </div>
       </div>
       <Loader loader={loader} />

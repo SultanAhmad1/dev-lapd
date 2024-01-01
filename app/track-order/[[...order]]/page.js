@@ -529,7 +529,7 @@ function TrackOrder({params})
                                 <div className='mimjepmkmlmmtrackorder-desk'>
                                     <div className='d1g1trackorder-desk'>
                                     
-                                        <h1 className="invalid-order-code">Invalid Order code</h1>
+                                        <h1 className="invalid-order-code">Invalid order code</h1>
                                         
                                         <Link className="continue-to-menu-btn" href="/">Continue to menu</Link>
                                     </div>
