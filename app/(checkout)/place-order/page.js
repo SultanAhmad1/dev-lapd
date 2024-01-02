@@ -754,7 +754,7 @@ function UserForm()
                 parseInt(saveMyDetailsError.length) > parseInt(0) &&
                 <p style={{color: "red", background: "#eda7a7", textAlign: "center", padding:"10px", marginBottom: "10px"}}>{saveMyDetailsError}</p>
               }
-              <div className='mimjepmkmlmmcheckout-desk'>
+              {/* <div className='mimjepmkmlmmcheckout-desk'>
                 <div className="allzc5checkout-desk">
                   <div className="f2checkout-desk">
                     <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
@@ -762,7 +762,6 @@ function UserForm()
                     </svg>
                   </div> 
                   <input type="checkbox" className="agaxlqdflacheckout-desk-input"></input>
-                  {/* <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isavefasterdetailsclicked ? "mch" : ""}`} onClick={() => setIsavefasterdetailsclicked(!isavefasterdetailsclicked)}> */}
                   <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isavefasterdetailsclicked ? "mch" : ""}`} onClick={handleSaveMyDetails}>
                     <div className="spacer _16"></div>
                     <div className="d1alfwllcheckout-desk">
@@ -806,7 +805,7 @@ function UserForm()
                    
                   </>
                 }
-              </div>
+              </div> */}
               
               <hr className='edfhmthtcheckout-desk'></hr>
               <div className='mimjepmkmlmmcheckout-desk'>
