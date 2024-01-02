@@ -39,6 +39,9 @@ function SubAtLoadLoadShow({setLoader})
     const [isgobtnclickable, setIsgobtnclickable] = useState(false)
 
     const [availablestores, setAvailablestores] = useState([])
+
+    const [isstoreavailable, setIsstoreavailable] = useState(true)
+
     const handlePostCode = (event) =>
     {   
         const countPostcodeLength = event.target.value
@@ -59,13 +62,31 @@ function SubAtLoadLoadShow({setLoader})
     const fetchPostcodeData = async () => {
         try 
         {
+            let filterPostcode = validpostcode.replace(/\s/g, '');
+
+            let grabPostcodeOutWard = ""
+            if(parseInt(filterPostcode.length) === parseInt(7))
+            {
+                grabPostcodeOutWard = filterPostcode.substring(0,4)
+            }
+            else if(parseInt(filterPostcode.length) === parseInt(6))
+            {
+                grabPostcodeOutWard = filterPostcode.substring(0,3)
+            }
+            else
+            {
+                grabPostcodeOutWard = filterPostcode.substring(0,2)
+            }
+
             const data = {
-                postcode: validpostcode,
+                postcode: filterPostcode,
                 brand_guid: BRAND_GUID,
                 dayname: dayname,
-                daynumber: daynumber
+                daynumber: daynumber,
+                outwardString: grabPostcodeOutWard
             }
             // console.log("The Data:", data);
+            
             const response = await axiosPrivate.post(`/ukpostcode-website`, data);
             const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows
             //   console.log("Success repsonse:", response.data?.data);
@@ -75,7 +96,7 @@ function SubAtLoadLoadShow({setLoader})
             // setLocalStorage('user_valid_postcode', validpostcode)
             setSessionStorage('address',response?.data?.data)
             setSessionStorage('user_valid_postcode', validpostcode)
-
+            // setIsstoreavailable(false)
             setAvailablestores(response.data?.data?.availableStore)
             
             setIsgobtnclickable(false)
@@ -85,10 +106,12 @@ function SubAtLoadLoadShow({setLoader})
             }, 1000);
            
         } catch (error) {
-          setPostcodeerror(error?.response?.data?.postcode)
-          setIsgobtnclickable(false)
-          setTimeout(() => {
-            setLoader(false)
+            // console.log("Error:", error);
+            setIsstoreavailable(true)
+            setPostcodeerror("Postcode out of range.")
+            setIsgobtnclickable(false)
+            setTimeout(() => {
+                setLoader(false)
             }, 1000);
         }
     };
@@ -259,7 +282,7 @@ function SubAtLoadLoadShow({setLoader})
                             </div>
                             {
                                 parseInt(postcodeerror.length) > parseInt(0) &&
-                                <p style={{color: "red", background: "#eda7a7", textAlign: "center"}}>{postcodeerror}</p>
+                                <p style={{color: "red", background: "#eda7a7", textAlign: "center",marginTop:"10px",padding:"10px"}}>{postcodeerror}</p>
                             }
                         </div>
 
@@ -303,9 +326,19 @@ function SubAtLoadLoadShow({setLoader})
                                 </div>
                             </>
                         }
+
+                        {
+                            isstoreavailable === false &&
+                            <>
+                            <div className="available-stores-show" style={{cursor: "pointer",textAlign: "center", marginTop: "10px", fontWeight:"bold"}}>
+                                <div className="available-stores">Your are out of radius.</div>
+                                <div className="spacer _8"></div>
+                            </div>
+                            </>
+                        }
                         {
                             isgobtnclickable &&
-                            <button className="deliver-to-done-button" onClick={handleGoBtn}> Go </button>
+                            <button className="deliver-to-done-button" onClick={handleGoBtn}>Go</button>
                         }
                     </div>
                     
