@@ -89,7 +89,7 @@ function SubAtLoadLoadShow({setLoader})
             
             const response = await axiosPrivate.post(`/ukpostcode-website`, data);
             const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows
-            //   console.log("Success repsonse:", response.data?.data);
+              console.log("Success repsonse:", response.data?.data);
             
             find_matching_postcode(matrix, validpostcode, setDeliverymatrix)
             // setLocalStorage('address',response?.data?.data)
@@ -106,9 +106,9 @@ function SubAtLoadLoadShow({setLoader})
             }, 1000);
            
         } catch (error) {
-            // console.log("Error:", error);
+            // console.log("Error:", error?.response?.data?.postcode);
             setIsstoreavailable(true)
-            setPostcodeerror("Postcode out of range.")
+            setPostcodeerror(error?.response?.data?.postcode)
             setIsgobtnclickable(false)
             setTimeout(() => {
                 setLoader(false)
