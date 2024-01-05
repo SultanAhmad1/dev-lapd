@@ -26,9 +26,9 @@ export default function Header()
                             </a>
                         }
                         <div className={`spacer _48`}></div>
-                        <Link href="/">
+                        <a href="/">
                             <Image  src={brandlogo} width={146} height={24} className="brand-logo" alt='brand-logo'/>
-                        </Link>
+                        </a>
                         <div className="spacer _40"></div>
                         {
                             headerPostcodeBtnDisplay &&
