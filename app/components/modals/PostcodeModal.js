@@ -39,10 +39,8 @@ function PostcodeModal()
                 dayname: dayname,
                 daynumber: daynumber
             }
-            // console.log("The Data:", data);
             const response = await axiosPrivate.post(`/ukpostcode-website`, data);
             const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows
-            //   console.log("Success repsonse:", response.data);
             
             find_matching_postcode(matrix, updatedvalidpostcode, setDeliverymatrix)
         
@@ -71,7 +69,6 @@ function PostcodeModal()
     
     const handleLocationSelect = (storeGUID,storeName, storeTelephone) =>
     {
-        console.log("Store GUID", storeGUID, "Store Name", storeName, "Store Telephone",storeTelephone);
         setStoreName(storeName)
         if(parseInt(availablestores.length) > parseInt(0))
         {

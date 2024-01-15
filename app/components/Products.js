@@ -101,8 +101,6 @@ export default function Products()
           }
     
           let maxScrollValue = tabsList.scrollWidth - tabsList.clientWidth - 20;
-          // console.log("scroll width: ", tabsList.scrollWidth);
-          // console.log("client width: ", tabsList.clientWidth);
     
           if (tabsList.scrollLeft >= maxScrollValue) {
             // rightArrowContainer.classList.remove("active");

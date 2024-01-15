@@ -8,7 +8,7 @@ import { listtime, round15, tConvert } from "@/app/global/Time";
 import moment from "moment";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useRef, useState } from "react";
 
 function UserForm() 
 {
@@ -34,9 +34,12 @@ function UserForm()
     isdeliverybtnclicked,
     isdeliverychangedbtnclicked,
     setIsdeliverychangedbtnclicked,
-    daynumber
+    daynumber,
+    setHeaderCartBtnDisplay,
+    setHeaderPostcodeBtnDisplay,
   } = useContext(HomeContext)
 
+  const addDoorNumberRef = useRef(null)
   const [loader, setLoader] = useState(true)
 
   // Button Name Change State
@@ -183,7 +186,6 @@ function UserForm()
 
   const handleLogin = () =>
   {
-    // console.log("I am login button");
     setIsauth(false)
     navigate("/login")
   }
@@ -213,7 +215,6 @@ function UserForm()
       }  
 
       const response = await axiosPrivate.post(`/website-delivery-time`, data);
-      // console.log("Success delivery time:", response?.data?.data?.brandDeliveryEstimatePartner);
 
       // Write logic if the closing is up or come closer than show information.
       var startTime = response?.data?.data?.brandDeliveryEstimatePartner?.start_time
@@ -232,7 +233,6 @@ function UserForm()
       var time_from = new Date(time_from_temp);
       var time_to = new Date(time_to_temp);               
 
-      // console.log("Time Form :", time_from, " Time to:", time_to);
       if (Date.parse(time_from) > Date.parse(d)) 
       {
         time_from.setMinutes(time_from.getMinutes() + parseInt(deliveryTo));
@@ -253,7 +253,6 @@ function UserForm()
         setIsTimeToClosed(true)
         return;
       }
-      // console.log("To time:", time_to, "brand delivery_to", deliveryTo);
       time_to.setMinutes(time_to.getMinutes() + parseInt(deliveryTo) - 1);
       let end_time = new Date(time_to);
      
@@ -282,7 +281,6 @@ function UserForm()
         var temp_time = start_time;
       }
       // temp_time = tConvert(temp_time);
-      // console.log("Delivery time:", temp_time);
 
       setDeliveryTime(temp_time)
       setOpeningtime(temp_time)
@@ -299,7 +297,6 @@ function UserForm()
         setLoader(false)
       }, 3000);
     } catch (error) {
-      console.log("Error:", error);
       setTimeout(() => {
         setLoader(false)
       }, 3000);
@@ -309,15 +306,15 @@ function UserForm()
   useEffect(() => {
     // const placeOrderLocalStorageTotal = JSON.parse(window.localStorage.getItem('total_order_value_storage'))
     const placeOrderLocalStorageTotal = JSON.parse(window.sessionStorage.getItem('total_order_value_storage'))
-    // console.log("Order value total:", getAmountConvertToFloatWithFixed(JSON.parse(placeOrderLocalStorageTotal),2));
     settotalOrderAmountValue(placeOrderLocalStorageTotal === null ? totalOrderAmountValue : getAmountConvertToFloatWithFixed(JSON.parse(placeOrderLocalStorageTotal),2))
 
     setIscartbtnclicked(false)
     fetchLocationDeliveryEstimate()
+    addDoorNumberRef.current.focus();
 
+    setHeaderCartBtnDisplay(false)
+    setHeaderPostcodeBtnDisplay(false)
   }, [])
- 
-  // console.log("Handle Delivery Time", deliverytime);
 
   const fetchCustomerLoginDetails = async () =>
   {
@@ -330,7 +327,6 @@ function UserForm()
       }
 
       const response = await axiosPrivate.post(`/create-account-faster`, data)
-      console.log("Response: data ", response?.data?.data?.customer);
       if(response?.data?.data?.customer !== null)
       {
         if(response?.data?.data?.customer?.customer_password !== null)
@@ -347,7 +343,6 @@ function UserForm()
     } 
     catch (error) 
     {
-      console.log("Error:", error);
       if(parseInt(error?.response?.data?.errors?.email?.length) > parseInt(0))
       {
         setEmail("")
@@ -392,7 +387,6 @@ function UserForm()
     const deliveryFeeLocalStorage = (JSON.parse(window.sessionStorage.getItem('delivery_fee')) === null) ? null : getAmountConvertToFloatWithFixed(JSON.parse(window.sessionStorage.getItem('delivery_fee')),2)
 
     const updatedDeliveryTime = moment(`${moment().format('YYYY-MM-DD')} ${deliverytime}`, 'YYYY-MM-DD HH:mm:ss')
-    // console.log("Updated delivery Time:", updatedDeliveryTime._i, "Store GUID:", storeGUID);
     try 
     {
       const data = {
@@ -423,9 +417,7 @@ function UserForm()
         // delivery_estimate_time: moment(deliverytime, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
         delivery_fee: deliveryFeeLocalStorage
       }
-      console.log("Data:", data);
       const response = await axiosPrivate.post(`/store-customer-details`,data)  
-      // console.log("Response success:", response);
       if(response?.data?.status === "success")
       {
         // setLocalStorage('cart',[])
@@ -441,7 +433,6 @@ function UserForm()
     } 
     catch (error) 
     {
-      console.log("Error:", error);
       setTimeout(() => {
         setLoader(false)
       }, 2000);
@@ -474,7 +465,6 @@ function UserForm()
     storeCustomerDetail()
   }
 
-  // console.log("Amount Discount",(JSON.parse(window.localStorage.getItem('order_amount_number')) === null) ? null : JSON.parse(window.localStorage.getItem('order_amount_number')),"Handle Payment total:", totalOrderAmountValue,"Cart data:", cartdata);
   return (
     <>
       <div className='e5ald0m1m2amc5checkout-desk'>
@@ -542,11 +532,14 @@ function UserForm()
                       
                       <div className="alamd1g1checkout-desk">
                         <span className="chd2cjd3b1checkout-desk">Add door number <span style={{color: "red"}}>*</span></span>
-                         <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                            <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
-                              {doorhousename}
-                            </span>
-                          </p>
+                        {
+                          !isdoorinputdisplayclicked &&
+                            <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                              <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
+                                {doorhousename}
+                              </span>
+                            </p>
+                        }
                       </div>
                     
                       <button className="chcicjckhacheckout-desk-btn" onClick={handleDoorHouseClicked}>{doornumbertext}</button>
@@ -556,7 +549,7 @@ function UserForm()
                     {
                       isdoorinputdisplayclicked &&
                       <div className="btaucheckout-window">
-                        <input type="text" placeholder="Enter door number or name" value={doorhousename} className={`door_number ${parseInt(doorhousename.length) > parseInt(0) ? "parse-success" : "parse-erorr"}`} onChange={handleDoorOrHouse}/>
+                        <input type="text" ref={addDoorNumberRef} placeholder="Enter door number or name"  value={doorhousename} className={`door_number ${parseInt(doorhousename.length) > parseInt(0) ? "parse-success" : "parse-erorr"}`} onChange={handleDoorOrHouse}/>
                       </div>
                     }
                     <div className="alcheckout-desk">
@@ -575,11 +568,14 @@ function UserForm()
                       
                       <div className="alamd1g1checkout-desk">
                         <span className="chd2cjd3b1checkout-desk">Add driver instructions</span>
-                        <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                            <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
-                              {driverinstruction}
-                            </span>
-                          </p>
+                        {
+                          !isadddriverdisplayclicked &&
+                            <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                              <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
+                                {driverinstruction}
+                              </span>
+                            </p>
+                        }
                       </div>
                       
                       <button className="chcicjckhacheckout-desk-btn" onClick={handleDriverInstruction}>{isadddoortext}</button>
@@ -613,11 +609,14 @@ function UserForm()
                     
                     <div className="alamd1g1checkout-desk">
                       <span className="chd2cjd3b1checkout-desk">Add email address <span style={{color: "red"}}>*</span></span> 
-                      <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                        <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
-                          {email}
-                        </span>
-                      </p>
+                      {
+                        !isemailinputtoggle &&
+                        <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                          <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
+                            {email}
+                          </span>
+                        </p>
+                      }
                     </div>
                     
                     <button className="chcicjckhacheckout-desk-btn" onClick={handleEmailToggle}>{emailaddbtntext}</button>
@@ -655,11 +654,14 @@ function UserForm()
                     
                     <div className="alamd1g1checkout-desk">
                       <span className="chd2cjd3b1checkout-desk">Add phone number <span style={{color: "red"}}>*</span></span>
-                      <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                        <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
-                          {phone}
-                        </span>
-                      </p>
+                      {
+                        !isphoneinputtoggle &&
+                        <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                          <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
+                            {phone}
+                          </span>
+                        </p>
+                      }
                     </div>
                     
                     <button className="chcicjckhacheckout-desk-btn" onClick={handlePhoneToggle}>{phoneaddbtntext}</button>
@@ -687,11 +689,14 @@ function UserForm()
                     
                     <div className="alamd1g1checkout-desk">
                       <span className="chd2cjd3b1checkout-desk">Add name <span style={{color: "red"}}>*</span></span>
-                      <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                        <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
-                          {firstname} {lastname}
-                        </span>
-                      </p>
+                      {
+                        !isfirstnametoggle &&
+                        <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                          <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
+                            {firstname} {lastname}
+                          </span>
+                        </p>
+                      }
                     </div>
                     
                     <button className="chcicjckhacheckout-desk-btn" onClick={handleFirstNameToggle}>{firstnameaddbtntext}</button>
@@ -987,11 +992,14 @@ function UserForm()
                           
                         <div className="alamd1g1checkout-desk">
                           <span className="chd2cjd3b1checkout-desk">Add door number <span style={{color: "red"}}>*</span></span>
-                          <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                            <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
-                              {doorhousename}
-                            </span>
-                          </p>
+                          {
+                            !isdoorinputdisplayclicked &&
+                            <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                              <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
+                                {doorhousename}
+                              </span>
+                            </p>
+                          }
                         </div>
                       
                           <button className="chcicjckhacheckout-desk-btn" onClick={handleDoorHouseClicked}>{doornumbertext}</button>
@@ -1000,7 +1008,7 @@ function UserForm()
                         {
                           isdoorinputdisplayclicked &&
                           <div className="btaucheckout-window">
-                          <input type="text" placeholder="Enter door number or name" value={doorhousename} className={`door_number ${parseInt(doorhousename.length) > parseInt(0) ? "parse-success" : "parse-erorr"}`} onChange={handleDoorOrHouse}/>
+                          <input type="text" ref={addDoorNumberRef} placeholder="Enter door number or name" value={doorhousename} className={`door_number ${parseInt(doorhousename.length) > parseInt(0) ? "parse-success" : "parse-erorr"}`} onChange={handleDoorOrHouse}/>
                             {/* <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
                             
                             <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
@@ -1025,11 +1033,14 @@ function UserForm()
                         
                         <div className="alamd1g1checkout-desk">
                           <span className="chd2cjd3b1checkout-desk">Add driver instructions</span>
-                          <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                            <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
-                              {driverinstruction}
-                            </span>
-                          </p>
+                          {
+                            !isadddriverdisplayclicked &&
+                            <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                              <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
+                                {driverinstruction}
+                              </span>
+                            </p>
+                          }
                         </div>
                         <button className="chcicjckhacheckout-desk-btn" onClick={handleDriverInstruction}>{isadddoortext}</button>
                       </a>
@@ -1064,11 +1075,14 @@ function UserForm()
                     
                       <div className="alamd1g1checkout-desk">
                         <span className="chd2cjd3b1checkout-desk">Add email address <span style={{color: "red"}}>*</span></span> 
-                        <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                          <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
-                              {email}
-                          </span>
-                        </p>
+                        {
+                          !isemailinputtoggle &&
+                          <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                            <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
+                                {email}
+                            </span>
+                          </p>
+                        }
                       </div>
                     
                       <button className="chcicjckhacheckout-desk-btn" onClick={handleEmailToggle}>{emailaddbtntext}</button>
@@ -1106,11 +1120,14 @@ function UserForm()
                     
                       <div className="alamd1g1checkout-desk">
                         <span className="chd2cjd3b1checkout-desk">Add phone number <span style={{color: "red"}}>*</span></span>
-                        <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                          <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
-                              {phone}
-                          </span>
-                        </p>
+                        {
+                          !isphoneinputtoggle &&
+                          <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                            <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
+                                {phone}
+                            </span>
+                          </p>
+                        }
                       </div>
                       <button className="chcicjckhacheckout-desk-btn" onClick={handlePhoneToggle}>{phoneaddbtntext}</button>
                     </a>
@@ -1142,11 +1159,14 @@ function UserForm()
                   
                       <div className="alamd1g1checkout-desk">
                         <span className="chd2cjd3b1checkout-desk">Add name <span style={{color: "red"}}>*</span></span>
-                        <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                          <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
+                        {
+                          !isfirstnametoggle &&
+                          <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                            <span style={{fontFamily:"UberMoveText", color:"#05944F"}}>
                               {firstname} {lastname}
-                          </span>
-                        </p>
+                            </span>
+                          </p>
+                        }
                       </div>
                       <button className="chcicjckhacheckout-desk-btn" onClick={handleFirstNameToggle}>{firstnameaddbtntext}</button>
                     </a>

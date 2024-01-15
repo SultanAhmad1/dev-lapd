@@ -4,6 +4,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { find_matching_postcode, getAtFirstLoadModalShow, getStoreName, setAtFirstLoadModalShow, setLocalStorage, setSessionStorage, setStoreName } from '@/app/global/Store'
 import { useRouter } from 'next/navigation'
 import moment from 'moment'
+
 function SubAtLoadLoadShow({setLoader}) 
 {
    const route = useRouter()
@@ -42,7 +43,7 @@ function SubAtLoadLoadShow({setLoader})
 
     const [isstoreavailable, setIsstoreavailable] = useState(true)
 
-    const handlePostCode = (event) =>
+    function handlePostCode(event)
     {   
         const countPostcodeLength = event.target.value
         setValidpostcode(event.target.value.toUpperCase())
@@ -59,7 +60,7 @@ function SubAtLoadLoadShow({setLoader})
         }
     }
 
-    const fetchPostcodeData = async () => {
+    async function fetchPostcodeData(){
         try 
         {
             let filterPostcode = validpostcode.replace(/\s/g, '');
@@ -85,12 +86,9 @@ function SubAtLoadLoadShow({setLoader})
                 daynumber: daynumber,
                 outwardString: grabPostcodeOutWard
             }
-            // console.log("The Data:", data);
-            
             const response = await axiosPrivate.post(`/ukpostcode-website`, data);
             const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows
-              console.log("Success repsonse:", response.data?.data);
-            
+            console.log("Matrix :", response);
             find_matching_postcode(matrix, validpostcode, setDeliverymatrix)
             // setLocalStorage('address',response?.data?.data)
             // setLocalStorage('user_valid_postcode', validpostcode)
@@ -106,7 +104,6 @@ function SubAtLoadLoadShow({setLoader})
             }, 1000);
            
         } catch (error) {
-            // console.log("Error:", error?.response?.data?.postcode);
             setIsstoreavailable(true)
             setPostcodeerror(error?.response?.data?.postcode)
             setIsgobtnclickable(false)
@@ -120,19 +117,18 @@ function SubAtLoadLoadShow({setLoader})
       if(deliverymatrix !== null)
       {
         setPostcodefororderamount(deliverymatrix?.postcode)
-        window.localStorage.setItem("delivery_matrix", JSON.stringify(deliverymatrix))
+        window.sessionStorage.setItem("delivery_matrix", JSON.stringify(deliverymatrix))
       }
     
     }, [deliverymatrix])
     
-    const handleGoBtn = () =>
+    function handleGoBtn()
     {
         setLoader(true)
         fetchPostcodeData();
     }
 
-    
-    const fetchMenu = async (storeGUID) => 
+    async function fetchMenu(storeGUID)
     {
         try 
         {
@@ -143,7 +139,6 @@ function SubAtLoadLoadShow({setLoader})
         }
 
         const response = await axiosPrivate.post(`/menu`, data);
-        //   console.log("Success repsonse:", JSON.parse(response.data?.data?.menu.menu_json_log));
         const convertToJSobj = JSON.parse(response.data?.data?.menu.menu_json_log)
         setMenu(convertToJSobj)
         
@@ -161,21 +156,18 @@ function SubAtLoadLoadShow({setLoader})
         setNavmobileindex(convertToJSobj.categories[0].id)
 
         const getDayInformation = convertToJSobj.menus[0].service_availability?.find((dayinformation) => dayinformation.day_of_week === moment().format('dddd').toLowerCase())
-        // console.log("Getting the day information:", getDayInformation);
         setStoretodaydayname(moment().format('dddd'))
         setStoretodayopeningtime(getDayInformation.time_periods[0].start_time)
         setStoretodayclosingtime(getDayInformation.time_periods[0].end_time)
         } 
         catch (error) 
         {
-        console.error('Error fetching data:', error);
         setIsmenuavailable(false)
         }
     };
 
-    const handleLocationSelect = (storeGUID,storeName, storeTelephone) =>
+    function handleLocationSelect(storeGUID,storeName, storeTelephone)
     {
-        // console.log("Store guid:", storeGUID);
         setStoreName(storeName)
         setAtfirstload(false)
         setStoreGUID(storeGUID)
@@ -200,7 +192,6 @@ function SubAtLoadLoadShow({setLoader})
         setSessionStorage('user_selected_store', selectedStoreData)
         route.push("/")
     }
-
 
     useEffect(() => {
         // if the available store location is equal to one then click on handleLocationSelect 

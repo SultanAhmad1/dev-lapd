@@ -43,7 +43,6 @@ function TrackOrder({params})
                     guid: params?.order,
                 }   
                 const response = await axiosPrivate.post(`/website-track-order`,data)
-                console.log("Track Order Response:", response);
     
                 setBrand(response?.data?.data?.trackOrder?.brand)
                 setLocation(response?.data?.data?.trackOrder?.location)
@@ -58,7 +57,6 @@ function TrackOrder({params})
             } 
             catch (error) 
             {
-                console.log("Track Order Error Response:", error);
                 setTimeout(() => {
                     setLoader(!loader)
                 }, 3000);
@@ -83,7 +81,6 @@ function TrackOrder({params})
                 orderhash: orderhash,
             }   
             const response = await axiosPrivate.post(`/track-order-by-hash-order`,data)
-            // console.log("Hash code order Track Order Response:", response);
 
             setBrand(response?.data?.data?.trackOrder?.brand)
             setLocation(response?.data?.data?.trackOrder?.location)
@@ -98,7 +95,6 @@ function TrackOrder({params})
         } 
         catch (error) 
         {
-            console.log("Track Order Error Response:", error);
             setTimeout(() => {
                 setLoader(false)
             }, 3000);

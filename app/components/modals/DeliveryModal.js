@@ -10,9 +10,7 @@ function DeliveryModal()
     useEffect(() => {
         setIsdeliverychangedbtnclicked(false)
     }, [])
-    
 
-    console.log("Is ther anything change:", isdeliverychangedbtnclicked);
     return (
         <>
             <div className="modal-delivery-details">

@@ -26,7 +26,6 @@ function productEdit({params})
 
   const [quantity, setQuantity] = useState(1)
   const [itemprice, setItemprice] = useState(0)
-  // console.log("Get the parameter:", params);
 
   const [selectedModifierId, setselectedModifierId] = useState(0)
   const [selectedModifierItemId, setSelectedModifierItemId] = useState(0)
@@ -53,7 +52,6 @@ function productEdit({params})
     setSingleitem(getFilterItem)
     setQuantity(getFilterItem?.quantity)
     setItemprice(getFilterItem?.total_order_amount / getFilterItem?.quantity)
-    console.log("Get the filter item:", getFilterItem);
 
     setBrandlogo("/gallery/uber-eat.svg")
     setTimeout(() => {
@@ -68,15 +66,12 @@ function productEdit({params})
 
   const handleRadioInput = (modifierId, itemId, itemName ,secondaryItemModifierCounter) =>
   {
-    // console.log("Handle Radio input: ", modifierId, "Item id:", itemId, " Secondary item Modifier:", secondaryItemModifierCounter);
     if(parseInt(secondaryItemModifierCounter) > parseInt(0))
     {
       const findModifierItemNestedModifier = singleitem?.modifier_group?.find((modifier) => modifier?.id === modifierId)
       const findModifierItemNestedModifierItem = findModifierItemNestedModifier?.modifier_secondary_items?.find((item) => item?.id === itemId)
-      // console.log("Nested Modifiers: ", findModifierItemNestedModifierItem);
       // setnestedmodifieritemhasmodifier(findModifierItemNestedModifierItem)
 
-      console.log("Modifier item selected:", modifierId, "selected item:", itemId);
       setselectedModifierId(modifierId)
       setSelectedModifierItemId(itemId)
       setSelectedModifierItemPrice(parseFloat(findModifierItemNestedModifierItem?.total_price))
@@ -564,9 +559,8 @@ function productEdit({params})
                               {
                                   if(updateSecondaryItem?.id === secondaryItemId)
                                   {
-                                      const newTotalPlus = parseFloat(totalAmount) + parseFloat(updateSecondaryItem?.price_info)
-                                      // console.log("Plus the radio modal value:", newTotalPlus, " The value: ", parseFloat(updateSecondaryItem?.price_info));
-                                      totalAmount = newTotalPlus
+                                    const newTotalPlus = parseFloat(totalAmount) + parseFloat(updateSecondaryItem?.price_info)
+                                    totalAmount = newTotalPlus
                                   }
                               }
                           }
@@ -1037,7 +1031,6 @@ function productEdit({params})
 
   const handleQuantity = (event) =>
   {
-    console.log("Working on this one", event.target.value);
     setQuantity(event.target.value)
   }
 
@@ -1066,7 +1059,6 @@ function productEdit({params})
           }
       }
 
-      console.log("Save btn clicked: ", countMinPermiModifier);
 
       if(parseInt(countMinPermiModifier) > parseInt(0))
       {
@@ -1128,7 +1120,6 @@ function productEdit({params})
       }
       else
       {
-        // console.log("Modifier Id:", modifierId, " selected item id:", itemId);
         const newTotal = parseFloat(itemprice) + parseFloat(selectedModifierItemPrice)
         setItemprice(parseFloat(newTotal).toFixed(2))
 
@@ -1343,7 +1334,6 @@ function productEdit({params})
   //     if(isaccordianclicked)
   //     {
   //       var acc = document.getElementsByClassName("accordion");
-  //     //   console.log("All acc", acc);
   //       var i;
   
   //       for (i = 0; i < acc.length; i++) 
@@ -1383,7 +1373,6 @@ function productEdit({params})
 
   const handleMobileModifierToggle = (modifierId) =>
   {
-    // console.log("Modifier ID:",modifierId);
     const updateModifierToggle = {
       ...singleitem,
       modifier_group: singleitem?.modifier_group?.map((modifierToggle) =>
@@ -1398,7 +1387,6 @@ function productEdit({params})
         return modifierToggle
       })
     }
-    // console.log("Single Item:", updateModifierToggle);
 
     setSingleitem(updateModifierToggle)
   }
@@ -1447,7 +1435,6 @@ function productEdit({params})
 
   const handleBackArrow = (modifierId, itemId) =>
   {
-    console.log("Back arrow Modifier item selected:", modifierId, "selected item:", itemId);
     if(singleitem)
     {
       let countMinPermiModifier = 0
@@ -1532,7 +1519,6 @@ function productEdit({params})
       }
       else
       {
-        // console.log("Modifier Id:", modifierId, " selected item id:", itemId);
         let totalSubAmount = 0
         if(singleitem)
         {

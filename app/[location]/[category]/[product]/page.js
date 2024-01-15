@@ -26,7 +26,6 @@ function productDetails({params})
 
     const [quantity, setQuantity] = useState(1)
     const [itemprice, setItemprice] = useState(0)
-    // console.log("Get the parameter:", params);
 
     const [selectedModifierId, setselectedModifierId] = useState(0)
     const [selectedModifierItemId, setSelectedModifierItemId] = useState(0)
@@ -45,16 +44,13 @@ function productDetails({params})
         {
             // const getStoreIDFromLocalStorage = JSON.parse(window.localStorage.getItem('user_selected_store'))
             const getStoreIDFromLocalStorage = JSON.parse(window.sessionStorage.getItem('user_selected_store'))
-            // console.log("Local storage:", getStoreIDFromLocalStorage);
             const data = {
                 location: (getStoreIDFromLocalStorage !== null) ? getStoreIDFromLocalStorage?.display_id: storeGUID,
                 brand: BRAND_GUID,
                 partner: PARTNER_ID
             }
             
-            // console.log("Single product:", data);
             const response = await axiosPrivate.post(`/menu`, data);
-            // console.log("Success repsonse:", JSON.parse(response.data?.data?.menu.menu_json_log));
             const convertToJSobj = JSON.parse(response.data?.data?.menu.menu_json_log)
 
             const getSingleCategory = convertToJSobj?.categories?.find((category) => category.slug === params.category)
@@ -387,9 +383,7 @@ function productDetails({params})
                 }
             })
             getItemFromCategory.modifier_group = updateModifier
-            // console.log("Update item:", getItemFromCategory);
 
-            // console.log("Update modifier groups:", updateModifier);
             setSingleitem(getItemFromCategory)
             setItemprice(parseFloat(getItemFromCategory?.price).toFixed(2))
             setTimeout(() => {
@@ -417,16 +411,13 @@ function productDetails({params})
 
     const handleRadioInput = (modifierId, itemId, itemName ,secondaryItemModifierCounter) =>
     {
-        // console.log("Handle Radio input: ", modifierId, "Item id:", itemId, " Secondary item Modifier:", secondaryItemModifierCounter);
         if(parseInt(secondaryItemModifierCounter) > parseInt(0))
         {
             
             const findModifierItemNestedModifier = singleitem?.modifier_group?.find((modifier) => modifier?.id === modifierId)
             const findModifierItemNestedModifierItem = findModifierItemNestedModifier?.modifier_secondary_items?.find((item) => item?.id === itemId)
-            // console.log("Nested Modifiers: ", findModifierItemNestedModifierItem);
             // setnestedmodifieritemhasmodifier(findModifierItemNestedModifierItem)
 
-            console.log("Modifier item selected:", modifierId, "selected item:", itemId);
             setselectedModifierId(modifierId)
             setSelectedModifierItemId(itemId)
             setSelectedModifierItemPrice(parseFloat(findModifierItemNestedModifierItem?.total_price))
@@ -927,7 +918,6 @@ function productDetails({params})
                                     if(updateSecondaryItem?.id === secondaryItemId)
                                     {
                                         const newTotalPlus = parseFloat(totalAmount) + parseFloat(updateSecondaryItem?.price_info)
-                                        // console.log("Plus the radio modal value:", newTotalPlus, " The value: ", parseFloat(updateSecondaryItem?.price_info));
                                         totalAmount = newTotalPlus
                                     }
                                 }
@@ -1427,8 +1417,6 @@ function productDetails({params})
                 }
             }
 
-            console.log("Save btn clicked: ", countMinPermiModifier);
-
             if(parseInt(countMinPermiModifier) > parseInt(0))
             {
                 let getTheCounter = 0
@@ -1489,7 +1477,6 @@ function productDetails({params})
             }
             else
             {
-                // console.log("Modifier Id:", modifierId, " selected item id:", itemId);
                 const newTotal = parseFloat(itemprice) + parseFloat(selectedModifierItemPrice)
                 setItemprice(parseFloat(newTotal).toFixed(2))
         
@@ -1697,7 +1684,6 @@ function productDetails({params})
     //     if(isaccordianclicked)
     //     {
     //       var acc = document.getElementsByClassName("accordion");
-    //     //   console.log("All acc", acc);
     //       var i;
     
     //       for (i = 0; i < acc.length; i++) 
@@ -1738,7 +1724,6 @@ function productDetails({params})
     const handleMobileModifierToggle = (modifierId) =>
     {
         
-        console.log("Modifier ID:",modifierId);
         const updateModifierToggle = {
             ...singleitem,
             modifier_group: singleitem?.modifier_group?.map((modifierToggle) =>
@@ -1753,7 +1738,6 @@ function productDetails({params})
                 return modifierToggle
             })
         }
-        // console.log("Single Item:", updateModifierToggle);
 
         setSingleitem(updateModifierToggle)
     }
@@ -1802,7 +1786,6 @@ function productDetails({params})
  
     const handleBackArrow = (modifierId, itemId) =>
     {
-        console.log("Back arrow Modifier item selected:", modifierId, "selected item:", itemId);
         if(singleitem)
         {
             let countMinPermiModifier = 0
@@ -1887,7 +1870,6 @@ function productDetails({params})
             }
             else
             {
-                // console.log("Modifier Id:", modifierId, " selected item id:", itemId);
                 let totalSubAmount = 0
                 if(singleitem)
                 {
@@ -1912,7 +1894,6 @@ function productDetails({params})
         }
         setIsmodifierclicked(false)
     }
-    console.log("Single items udpate:", singleitem);
     return (
         
         <>
