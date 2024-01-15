@@ -23,7 +23,6 @@ const PaymentForm = ({orderId}) =>
   const [paymentError, setPaymentError] = useState(null);
 
   const [isgeterrorfromdatabase, setIsgeterrorfromdatabase] = useState(false)
-  // console.log("Stripe: ", stripe);
   const forceFullyGetOrderPriceFromDatabase = async () =>
   {
     try 
@@ -32,7 +31,6 @@ const PaymentForm = ({orderId}) =>
         guid: orderId,
       }  
       const response = await axiosPrivate.post(`/order-price-to-payable-get`, data)
-      console.log("Get the data:", response.data.data?.orderAmountDetails);
       setIsgeterrorfromdatabase(response.data.data?.orderAmountDetails === null ? true : false)
 
       settotalOrderAmountValue(response.data.data?.orderAmountDetails === null ? 0 : response.data.data?.orderAmountDetails?.order_total)
@@ -40,7 +38,6 @@ const PaymentForm = ({orderId}) =>
     } 
     catch (error) 
     {
-      console.log("There is something went wrong please refresh and try again!.");
     }
   }
 
@@ -72,9 +69,7 @@ const PaymentForm = ({orderId}) =>
         pathname: pathname
       } 
 
-      // console.log("Data: ", data);
       const response = await axiosPrivate.post(`/send-sms-and-email`, data)
-      // console.log("Success response:", response);
       setLoader(false)
       // if(response?.data?.status === "success")
       // {
@@ -84,7 +79,6 @@ const PaymentForm = ({orderId}) =>
     } 
     catch (error) 
     {
-      console.log("Handle Error:", error);
       window.alert(error?.response?.data?.error)
       setLoader(false)
       router.push(`/track-order/${orderId}`)
@@ -101,9 +95,6 @@ const PaymentForm = ({orderId}) =>
         stripeid: paymentIntent.id,
       }  
       const response = await axiosPrivate.post(`/update-order-after-successfully-payment-save`, data)
-      
-      console.log('Order is updated:', response);
-
       // Here need to hit sms and email call.
 
       if(response?.data?.status === "success")
@@ -114,14 +105,12 @@ const PaymentForm = ({orderId}) =>
     } 
     catch (error) 
     {
-      console.log("There is something went wrong please refresh and try again!.");
     }
   }
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoader(true)
-    // console.log("Order total amount:", getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) * 100);
     if (!stripe || !elements) 
     {
       setLoader(false)
@@ -155,7 +144,6 @@ const PaymentForm = ({orderId}) =>
         if (result.error) {
           setPaymentError(result.error.message);
         } else {
-          console.log('Payment successful:', result.paymentIntent);
           afterPaymentSavedOrderUpdate(result.paymentIntent)
         }
       }

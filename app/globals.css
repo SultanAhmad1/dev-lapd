@@ -4545,6 +4545,7 @@ input {
   overflow-x: hidden;
   opacity: 1;
   overflow-y: hidden;
+  height: 100%;
 }
 
 .esetcheckout {
@@ -10057,6 +10058,7 @@ ul.track-steps {
     overflow-x: hidden;
     opacity: 1;
     overflow-y: hidden;
+    height: 100%;
   }
 
   .esetcheckout {

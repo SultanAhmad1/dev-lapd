@@ -25,6 +25,7 @@ export default function Cart()
         postcodefororderamount
     } = useContext(HomeContext)
 
+    console.log("Delivery matrix:",deliverymatrix);
     const [subtotalOrderAmount, setSubtotalOrderAmount] = useState(0)
     const [totalOrderAmount, setTotalOrderAmount] = useState(0)
     
@@ -53,9 +54,7 @@ export default function Cart()
                 postcode: postcodefororderamount
             }
 
-            console.log("Filter data:", filterData);
             const response = await axiosPrivate.post(`/apply-amount-discount`,filterData)
-            console.log("Amount Discount Success data:", response);
             
             const amountDiscounts = response?.data?.data?.applyAmountDiscount
             let workingIndex = 0
@@ -110,7 +109,6 @@ export default function Cart()
                 }
             }
         } catch (error) {
-            console.log("Error data:", error);
         }
     }
 
@@ -131,7 +129,6 @@ export default function Cart()
         setSubtotalOrderAmount(getAmountConvertToFloatWithFixed(totalValue,2))
         
         // Calculate the Delivery Fee
-        // console.log("Inside the cart:", selectedFilter);
         // If the User select the delivery, then delivery fee will be charge.
         
         if(selectedFilter?.id === DELIVERY_ID)
@@ -182,6 +179,7 @@ export default function Cart()
             }
             else
             {
+                console.log("Minimum order is :",deliverymatrix?.order_value);
                 // const textMessage = <span>Minimum order is <strong>{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(deliverymatrix?.order_value, 2)}</strong> to your postcode <strong>{postcode}</strong></span>
                 const textMessage = <span style={{color: "red", background: "#eda7a7", textAlign: "center", padding:"10px"}}>Minimum order is <strong>{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(deliverymatrix?.order_value, 2)}</strong> to your postcode</span>
                 setDeliverymessage(textMessage)

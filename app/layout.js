@@ -97,7 +97,6 @@ export default function RootLayout({ children })
       }
 
       const response = await axiosPrivate.post(`/menu`, data);
-      console.log("Success repsonse:", JSON.parse(response.data?.data?.menu.menu_json_log));
       const convertToJSobj = JSON.parse(response.data?.data?.menu.menu_json_log)
       setMenu(convertToJSobj)
       
@@ -114,7 +113,6 @@ export default function RootLayout({ children })
       setNavmobileindex(convertToJSobj.categories[0].id)
 
       const getDayInformation = convertToJSobj.menus[0].service_availability?.find((dayinformation) => dayinformation.day_of_week === moment().format('dddd').toLowerCase())
-      // console.log("Getting the day information:", getDayInformation);
       setStoretodaydayname(moment().format('dddd'))
       setStoretodayopeningtime(getDayInformation.time_periods[0].start_time)
       setStoretodayclosingtime(getDayInformation.time_periods[0].end_time)
@@ -179,7 +177,6 @@ export default function RootLayout({ children })
     const getSelectStore = window.sessionStorage.getItem('user_selected_store')
     if(getSelectStore === null)
     {
-      console.log("Path name array:", pathnameArray);
       if(pathnameArray[0] === 'track-order' || pathnameArray[0] === 'review-order' || pathnameArray[0] === 'payment' || pathnameArray[0] === 'place-order')
       {
         setAtfirstload(false)  
