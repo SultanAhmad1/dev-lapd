@@ -431,7 +431,7 @@ function UserForm()
 
         setSessionStorage('cart',[])
         setSessionStorage('order_amount_number',null)
-
+        setSessionStorage("applied_coupon",[])
         setCartdata([])
         setLoader(false)
         route.push(`/payment/${response?.data?.data?.order?.external_order_id}`)

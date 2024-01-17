@@ -438,6 +438,7 @@ export default function Cart() {
           setDeliveryfee(0)
         }
       }
+      setSessionStorage("order_amount_number",null)
       setAmountDiscountapplied(null)
       setDiscountValue(getAmountConvertToFloatWithFixed(couponDiscountValue,2))
     }
