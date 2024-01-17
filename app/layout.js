@@ -61,6 +61,8 @@ export default function RootLayout({ children })
   const [totalOrderAmountValue, settotalOrderAmountValue] = useState(0)
 
   // Boolean States
+  const [iscouponcodeapplied, setIscouponcodeapplied] = useState(false)
+
   const [isTimeToClosed, setIsTimeToClosed] = useState(false)
   const [atfirstload, setAtfirstload] = useState(false)
 
@@ -85,6 +87,8 @@ export default function RootLayout({ children })
   const [ismenuavailable, setIsmenuavailable] = useState(true)
 
   const [cartdata, setCartdata] = useState([])
+  const [amountDiscountapplied, setAmountDiscountapplied] = useState(null)
+  const [couponDiscountapplied, setCouponDiscountapplied] = useState([])
 
   const fetchMenu = async (storeID) => 
   {
@@ -173,6 +177,8 @@ export default function RootLayout({ children })
     setDayname(dayName)
     setDaynumber(dayNumber)
     
+    const afterReloadingGetCouponCode = JSON.parse(window.sessionStorage.getItem("applied_coupon"))
+    setCouponDiscountapplied(afterReloadingGetCouponCode !== null ? afterReloadingGetCouponCode : [])
     // const getSelectStore = window.localStorage.getItem('user_selected_store')
     const getSelectStore = window.sessionStorage.getItem('user_selected_store')
     if(getSelectStore === null)
@@ -203,9 +209,10 @@ export default function RootLayout({ children })
       // const address = JSON.parse(window.localStorage.getItem('address'))
       // const getDeliveryMatrix = JSON.parse(window.localStorage.getItem('delivery_matrix'))
 
+      const appliedAmountDiscount = JSON.parse(window.sessionStorage.getItem("order_amount_discount_applied"))
       const address = JSON.parse(window.sessionStorage.getItem('address'))
       const getDeliveryMatrix = JSON.parse(window.sessionStorage.getItem('delivery_matrix'))
-
+      setAmountDiscountapplied(appliedAmountDiscount)
       setDeliverymatrix(getDeliveryMatrix)
       setPostcodefororderamount(getDeliveryMatrix?.postcode)
 
@@ -246,6 +253,8 @@ export default function RootLayout({ children })
       <body className="body-tag">
         <HomeContext.Provider 
           value={{
+            setIscouponcodeapplied,
+            setLoader,
             totalOrderAmountValue,
             settotalOrderAmountValue,
             setIsTimeToClosed,
@@ -309,6 +318,10 @@ export default function RootLayout({ children })
             setIsitemclicked, 
             setIsdeliverybtnclicked, 
             setCartdata,
+            amountDiscountapplied,
+            setAmountDiscountapplied,
+            couponDiscountapplied,
+            setCouponDiscountapplied,
             cartdata,
             deliverymatrix,
             setDeliverymatrix,
@@ -322,10 +335,10 @@ export default function RootLayout({ children })
           {isdeliverybtnclicked && <DeliveryModal />}
           {/* {isgobtnclicked && <AvailableStoresShow />} */}
           {isTimeToClosed && <StoreClosedModal />}
+          {iscouponcodeapplied && <StoreClosedModal />}
           <Footer />
           <Loader loader={loader}/>
         </HomeContext.Provider>
-   
       </body>
     </html>
   )
