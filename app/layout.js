@@ -335,7 +335,7 @@ export default function RootLayout({ children })
           {isdeliverybtnclicked && <DeliveryModal />}
           {/* {isgobtnclicked && <AvailableStoresShow />} */}
           {isTimeToClosed && <StoreClosedModal />}
-          {iscouponcodeapplied && <StoreClosedModal />}
+          {/* {iscouponcodeapplied && <StoreClosedModal />} */}
           <Footer />
           <Loader loader={loader}/>
         </HomeContext.Provider>
