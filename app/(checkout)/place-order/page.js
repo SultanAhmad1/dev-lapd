@@ -15,6 +15,7 @@ function UserForm()
   const route = useRouter()
 //   const {isauth, setIsauth} = useContext(AuthContext)
   const {
+    couponDiscountapplied,
     totalOrderAmountValue,
     settotalOrderAmountValue,
     setIsTimeToClosed,
@@ -95,77 +96,78 @@ function UserForm()
   const [phoneError, setPhoneError] = useState("")
   const [saveMyDetailsError, setSaveMyDetailsError] = useState("")
   const [PayNowBottomError, setPayNowBottomError] = useState("")
-  const handleDoorHouseClicked = () =>
+
+  function handleDoorHouseClicked()
   {
     setIsadddoororhouseclicked(!isadddoororhouseclicked)
     setDoornumbertext( doornumbertext === "Add" ? "Save" : "Add")
     setIsdoorinputdisplayclicked(!isdoorinputdisplayclicked)
   }
 
-  const handleDoorOrHouse = (event) =>
+  function handleDoorOrHouse(event)
   {
     setDoorhousename(event.target.value)
     setIsavefasterdetailsclicked(false)
   }
 
-  const handleDriverInstruction = () =>
+  function handleDriverInstruction()
   {
     setIsadddrivertoggle(!isadddrivertoggle)
     setIsadddoortext(isadddoortext === "Add" ? "Save" : "Add")
     setIsadddriverdisplayclicked(!isadddriverdisplayclicked)
   }
 
-  const handleDriverInstructionEvent = (event) =>
+  function handleDriverInstructionEvent(event)
   {
     setDriverinstruction(event.target.value)
   }
 
-  const handleEmailToggle = () =>
+  function handleEmailToggle()
   {
     setIsemailtoggle(!isemailtoggle)
     setEmailaddbtntext((emailaddbtntext === "Save") ? "Edit": "Save")
     setIsemailinputtoggle(!isemailinputtoggle)
   }
 
-  const handleUserEmail = (event) =>
+  function handleUserEmail(event)
   {
     setEmail(event.target.value)
     setIsavefasterdetailsclicked(false)
   }
 
-  const handlePhoneToggle = () =>
+  function handlePhoneToggle()
   {
     setIsphonetoggle(!isphonetoggle)
     setPhoneaddbtntext((phoneaddbtntext === "Save") ? "Edit": "Save")
     setIsphoneinputtoggle(!isphoneinputtoggle)
   }
 
-  const handleUserPhone = (event) =>
+  function handleUserPhone(event)
   {
     setPhone(event.target.value)
     setIsavefasterdetailsclicked(false)
   }
 
-  const handleFirstNameToggle = () =>
+  function handleFirstNameToggle()
   {
     setIsfirstnametoggle(!isfirstnametoggle)
     setFirstNameaddbtntext((firstnameaddbtntext === "Save") ? "Edit": "Save")
   }
 
-  const handleUserFirstName = (event) =>
+  function handleUserFirstName(event)
   {
     
     setFirstName(event.target.value.replace(/^\w/, (c) => c.toUpperCase()))
     setIsavefasterdetailsclicked(false)
   }
 
-  const handleUserLastName = (event) =>
+  function handleUserLastName(event)
   {
     setLastName(event.target.value.replace(/^\w/, (c) => c.toUpperCase()))
     setIsavefasterdetailsclicked(false)
   }
 
-  const handleDeliveryTime = (event) =>
+  function handleDeliveryTime(event)
   {
     setDeliveryTime(event.target.value)
     setDue("requested")
@@ -173,7 +175,7 @@ function UserForm()
   // Change Postcode and Address states
   const [ispostcodeeditclicked, setIspostcodeeditclicked] = useState(false)
   const [deliverydetailtext, setDeliverydetailtext] = useState("Edit")
-  const handlePostcodeEdit = () =>
+  function handlePostcodeEdit()
   {
     setIspostcodeeditclicked(!ispostcodeeditclicked)
     setDeliverydetailtext(deliverydetailtext === "Edit" ? "Save" : "Edit")
@@ -184,23 +186,23 @@ function UserForm()
   // Save details for Faster Checkout next time
   const [isavefasterdetailsclicked, setIsavefasterdetailsclicked] = useState(false)
 
-  const handleLogin = () =>
+  function handleLogin()
   {
     setIsauth(false)
     navigate("/login")
   }
 
-  const handleRegisteration = () =>
+  function handleRegisteration()
   {
 
   }
 
-  const handlePassword = (event) =>
+  function handlePassword(event)
   {
     setPassword(event.target.value)
   }
 
-  const fetchLocationDeliveryEstimate = async () =>
+  async function fetchLocationDeliveryEstimate()
   {
     // Get the current day name
     try 
@@ -316,7 +318,7 @@ function UserForm()
     setHeaderPostcodeBtnDisplay(false)
   }, [])
 
-  const fetchCustomerLoginDetails = async () =>
+  async function fetchCustomerLoginDetails()
   {
     try 
     { 
@@ -357,7 +359,7 @@ function UserForm()
     }
   }
 
-  const handleSaveMyDetails = () =>
+  function handleSaveMyDetails()
   {
     if(doorhousename === "" || email === "" || phone === "" || firstname === "" || lastname === "")
     {
@@ -372,7 +374,7 @@ function UserForm()
     fetchCustomerLoginDetails()
   }
 
-  const storeCustomerDetail = async () =>
+  async function storeCustomerDetail()
   {
     // const subTotalOrderLocal = (JSON.parse(JSON.parse(window.localStorage.getItem('sub_order_total_local'))) === null) ? null : getAmountConvertToFloatWithFixed(JSON.parse(JSON.parse(window.localStorage.getItem('sub_order_total_local'))),2)
     // const localStorageTotal = (JSON.parse(window.localStorage.getItem('total_order_value_storage')) === null) ? null : JSON.parse(window.localStorage.getItem('total_order_value_storage'))
@@ -385,7 +387,9 @@ function UserForm()
     const orderAmountDiscountValue = (JSON.parse(window.sessionStorage.getItem('order_amount_number')) === null) ? null : JSON.parse(window.sessionStorage.getItem('order_amount_number'))
     const orderFilter = JSON.parse(window.sessionStorage.getItem('filter'))
     const deliveryFeeLocalStorage = (JSON.parse(window.sessionStorage.getItem('delivery_fee')) === null) ? null : getAmountConvertToFloatWithFixed(JSON.parse(window.sessionStorage.getItem('delivery_fee')),2)
+    const getCouponCode = JSON.parse(window.sessionStorage.getItem("applied_coupon"))
 
+    const couponCodes = (parseInt(getCouponCode.length) > parseInt(0) ? getCouponCode : couponDiscountapplied)
     const updatedDeliveryTime = moment(`${moment().format('YYYY-MM-DD')} ${deliverytime}`, 'YYYY-MM-DD HH:mm:ss')
     try 
     {
@@ -415,8 +419,10 @@ function UserForm()
         delivery_estimate_time: updatedDeliveryTime._i,
         due: due,
         // delivery_estimate_time: moment(deliverytime, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
-        delivery_fee: deliveryFeeLocalStorage
+        delivery_fee: deliveryFeeLocalStorage,
+        coupons: couponCodes,
       }
+      // console.log("Save data:", data);
       const response = await axiosPrivate.post(`/store-customer-details`,data)  
       if(response?.data?.status === "success")
       {
@@ -433,13 +439,14 @@ function UserForm()
     } 
     catch (error) 
     {
+      // console.log("Error:", error);
       setTimeout(() => {
         setLoader(false)
       }, 2000);
     }
   }
 
-  const handlePayNow = () =>
+  function handlePayNow()
   {
     setLoader(true)
     if(parseInt(doorhousename.length) === parseInt(0) || parseInt(email.length) === parseInt(0) || parseInt(phone.length) === parseInt(0) || parseInt(firstname.length) === parseInt(0) || parseInt(lastname.length) === parseInt(0))

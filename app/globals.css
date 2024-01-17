@@ -4594,6 +4594,23 @@ input {
   display: -webkit-flex;
 }
 
+.bodgdfcheckout-amountdiscount{
+  /* background-color: rgb(238, 238, 238); */
+  line-height: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  -webkit-box-pack: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-box-align: center;
+  align-items: center;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+}
 .alamcjewcheckout {
   align-self: center;
   flex: 1;
@@ -10106,6 +10123,23 @@ ul.track-steps {
     display: -webkit-flex;
   }
 
+  .bodgdfcheckout-amountdiscount{
+    /* background-color: rgb(238, 238, 238); */
+    line-height: 16px;
+    font-size: 14px;
+    font-weight: 500;
+    -webkit-box-pack: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+    -webkit-box-align: center;
+    align-items: center;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+  }
   .alamcjewcheckout {
     align-self: center;
     flex: 1;
