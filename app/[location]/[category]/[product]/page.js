@@ -10,10 +10,10 @@ import React, { useContext, useEffect, useState } from 'react'
 
 function productDetails({params}) 
 {
-    const [loader, setLoader] = useState(true)
+    // const [loader, setLoader] = useState(true)
 
     const router = useRouter()
-    const{storeGUID,setBrandlogo,setIscartbtnclicked,setCartdata,cartdata} = useContext(HomeContext)
+    const{setLoader,loader,storeGUID,setBrandlogo,setIscartbtnclicked,setCartdata,cartdata} = useContext(HomeContext)
     // const {setIsitemclicked, handleInput} = useContext(HomeContext)
     const [isitemclicked, setIsitemclicked] = useState(false)
     const [isaccordianclicked, setIsaccordianclicked] = useState(true)
@@ -2377,6 +2377,7 @@ function productDetails({params})
                                         singleitem?.modifier_group?.map((modifier,index) =>
                                         {
                                             return(
+                                                parseInt(modifier?.modifier_secondary_items?.length) > parseInt(0) &&
                                                 // {/* minimum option = '1' and maximum option = 1 and single item select = 1 */}
                                                 (modifier?.select_single_option === 1 && (modifier?.min_permitted === 1 && modifier?.max_permitted === 1)) ?
 

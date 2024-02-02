@@ -261,7 +261,7 @@ img {
 .brand-logo {
   display: block;
   width: auto;
-  height: 24px;
+  height: 50px;
   filter: unset;
 }
 
@@ -10480,6 +10480,60 @@ ul.track-steps {
   .fwbrbocheckout-add:hover {
     background: #6e6e6e;
   }
+
+  .d1g1payment-desk {
+    /* height: 80px; */
+    position: relative;
+}
+
+.gmgngoalamgppayment-desk {
+	background: linear-gradient(rgba(255, 255, 255, 0) 2.5%, rgba(255, 255, 255, 0.92) 55.35%);
+    padding: 16px 16px 24px;
+    top: unset;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    position: fixed;
+}
+
+.gqpayment-desk {
+  min-height: 56px;
+}
+
+.boh7bqh8payment-desk {
+  line-height: 28px;
+  font-size: 18px;
+  font-weight: normal;
+  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.h7brboe1payment-btn {
+  background: rgb(2, 117, 37);
+  padding: 12px 16px;
+  border-radius: 8px;
+  min-height: 56px;
+  font-size: 18px;
+  font-weight: 500;
+  -webkit-box-pack: center;
+  justify-content: center;
+  color: #FFFFFF;
+  cursor: pointer;
+  line-height: 24px;
+  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  width: 100%;
+  -webkit-box-align: center;
+  align-items: center;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  box-sizing: border-box;
+}
+
+.h7brboe1payment-btn:hover {
+	background: rgb(4, 165, 17);
+}
 
   .acdvcheckout {
     width: 20px;

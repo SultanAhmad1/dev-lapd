@@ -3,7 +3,7 @@ import HomeContext from '../contexts/HomeContext'
 
 function MobileTopBar({handleCategoryClick,isscrolled,scrollPosition}) 
 {
-    const {navigationcategories,navmobileindex} = useContext(HomeContext)
+    const {websiteModificationData,navigationcategories,navmobileindex} = useContext(HomeContext)
   return (
     <div className={`top-bar ${isscrolled ? 'scrolled' : ''}`}>
         <div className="top-bar-div-level-one">
@@ -21,8 +21,9 @@ function MobileTopBar({handleCategoryClick,isscrolled,scrollPosition})
                         navigationcategories?.map((category, index) => 
                         {
                             return(
+                                parseInt(category?.items?.length) > parseInt(0) &&
                                 <button style={{transform: `translate3d(-${scrollPosition}px, 0px,0px)`}}  key={category.id} className={`bycsc0ctnmalc8bcc6nptopbar-div ${navmobileindex === category.id ? "np" : ""}`} onClick={() => handleCategoryClick(category.id)}>
-                                    <div className="bycsd3d4topbar-div">
+                                    <div className="bycsd3d4topbar-div" style={{color: (websiteModificationData !== null && websiteModificationData?.json_log[0]?.categoryFontColor !== null) && websiteModificationData?.json_log[0]?.categoryFontColor}}>
                                         {category.title}
                                     </div>
                                 </button>
