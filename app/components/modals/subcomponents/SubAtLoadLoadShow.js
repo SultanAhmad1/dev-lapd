@@ -87,6 +87,7 @@ function SubAtLoadLoadShow({setLoader})
                 outwardString: grabPostcodeOutWard
             }
             const response = await axiosPrivate.post(`/ukpostcode-website`, data);
+            console.log("Success:", response);
             const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows
             // console.log("Matrix :", response);
             find_matching_postcode(matrix, validpostcode, setDeliverymatrix)
@@ -104,6 +105,7 @@ function SubAtLoadLoadShow({setLoader})
             }, 1000);
            
         } catch (error) {
+            console.log("Error;", error);
             setIsstoreavailable(true)
             setPostcodeerror(error?.response?.data?.postcode)
             setIsgobtnclickable(false)
@@ -272,7 +274,7 @@ function SubAtLoadLoadShow({setLoader})
 
                             </div>
                             {
-                                parseInt(postcodeerror.length) > parseInt(0) &&
+                                postcodeerror !== "" &&
                                 <p style={{color: "red", background: "#eda7a7", textAlign: "center",marginTop:"10px",padding:"10px"}}>{postcodeerror}</p>
                             }
                         </div>

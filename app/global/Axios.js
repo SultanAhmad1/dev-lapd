@@ -12,6 +12,6 @@ export const axiosPrivate = axios.create({
   withCredentials: true,
 });
 
-export const BRAND_GUID = "56A7923E-E8D5-4212-82EB-8E64775CEF10";
+export const BRAND_GUID = "28D0041C-F48D-4054-BA0E-7153D2B8642C";
 export const PARTNER_ID = 2;
 export const DELIVERY_ID = "79857505-DA6E-4256-B9CF-E0F41DACB086";

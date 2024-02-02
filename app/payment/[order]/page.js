@@ -1,11 +1,10 @@
 "use client";
 
-import PaymentHTML from "@/app/components/PaymentHTML";
+import ApplePay from "@/app/components/paymentcomponent/ApplePay";
+import GooglePay from "@/app/components/paymentcomponent/GooglePay";
 import PaymentForm from "@/app/components/paymentcomponent/PaymentForm";
 import stripePromise from "@/app/components/paymentcomponent/Stripe";
-import { axiosPrivate } from "@/app/global/Axios";
 import { Elements } from "@stripe/react-stripe-js";
-import { useEffect } from "react";
 
 
 function Payment({params}) 
@@ -13,6 +12,8 @@ function Payment({params})
   return (
     <Elements stripe={stripePromise}>
         <PaymentForm orderId={params?.order}/>
+        {/* <ApplePay orderId={params?.order}/> */}
+        {/* <GooglePay orderId={params?.order}/> */}
     </Elements>
   )
 }

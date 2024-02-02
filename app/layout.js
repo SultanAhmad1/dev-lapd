@@ -27,6 +27,8 @@ const inter = Inter({ subsets: ['latin'] })
 export default function RootLayout({ children }) 
 {
   const [loader, setLoader] = useState(true)
+
+  const [websiteModificationData, setWebsiteModificationData] = useState(null)
   // Header Bar buttons to be displayed.
   const [brandlogo, setBrandlogo] = useState("../gallery/uber-eat.svg")
   const [headerUserBtnDisplay, setHeaderUserBtnDisplay] = useState(true)
@@ -163,6 +165,22 @@ export default function RootLayout({ children })
   
   useEffect(() => 
   {
+    async function fetchWebsiteImageColor()
+    {
+      try {
+        const response = await axiosPrivate.get(`/website-modification-detail/${PARTNER_ID}`);
+        if(response?.data?.data?.websiteModificationLive !== null && response?.data?.data?.websiteModificationLive?.json_log[0]?.websiteLogoUrl !== null)
+        {
+          setBrandlogo(response?.data?.data?.websiteModificationLive?.json_log[0]?.websiteLogoUrl)
+        }
+        setWebsiteModificationData(response?.data?.data?.websiteModificationLive)
+      } 
+      catch (error) 
+      {
+      }
+    }
+
+    fetchWebsiteImageColor()
     const url = new URL(window.location.href)
     var pathnameArray = url.pathname.split("/").filter(function(segment) {
       return segment !== ""; // Filter out empty segments
@@ -242,7 +260,9 @@ export default function RootLayout({ children })
       window.location.reload(true)
       
     }, 30 * 60 * 1000);
-    setLoader(false)
+    setTimeout(() => {
+      setLoader(false)
+    }, 4000);
     // Clear the timeout if the component is unmounted before 20 minutes
     return () => clearTimeout(timeoutId);
   }, []);
@@ -253,7 +273,9 @@ export default function RootLayout({ children })
       <body className="body-tag">
         <HomeContext.Provider 
           value={{
+            websiteModificationData,
             setIscouponcodeapplied,
+            loader,
             setLoader,
             totalOrderAmountValue,
             settotalOrderAmountValue,

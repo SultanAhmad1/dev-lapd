@@ -7,6 +7,7 @@ import { getAmountConvertToFloatWithFixed } from '@/app/global/Store';
 import { useRouter } from 'next/navigation';
 import Loader from '../modals/Loader';
 import Link from 'next/link';
+import GooglePay from './GooglePay';
 // import stripePromise from './stripe';
 
 const PaymentForm = ({orderId}) => 
@@ -186,7 +187,7 @@ const PaymentForm = ({orderId}) =>
                       isgeterrorfromdatabase === false &&
                       <div className="btaupayment-window">
                         {/* <input type="email" placeholder="Enter your card" defaultValue="" className="payment_card" /> */}
-                        <CardElement options={{ style: { base: { fontSize: '16px', color: '#424770', '::placeholder': { color: '#aab7c4' } } } }} />
+                        <CardElement options={{style: { base: { fontSize: '16px', color: '#424770', '::placeholder': { color: '#aab7c4' } } } }} />
                         {paymentError && <div style={{background: "#ed5858", color: "white", padding: "12px", borderRadius: "1px", marginTop: "10px"}}>{paymentError}</div>}
                       </div>
                     }
@@ -201,27 +202,29 @@ const PaymentForm = ({orderId}) =>
             ?
             <>
             
-              <div className="d1g1payment-desk subpayment-desk">
+              <div className="d1g1payment-desk">
                 <div className='gmgngoalamgppayment-desk'>
                   <div className="gqpayment-desk">
                     <div className='boh7bqh8payment-desk'>
-                      <button className="h7brboe1payment-btn" disabled={!stripe} onClick={handleSubmit}>Submit</button>
+                      <button className="h7brboe1payment-btn" style={{marginBottom: "10px"}} disabled={!stripe} onClick={handleSubmit}>Submit</button>
+                      <GooglePay orderTotal={totalOrderAmountValue}/>
                     </div>
                   </div>
                 </div>
               </div>
             
             
-              <div className="sbpayment">
+              {/* <div className="sbpayment">
                 <div className="akgzcheckout">
                   <div className="atbaagcheckout">
                     <div className="">
                       <button className="fwbrbocheckout-place-order" disabled={!stripe} onClick={handleSubmit}>Submit Payment</button>
                       <div style={{height: "10px"}}></div>
+                      <GooglePay orderTotal={totalOrderAmountValue}/>
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> */}
 
             </>
             

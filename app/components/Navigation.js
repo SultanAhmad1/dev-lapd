@@ -3,7 +3,8 @@ import HomeContext from '../contexts/HomeContext'
 
 function Navigation({handleCategoryClick}) 
 {
-    const {navigationcategories,navmobileindex} = useContext(HomeContext)
+    
+    const {websiteModificationData,navigationcategories,navmobileindex} = useContext(HomeContext)
 
     return (
         <div className="left-bar">
@@ -17,9 +18,10 @@ function Navigation({handleCategoryClick})
                                 navigationcategories?.map((category, index) =>
                                 {
                                     return(
+                                        parseInt(category?.items?.length) > parseInt(0) &&
                                         <div className="navigation-div" key={index}>
                                             <button className={`navigation-btn ${category.id === navmobileindex ? "active" : ""}`} onClick={() => handleCategoryClick(category?.id)}>
-                                                <div className="navigation-btn-div">{category.title}</div>
+                                                <div className="navigation-btn-div" style={{color: (websiteModificationData !== null && websiteModificationData?.json_log[0]?.categoryFontColor !== null) && websiteModificationData?.json_log[0]?.categoryFontColor}}>{category.title}</div>
                                             </button>
                                         </div>
                                     )

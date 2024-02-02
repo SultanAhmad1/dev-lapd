@@ -345,21 +345,43 @@ export default function Cart() {
       const getCouponCodeFromSession = JSON.parse(window.sessionStorage.getItem("applied_coupon"))
       
       let discountedCoupon = 0;
-      if(couponData?.user_in_conjuction === 0)
+      if(couponData?.discount_type === "P")
       {
-        discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(subtotalOrderAmount) * (couponData?.value / 100),2)
-      }
-      else
-      {
-        if(parseInt(getCouponCodeFromSession.length) > parseInt(0))
-        {
-          discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(totalOrderAmountValue - deliveryfee) * (couponData?.value / 100),2)
-        }
-        else
+        if(couponData?.user_in_conjuction === 0)
         {
           discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(subtotalOrderAmount) * (couponData?.value / 100),2)
         }
+        else
+        {
+          if(parseInt(getCouponCodeFromSession.length) > parseInt(0))
+          {
+            discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(totalOrderAmountValue - deliveryfee) * (couponData?.value / 100),2)
+          }
+          else
+          {
+            discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(subtotalOrderAmount) * (couponData?.value / 100),2)
+          }
+        }
       }
+      else if(couponData?.discount_type === "M")
+      {
+        if(couponData?.user_in_conjuction === 0)
+        {
+          discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(subtotalOrderAmount) - parseFloat(couponData?.value),2)
+        }
+        else
+        {
+          if(parseInt(getCouponCodeFromSession.length) > parseInt(0))
+          {
+            discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(totalOrderAmountValue - deliveryfee) - (couponData?.value),2)
+          }
+          else
+          {
+            discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(subtotalOrderAmount) - parseFloat(couponData?.value0),2)
+          }
+        }
+      }
+      
       
       const totalOrderAmountValueUpdate = parseFloat(totalOrderAmountValue) - parseFloat(discountedCoupon)
       settotalOrderAmountValue(getAmountConvertToFloatWithFixed(totalOrderAmountValueUpdate,2))

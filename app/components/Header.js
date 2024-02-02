@@ -28,6 +28,7 @@ export default function Header()
                         <div className={`spacer _48`}></div>
                         <a href="/">
                             <Image  src={brandlogo} width={146} height={24} className="brand-logo" alt='brand-logo'/>
+                            {/* <Image  src="https://laravel-jouleskitchen.cleartwo.uk/storage/lapd/Logo/1_LAPD.svg" width={146} height={24} className="brand-logo" alt='brand-logo'/> */}
                         </a>
                         <div className="spacer _40"></div>
                         {
