@@ -422,7 +422,6 @@ function UserForm()
         delivery_fee: deliveryFeeLocalStorage,
         coupons: couponCodes,
       }
-      // console.log("Save data:", data);
       const response = await axiosPrivate.post(`/store-customer-details`,data)  
       if(response?.data?.status === "success")
       {
@@ -439,7 +438,6 @@ function UserForm()
     } 
     catch (error) 
     {
-      // console.log("Error:", error);
       setTimeout(() => {
         setLoader(false)
       }, 2000);

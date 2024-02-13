@@ -1,6 +1,7 @@
 "use client";
 import Loader from '@/app/components/modals/Loader';
 import HomeContext from '@/app/contexts/HomeContext';
+import { BrandLogoPath } from '@/app/global/Axios';
 import { getAmountConvertToFloatWithFixed, getCountryCurrencySymbol } from '@/app/global/Store';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -53,13 +54,13 @@ function productEdit({params})
     setQuantity(getFilterItem?.quantity)
     setItemprice(getFilterItem?.total_order_amount / getFilterItem?.quantity)
 
-    setBrandlogo("/gallery/uber-eat.svg")
+    setBrandlogo(BrandLogoPath)
     setTimeout(() => {
       setLoader(false)
     }, 3000);
 
     return () => {
-      setBrandlogo("../gallery/uber-eat.svg")
+      setBrandlogo(BrandLogoPath)
     }
 
   }, [])

@@ -2,7 +2,7 @@
 
 import Loader from '@/app/components/modals/Loader';
 import HomeContext from '@/app/contexts/HomeContext';
-import { BRAND_GUID, PARTNER_ID, axiosPrivate } from '@/app/global/Axios';
+import { BRAND_GUID, BrandLogoPath, PARTNER_ID, axiosPrivate } from '@/app/global/Axios';
 import { getAmountConvertToFloatWithFixed, getCountryCurrencySymbol } from '@/app/global/Store';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -401,11 +401,11 @@ function productDetails({params})
       };
 
     useEffect(() => {
-        setBrandlogo("/gallery/uber-eat.svg")
+        setBrandlogo(BrandLogoPath)
         filterItem()
 
       return () => {
-        setBrandlogo("../gallery/uber-eat.svg")
+        setBrandlogo(BrandLogoPath)
       }
     }, [])
 
@@ -2000,7 +2000,7 @@ function productDetails({params})
                                                                                         <div className="modifier-product-item-name-one-nested-div">
                                                                                             <div className="modifier-product-item-name-one-nested-div-one">
                                                                                                 <div className="modifier-product-item-name-one-nested-div-one-nested">
-                                                                                                    <div className="modifier-product-item-name-one-nested-div-one-nested-div">Add: {seconditems?.title}</div>
+                                                                                                    <div className="modifier-product-item-name-one-nested-div-one-nested-div">{seconditems?.title}</div>
                                                                                                     <div className="spacer _8"></div>
                                                                                                     <div className="modifier-group-price">+{seconditems?.country_price_symbol}{getAmountConvertToFloatWithFixed(seconditems?.price,2)}</div>
                                                                                                 </div>
@@ -2056,7 +2056,7 @@ function productDetails({params})
                                                                                                 <div className="modifier-product-item-name-one-nested-div">
                                                                                                     <div className="modifier-product-item-name-one-nested-div-one">
                                                                                                         <div className="modifier-product-item-name-one-nested-div-one-nested">
-                                                                                                            <div className="modifier-product-item-name-one-nested-div-one-nested-div">Add: {seconditems?.title}</div>
+                                                                                                            <div className="modifier-product-item-name-one-nested-div-one-nested-div">{seconditems?.title}</div>
                                                                                                             <div className="spacer _8"></div>
                                                                                                             <div className="modifier-group-price">+{seconditems?.country_price_symbol}{getAmountConvertToFloatWithFixed(seconditems?.price,2)}</div>
                                                                                                         </div>
@@ -2158,7 +2158,7 @@ function productDetails({params})
                                                                                         <div className="modifier-product-item-name-one-nested-div">
                                                                                             <div className="modifier-product-item-name-one-nested-div-one">
                                                                                                 <div className="modifier-product-item-name-one-nested-div-one-nested">
-                                                                                                    <div className="modifier-product-item-name-one-nested-div-one-nested-div">Add: {seconditems?.title}</div>
+                                                                                                    <div className="modifier-product-item-name-one-nested-div-one-nested-div">{seconditems?.title}</div>
                                                                                                     <div className="spacer _8"></div>
                                                                                                     <div className="modifier-group-price">+{seconditems?.country_price_symbol}{getAmountConvertToFloatWithFixed(seconditems?.price,2)}</div>
                                                                                                 </div>
@@ -2448,7 +2448,7 @@ function productDetails({params})
                                                                                                 <div className="ale4amc4gjgkglsingle-product">
                                                                                                     <div className="alaqsingle-product">
                                                                                                         <div className="alamgmgnsingle-product">
-                                                                                                            <div className="bresdpg4gosingle-product">Add: {mobileSecondItems?.title}</div>
+                                                                                                            <div className="bresdpg4gosingle-product">{mobileSecondItems?.title}</div>
                                                                                                             <div className="spacer _8"></div>
                                                                                                             <div className="bresbtdqb1bzsingle-productincdecprice">+{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
                                                                                                         </div>
@@ -2537,7 +2537,7 @@ function productDetails({params})
                                                                                                     <div className="ale4amc4gjgkglsingle-product">
                                                                                                         <div className="alaqsingle-product">
                                                                                                             <div className="alamgmgnsingle-product">
-                                                                                                                <div className="bresdpg4gosingle-product">Add: {mobileSecondItems?.title}</div>
+                                                                                                                <div className="bresdpg4gosingle-product">{mobileSecondItems?.title}</div>
                                                                                                                 <div className="spacer _8"></div>
                                                                                                                 <div className="bresbtdqb1bzsingle-productincdecprice">+{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
                                                                                                             </div>
@@ -2559,7 +2559,7 @@ function productDetails({params})
                                                                                                     <div className="ale4amc4gjgkglsingle-product">
                                                                                                         <div className="alaqsingle-product">
                                                                                                             <div className="alamgmgnsingle-product">
-                                                                                                                <div className="bresdpg4gosingle-product">Add: {mobileSecondItems?.title}</div>
+                                                                                                                <div className="bresdpg4gosingle-product">{mobileSecondItems?.title}</div>
                                                                                                                 <div className="spacer _8"></div>
                                                                                                                 <div className="bresbtdqb1bzsingle-productincdecprice">+{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
                                                                                                             </div>
@@ -2665,7 +2665,7 @@ function productDetails({params})
                                                                                         <div className="ale4amc4gigjgksingle-productincdec">
                                                                                             <div className="alaqsingle-product">
                                                                                                 <div className="alamglgmsingle-productincdec">
-                                                                                                    <div className="bresdpg3gnsingle-productincdecheading">Add: {mobileSecondItems?.title}</div>
+                                                                                                    <div className="bresdpg3gnsingle-productincdecheading">{mobileSecondItems?.title}</div>
                                                                                                     <div className="spacer _8"></div>
                                                                                                     <div className="bresbtdqb1bzsingle-productincdecprice">+{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
                                                                                                 </div>

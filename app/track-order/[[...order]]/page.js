@@ -1,6 +1,6 @@
 "use client"
 
-import { axiosPrivate } from "@/app/global/Axios";
+import { BRAND_GUID, axiosPrivate } from "@/app/global/Axios";
 import moment from "moment";
 import { useContext, useEffect, useState } from "react";
 
@@ -79,9 +79,9 @@ function TrackOrder({params})
         {
             const data = {
                 orderhash: orderhash,
+                brandGUID: BRAND_GUID
             }   
             const response = await axiosPrivate.post(`/track-order-by-hash-order`,data)
-
             setBrand(response?.data?.data?.trackOrder?.brand)
             setLocation(response?.data?.data?.trackOrder?.location)
             setAddress(response?.data?.data?.trackOrder?.address)

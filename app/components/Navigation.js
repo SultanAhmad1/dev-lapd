@@ -21,7 +21,7 @@ function Navigation({handleCategoryClick})
                                         parseInt(category?.items?.length) > parseInt(0) &&
                                         <div className="navigation-div" key={index}>
                                             <button className={`navigation-btn ${category.id === navmobileindex ? "active" : ""}`} onClick={() => handleCategoryClick(category?.id)}>
-                                                <div className="navigation-btn-div" style={{color: (websiteModificationData !== null && websiteModificationData?.json_log[0]?.categoryFontColor !== null) && websiteModificationData?.json_log[0]?.categoryFontColor}}>{category.title}</div>
+                                                <div className="navigation-btn-div" style={{color: (websiteModificationData?.websiteModificationLive !== null && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor !== null) && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor}}>{category.title}</div>
                                             </button>
                                         </div>
                                     )

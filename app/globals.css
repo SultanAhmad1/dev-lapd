@@ -3586,6 +3586,8 @@ input {
   display: -ms-flexbox;
   display: -webkit-flex;
   display: flex;
+  
+  cursor: pointer;
 }
 
 .footer-partners-log {
@@ -3599,6 +3601,10 @@ input {
   display: -ms-flexbox;
   display: -webkit-flex;
   display: flex;
+}
+
+.footer-brand-conditions-btn:hover {
+  color: #769817f2;
 }
 
 .footer-partners-div {
@@ -3621,8 +3627,8 @@ input {
 }
 
 .partner-svg {
-  height: 16px;
-  width: 16px;
+  height: 23px;
+  width: 23px;
   /* fill: currentColor; */
   flex: none;
 }
@@ -4475,9 +4481,9 @@ input {
 .dtcxcyczd0d1checkout {
   padding-top: 24px;
   border-bottom: 8px solid rgb(238, 238, 238);
-  padding-bottom: 8px;
+  /* padding-bottom: 8px;
   padding-right: 16px;
-  padding-left: 16px;
+  padding-left: 16px; */
   padding-top: 0px;
 }
 
@@ -4542,9 +4548,9 @@ input {
   max-height: 100000px;
   padding-right: 6px;
   animation-fill-mode: forwards;
-  overflow-x: hidden;
+  /* overflow-x: hidden; */
   opacity: 1;
-  overflow-y: hidden;
+  /* overflow-y: hidden; */
   height: 100%;
 }
 
@@ -8441,7 +8447,40 @@ ul.track-steps {
   }
 } 
 
+.alc6cart{
+  -webkit-box-align: center;
+  align-items: center;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
 
+.cid3ckd4d1{
+  -webkit-box-flex: 1;
+  flex-grow: 1;
+  line-height: 20px;
+  font-weight: 500;
+  font-size: 16px;
+  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.c3hmeljuhoq6{
+  padding-right: 4px;
+  color: rgb(84, 84, 84);
+  line-height: 24px;
+  font-weight: normal;
+  font-size: 16px;
+  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.c3hmc5em{
+  line-height: 20px;
+  font-weight: 500;
+  font-size: 16px;
+  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
 
 @media screen and (max-width: 900px) {
 
@@ -10072,9 +10111,9 @@ ul.track-steps {
     max-height: 100000px;
     padding-right: 6px;
     animation-fill-mode: forwards;
-    overflow-x: hidden;
+    /* overflow-x: hidden; */
     opacity: 1;
-    overflow-y: hidden;
+    /* overflow-y: hidden; */
     height: 100%;
   }
 

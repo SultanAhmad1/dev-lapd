@@ -12,7 +12,7 @@ import AtLoadModalShow from './components/modals/AtLoadModalShow'
 import DeliveryModal from './components/modals/DeliveryModal'
 import AvailableStoresShow from './components/modals/AvailableStoresShow'
 import moment from 'moment/moment'
-import { BRAND_GUID, PARTNER_ID, axiosPrivate } from './global/Axios'
+import { BRAND_GUID, BrandLogoPath, PARTNER_ID, axiosPrivate } from './global/Axios'
 import StoreClosedModal from './components/modals/StoreClosedModal'
 import { setLocalStorage, setSessionStorage } from './global/Store'
 import Loader from './components/modals/Loader'
@@ -30,7 +30,7 @@ export default function RootLayout({ children })
 
   const [websiteModificationData, setWebsiteModificationData] = useState(null)
   // Header Bar buttons to be displayed.
-  const [brandlogo, setBrandlogo] = useState("../gallery/uber-eat.svg")
+  const [brandlogo, setBrandlogo] = useState(BrandLogoPath)
   const [headerUserBtnDisplay, setHeaderUserBtnDisplay] = useState(true)
   const [headerPostcodeBtnDisplay, setHeaderPostcodeBtnDisplay] = useState(true)
   const [headerSearchBarDisplay, setHeaderSearchBarDisplay] = useState(false)
@@ -168,12 +168,12 @@ export default function RootLayout({ children })
     async function fetchWebsiteImageColor()
     {
       try {
-        const response = await axiosPrivate.get(`/website-modification-detail/${PARTNER_ID}`);
+        const response = await axiosPrivate.get(`/website-modification-detail/${BRAND_GUID}/${PARTNER_ID}`);
         if(response?.data?.data?.websiteModificationLive !== null && response?.data?.data?.websiteModificationLive?.json_log[0]?.websiteLogoUrl !== null)
         {
           setBrandlogo(response?.data?.data?.websiteModificationLive?.json_log[0]?.websiteLogoUrl)
         }
-        setWebsiteModificationData(response?.data?.data?.websiteModificationLive)
+        setWebsiteModificationData(response?.data?.data)
       } 
       catch (error) 
       {
