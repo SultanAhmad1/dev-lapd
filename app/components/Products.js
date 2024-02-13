@@ -171,7 +171,7 @@ export default function Products()
                     return(
                         <li key={category.id} className="item-lists" id={`section${category.id}`}>
                           <div className="item-title" >
-                            <h3 className="item-title-h3">{category.title}</h3>
+                            <h3 className="item-title-h3" style={{color: (websiteModificationData?.websiteModificationLive !== null && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor !== null) && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor}}>{category.title}</h3>
                           </div>
                           <div className="item-list-empty-div"></div>
 
@@ -187,7 +187,7 @@ export default function Products()
                                           <div className="items-nested-div-one">
                                             <div className="item-detail-style">
                                                 <div className="item-detail">
-                                                    <div className="item-title" style={{color: (websiteModificationData !== null && websiteModificationData?.json_log[0]?.itemFontColor !== null) && websiteModificationData?.json_log[0]?.itemFontColor}}>
+                                                    <div className="item-title" style={{color: (websiteModificationData?.websiteModificationLive !== null && websiteModificationData?.websiteModificationLive?.json_log[0]?.itemFontColor !== null) && websiteModificationData?.websiteModificationLive?.json_log[0]?.itemFontColor}}>
                                                         <span>{item.title}</span>
                                                     </div>
                                                     

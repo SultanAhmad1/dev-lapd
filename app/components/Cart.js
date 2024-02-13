@@ -553,7 +553,11 @@ export default function Cart() {
                           <span className="cjcheckout">Cart summary</span>
                         </h3>
                       </div>
-
+                      <div className="alc6cart">
+                        <div className="cid3ckd4d1">{cartdata.length} item</div>
+                        <div class="c3hmeljuhoq6">Subtotal:</div>
+                        <div class="c3hmc5em"><span aria-label="Subtotal"> {getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(subtotalOrderAmount,2)}</span></div>
+                      </div>  
                       <div className="dze0checkout"></div>
 
                       <div className="alame1e2checkout">
