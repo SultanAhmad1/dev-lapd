@@ -1,7 +1,7 @@
 "use client";
 import Loader from '@/app/components/modals/Loader';
 import HomeContext from '@/app/contexts/HomeContext';
-import { BrandLogoPath } from '@/app/global/Axios';
+import { BRANDSIMPLEGUID, BrandLogoPath } from '@/app/global/Axios';
 import { getAmountConvertToFloatWithFixed, getCountryCurrencySymbol } from '@/app/global/Store';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -42,11 +42,9 @@ function productEdit({params})
 
     // When component load first this useEffect will be used
   useEffect(() => {
-    // const getIndex = window.localStorage.getItem('set_index')
-    // const getCart = window.localStorage.getItem('cart')
-
-    const getIndex = window.sessionStorage.getItem('set_index')
-    const getCart = window.sessionStorage.getItem('cart')
+    setLoader(false)
+    const getIndex = window.localStorage.getItem(`${BRANDSIMPLEGUID}set_index`)
+    const getCart = window.localStorage.getItem(`${BRANDSIMPLEGUID}cart`)
 
     const parseCart = JSON.parse(getCart)
     const getFilterItem = parseCart?.find((cart,index) => index === JSON.parse(getIndex))
@@ -54,13 +52,13 @@ function productEdit({params})
     setQuantity(getFilterItem?.quantity)
     setItemprice(getFilterItem?.total_order_amount / getFilterItem?.quantity)
 
-    setBrandlogo(BrandLogoPath)
-    setTimeout(() => {
-      setLoader(false)
-    }, 3000);
+    // setBrandlogo(BrandLogoPath)
+    // setTimeout(() => {
+      
+    // }, 3000);
 
     return () => {
-      setBrandlogo(BrandLogoPath)
+      // setBrandlogo(BrandLogoPath)
     }
 
   }, [])
@@ -1295,8 +1293,7 @@ function productEdit({params})
       }
       else
       {
-        // const removeIndex = window.localStorage.getItem('set_index')
-        const removeIndex = window.sessionStorage.getItem('set_index')
+        const removeIndex = window.localStorage.getItem(`${BRANDSIMPLEGUID}set_index`)
         
         const filterCartFirst = cartdata?.filter((cart, index) => index !== JSON.parse(removeIndex))
         setCartdata(filterCartFirst)
@@ -1359,6 +1356,7 @@ function productEdit({params})
   // }, [isaccordianclicked])
 
   // Mobile Decrement quantity
+  
   const handleMobileQuantityDecrement = () => 
   {
     if(quantity > 0)
@@ -1548,7 +1546,6 @@ function productEdit({params})
 
   return (
     <>
-          
       <div className="single-product">
         <div className="e5 e6">
           <div className="single-product-level-one-div">

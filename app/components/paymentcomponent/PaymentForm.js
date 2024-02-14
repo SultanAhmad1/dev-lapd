@@ -1,9 +1,9 @@
 // PaymentForm.js
 import React, { useContext, useEffect, useState } from 'react';
 import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { axiosPrivate } from '@/app/global/Axios';
+import { BRANDSIMPLEGUID, axiosPrivate } from '@/app/global/Axios';
 import HomeContext from '@/app/contexts/HomeContext';
-import { getAmountConvertToFloatWithFixed } from '@/app/global/Store';
+import { getAmountConvertToFloatWithFixed, setLocalStorage } from '@/app/global/Store';
 import { useRouter } from 'next/navigation';
 import Loader from '../modals/Loader';
 import Link from 'next/link';
@@ -44,8 +44,7 @@ const PaymentForm = ({orderId}) =>
   }
 
   useEffect(() => {
-    // const orderTotalFromLocalStorage = JSON.parse(window.localStorage.getItem('total_order_value_storage'))
-    const orderTotalFromLocalStorage = JSON.parse(window.sessionStorage.getItem('total_order_value_storage'))
+    const orderTotalFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}total_order_value_storage`))
     if(orderTotalFromLocalStorage !== null)
     {
       settotalOrderAmountValue(orderTotalFromLocalStorage === null ? getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) : getAmountConvertToFloatWithFixed(JSON.parse(orderTotalFromLocalStorage),2))
@@ -73,6 +72,12 @@ const PaymentForm = ({orderId}) =>
 
       const response = await axiosPrivate.post(`/send-sms-and-email`, data)
       setLoader(false)
+      setLocalStorage(`${BRANDSIMPLEGUID}cart`,[])
+      setLocalStorage(`${BRANDSIMPLEGUID}order_amount_number`,null)
+      setLocalStorage(`${BRANDSIMPLEGUID}applied_coupon`,[])
+      setLocalStorage(`${BRANDSIMPLEGUID}customer_information`,null)
+      setLocalStorage(`${BRANDSIMPLEGUID}order_guid`,null)
+      setCartdata([])
       // if(response?.data?.status === "success")
       // {
         router.push(`/track-order/${orderId}`)
@@ -187,7 +192,7 @@ const PaymentForm = ({orderId}) =>
                       isgeterrorfromdatabase === false &&
                       <div className="btaupayment-window">
                         {/* <input type="email" placeholder="Enter your card" defaultValue="" className="payment_card" /> */}
-                        <CardElement options={{style: { base: { fontSize: '16px', color: '#424770', '::placeholder': { color: '#aab7c4' } } } }} />
+                        <CardElement options={{hidePostalCode: true, style: { base: { fontSize: '16px', color: '#424770', '::placeholder': { color: '#aab7c4' } } } }} />
                         {paymentError && <div style={{background: "#ed5858", color: "white", padding: "12px", borderRadius: "1px", marginTop: "10px"}}>{paymentError}</div>}
                       </div>
                     }

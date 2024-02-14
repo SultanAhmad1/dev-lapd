@@ -4679,7 +4679,7 @@ input {
 }
 
 .bheyezebalf0checkout-item-li {
-  flex-wrap: wrap;
+  flex-wrap: unset;
   padding-top: 8px;
   color: rgb(84, 84, 84);
   width: 100%;
@@ -4695,7 +4695,7 @@ input {
   font-weight: 500;
   line-height: 20px;
   font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
-  width: 100%;
+  /* width: 100%; */
   max-width: 220px;
 }
 
@@ -8479,6 +8479,279 @@ ul.track-steps {
   line-height: 20px;
   font-weight: 500;
   font-size: 16px;
+  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+/* new design for items cart */
+.ex-cart-width{
+  border-top: 1px solid rgb(226, 226, 226);
+}
+
+.cart-spacer{
+  height: 1px;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+}
+
+._width48 {
+  width: 48px;
+}
+.blhv-cart-item-display{
+  pointer-events: auto;
+  width: 100%;
+  cursor: pointer;
+}
+
+.blmc-cart-item-display{
+  padding-top: 16px;
+  width: 100%;
+
+}
+
+.blf7al-cart-item-display{
+  max-width: 100%;
+  width: 100%;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+
+}
+
+.cv-cart-item-display{
+  -webkit-box-flex: 1;
+  flex-grow: 1;
+}
+
+.c3cic5chfe-cart-item-display{
+  padding: 0px;
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 500;
+  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+}
+
+.ibcv-cart-item-display{
+  margin-top: 4px;
+  -webkit-box-flex: 1;
+  flex-grow: 1;
+
+
+}
+
+.fdfeffc3c4cgchj9-cart-item-display{
+  color: rgb(107, 107, 107);
+  text-decoration-line: none;
+  text-decoration-line: none;
+  padding: 0px;
+  white-space: pre-wrap;
+  line-height: 20px;
+  font-weight: normal;
+  font-size: 14px;
+  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.md-cart-item-display{
+  padding-left: 16px;
+}
+
+.d1llf9memf-cart-item-display{
+  outline-offset: -1px;
+  outline: rgba(0, 0, 0, 0.03) solid 1px;
+  width: 48px;
+  object-fit: cover;
+  height: 48px;
+}
+
+
+.mgalbb-cart-inc{
+  min-height: 64px;
+  -webkit-box-align: center;
+  align-items: center;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+
+.al-cart{
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+
+.akm2c1mhc2cmcpb1mi-cart-inc-div{
+  cursor: auto;
+  transition: width 100ms linear 0s;
+  width: 120px;
+  background: #EEEEEE;
+  overflow: hidden;
+  border-radius: 500px;
+  height: 36px;
+  color: #000000;
+  position: relative;
+}
+
+.agbafbe3albc-cart-inc-div{
+  transition: right 100ms linear 0s;
+  width: 120px;
+  -webkit-box-align: center;
+  align-items: center;
+  right: 0;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  position: absolute;
+}
+
+.ecbrboc1byfcenalbccmafeodffddefefffgfhfifj{
+  background: transparent;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 0px;
+  width: 36px;
+  font-size: 18px;
+  border-radius: 500px;
+  height: 36px;
+  -webkit-box-pack: center;
+  justify-content: center;
+  font-weight: 500;
+  cursor: pointer;
+  line-height: 24px;
+  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-box-align: center;
+  align-items: center;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  box-sizing: border-box;
+}
+
+.ecbrboc1byfcenalbccmafeodffddefefffgfhfifj-del{
+  background: #fffbfb;
+  border-radius: 50%;
+  box-shadow: 0px 3px 6px #00000029;
+  min-width: 36px;
+  min-height: 36px;
+  padding: 5px;
+  margin-left: 32px;
+  width: 36px;
+  font-size: 18px;
+  border-radius: 500px;
+  height: 36px;
+  -webkit-box-pack: center;
+  justify-content: center;
+  font-weight: 500;
+  cursor: pointer;
+  line-height: 24px;
+  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-box-align: center;
+  align-items: center;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  box-sizing: border-box;
+}
+
+.cwcxbjbk-del{
+  height: 16px;
+  width: 16px;
+  fill: currentColor;
+  flex: none;
+
+
+}
+
+.bhbibjbk-dec{
+  fill: currentColor;
+  flex: none;
+  height: 20px;
+  width: 20px;
+}
+
+.bhbibjbk-inc{
+  width: 20px;
+  height: 20px;
+  fill: currentcolor;
+  flex: none;
+}
+
+.agezmrc3jgc5d2albmbbcoei{
+  transform: translateX(-50%);
+  font-size: 18px;
+  left: 50%;
+  text-align: center;
+  line-height: 24px;
+  white-space: nowrap;
+  font-weight: 500;
+  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  position: absolute;
+}
+
+.cvalk1bb-cart-amount{
+  -webkit-box-pack: end;
+  justify-content: flex-end;
+  -webkit-box-flex: 1;
+  flex-grow: 1;
+  -webkit-box-align: center;
+  align-items: center;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+
+.dialamgsb1c3c5cich{
+  -webkit-box-align: end;
+  align-items: flex-end;
+  -webkit-box-flex: 0;
+  flex-grow: 0;
+  font-size: 16px;
+  line-height: 20px;
+  font-weight: 500;
+  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  color: #000000;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  flex-direction: column;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+
+.fdfeffc3c4c5c6j9{
+  color: rgb(107, 107, 107);
+  text-decoration-line: none;
+  padding: 0px;
+  white-space: pre-wrap;
+  line-height: 16px;
+  font-weight: 500;
+  font-size: 14px;
   font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
 }
 

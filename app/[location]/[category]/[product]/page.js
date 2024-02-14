@@ -2,7 +2,7 @@
 
 import Loader from '@/app/components/modals/Loader';
 import HomeContext from '@/app/contexts/HomeContext';
-import { BRAND_GUID, BrandLogoPath, PARTNER_ID, axiosPrivate } from '@/app/global/Axios';
+import { BRANDSIMPLEGUID, BRAND_GUID, BrandLogoPath, PARTNER_ID, axiosPrivate } from '@/app/global/Axios';
 import { getAmountConvertToFloatWithFixed, getCountryCurrencySymbol } from '@/app/global/Store';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -42,8 +42,7 @@ function productDetails({params})
     const filterItem = async () => {
         try 
         {
-            // const getStoreIDFromLocalStorage = JSON.parse(window.localStorage.getItem('user_selected_store'))
-            const getStoreIDFromLocalStorage = JSON.parse(window.sessionStorage.getItem('user_selected_store'))
+            const getStoreIDFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}user_selected_store`))
             const data = {
                 location: (getStoreIDFromLocalStorage !== null) ? getStoreIDFromLocalStorage?.display_id: storeGUID,
                 brand: BRAND_GUID,
@@ -401,12 +400,12 @@ function productDetails({params})
       };
 
     useEffect(() => {
-        setBrandlogo(BrandLogoPath)
+        // setBrandlogo("../gallery/lapd-logo.svg")
         filterItem()
 
-      return () => {
-        setBrandlogo(BrandLogoPath)
-      }
+    //   return () => {
+    //     setBrandlogo("../gallery/lapd-logo.svg")
+    //   }
     }, [])
 
     const handleRadioInput = (modifierId, itemId, itemName ,secondaryItemModifierCounter) =>
@@ -1655,6 +1654,7 @@ function productDetails({params})
                 const addTotalAmount = {
                     ...singleitem,
                     total_order_amount: parseFloat(quantity * itemprice).toFixed(2),
+                    price_total_without_quantity: parseFloat(itemprice).toFixed(2),
                     quantity: parseInt(quantity),
                     is_cart_modal_clicked: false
                 }

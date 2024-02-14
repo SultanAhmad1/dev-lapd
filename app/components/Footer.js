@@ -1,4 +1,4 @@
-import React, { Fragment, useContext } from 'react'
+import React, { Fragment, useContext, useEffect, useState } from 'react'
 import HomeContext from '../contexts/HomeContext'
 import moment from 'moment'
 import Link from 'next/link';
@@ -9,6 +9,11 @@ function Footer() {
     brandlogo
   } = useContext(HomeContext)
 
+  const [websiteOrigin, setWebsiteOrigin] = useState(null)
+  useEffect(() => {
+    setWebsiteOrigin(window.location.origin)
+  }, [])
+  
   return (
     <>
     {/* Footer */}
@@ -67,7 +72,7 @@ function Footer() {
           <div className="footer-brand-conditions">
             <ul>
               <li>
-                <Link href={`${window.location.origin}/track-order`} className="footer-brand-conditions-btn">Track Order</Link>
+                <Link href={`${websiteOrigin}/track-order`} className="footer-brand-conditions-btn">Track Order</Link>
               </li>
               <li>
                 <a className="footer-brand-conditions-btn">Allergens</a>
