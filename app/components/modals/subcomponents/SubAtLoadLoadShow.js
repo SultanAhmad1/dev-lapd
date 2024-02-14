@@ -1,7 +1,7 @@
 import HomeContext from '@/app/contexts/HomeContext'
-import { BRAND_GUID, PARTNER_ID, axiosPrivate } from '@/app/global/Axios'
+import { BRANDSIMPLEGUID, BRAND_GUID, PARTNER_ID, axiosPrivate } from '@/app/global/Axios'
 import React, { useContext, useEffect, useState } from 'react'
-import { find_matching_postcode, getAtFirstLoadModalShow, getStoreName, setAtFirstLoadModalShow, setLocalStorage, setSessionStorage, setStoreName } from '@/app/global/Store'
+import { find_matching_postcode, getAtFirstLoadModalShow, getStoreName, setAtFirstLoadModalShow, setLocalStorage, setStoreName } from '@/app/global/Store'
 import { useRouter } from 'next/navigation'
 import moment from 'moment'
 
@@ -89,11 +89,10 @@ function SubAtLoadLoadShow({setLoader})
             const response = await axiosPrivate.post(`/ukpostcode-website`, data);
             const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows
             find_matching_postcode(matrix, validpostcode, setDeliverymatrix)
-            // setLocalStorage('address',response?.data?.data)
-            // setLocalStorage('user_valid_postcode', validpostcode)
-            setSessionStorage('address',response?.data?.data)
-            setSessionStorage('user_valid_postcode', validpostcode)
-            // setIsstoreavailable(false)
+            
+            setLocalStorage(`${BRANDSIMPLEGUID}address`,response?.data?.data)
+            setLocalStorage(`${BRANDSIMPLEGUID}user_valid_postcode`, validpostcode)
+            
             setAvailablestores(response.data?.data?.availableStore)
             
             setIsgobtnclickable(false)
@@ -116,7 +115,7 @@ function SubAtLoadLoadShow({setLoader})
       if(deliverymatrix !== null)
       {
         setPostcodefororderamount(deliverymatrix?.postcode)
-        window.sessionStorage.setItem("delivery_matrix", JSON.stringify(deliverymatrix))
+        window.localStorage.setItem(`${BRANDSIMPLEGUID}delivery_matrix`, JSON.stringify(deliverymatrix))
       }
     
     }, [deliverymatrix])
@@ -141,13 +140,11 @@ function SubAtLoadLoadShow({setLoader})
         const convertToJSobj = JSON.parse(response.data?.data?.menu.menu_json_log)
         setMenu(convertToJSobj)
         
-        // const getFilterDataFromObj = JSON.parse(window.localStorage.getItem('filter'))
-        const getFilterDataFromObj = JSON.parse(window.sessionStorage.getItem('filter'))
+        const getFilterDataFromObj = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}filter`))
 
         if(getFilterDataFromObj === null)
         {
-            // setLocalStorage('filter',convertToJSobj.filters[0])
-            setSessionStorage('filter',convertToJSobj.filters[0])
+            setLocalStorage(`${BRANDSIMPLEGUID}filter`,convertToJSobj.filters[0])
         }
         setSelectedFilter(getFilterDataFromObj === null ? convertToJSobj.filters[0] : getFilterDataFromObj)
         setFilters(convertToJSobj.filters)
@@ -187,8 +184,7 @@ function SubAtLoadLoadShow({setLoader})
             store: storeName,
             telephone: storeTelephone
         }
-        // setLocalStorage('user_selected_store', selectedStoreData)
-        setSessionStorage('user_selected_store', selectedStoreData)
+        setLocalStorage(`${BRANDSIMPLEGUID}user_selected_store`, selectedStoreData)
         route.push("/")
     }
 

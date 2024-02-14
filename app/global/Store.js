@@ -107,7 +107,7 @@ export function setLocalStorage(keyName,data)
 
 export function setSessionStorage(keyName,data)
 {
-    return window.sessionStorage.setItem(`${keyName}`, JSON.stringify(data))
+    return window.localStorage.setItem(`${keyName}`, JSON.stringify(data))
 }
 
 export function validatePhoneNumber(phoneNumber) {

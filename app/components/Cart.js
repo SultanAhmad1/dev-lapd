@@ -1,14 +1,14 @@
-import React, { useContext, useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect, useState } from "react";
 import HomeContext from "../contexts/HomeContext";
 import Link from "next/link";
 import {
   getAmountConvertToFloatWithFixed,
   getCountryCurrencySymbol,
   setLocalStorage,
-  setSessionStorage,
 } from "../global/Store";
 import moment from "moment";
 import {
+  BRANDSIMPLEGUID,
   BRAND_GUID,
   DELIVERY_ID,
   PARTNER_ID,
@@ -101,9 +101,8 @@ export default function Cart() {
 
         if (parseInt(subTotalArgument) >= parseInt(amountDiscounts[workingIndex].need_to_spend)) 
         {
-          // setLocalStorage('order_amount_number', amountDiscounts[workingIndex].amount_guid)
-          setSessionStorage("order_amount_number",amountDiscounts[workingIndex].amount_guid);
-          setSessionStorage("order_amount_discount_applied",amountDiscounts[workingIndex])
+          setLocalStorage(`${BRANDSIMPLEGUID}order_amount_number`,amountDiscounts[workingIndex].amount_guid);
+          setLocalStorage(`${BRANDSIMPLEGUID}order_amount_discount_applied`,amountDiscounts[workingIndex])
           setAmountDiscountapplied(amountDiscounts[workingIndex])
           if (amountDiscounts[workingIndex].discount_type === "P") 
           {
@@ -146,18 +145,12 @@ export default function Cart() {
         totalValue =
           parseFloat(totalValue) + parseFloat(total?.total_order_amount);
       }
-
-      // setLocalStorage('sub_order_total_local',JSON.stringify(getAmountConvertToFloatWithFixed(totalValue,2)))
-      setSessionStorage(
-        "sub_order_total_local",
-        JSON.stringify(getAmountConvertToFloatWithFixed(totalValue, 2))
-      );
+      setLocalStorage(`${BRANDSIMPLEGUID}sub_order_total_local`,JSON.stringify(getAmountConvertToFloatWithFixed(totalValue, 2)));
 
       setSubtotalOrderAmount(getAmountConvertToFloatWithFixed(totalValue, 2));
 
       // Calculate the Delivery Fee
       // If the User select the delivery, then delivery fee will be charge.
-
       if (selectedFilter?.id === DELIVERY_ID) {
         if (parseFloat(totalValue) >= parseFloat(deliverymatrix?.order_value)) {
           if (deliverymatrix?.above_order_value === null) {
@@ -166,25 +159,16 @@ export default function Cart() {
             const fee = getAmountConvertToFloatWithFixed(0, 2);
             setDeliveryfee(fee);
           } else {
-            const fee = getAmountConvertToFloatWithFixed(
-              deliverymatrix?.above_order_value,
-              2
-            );
+            const fee = getAmountConvertToFloatWithFixed(deliverymatrix?.above_order_value,2);
             setDeliveryfee(fee);
           }
 
-          if (
-            parseFloat(deliverymatrix?.delivery_matrix_row_values) >
-            parseFloat(0)
-          ) {
+          if (parseFloat(deliverymatrix?.delivery_matrix_row_values) >parseFloat(0)) {
             for (const deliveryMatrixRowValues of deliverymatrix?.delivery_matrix_row_values) {
-              if (
-                parseFloat(totalValue) >=
-                parseFloat(deliveryMatrixRowValues?.min_order_value)
-              ) {
-                if (
-                  deliveryMatrixRowValues?.above_minimum_order_value === null
-                ) {
+              if (parseFloat(totalValue) >=parseFloat(deliveryMatrixRowValues?.min_order_value)) 
+              {
+                if (deliveryMatrixRowValues?.above_minimum_order_value === null) 
+                {
                   const textMessage = <strong>Free Delivery</strong>;
                   setDeliverymessage(textMessage);
                   const fee = getAmountConvertToFloatWithFixed(0, 2);
@@ -214,24 +198,10 @@ export default function Cart() {
             }
           }
         } else {
-          // const textMessage = <span>Minimum order is <strong>{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(deliverymatrix?.order_value, 2)}</strong> to your postcode <strong>{postcode}</strong></span>
           const textMessage = (
-            <span
-              style={{
-                color: "red",
-                background: "#eda7a7",
-                textAlign: "center",
-                padding: "10px",
-              }}
-            >
+            <span style={{color: "red",background: "#eda7a7",textAlign: "center",padding: "10px",}}>
               Minimum order is{" "}
-              <strong>
-                {getCountryCurrencySymbol()}
-                {getAmountConvertToFloatWithFixed(
-                  deliverymatrix?.order_value,
-                  2
-                )}
-              </strong>{" "}
+              <strong>{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(deliverymatrix?.order_value,2)}</strong>{" "}
               to your postcode
             </span>
           );
@@ -255,8 +225,7 @@ export default function Cart() {
         getOrderAmount(getAmountConvertToFloatWithFixed(totalValue, 2));
       }
     }
-    //   setLocalStorage('cart',cartdata)
-    setSessionStorage("cart", cartdata);
+    setLocalStorage(`${BRANDSIMPLEGUID}cart`, cartdata);
   }, [cartdata]);
 
   function handlePromoCodeToggle() {
@@ -300,7 +269,7 @@ export default function Cart() {
   async function handleFindCouponCode() {
     // setIsaddpromocodebtntoggle(!isaddpromocodebtntoggle);
     setLoader(true)
-    const checkCouponCodeIsAlreadyApplied = JSON.parse(window.sessionStorage.getItem("applied_coupon"))
+    const checkCouponCodeIsAlreadyApplied = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}applied_coupon`))
 
     if(parseInt(checkCouponCodeIsAlreadyApplied.length) > parseInt(0))
     {
@@ -342,7 +311,7 @@ export default function Cart() {
       }
       const couponData = response?.data?.data?.coupon
 
-      const getCouponCodeFromSession = JSON.parse(window.sessionStorage.getItem("applied_coupon"))
+      const getCouponCodeFromSession = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}applied_coupon`))
       
       let discountedCoupon = 0;
       if(couponData?.discount_type === "P")
@@ -424,22 +393,9 @@ export default function Cart() {
   }
 
   useEffect(() => {
-    // setLocalStorage('total_order_value_storage',JSON.stringify((getAmountConvertToFloatWithFixed((parseFloat(subtotalOrderAmount) + parseFloat(deliveryfee)) - parseFloat(discountvalue),2))))
-    // setLocalStorage('delivery_fee',getAmountConvertToFloatWithFixed(deliveryfee,2))
 
-    setSessionStorage(
-      "total_order_value_storage",
-      getAmountConvertToFloatWithFixed(
-        parseFloat(subtotalOrderAmount) +
-          parseFloat(deliveryfee) -
-          parseFloat(discountvalue),
-        2
-      )
-    );
-    setSessionStorage(
-      "delivery_fee",
-      getAmountConvertToFloatWithFixed(deliveryfee, 2)
-    );
+    setLocalStorage(`${BRANDSIMPLEGUID}total_order_value_storage`,getAmountConvertToFloatWithFixed(parseFloat(subtotalOrderAmount) +parseFloat(deliveryfee) -parseFloat(discountvalue),2));
+    setLocalStorage(`${BRANDSIMPLEGUID}delivery_fee`,getAmountConvertToFloatWithFixed(deliveryfee, 2));
 
     // {getAmountConvertToFloatWithFixed(parseFloat(subtotalOrderAmount) + parseFloat(deliveryfee) - parseFloat(discountvalue),2)}
 
@@ -448,7 +404,7 @@ export default function Cart() {
   }, [subtotalOrderAmount, deliveryfee, discountvalue]);
 
   useEffect(() => {
-    setSessionStorage("applied_coupon", couponDiscountapplied)
+    setLocalStorage(`${BRANDSIMPLEGUID}applied_coupon`, couponDiscountapplied)
     if(parseInt(couponDiscountapplied.length) > parseInt(0))
     {
       let couponDiscountValue = 0
@@ -460,15 +416,15 @@ export default function Cart() {
           setDeliveryfee(0)
         }
       }
-      setSessionStorage("order_amount_number",null)
+      setLocalStorage(`${BRANDSIMPLEGUID}order_amount_number`,null)
       setAmountDiscountapplied(null)
       setDiscountValue(getAmountConvertToFloatWithFixed(couponDiscountValue,2))
     }
   }, [couponDiscountapplied])
   
-  function handleEditItem(findByIndex, storeName, categorySlug, itemSlug) {
-    // setLocalStorage("set_index",findByIndex)
-    setSessionStorage("set_index", findByIndex);
+  function handleEditItem(findByIndex, storeName, categorySlug, itemSlug) 
+  {
+    setLocalStorage(`${BRANDSIMPLEGUID}set_index`, findByIndex);
     const updateCartModal = cartdata?.map((cart, index) => {
       if (findByIndex === index) {
         return {
@@ -504,14 +460,52 @@ export default function Cart() {
     const removeCoupon = couponDiscountapplied?.filter((filterCoupon) => filterCoupon?.id !== id)
     setCouponDiscountapplied(removeCoupon)
 
-    const removeFromSessionTooo = JSON.parse(window.sessionStorage.getItem("applied_coupon"))
+    const removeFromSessionTooo = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}applied_coupon`))
     const removeFromSessionToooCoupon = removeFromSessionTooo?.filter((sessionCoupon) => sessionCoupon?.id !== id)
-    setSessionStorage("applied_coupon",removeFromSessionToooCoupon)
+    setLocalStorage(`${BRANDSIMPLEGUID}applied_coupon`,removeFromSessionToooCoupon)
     if(parseInt(removeCoupon.length) === parseInt(0))
     {
-      const getTotalOrderValue = JSON.parse(window.sessionStorage.getItem('sub_order_total_local'))
+      const getTotalOrderValue = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}sub_order_total_local`))
       getOrderAmount(JSON.parse(getTotalOrderValue))
     }
+  }
+
+  const decrementQuantity = (index) =>
+  {
+    const updateCartQuantity = cartdata?.map((decCartItemQuantity,indexCartItem) =>
+    {
+      if(parseInt(index) === parseInt(indexCartItem))
+      {
+        return{
+          ...decCartItemQuantity,
+          quantity: decCartItemQuantity.quantity - 1,
+          total_order_amount: parseFloat(decCartItemQuantity.quantity - 1) * parseFloat(decCartItemQuantity.price_total_without_quantity)
+        }
+      }
+
+      return decCartItemQuantity
+    })
+    
+    setCartdata(updateCartQuantity)
+  }
+
+  const incrementQuantity = (index) =>
+  {
+    const updateCartQuantity = cartdata?.map((incCartItemQuantity,indexCartItem) =>
+    {
+      if(parseInt(index) === parseInt(indexCartItem))
+      {
+        return{
+          ...incCartItemQuantity,
+          quantity: incCartItemQuantity.quantity + 1,
+          total_order_amount: parseFloat(incCartItemQuantity.quantity + 1) * parseFloat(incCartItemQuantity.price_total_without_quantity)
+        }
+      }
+
+      return incCartItemQuantity
+    })
+
+    setCartdata(updateCartQuantity)
   }
 
   return (
@@ -555,219 +549,111 @@ export default function Cart() {
                       </div>
                       <div className="alc6cart">
                         <div className="cid3ckd4d1">{cartdata.length} item</div>
-                        <div class="c3hmeljuhoq6">Subtotal:</div>
-                        <div class="c3hmc5em"><span aria-label="Subtotal"> {getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(subtotalOrderAmount,2)}</span></div>
+                        <div className="c3hmeljuhoq6">Subtotal:</div>
+                        <div className="c3hmc5em"><span aria-label="Subtotal"> {getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(subtotalOrderAmount,2)}</span></div>
                       </div>  
                       <div className="dze0checkout"></div>
 
-                      <div className="alame1e2checkout">
-                        <div className="b7avfpfqcheckout-details">
-                          {cartdata?.map((cart, index) => {
-                            return (
-                              <div className="esetcheckout" key={index}>
-                                <a className="ald5egbhddeteud1checkout-edit-item d1">
-                                  <div className="bodgdfcheckout-qty">
-                                    {parseInt(cart?.quantity)}
-                                  </div>
-                                  <div className="alamcjewcheckout">
-                                    <span className="bobpdfcvcheckout-item-header">
-                                      {cart?.title}
-                                    </span>
-                                    <ul className="excheckout">
-                                      {cart?.modifier_group?.map((modifier) => {
-                                        return modifier?.modifier_secondary_items?.map(
-                                          (item, index) => {
-                                            return (
-                                              item?.item_select_to_sale && (
-                                                <>
-                                                  <li
-                                                    className="bheyezebalf0checkout-item-li ez"
-                                                    key={index}
-                                                  >
-                                                    <span className="bodgdfcvcheckout-li-modi-title">
-                                                      {modifier?.title}:
-                                                    </span>
-                                                    <div className="spacer _4"></div>
-                                                    <span className="albodgbqcvcheckout-li-modi-detail">
-                                                      {item?.title} (
+                      {/* Cart item display with new style */}
+                      <div className="ex-cart-width"></div>
+                      <ul>
+                        {
+                          cartdata?.map((cartitem,indexItem) =>
+                          {
+                            return(
+                              <Fragment  key={indexItem}>
+                                <a className="blhv-cart-item-display">
+                                  <li className="blmc-cart-item-display">
+                                    <div className="blf7al-cart-item-display" onClick={() => handleEditItem(indexItem,storeName,cartitem?.category_slug,cartitem?.slug)}>
+                                      <div className="cv-cart-item-display">
+                                        <div className="c3cic5chfe-cart-item-display">{cartitem?.title}</div>
+                                        <ul className="ibcv-cart-item-display">
+                                          {
+                                            cartitem?.modifier_group?.map((modifier,indexItemModifier) =>
+                                            {
+                                              return modifier?.modifier_secondary_items?.map((secondItem,indexSecondItem) =>
+                                              {
+                                                return(
+                                                  secondItem?.item_select_to_sale &&
+                                                  <Fragment key={indexItem + indexItemModifier + indexSecondItem}>
+                                                    <div >
+                                                      <span className="fdfeffc3c4cgchj9-cart-item-display">{modifier?.title}: </span>
+                                                      <span className="fdfeffc3c4cgchj9-cart-item-display">{secondItem?.title} {parseInt(secondItem?.price) > parseInt(0) && `(${secondItem?.country_price_symbol} ${parseFloat(secondItem?.price).toFixed(2)})`}</span>
+                                                    </div>
+                                                    {
+                                                      secondItem?.secondary_item_modifiers?.map((secondModifer,indexSecondModifier) =>
                                                       {
-                                                        item?.country_price_symbol
-                                                      }
-                                                      {item?.price})<div></div>
-                                                    </span>
-                                                  </li>
+                                                        return secondModifer?.secondary_items_modifier_items?.map((secondNestItems, indexSecondNestItem) =>
+                                                        {
+                                                          return(
+                                                            secondNestItems?.item_select_to_sale &&
+                                                            <div key={indexItem + indexItemModifier + indexSecondItem + indexSecondModifier + indexSecondNestItem}>
+                                                              <span className="fdfeffc3c4cgchj9-cart-item-display">{secondModifer?.title}: </span>
+                                                              <span className="fdfeffc3c4cgchj9-cart-item-display">{secondNestItems?.title} {parseInt(secondNestItems?.price) > parseInt(0) && `(${secondNestItems?.country_price_symbol} ${parseFloat(secondNestItems?.price).toFixed(2)})`}</span>
+                                                            </div>
+                                                          )
+                                                        })
+                                                      })
+                                                    }
+                                                  </Fragment>
+                                                )
+                                              })
 
-                                                  {
-                                                  parseInt(item?.secondary_item_modifiers.length) > parseInt(0) &&
-                                                    item?.secondary_item_modifiers?.map(
-                                                      (
-                                                        secondaryModifierItems,
-                                                        indexSecondModifier
-                                                      ) => {
-                                                        return secondaryModifierItems?.secondary_items_modifier_items?.map(
-                                                          (
-                                                            secondItem,
-                                                            indexSecondItem
-                                                          ) => {
-                                                            return (
-                                                              <li
-                                                                className="bheyezebalf0checkout-item-li ez"
-                                                                key={
-                                                                  index +
-                                                                  indexSecondModifier +
-                                                                  indexSecondItem
-                                                                }
-                                                              >
-                                                                <span className="bodgdfcvcheckout-li-modi-title">
-                                                                  {
-                                                                    secondaryModifierItems?.title
-                                                                  }
-                                                                  :
-                                                                </span>
-                                                                <div className="spacer _4"></div>
-                                                                {secondItem.counter >
-                                                                0 ? (
-                                                                  <>
-                                                                    <div class="bodgdfcheckout-qty">
-                                                                      {
-                                                                        secondItem.counter
-                                                                      }
-                                                                    </div>
-                                                                    <span className="albodgbqcvcheckout-li-modi-detail">
-                                                                      {
-                                                                        secondItem?.title
-                                                                      }{" "}
-                                                                      (
-                                                                      {
-                                                                        secondItem?.country_price_symbol
-                                                                      }
-                                                                      {getAmountConvertToFloatWithFixed(
-                                                                        parseFloat(
-                                                                          secondItem.counter
-                                                                        ) *
-                                                                          parseFloat(
-                                                                            secondItem?.price_info
-                                                                          ),
-                                                                        2
-                                                                      )}
-                                                                      )
-                                                                      <div></div>
-                                                                    </span>
-                                                                  </>
-                                                                ) : (
-                                                                  <span className="albodgbqcvcheckout-li-modi-detail">
-                                                                    {
-                                                                      secondItem?.title
-                                                                    }{" "}
-                                                                    (
-                                                                    {
-                                                                      secondItem?.country_price_symbol
-                                                                    }
-                                                                    {
-                                                                      secondItem?.price_info
-                                                                    }
-                                                                    )<div></div>
-                                                                  </span>
-                                                                )}
-                                                              </li>
-                                                            );
-                                                          }
-                                                        );
-                                                      }
-                                                    )}
-                                                </>
-                                              )
-                                            );
+                                            })
                                           }
-                                        );
-                                      })}
-                                    </ul>
-                                  </div>
-                                  <div className="f1alamcheckout-item-qty">
-                                    <span className="gye2gzcheckout-item-qty-span">
-                                      {cart?.country_price_symbol}
-                                      {cart?.total_order_amount}
-                                    </span>
-                                  </div>
-                                </a>
-
-                                <div className="checkout-item-edit-delete">
-                                  <button
-                                    className="cart-header-dotted-btn cp"
-                                    onClick={() => handleDotedBtn(index)}
-                                  >
-                                    <svg
-                                      aria-hidden="true"
-                                      focusable="false"
-                                      viewBox="0 0 24 24"
-                                      style={{ transform: "rotate(90deg)" }}
-                                      className="c8c7cccdcheckout"
-                                    >
-                                      <g>
-                                        <path d="M17 12a1.667 1.667 0 103.333 0A1.667 1.667 0 0017 12zM10.333 12a1.667 1.667 0 103.334 0 1.667 1.667 0 00-3.334 0zM5.333 13.667a1.667 1.667 0 110-3.333 1.667 1.667 0 010 3.333z"></path>
-                                      </g>
-                                    </svg>
-                                  </button>
-                                  {cart?.is_cart_modal_clicked && (
-                                    <div className="cart-item-clear-or-add-modal">
-                                      <a
-                                        className="cart-add-item-btn"
-                                        onClick={() =>
-                                          handleEditItem(
-                                            index,
-                                            storeName,
-                                            cart?.category_slug,
-                                            cart?.slug
-                                          )
-                                        }
-                                      >
-                                        <div className="cart-add-item-svg-div">
-                                          <svg
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            viewBox="0 0 48 48"
-                                            className="cart-add-item-svg"
-                                          >
-                                            <path d="m46.84 5.32-4.16-4.16a4 4 0 0 0-5.58 0C1.7 36.55 3.65 34.52 3.53 34.88S3 36.78 0 46.72A1 1 0 0 0 1 48c.21 0 12.08-3.45 12.39-3.68s-2.75 2.79 33.45-33.42a4 4 0 0 0 0-5.58zM35 6.05 42 13l-1.37 1.37-6.97-6.95zM10.45 38.91l-1-.34-.34-1L35 11.61 36.39 13zm21.8-30.08 1.36 1.37L7.79 36l-1.71-1zM3.32 42.67a7.68 7.68 0 0 1 2 2l-2.85.84zm4 1.42a9.88 9.88 0 0 0-3.43-3.43l1.16-3.94 2 1.23c.88 2.62.38 2.08 2.94 2.94l1.23 2zM13 41.92l-1-1.71 25.8-25.82 1.37 1.36zM45.43 9.49l-2.07 2.07-6.92-6.92 2.07-2.07a1.94 1.94 0 0 1 2.75 0l4.17 4.17a1.94 1.94 0 0 1 0 2.75z" />
-                                          </svg>
-                                        </div>
-                                        <div className="cart-item-btn-text">
-                                          Edit item
-                                        </div>
-                                      </a>
-
-                                      <li
-                                        className="cart-remove-item-list"
-                                        onClick={() => removeItem(index)}
-                                      >
-                                        <div className="cart-remove-item-svg-div">
-                                          <svg
-                                            aria-hidden="true"
-                                            focusable="false"
-                                            viewBox="0 0 16 16"
-                                            className="cart-remove-item-svg"
-                                          >
-                                            <path
-                                              fillRule="evenodd"
-                                              clipRule="evenodd"
-                                              d="M10.667.667V2H14v2H2V2h3.333V.667h5.334zM3.333 5.333h9.334v10H3.333v-10z"
-                                            ></path>
-                                          </svg>
-                                        </div>
-
-                                        <div className="cart-remove-item-btn-text">
-                                          Remove item
-                                        </div>
-                                      </li>
+                                        </ul>
+                                      </div>
+                                      
+                                      <div className="md-cart-item-display">
+                                        <img alt={cartitem?.title} src={cartitem?.image_url} className="d1llf9memf-cart-item-display" />
+                                      </div>
                                     </div>
-                                  )}
-                                </div>
-                              </div>
-                            );
-                          })}
+                                    
+                                    <div className="mgalbb-cart-inc">
+                                      <div className="al-cart">
+                                        <div className="akm2c1mhc2cmcpb1mi-cart-inc-div">
+                                          <div className="agbafbe3albc-cart-inc-div">
+                                          
+                                            <button disabled={parseInt(cartitem?.quantity) === parseInt(1) ? true : false} className="ecbrboc1byfcenalbccmafeodffddefefffgfhfifj" onClick={() => decrementQuantity(indexItem)}>
+                                              <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" className="hfg0ebhgsingle-product-svg"><path d="M15.833 8.75H4.167v2.5h11.666v-2.5z"></path></svg>
+                                            </button>
+                                            <div className="cart-spacer _width48"></div>
+                                            
+                                            <button className="ecbrboc1byfcenalbccmafeodffddefefffgfhfifj" onClick={() => incrementQuantity(indexItem)}>
+                                              <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" className="bhbibjbk-inc"><path d="M15.833 8.75H11.25V4.167h-2.5V8.75H4.167v2.5H8.75v4.583h2.5V11.25h4.583v-2.5z"></path></svg>
+                                            </button>
+                                          
+                                            <div className="agezmrc3jgc5d2albmbbcoei">
+                                              <div>{parseInt(cartitem?.quantity)}</div>
+                                            </div>
+                                          </div>
+                                        </div>
+                                          
+                                        <button className="ecbrboc1byfcenalbccmafeodffddefefffgfhfifj-del" onClick={() => removeItem(indexItem)}>
+                                            <svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" className="cwcxbjbk-del"><path fillRule="evenodd" clipRule="evenodd" d="M10.667.667V2H14v2H2V2h3.333V.667h5.334zM3.333 5.333h9.334v10H3.333v-10z"></path></svg>
+                                        </button>
 
-                         
-                        </div>
-                      </div>
+                                        <div className="spacer _8"></div>
+                                      </div>
+                                        
+                                      <div className="cvalk1bb-cart-amount">
+                                        <div className="dialamgsb1c3c5cich">
+                                          <span className="fdfeffc3c4c5c6j9">{cartitem?.country_price_symbol}{parseFloat(cartitem?.total_order_amount).toFixed(2)}</span>
+                                        </div>
+                                      </div>
+                                      
+                                    </div>
+
+                                  </li>
+                                </a>
+                                <div className="ex-cart-width"></div>
+                              </Fragment>
+                            )
+                          })
+                        }
+                      </ul>
+                      {/* <div className="ex-cart-width"></div> */}
+                      {/* Cart item new design */}
                       {/* Amount Discount */}
                       {
                         amountDiscountapplied !== null &&

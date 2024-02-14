@@ -2,11 +2,10 @@
 import Loader from "@/app/components/modals/Loader";
 import PostcodeModal from "@/app/components/modals/PostcodeModal";
 import HomeContext from "@/app/contexts/HomeContext";
-import { BRAND_GUID, PARTNER_ID, axiosPrivate } from "@/app/global/Axios";
-import { getAmountConvertToFloatWithFixed, getCountryCurrencySymbol, setLocalStorage, setSessionStorage, validatePhoneNumber } from "@/app/global/Store";
-import { listtime, round15, tConvert } from "@/app/global/Time";
+import { BRANDSIMPLEGUID, BRAND_GUID, PARTNER_ID, axiosPrivate } from "@/app/global/Axios";
+import { getAmountConvertToFloatWithFixed, getCountryCurrencySymbol, setLocalStorage, validatePhoneNumber } from "@/app/global/Store";
+import { listtime, round15 } from "@/app/global/Time";
 import moment from "moment";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useContext, useEffect, useRef, useState } from "react";
 
@@ -207,8 +206,7 @@ function UserForm()
     // Get the current day name
     try 
     {
-      // const placeOrderGetStoreGUID = JSON.parse(window.localStorage.getItem('user_selected_store'))
-      const placeOrderGetStoreGUID = JSON.parse(window.sessionStorage.getItem('user_selected_store'))
+      const placeOrderGetStoreGUID = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}user_selected_store`))
       const data = {
         location_guid: (placeOrderGetStoreGUID === null) ? storeGUID : placeOrderGetStoreGUID?.display_id,
         brand_guid: BRAND_GUID,
@@ -306,8 +304,8 @@ function UserForm()
   }
 
   useEffect(() => {
-    // const placeOrderLocalStorageTotal = JSON.parse(window.localStorage.getItem('total_order_value_storage'))
-    const placeOrderLocalStorageTotal = JSON.parse(window.sessionStorage.getItem('total_order_value_storage'))
+    
+    const placeOrderLocalStorageTotal = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}total_order_value_storage`))
     settotalOrderAmountValue(placeOrderLocalStorageTotal === null ? totalOrderAmountValue : getAmountConvertToFloatWithFixed(JSON.parse(placeOrderLocalStorageTotal),2))
 
     setIscartbtnclicked(false)
@@ -316,6 +314,20 @@ function UserForm()
 
     setHeaderCartBtnDisplay(false)
     setHeaderPostcodeBtnDisplay(false)
+
+    const getCustomerInforation = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}customer_information`))
+    if(getCustomerInforation !== null)
+    {
+      setDoorhousename(getCustomerInforation.doorhousename)
+      setDriverinstruction(getCustomerInforation.driverinstruction)
+      setEmail(getCustomerInforation.email)
+      setPhone(getCustomerInforation.phone)
+      setFirstName(getCustomerInforation.firstname)
+      setLastName(getCustomerInforation.lastname)
+      setDeliveryTime(getCustomerInforation.deliverytime)
+      setIsbyemailclicked(getCustomerInforation.isbyemailclicked)
+      setIsbysmsclicked(getCustomerInforation.isbysmsclicked)
+    }
   }, [])
 
   async function fetchCustomerLoginDetails()
@@ -376,21 +388,33 @@ function UserForm()
 
   async function storeCustomerDetail()
   {
-    // const subTotalOrderLocal = (JSON.parse(JSON.parse(window.localStorage.getItem('sub_order_total_local'))) === null) ? null : getAmountConvertToFloatWithFixed(JSON.parse(JSON.parse(window.localStorage.getItem('sub_order_total_local'))),2)
-    // const localStorageTotal = (JSON.parse(window.localStorage.getItem('total_order_value_storage')) === null) ? null : JSON.parse(window.localStorage.getItem('total_order_value_storage'))
-    // const orderAmountDiscountValue = (JSON.parse(window.localStorage.getItem('order_amount_number')) === null) ? null : JSON.parse(window.localStorage.getItem('order_amount_number'))
-    // const orderFilter = JSON.parse(window.localStorage.getItem('filter'))
-    // const deliveryFeeLocalStorage = (JSON.parse(window.localStorage.getItem('delivery_fee')) === null) ? null : getAmountConvertToFloatWithFixed(JSON.parse(window.localStorage.getItem('delivery_fee')),2)
-
-    const subTotalOrderLocal = (JSON.parse(JSON.parse(window.sessionStorage.getItem('sub_order_total_local'))) === null) ? null : getAmountConvertToFloatWithFixed(JSON.parse(JSON.parse(window.sessionStorage.getItem('sub_order_total_local'))),2)
-    const localStorageTotal = (JSON.parse(window.sessionStorage.getItem('total_order_value_storage')) === null) ? null : JSON.parse(window.sessionStorage.getItem('total_order_value_storage'))
-    const orderAmountDiscountValue = (JSON.parse(window.sessionStorage.getItem('order_amount_number')) === null) ? null : JSON.parse(window.sessionStorage.getItem('order_amount_number'))
-    const orderFilter = JSON.parse(window.sessionStorage.getItem('filter'))
-    const deliveryFeeLocalStorage = (JSON.parse(window.sessionStorage.getItem('delivery_fee')) === null) ? null : getAmountConvertToFloatWithFixed(JSON.parse(window.sessionStorage.getItem('delivery_fee')),2)
-    const getCouponCode = JSON.parse(window.sessionStorage.getItem("applied_coupon"))
+    const subTotalOrderLocal = (JSON.parse(JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}sub_order_total_local`))) === null) ? null : getAmountConvertToFloatWithFixed(JSON.parse(JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}sub_order_total_local`))),2)
+    const localStorageTotal = (JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}total_order_value_storage`)) === null) ? null : JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}total_order_value_storage`))
+    const orderAmountDiscountValue = (JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}order_amount_number`)) === null) ? null : JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}order_amount_number`))
+    const orderFilter = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}filter`))
+    const deliveryFeeLocalStorage = (JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}delivery_fee`)) === null) ? null : getAmountConvertToFloatWithFixed(JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}delivery_fee`)),2)
+    const getCouponCode = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}applied_coupon`))
 
     const couponCodes = (parseInt(getCouponCode.length) > parseInt(0) ? getCouponCode : couponDiscountapplied)
     const updatedDeliveryTime = moment(`${moment().format('YYYY-MM-DD')} ${deliverytime}`, 'YYYY-MM-DD HH:mm:ss')
+
+    let orderFromDatabaseGUID = window.localStorage.getItem(`${BRANDSIMPLEGUID}order_guid`)
+    
+    let customerURL = (orderFromDatabaseGUID === null) ?  `/store-customer-details` : `/update-customer-details`
+
+    const customerInformationInLocalStorage = {
+      doorhousename: doorhousename,
+      driverinstruction: driverinstruction,
+      email: email,
+      phone: phone,
+      firstname: firstname,
+      lastname: lastname,
+      deliverytime: deliverytime,
+      isbyemailclicked: isbyemailclicked,
+      isbysmsclicked: isbysmsclicked,
+    }
+
+    setLocalStorage(`${BRANDSIMPLEGUID}customer_information`,customerInformationInLocalStorage)
     try 
     {
       const data = {
@@ -421,17 +445,15 @@ function UserForm()
         // delivery_estimate_time: moment(deliverytime, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
         delivery_fee: deliveryFeeLocalStorage,
         coupons: couponCodes,
+        order_guid: (orderFromDatabaseGUID !== null) ? JSON.parse(orderFromDatabaseGUID) : null,
       }
-      const response = await axiosPrivate.post(`/store-customer-details`,data)  
+
+      // first check the order guid id in localStorage if it is null then store information then update them.
+
+      const response = await axiosPrivate.post(customerURL,data)  
       if(response?.data?.status === "success")
       {
-        // setLocalStorage('cart',[])
-        // setLocalStorage('order_amount_number',null)
-
-        setSessionStorage('cart',[])
-        setSessionStorage('order_amount_number',null)
-        setSessionStorage("applied_coupon",[])
-        setCartdata([])
+        setLocalStorage(`${BRANDSIMPLEGUID}order_guid`,response?.data?.data?.order?.external_order_id)
         setLoader(false)
         route.push(`/payment/${response?.data?.data?.order?.external_order_id}`)
       }
@@ -589,7 +611,7 @@ function UserForm()
                     {
                       isadddriverdisplayclicked &&
                       <div className="btaucheckout-window">
-                        <textarea placeholder="Add delivery instructions" rows="2" aria-label="Add delivery instructions" value={driverinstruction} onChange={handleDriverInstructionEvent} className="door_number" spellcheck="false"></textarea>
+                        <textarea placeholder="Add delivery instructions" rows="2" aria-label="Add delivery instructions" value={driverinstruction} onChange={handleDriverInstructionEvent} className="door_number" spellCheck="false"></textarea>
                       </div>
                     }
 
@@ -1053,7 +1075,7 @@ function UserForm()
                         isadddriverdisplayclicked &&
                         <div className="btaucheckout-window">
                           {/* <textarea placeholder="Add delivery instructions" className="door_number" ></textarea> */}
-                          <textarea placeholder="Add delivery instructions" rows="2" aria-label="Add delivery instructions" value={driverinstruction} onChange={handleDriverInstructionEvent} className="door_number" spellcheck="false"></textarea>
+                          <textarea placeholder="Add delivery instructions" rows="2" aria-label="Add delivery instructions" value={driverinstruction} onChange={handleDriverInstructionEvent} className="door_number" spellCheck="false"></textarea>
                           {/* <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
                           
                           <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
