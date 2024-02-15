@@ -9206,7 +9206,7 @@ ul.track-steps {
   }
 
   .agaksingle-product {
-    width: 100%;
+    width: 0%;
     position: absolute;
   }
 
@@ -9370,7 +9370,7 @@ ul.track-steps {
     display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
-    margin-top: 64px;
+    /* margin-top: 64px; */
   }
 
   .ecsingle-product {

@@ -10,8 +10,6 @@ import React, { useContext, useEffect, useState } from 'react'
 
 function productDetails({params}) 
 {
-    // const [loader, setLoader] = useState(true)
-
     const router = useRouter()
     const{setLoader,loader,storeGUID,setBrandlogo,setIscartbtnclicked,setCartdata,cartdata} = useContext(HomeContext)
     // const {setIsitemclicked, handleInput} = useContext(HomeContext)
@@ -391,22 +389,22 @@ function productDetails({params})
         } 
         catch (error) 
         {
-          console.error('Error fetching data:', error);
           setTimeout(() => {
             setLoader(false)
         }, 3000);
-        //   setIsmenuavailable(false)
         }
-      };
+    }
 
     useEffect(() => {
-        // setBrandlogo("../gallery/lapd-logo.svg")
         filterItem()
-
-    //   return () => {
-    //     setBrandlogo("../gallery/lapd-logo.svg")
-    //   }
     }, [])
+
+    const handleMScroll = (event) =>
+    {
+        let element = document.querySelector('.ctascusingle-product')
+            
+        element.style.position = (event.deltaY === 100) ? "absolute" : "sticky"
+    }
 
     const handleRadioInput = (modifierId, itemId, itemName ,secondaryItemModifierCounter) =>
     {
@@ -1629,20 +1627,24 @@ function productDetails({params})
                 }
             }
 
+            let indexArrForScroll = []
+
             if(parseInt(countMinPermit) > parseInt(0))
             {
                 const addErrorClassinModifier = {
                     ...singleitem,
-                    modifier_group: singleitem?.modifier_group?.map((addErrorClass) =>
+                    modifier_group: singleitem?.modifier_group?.map((addErrorClass,index) =>
                     {
                         let addClass = addErrorClass?.valid_class
                         if(parseInt(addErrorClass?.min_permitted) > parseInt(0) && addErrorClass.is_modifier_selected === false)
                         {
                             addClass = "error_check"
+                            indexArrForScroll.push(index)
                         }
+                      
                         return{
                             ...addErrorClass,
-                            valid_class: addClass
+                            valid_class: addClass,
                         }
                     })
                 }
@@ -1651,6 +1653,7 @@ function productDetails({params})
             }
             else
             {
+                setLoader(true)
                 const addTotalAmount = {
                     ...singleitem,
                     total_order_amount: parseFloat(quantity * itemprice).toFixed(2),
@@ -1662,50 +1665,98 @@ function productDetails({params})
                 router.push("/")
                 setIscartbtnclicked(true)
             }
+
+            if(indexArrForScroll.length > 0)
+            {
+                for(let indexArr = 0; indexArr < indexArrForScroll.length; indexArr++)
+                {
+                    if(indexArr === 0)
+                    {
+                        let element = document.querySelector(`.section${indexArrForScroll[indexArr]}`)
+                        element.scrollIntoView({ behavior: 'smooth' });
+                        return
+                    }
+                }
+            }
         }
     }
 
-    // Mobile Cart Click button
     const handleMobileAddtoCart = () =>
     {
-        const addTotalAmount = {
-            ...singleitem,
-            total_order_amount: parseFloat(quantity * itemprice).toFixed(2),
-            quantity: parseInt(quantity),
-            is_cart_modal_clicked: false
-        }
-        setCartdata((prevData) => [...prevData, addTotalAmount])
-        router.push("/")
-        setIscartbtnclicked(true)
-    }
+        if(singleitem)
+        {
+            // Count the number of modifier is min_permit is greater than zero.
 
-    // useEffect(() => {
-  
-    //     if(isaccordianclicked)
-    //     {
-    //       var acc = document.getElementsByClassName("accordion");
-    //       var i;
-    
-    //       for (i = 0; i < acc.length; i++) 
-    //       {
-    //         acc[i].addEventListener("click", function() 
-    //         {
-    //           var panel = this.parentNode.parentNode.nextElementSibling;
-    //           if (panel.style.display === "block") {
-    //             panel.style.display = "none";
-    //             this.children[0].children[0].style.display = 'none'
-    //             this.children[0].children[1].style.display = 'block'
-    //           } else {
-    //             panel.style.display = "block";
-    //             this.children[0].children[0].style.display = 'block'
-    //             this.children[0].children[1].style.display = 'none'
-    //           }
-    //         });
-    //       }
-        
-    //       setIsaccordianclicked(false)
-    //     }
-    // }, [isaccordianclicked])
+            let countMinPermit = 0
+            for(const minPermit of singleitem?.modifier_group)
+            {
+                if(parseInt(minPermit?.min_permitted) > parseInt(0) && minPermit?.is_modifier_selected === false)
+                {
+                    countMinPermit += 1
+                }
+            }
+
+            let indexArrForScroll = []
+
+            if(parseInt(countMinPermit) > parseInt(0))
+            {
+                const addErrorClassinModifier = {
+                    ...singleitem,
+                    modifier_group: singleitem?.modifier_group?.map((addErrorClass,index) =>
+                    {
+                        let addClass = addErrorClass?.valid_class
+                        if(parseInt(addErrorClass?.min_permitted) > parseInt(0) && addErrorClass.is_modifier_selected === false)
+                        {
+                            addClass = "error_check"
+                            indexArrForScroll.push(index)
+                        }
+                      
+                        return{
+                            ...addErrorClass,
+                            valid_class: addClass,
+                        }
+                    })
+                }
+
+                setSingleitem(addErrorClassinModifier)
+            }
+            else
+            {
+                setLoader(true)
+                const addTotalAmount = {
+                    ...singleitem,
+                    total_order_amount: parseFloat(quantity * itemprice).toFixed(2),
+                    price_total_without_quantity: parseFloat(itemprice).toFixed(2),
+                    quantity: parseInt(quantity),
+                    is_cart_modal_clicked: false
+                }
+                setCartdata((prevData) => [...prevData, addTotalAmount])
+                router.push("/")
+                setIscartbtnclicked(true)
+            }
+
+            if(indexArrForScroll.length > 0)
+            {
+                for(let indexArr = 0; indexArr < indexArrForScroll.length; indexArr++)
+                {
+                    if(indexArr === 0)
+                    {
+                        let element = document.querySelector(`.msection${indexArrForScroll[indexArr]}`)
+                        element.scrollIntoView({ 
+                            behavior: 'smooth',
+                            block: 'start', // Adjust to 'center' or 'end' if needed
+                            inline: 'nearest'
+                         });
+                        element.offsetTop
+                        let elementCross = document.querySelector('.ctascusingle-product')
+            
+                        elementCross.style.position = "absolute"
+                        return
+                    }
+                }
+            }
+        }
+    }
 
     // Mobile Decrement quantity
     const handleMobileQuantityDecrement = () => 
@@ -1894,10 +1945,10 @@ function productDetails({params})
         }
         setIsmodifierclicked(false)
     }
+
     return (
         
         <>
-          
             <div className="single-product">
                 <div className="e5 e6">
                     <div className="single-product-level-one-div">
@@ -1959,158 +2010,87 @@ function productDetails({params})
                                         return(
                                             // {/* minimum option = '1' and maximum option = 1 and single item select = 1 */}
                                             (modifier?.select_single_option === 1 && (modifier?.min_permitted === 1 && modifier?.max_permitted === 1)) ? 
-                                                <li key={index}>
+                                            <li key={index} className={`section${index}`}>
+                                                <div>
                                                     <div>
-                                                        <div>
-                                                            <hr className="product_hr"></hr>
-                                                            <div className="product-list-div">
-                                                                <div className="product-modifier-groups">
-                                                                    <div className="product-modifier-name">{modifier?.title}</div>
-                                                                    <div className="product-modifier-option">
-                                                                        <span>Choose {modifier?.max_permitted}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="product-required">
-                                                                    <div className={`product-required-div ${modifier?.valid_class}`}> {(parseInt(modifier?.min_permitted) > parseInt(0)) ? "Required" : "Optional"}</div>
+                                                        <hr className="product_hr"></hr>
+                                                        <div className="product-list-div">
+                                                            <div className="product-modifier-groups">
+                                                                <div className="product-modifier-name">{modifier?.title}</div>
+                                                                <div className="product-modifier-option">
+                                                                    <span>Choose {modifier?.max_permitted}</span>
                                                                 </div>
                                                             </div>
-                
+                                                            <div className="product-required">
+                                                                <div className={`product-required-div ${modifier?.valid_class}`}> {(parseInt(modifier?.min_permitted) > parseInt(0)) ? "Required" : "Optional"}</div>
+                                                            </div>
                                                         </div>
-                                                        <div className="hg">
+            
+                                                    </div>
+                                                    <div className="hg">
+                                                        {
+                                                            modifier?.modifier_secondary_items?.map((seconditems, indexSecondItem) =>
                                                             {
-                                                                modifier?.modifier_secondary_items?.map((seconditems, indexSecondItem) =>
-                                                                {
-                                                                    return(
-                                                                        <div key={indexSecondItem}>
-                                                                            <hr className="product-modifier-items-hr"></hr>
-                                                                            <div className="product-modifier-item-detail" onClick={() => handleRadioInput(modifier?.id,seconditems?.id, seconditems?.title, parseInt(seconditems?.secondary_item_modifiers.length))}>
-                                                                                {
-                                                                                    (parseInt(seconditems?.secondary_item_modifiers?.length) > parseInt(0)) && 
-                                                                                    <div className="poquickreview-modal">
-                                                                                        <div className="c8c7cuquickreview-modal">
-                                                                                            <svg style={{cursor: "pointer"}} width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="#AFAFAF" transform="rotate(90, 12, 12)"></path></svg>
-                                                                                        </div>
+                                                                return(
+                                                                    <div key={indexSecondItem}>
+                                                                        <hr className="product-modifier-items-hr"></hr>
+                                                                        <div className="product-modifier-item-detail" onClick={() => handleRadioInput(modifier?.id,seconditems?.id, seconditems?.title, parseInt(seconditems?.secondary_item_modifiers.length))}>
+                                                                            {
+                                                                                (parseInt(seconditems?.secondary_item_modifiers?.length) > parseInt(0)) && 
+                                                                                <div className="poquickreview-modal">
+                                                                                    <div className="c8c7cuquickreview-modal">
+                                                                                        <svg style={{cursor: "pointer"}} width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false"><path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="#AFAFAF" transform="rotate(90, 12, 12)"></path></svg>
                                                                                     </div>
-                                                                                }
-                                                                                <input type="radio" className="radio-input" ></input>
-                                                                                {/* <label className="modifier-product-item-name nv"> select radio */}
-                                                                                <label className={`modifier-product-item-name ${seconditems?.activeClass}`}>
-                                                                                    <div className="spacer _16"></div>
-                                                                                    <div className="modifier-product-item-name-one-div">
-                                                                                        <div className="modifier-product-item-name-one-nested-div">
-                                                                                            <div className="modifier-product-item-name-one-nested-div-one">
-                                                                                                <div className="modifier-product-item-name-one-nested-div-one-nested">
-                                                                                                    <div className="modifier-product-item-name-one-nested-div-one-nested-div">{seconditems?.title}</div>
-                                                                                                    <div className="spacer _8"></div>
-                                                                                                    <div className="modifier-group-price">+{seconditems?.country_price_symbol}{getAmountConvertToFloatWithFixed(seconditems?.price,2)}</div>
-                                                                                                </div>
+                                                                                </div>
+                                                                            }
+                                                                            <input type="radio" className="radio-input" ></input>
+                                                                            {/* <label className="modifier-product-item-name nv"> select radio */}
+                                                                            <label className={`modifier-product-item-name ${seconditems?.activeClass}`}>
+                                                                                <div className="spacer _16"></div>
+                                                                                <div className="modifier-product-item-name-one-div">
+                                                                                    <div className="modifier-product-item-name-one-nested-div">
+                                                                                        <div className="modifier-product-item-name-one-nested-div-one">
+                                                                                            <div className="modifier-product-item-name-one-nested-div-one-nested">
+                                                                                                <div className="modifier-product-item-name-one-nested-div-one-nested-div">{seconditems?.title}</div>
+                                                                                                <div className="spacer _8"></div>
+                                                                                                {
+                                                                                                    (parseInt(seconditems?.price) > parseInt(0)) &&
+                                                                                                    <div className="modifier-group-price">{seconditems?.country_price_symbol}{getAmountConvertToFloatWithFixed(seconditems?.price,2)}</div>
+                                                                                                }
                                                                                             </div>
                                                                                         </div>
                                                                                     </div>
-                                                                                </label>
-                                                                            </div>
-                                                                            
+                                                                                </div>
+                                                                            </label>
                                                                         </div>
-                                                                    )
-                                                                })
-                                                            }
-                                                        </div>
+                                                                        
+                                                                    </div>
+                                                                )
+                                                            })
+                                                        }
                                                     </div>
-                                                </li>
+                                                </div>
+                                            </li>
                                             :
                                             // {/* minimum option = '0' and maximum option = 1 and single item select = 1 */}
                                             (modifier?.select_single_option === 1 && (modifier?.min_permitted === 0 && modifier?.max_permitted >= 1)) ? 
-                                                <li key={index}>
+                                            <li key={index} className={`section${index}`}>
+                                                <div>
                                                     <div>
-                                                        <div>
-                                                            <hr className="product_hr"></hr>
+                                                        <hr className="product_hr"></hr>
 
-                                                            <div className="product-list-div">
-                                                                <div className="product-modifier-groups">
-                                                                    <div className="product-modifier-name">{modifier?.title}</div>
-                                                                    <div className="product-modifier-option">
-                                                                        <span>Choose up to {modifier?.max_permitted}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="product-required">
-                                                                    <div className={`product-required-div ${modifier?.valid_class}`}>{(parseInt(modifier?.min_permitted) > parseInt(0)) ? "Required" : "Optional"}</div>
+                                                        <div className="product-list-div">
+                                                            <div className="product-modifier-groups">
+                                                                <div className="product-modifier-name">{modifier?.title}</div>
+                                                                <div className="product-modifier-option">
+                                                                    <span>Choose up to {modifier?.max_permitted}</span>
                                                                 </div>
                                                             </div>
-
+                                                            <div className="product-required">
+                                                                <div className={`product-required-div ${modifier?.valid_class}`}>{(parseInt(modifier?.min_permitted) > parseInt(0)) ? "Required" : "Optional"}</div>
                                                             </div>
-                                                            {/* List of all modifier group products */}
-                                                            <div className="hg">
-                                                                {
-                                                                    modifier?.modifier_secondary_items?.map((seconditems,indexSecondItem) =>
-                                                                    {
-                                                                        return(
-                                                                            <div key={indexSecondItem}>
-                                                                                <hr className="product-modifier-items-hr"></hr>
-                                                                                {
-                                                                                    seconditems.activeClass !== "mchw" ?
-                                                                                    <div className="product-modifier-item-detail"  onClick={() => handleCheckInput(modifier?.id,seconditems?.id, parseInt(seconditems?.secondary_item_modifiers.length))}>
-                                                                                        <input type="checkbox" className="checkbox-input"></input>
-                                                                                        <label className={`modifier-product-item-name-checkbox ${seconditems.activeClass}`}>
-                                                                                            <div className="spacer _16"></div>
-                                                                                            <div className="modifier-product-item-name-one-div">
-                                                                                                <div className="modifier-product-item-name-one-nested-div">
-                                                                                                    <div className="modifier-product-item-name-one-nested-div-one">
-                                                                                                        <div className="modifier-product-item-name-one-nested-div-one-nested">
-                                                                                                            <div className="modifier-product-item-name-one-nested-div-one-nested-div">{seconditems?.title}</div>
-                                                                                                            <div className="spacer _8"></div>
-                                                                                                            <div className="modifier-group-price">+{seconditems?.country_price_symbol}{getAmountConvertToFloatWithFixed(seconditems?.price,2)}</div>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </label>
-                                                                                    </div>
-                                                                                    :
-                                                                                    <div className="product-modifier-item-detail">
-                                                                                        <input type="checkbox" className="checkbox-input"></input>
-                                                                                        <label className={`modifier-product-item-name-checkbox ${seconditems.activeClass}`}>
-                                                                                            <div className="spacer _16"></div>
-                                                                                            <div className="modifier-product-item-name-one-div">
-                                                                                                <div className="modifier-product-item-name-one-nested-div">
-                                                                                                    <div className="modifier-product-item-name-one-nested-div-one">
-                                                                                                        <div className="modifier-product-item-name-one-nested-div-one-nested">
-                                                                                                            <div className="modifier-product-item-name-one-nested-div-one-nested-div">{seconditems?.title}</div>
-                                                                                                            <div className="spacer _8"></div>
-                                                                                                            <div className="modifier-group-price">+{seconditems?.country_price_symbol}{parseFloat(seconditems?.price).toFixed(2)}</div>
-                                                                                                        </div>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                            </div>
-                                                                                        </label>
-                                                                                    </div>
-                                                                                }
-                                                                                
-                                                                            </div>
-                                                                        )
-                                                                    })
-                                                                }
                                                         </div>
-                                                    </div>
-                                                </li>
-                                            :
-                                            // (modifier?.select_single_option > 1 && (modifier?.min_permitted === 0 && modifier?.max_permitted > 1)) &&
-                                            // {/* minimum option = '- / 0' and maximum option = 5 and single item select = 2 */}
 
-                                                <li key={index}>
-                                                    <div>
-                                                        <div>
-                                                            <hr className="product_hr"></hr>
-                                                            <div className="product-list-div">
-                                                                <div className="product-modifier-groups">
-                                                                    <div className="product-modifier-name">{modifier?.title}</div>
-                                                                    <div className="product-modifier-option">
-                                                                        <span>Choose up to {modifier?.max_permitted}</span>
-                                                                    </div>
-                                                                </div>
-                                                                <div className="product-required">
-                                                                    <div className={`product-required-div ${modifier?.valid_class}`}>{(parseInt(modifier?.min_permitted) > parseInt(0)) ? "Required" : "Optional"}</div>
-                                                                </div>
-                                                            </div>
                                                         </div>
                                                         {/* List of all modifier group products */}
                                                         <div className="hg">
@@ -2120,63 +2100,144 @@ function productDetails({params})
                                                                     return(
                                                                         <div key={indexSecondItem}>
                                                                             <hr className="product-modifier-items-hr"></hr>
-
-                                                                            <div className="product-modifier-item-detail">
-
-                                                                                <div className="modifier-product-item-name-inc-dec">
-                                                                                
-                                                                                    <div className="modifier-inc-dec">
-                                                                                        <button className="modifier-btn" disabled={seconditems?.is_item_select} onClick={() => handleDecrement(modifier?.id,seconditems?.id)}>
-
-                                                                                        <div className="modifier-btn-div">
-                                                                                            <div className="modifier-btn-svg">
-                                                                                                <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                                                                                    <path d="m7.33325 13v-2h9.33335v2z" fill="#000000"></path>
-                                                                                                </svg>
-                                                                                            </div>
-                                                                                        </div>
-
-                                                                                        </button>
-                                                                                        
-                                                                                        <div className="incremented-values">{seconditems?.counter}</div>
-                                                                                        
-                                                                                        <button className="modifier-btn" disabled={(parseInt(modifier?.max_permitted) === parseInt(modifier?.modifier_counter)) ? true : false} onClick={() => handleIncrement(modifier?.id,seconditems?.id)}>
-
-                                                                                            <div className="modifier-btn-div">
-                                                                                                <div className="modifier-btn-svg">
-                                                                                                    <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                                                                                        <path d="m16.6666 11.0007h-3.6667v-3.66672h-2v3.66672h-3.66665v2h3.66665v3.6666h2v-3.6666h3.6667z" fill="#000000"></path>
-                                                                                                    </svg>
-                                                                                                </div>
-                                                                                            </div>
-
-                                                                                        </button>
-                                                                                    </div>
-
-                                                                                    <div className="spacer _16"></div>
-                                                                                    <div className="modifier-product-item-name-one-div">
-                                                                                        <div className="modifier-product-item-name-one-nested-div">
-                                                                                            <div className="modifier-product-item-name-one-nested-div-one">
-                                                                                                <div className="modifier-product-item-name-one-nested-div-one-nested">
-                                                                                                    <div className="modifier-product-item-name-one-nested-div-one-nested-div">{seconditems?.title}</div>
-                                                                                                    <div className="spacer _8"></div>
-                                                                                                    <div className="modifier-group-price">+{seconditems?.country_price_symbol}{getAmountConvertToFloatWithFixed(seconditems?.price,2)}</div>
+                                                                            {
+                                                                                seconditems.activeClass !== "mchw" ?
+                                                                                <div className="product-modifier-item-detail"  onClick={() => handleCheckInput(modifier?.id,seconditems?.id, parseInt(seconditems?.secondary_item_modifiers.length))}>
+                                                                                    <input type="checkbox" className="checkbox-input"></input>
+                                                                                    <label className={`modifier-product-item-name-checkbox ${seconditems.activeClass}`}>
+                                                                                        <div className="spacer _16"></div>
+                                                                                        <div className="modifier-product-item-name-one-div">
+                                                                                            <div className="modifier-product-item-name-one-nested-div">
+                                                                                                <div className="modifier-product-item-name-one-nested-div-one">
+                                                                                                    <div className="modifier-product-item-name-one-nested-div-one-nested">
+                                                                                                        <div className="modifier-product-item-name-one-nested-div-one-nested-div">{seconditems?.title}</div>
+                                                                                                        <div className="spacer _8"></div>
+                                                                                                        {
+                                                                                                            getAmountConvertToFloatWithFixed(seconditems?.price,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                                                                            <div className="modifier-group-price">{seconditems?.country_price_symbol}{getAmountConvertToFloatWithFixed(seconditems?.price,2)}</div>
+                                                                                                        }
+                                                                                                    </div>
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
-                                                                                    </div>
+                                                                                    </label>
                                                                                 </div>
-
-                                                                            </div>
+                                                                                :
+                                                                                <div className="product-modifier-item-detail">
+                                                                                    <input type="checkbox" className="checkbox-input"></input>
+                                                                                    <label className={`modifier-product-item-name-checkbox ${seconditems.activeClass}`}>
+                                                                                        <div className="spacer _16"></div>
+                                                                                        <div className="modifier-product-item-name-one-div">
+                                                                                            <div className="modifier-product-item-name-one-nested-div">
+                                                                                                <div className="modifier-product-item-name-one-nested-div-one">
+                                                                                                    <div className="modifier-product-item-name-one-nested-div-one-nested">
+                                                                                                        <div className="modifier-product-item-name-one-nested-div-one-nested-div">{seconditems?.title}</div>
+                                                                                                        <div className="spacer _8"></div>
+                                                                                                        {
+                                                                                                            getAmountConvertToFloatWithFixed(seconditems?.price,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                                                                            <div className="modifier-group-price">{seconditems?.country_price_symbol}{parseFloat(seconditems?.price).toFixed(2)}</div>
+                                                                                                        }
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </label>
+                                                                                </div>
+                                                                            }
+                                                                            
                                                                         </div>
                                                                     )
                                                                 })
                                                             }
-                                                            
-
+                                                    </div>
+                                                </div>
+                                            </li>
+                                            :
+                                            // (modifier?.select_single_option > 1 && (modifier?.min_permitted === 0 && modifier?.max_permitted > 1)) &&
+                                            // {/* minimum option = '- / 0' and maximum option = 5 and single item select = 2 */}
+                                            <li key={index} className={`section${index}`}>
+                                                <div>
+                                                    <div>
+                                                        <hr className="product_hr"></hr>
+                                                        <div className="product-list-div">
+                                                            <div className="product-modifier-groups">
+                                                                <div className="product-modifier-name">{modifier?.title}</div>
+                                                                <div className="product-modifier-option">
+                                                                    <span>Choose up to {modifier?.max_permitted}</span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="product-required">
+                                                                <div className={`product-required-div ${modifier?.valid_class}`}>{(parseInt(modifier?.min_permitted) > parseInt(0)) ? "Required" : "Optional"}</div>
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </li>
+                                                    {/* List of all modifier group products */}
+                                                    <div className="hg">
+                                                        {
+                                                            modifier?.modifier_secondary_items?.map((seconditems,indexSecondItem) =>
+                                                            {
+                                                                return(
+                                                                    <div key={indexSecondItem}>
+                                                                        <hr className="product-modifier-items-hr"></hr>
+
+                                                                        <div className="product-modifier-item-detail">
+
+                                                                            <div className="modifier-product-item-name-inc-dec">
+                                                                            
+                                                                                <div className="modifier-inc-dec">
+                                                                                    <button className="modifier-btn" disabled={seconditems?.is_item_select} onClick={() => handleDecrement(modifier?.id,seconditems?.id)}>
+
+                                                                                    <div className="modifier-btn-div">
+                                                                                        <div className="modifier-btn-svg">
+                                                                                            <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                                                                                <path d="m7.33325 13v-2h9.33335v2z" fill="#000000"></path>
+                                                                                            </svg>
+                                                                                        </div>
+                                                                                    </div>
+
+                                                                                    </button>
+                                                                                    
+                                                                                    <div className="incremented-values">{seconditems?.counter}</div>
+                                                                                    
+                                                                                    <button className="modifier-btn" disabled={(parseInt(modifier?.max_permitted) === parseInt(modifier?.modifier_counter)) ? true : false} onClick={() => handleIncrement(modifier?.id,seconditems?.id)}>
+
+                                                                                        <div className="modifier-btn-div">
+                                                                                            <div className="modifier-btn-svg">
+                                                                                                <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                                                                                    <path d="m16.6666 11.0007h-3.6667v-3.66672h-2v3.66672h-3.66665v2h3.66665v3.6666h2v-3.6666h3.6667z" fill="#000000"></path>
+                                                                                                </svg>
+                                                                                            </div>
+                                                                                        </div>
+
+                                                                                    </button>
+                                                                                </div>
+
+                                                                                <div className="spacer _16"></div>
+                                                                                <div className="modifier-product-item-name-one-div">
+                                                                                    <div className="modifier-product-item-name-one-nested-div">
+                                                                                        <div className="modifier-product-item-name-one-nested-div-one">
+                                                                                            <div className="modifier-product-item-name-one-nested-div-one-nested">
+                                                                                                <div className="modifier-product-item-name-one-nested-div-one-nested-div">{seconditems?.title}</div>
+                                                                                                <div className="spacer _8"></div>
+                                                                                                {
+                                                                                                    getAmountConvertToFloatWithFixed(seconditems?.price,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                                                                    <div className="modifier-group-price">{seconditems?.country_price_symbol}{getAmountConvertToFloatWithFixed(seconditems?.price,2)}</div>
+                                                                                                }
+                                                                                            </div>
+                                                                                        </div>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+
+                                                                        </div>
+                                                                    </div>
+                                                                )
+                                                            })
+                                                        }
+
+                                                    </div>
+                                                </div>
+                                            </li>
                                         )
                                     })
                                 }
@@ -2303,7 +2364,7 @@ function productDetails({params})
                                     </div>
                                     <div className="da c7"></div>
                                     <button className="add-to-cart-btn-item" onClick={handleAddtoCart}>
-                                        Add {quantity} to order
+                                        Add {quantity} to order cell
                                         <span className="add-cart-span">&nbsp;•&nbsp;</span>
                                         {getCountryCurrencySymbol()} {parseFloat(quantity * itemprice).toFixed(2)}
                                     </button>
@@ -2317,9 +2378,9 @@ function productDetails({params})
             </div>
 
             {/* Mobile Responsive */}
-            <div>
+            <div >
                 <div>
-                    <div className="agassingle-product">
+                    <div className="agassingle-product" onWheel={handleMScroll}>
                         <div  style={{width: "1px", height: "0px", padding: "0px", overflow: "hidden", position: "fixed", top: "1px", left: "1px"}}></div>
                         <div>
                             <div className="arc2single-product">
@@ -2339,9 +2400,9 @@ function productDetails({params})
                                                 <path d="m21.1 5.1-2.2-2.2-6.9 7-6.9-7-2.2 2.2 7 6.9-7 6.9 2.2 2.2 6.9-7 6.9 7 2.2-2.2-7-6.9 7-6.9Z" fill="currentColor"></path></svg>
                                             </Link>
                                         </div>
-
+{/* 
                                         <div className="bre3dpsingle-product">{singleitem?.title}</div>
-                                        <div className="e9single-product"></div>
+                                        <div className="e9single-product"></div> */}
                                     </div>
                                     </div>
 
@@ -2362,7 +2423,7 @@ function productDetails({params})
                                 </div>
                                 
                                 <div className="eksingle-product">
-                                    {/* <div className="bnelbpemeneoalbfsingle-product">Banoffee Waffle</div> */}
+                                    <div className="bnelbpemeneoalbfsingle-product">{singleitem?.title}</div>
                                     <span data-testid="rich-text" className="fnfofpbnfqbpfrb1single-product-price">{singleitem?.country_price_symbol}{parseFloat(singleitem?.price).toFixed(2)}</span>
                                     <div className="epeqsingle-product-div"></div>
                                     <div className="er">
@@ -2381,7 +2442,7 @@ function productDetails({params})
                                                 // {/* minimum option = '1' and maximum option = 1 and single item select = 1 */}
                                                 (modifier?.select_single_option === 1 && (modifier?.min_permitted === 1 && modifier?.max_permitted === 1)) ?
 
-                                                    <li key={index}>
+                                                    <li key={index} className={`msection${index}`}>
                                                         <div className="fusingle-productlidiv" >
                                                             <hr className="efeqeofvsingle-product"></hr>
                     
@@ -2450,7 +2511,10 @@ function productDetails({params})
                                                                                                         <div className="alamgmgnsingle-product">
                                                                                                             <div className="bresdpg4gosingle-product">{mobileSecondItems?.title}</div>
                                                                                                             <div className="spacer _8"></div>
-                                                                                                            <div className="bresbtdqb1bzsingle-productincdecprice">+{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
+                                                                                                            {
+                                                                                                                getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                                                                                <div className="bresbtdqb1bzsingle-productincdecprice">{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
+                                                                                                            }
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>
@@ -2474,7 +2538,7 @@ function productDetails({params})
                                                     // {/* minimum option = '0' and maximum option = 1 and single item select = 1 */}
                                                     (modifier?.select_single_option === 1 && (modifier?.min_permitted === 0 && modifier?.max_permitted >= 1)) ?
 
-                                                    <li key={index}>
+                                                    <li key={index} className={`msection${index}`}>
                                                         <div className="fusingle-productlidiv">
                                                             <hr className="efeqeofvsingle-product"></hr>
                         
@@ -2539,7 +2603,10 @@ function productDetails({params})
                                                                                                             <div className="alamgmgnsingle-product">
                                                                                                                 <div className="bresdpg4gosingle-product">{mobileSecondItems?.title}</div>
                                                                                                                 <div className="spacer _8"></div>
-                                                                                                                <div className="bresbtdqb1bzsingle-productincdecprice">+{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
+                                                                                                                {
+                                                                                                                    getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                                                                                    <div className="bresbtdqb1bzsingle-productincdecprice">{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
+                                                                                                                }
                                                                                                             </div>
                                                                                                         </div>
                                                                                                     </div>
@@ -2561,7 +2628,10 @@ function productDetails({params})
                                                                                                             <div className="alamgmgnsingle-product">
                                                                                                                 <div className="bresdpg4gosingle-product">{mobileSecondItems?.title}</div>
                                                                                                                 <div className="spacer _8"></div>
-                                                                                                                <div className="bresbtdqb1bzsingle-productincdecprice">+{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
+                                                                                                                {
+                                                                                                                    getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                                                                                    <div className="bresbtdqb1bzsingle-productincdecprice">{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
+                                                                                                                }
                                                                                                             </div>
                                                                                                         </div>
                                                                                                     </div>
@@ -2582,7 +2652,7 @@ function productDetails({params})
                                                 :
                                                     // (modifier?.select_single_option > 1 && (modifier?.min_permitted === 0 && modifier?.max_permitted > 1)) &&
                                                     // {/* minimum option = '- / 0' and maximum option = 5 and single item select = 2 */}
-                                                    <li key={index}>
+                                                    <li key={index} className={`msection${index}`}>
                                                         <div className="fusingle-productlidiv">
                                                             <hr className="efeqeofvsingle-product"></hr>
                     
@@ -2667,7 +2737,10 @@ function productDetails({params})
                                                                                                 <div className="alamglgmsingle-productincdec">
                                                                                                     <div className="bresdpg3gnsingle-productincdecheading">{mobileSecondItems?.title}</div>
                                                                                                     <div className="spacer _8"></div>
-                                                                                                    <div className="bresbtdqb1bzsingle-productincdecprice">+{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
+                                                                                                    {
+                                                                                                        getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                                                                        <div className="bresbtdqb1bzsingle-productincdecprice">{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
+                                                                                                    }
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
@@ -2724,7 +2797,7 @@ function productDetails({params})
                                 <div className="iosignle-product"></div>
                                 <div className="i7single-product"></div>
                                     <div className="iaibicblidieifigcsctbcsingle-product">
-                                        <button className="e3bubrdpb9ihbkalbfc4afh2iibbijikilgwgxsingle-product" onClick={handleAddtoCart}>
+                                        <button className="e3bubrdpb9ihbkalbfc4afh2iibbijikilgwgxsingle-product" onClick={handleMobileAddtoCart}>
                                             Add {quantity} to order
                                             <span className="bre3dpbud6imbfsingle-product-span">&nbsp;•&nbsp;</span>
                                             {getCountryCurrencySymbol()} {getAmountConvertToFloatWithFixed(quantity * itemprice,2)}
@@ -2783,65 +2856,176 @@ function productDetails({params})
                                                                             {
                                                                                 return(
                                                                                     (secondItemModifier?.select_single_option === 1 && (secondItemModifier?.min_permitted === 1 && secondItemModifier?.max_permitted === 1)) ? 
-
-                                                                                        <li key={index} className='mb-10'>
-                                                                                            <div className="k5modifier-modal-item">
-                                                                                                <div>
-                                                                                                    <hr className="edipiqgdmodifier-hr"></hr>
-                                
-                                                                                                    <div className="alaqg5fxmodifier-modal-div" onClick={() => handleModalModifierToggle(selectedModifierId, selectedModifierItemId, secondItemModifier?.id)}>
-                                                                                                        <div className="alammodifier-modal">
-                                                                                                            <div className="product-modifier-name">{secondItemModifier?.title}</div>
-                                                                                                            <div className="chcicwd3czmodifier-choose">
-                                                                                                                <span>Choose {secondItemModifier?.max_permitted}</span>
-                                                                                                                <div className="irmodifier-modal">
-                                                                                                                    <div className={`isafcbitiuivcymodifier-modal ${secondItemModifier?.valid_class}`}>
-                                                                                                                        {(parseInt(secondItemModifier?.min_permitted) > parseInt(0)) ? "Required" : "Optional"}
-                                                                                                                    </div>
+                                                                                    <li key={index} className='mb-10'>
+                                                                                        <div className="k5modifier-modal-item">
+                                                                                            <div>
+                                                                                                <hr className="edipiqgdmodifier-hr"></hr>
+                            
+                                                                                                <div className="alaqg5fxmodifier-modal-div" onClick={() => handleModalModifierToggle(selectedModifierId, selectedModifierItemId, secondItemModifier?.id)}>
+                                                                                                    <div className="alammodifier-modal">
+                                                                                                        <div className="product-modifier-name">{secondItemModifier?.title}</div>
+                                                                                                        <div className="chcicwd3czmodifier-choose">
+                                                                                                            <span>Choose {secondItemModifier?.max_permitted}</span>
+                                                                                                            <div className="irmodifier-modal">
+                                                                                                                <div className={`isafcbitiuivcymodifier-modal ${secondItemModifier?.valid_class}`}>
+                                                                                                                    {(parseInt(secondItemModifier?.min_permitted) > parseInt(0)) ? "Required" : "Optional"}
                                                                                                                 </div>
                                                                                                             </div>
-                                                                                                            {
-                                                                                                                (! secondItemModifier?.is_second_item_modifier_clicked) &&
-                                                                                                                secondItemModifier?.secondary_items_modifier_items?.map((displaySelectedItem, index) =>
-                                                                                                                {
-                                                                                                                    return(
-                                                                                                                        (displaySelectedItem?.is_item_select) &&
-                                                                                                                        <div key={index}>{(parseInt(displaySelectedItem?.title?.length) > parseInt(20) ? displaySelectedItem?.title?.substring(0,20)+"..." : displaySelectedItem?.title)}</div>
-                                                                                                                    )
-                                                                                                                })
-                                                                                                            }
                                                                                                         </div>
-                                
-                                                                                                        <div className="single-product-svg-div accordion">
-                                                                                                            <div className="single-product-svg-div-one">
-                                                                                                                {
-                                                                                                                    secondItemModifier?.is_second_item_modifier_clicked ?
-                                                                                                                        <svg className="bottom-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                                                                                                            <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(180, 12, 12)"></path>
-                                                                                                                        </svg>
-                                                                                                                    :
-                                                                                                                        <svg className="rigth-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{cursor: "pointer"}}>
-                                                                                                                            <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(90, 12, 12)"></path>
-                                                                                                                        </svg>
-                                                                                                                }
-                                
-                                                                                                            </div>
+                                                                                                        {
+                                                                                                            (! secondItemModifier?.is_second_item_modifier_clicked) &&
+                                                                                                            secondItemModifier?.secondary_items_modifier_items?.map((displaySelectedItem, index) =>
+                                                                                                            {
+                                                                                                                return(
+                                                                                                                    (displaySelectedItem?.is_item_select) &&
+                                                                                                                    <div key={index}>{(parseInt(displaySelectedItem?.title?.length) > parseInt(20) ? displaySelectedItem?.title?.substring(0,20)+"..." : displaySelectedItem?.title)}</div>
+                                                                                                                )
+                                                                                                            })
+                                                                                                        }
+                                                                                                    </div>
+                            
+                                                                                                    <div className="single-product-svg-div accordion">
+                                                                                                        <div className="single-product-svg-div-one">
+                                                                                                            {
+                                                                                                                secondItemModifier?.is_second_item_modifier_clicked ?
+                                                                                                                    <svg className="bottom-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                                                                                                        <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(180, 12, 12)"></path>
+                                                                                                                    </svg>
+                                                                                                                :
+                                                                                                                    <svg className="rigth-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{cursor: "pointer"}}>
+                                                                                                                        <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(90, 12, 12)"></path>
+                                                                                                                    </svg>
+                                                                                                            }
+                            
                                                                                                         </div>
                                                                                                     </div>
                                                                                                 </div>
-                                                                                                
-                                                                                                {
-                                                                                                    <div className={`iwmodifier-data ${secondItemModifier?.is_second_item_modifier_clicked ? "show" : "fade"}`}>
+                                                                                            </div>
+                                                                                            
+                                                                                            {
+                                                                                                <div className={`iwmodifier-data ${secondItemModifier?.is_second_item_modifier_clicked ? "show" : "fade"}`}>
+                                                                                                    {
+                                                                                                        secondItemModifier?.secondary_items_modifier_items?.map((item, index) =>
                                                                                                         {
-                                                                                                            secondItemModifier?.secondary_items_modifier_items?.map((item, index) =>
+                                                                                                            return(
+                                                                                                                <div key={index} onClick={() => handleModalRadioInput(selectedModifierId, selectedModifierItemId, secondItemModifier?.id, item?.id)}>
+                                                                                                                    <hr className="edb9jegdmodifier-hr"></hr>
+                                                                                                                    <div className="alakixc5modifier-data">
+                                                                                                                        <input type="radio" className="agaxgqdfiymodifier-input" defaultValue={item?.id}/>
+                                                                                                                        
+                                                                                                                        <label className={`chd2cjmodifier-modal-label ${item?.activeClass}`}>
+                                                                                                                            <div className="spacer _16"></div>
+                                                                                                                            <div className="d1alg5j9modifier-modal">
+                                                                                                                                <div className="ald1ame6jajbjcmodifier-modal">
+                                                                                                                                    <div className="alaqmodifier-modal">
+                                                                                                                                        <div className="alamdxdvmodifier-modal">
+                                                                                                                                            <div className="chcicjckjdmodifier-modal">{item?.title}</div>
+                                                                                                                                            <div className="spacer _8"></div>
+                                                                                                                                            {
+                                                                                                                                                getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                                                                                                                <div className="modifier-group-price">{item?.country_price_symbol}{parseFloat(item?.price_info).toFixed(2)}</div>
+                                                                                                                                            }
+                                                                                                                                        </div>
+                                                                                                                                    </div>
+                                                                                                                                </div>
+                                                                                                                            </div>
+                                                                                                                        </label>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                                                                                            )
+                                                                                                        })
+                                                                                                    }
+                                
+                                                                                                </div>
+                                                                                            }
+                                                                                        </div>
+                                                                                    </li>
+                                                                                    :
+                                                                                    (secondItemModifier?.select_single_option === 1 && (secondItemModifier?.min_permitted === 0 && secondItemModifier?.max_permitted >= 1)) ? 
+                                                                                    <li key={index} className='mb-10'>
+                                                                                        <div className="k5modifier-modal-item">
+                                                                                            <div>
+                                                                                                <hr className="edipiqgdmodifier-hr"></hr>
+
+                                                                                                <div className="alaqg5fxmodifier-modal-div" onClick={() => handleModalModifierToggle(selectedModifierId, selectedModifierItemId, secondItemModifier?.id)}>
+                                                                                                    <div className="alammodifier-modal">
+                                                                                                        <div className="product-modifier-name">{secondItemModifier?.title}</div>
+                                                                                                        <div className="chcicwd3czmodifier-choose">
+                                                                                                            <span>Choose {secondItemModifier?.max_permitted}</span>
+                                                                                                            <div className="irmodifier-modal">
+                                                                                                                <div className={`isafcbitiuivcymodifier-modal ${secondItemModifier?.valid_class}`}>
+                                                                                                                    {(parseInt(secondItemModifier?.min_permitted) > parseInt(0)) ? "Required" : "Optional"}
+                                                                                                                </div>
+                                                                                                            </div>
+                                                                                                        </div>
+                                                                                                        {
+                                                                                                            (! secondItemModifier?.is_second_item_modifier_clicked) &&
+                                                                                                            secondItemModifier?.secondary_items_modifier_items?.map((dispayItemCounter, index) =>
                                                                                                             {
                                                                                                                 return(
-                                                                                                                    <div key={index} onClick={() => handleModalRadioInput(selectedModifierId, selectedModifierItemId, secondItemModifier?.id, item?.id)}>
-                                                                                                                        <hr className="edb9jegdmodifier-hr"></hr>
+                                                                                                                    (dispayItemCounter?.is_item_select) &&
+                                                                                                                    <div key={index}>{(parseInt(dispayItemCounter?.title?.length) > parseInt(20) ? dispayItemCounter?.title?.substring(0,20)+"..." : dispayItemCounter?.title)}</div>
+                                                                                                                )
+                                                                                                            })
+                                                                                                        }
+                                                                                                    </div>
+
+                                                                                                    <div className="single-product-svg-div accordion">
+                                                                                                        <div className="single-product-svg-div-one">
+                                                                                                            {
+                                                                                                                secondItemModifier?.is_second_item_modifier_clicked ?
+                                                                                                                    <svg className="bottom-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                                                                                                        <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(180, 12, 12)"></path>
+                                                                                                                    </svg>
+                                                                                                                :
+
+                                                                                                                    <svg className="rigth-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{cursor: "pointer"}}>
+                                                                                                                        <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(90, 12, 12)"></path>
+                                                                                                                    </svg>
+                                                                                                            }
+                                                                                                        </div>
+                                                                                                    </div>
+                                                                                                </div>
+                                                                                            </div>
+
+                                                                                            {
+                                                                                                <div className={`iwmodifier-data ${secondItemModifier?.is_second_item_modifier_clicked ? "show" : "fade"}`}>
+                                                                                                    {
+                                                                                                        secondItemModifier?.secondary_items_modifier_items?.map((item, index) =>
+                                                                                                        {
+                                                                                                            return(
+                                                                                                                <div key={index} >
+                                                                                                                    <hr className="edb9jegdmodifier-hr"></hr>
+                                                                                                                    {
+                                                                                                                        item?.activeClass !== "mchw" ?
+                                                                                                                            <div className="alakixc5modifier-data" onClick={() => handleModalCheckInput(selectedModifierId, selectedModifierItemId, secondItemModifier?.id, item?.id)}>
+                                                                                                                                <input type="checkbox" className="checkbox-input" />
+                                                                                                                                
+                                                                                                                                <label className={`modifier-product-item-name-checkbox ${item?.activeClass}`}>
+                                                                                                                                    <div className="spacer _16"></div>
+                                                                                                                                    <div className="d1alg5j9modifier-modal">
+                                                                                                                                        <div className="ald1ame6jajbjcmodifier-modal">
+                                                                                                                                            <div className="alaqmodifier-modal">
+                                                                                                                                                <div className="alamdxdvmodifier-modal">
+                                                                                                                                                    <div className="chcicjckjdmodifier-modal">{item?.title}</div>
+                                                                                                                                                    <div className="spacer _8"></div>
+                                                                                                                                                    {
+                                                                                                                                                        getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                                                                                                                        <div className="modifier-group-price">{item?.country_price_symbol}{parseFloat(item?.price_info).toFixed(2)}</div>
+                                                                                                                                                    }
+                                                                                                                                                </div>
+                                                                                                                                            </div>
+                                                                                                                                        </div>
+                                                                                                                                    </div>
+                                                                                                                                </label>
+                                        
+                                                                                                                            </div>
+                                                                                                                        :
+
                                                                                                                         <div className="alakixc5modifier-data">
-                                                                                                                            <input type="radio" className="agaxgqdfiymodifier-input" defaultValue={item?.id}/>
+                                                                                                                            <input type="checkbox" className="checkbox-input" />
                                                                                                                             
-                                                                                                                            <label className={`chd2cjmodifier-modal-label ${item?.activeClass}`}>
+                                                                                                                            <label className={`modifier-product-item-name-checkbox ${item?.activeClass}`}>
                                                                                                                                 <div className="spacer _16"></div>
                                                                                                                                 <div className="d1alg5j9modifier-modal">
                                                                                                                                     <div className="ald1ame6jajbjcmodifier-modal">
@@ -2849,35 +3033,38 @@ function productDetails({params})
                                                                                                                                             <div className="alamdxdvmodifier-modal">
                                                                                                                                                 <div className="chcicjckjdmodifier-modal">{item?.title}</div>
                                                                                                                                                 <div className="spacer _8"></div>
-                                                                                                                                                <div className="modifier-group-price">+{item?.country_price_symbol}{parseFloat(item?.price_info).toFixed(2)}</div>
+                                                                                                                                                {
+                                                                                                                                                    getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                                                                                                                    <div className="modifier-group-price">{item?.country_price_symbol}{parseFloat(item?.price_info).toFixed(2)}</div>
+                                                                                                                                                }
                                                                                                                                             </div>
                                                                                                                                         </div>
                                                                                                                                     </div>
                                                                                                                                 </div>
                                                                                                                             </label>
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                )
-                                                                                                            })
-                                                                                                        }
                                     
-                                                                                                    </div>
-                                                                                                }
-                                                                                            </div>
-                                                                                        </li>
-
+                                                                                                                        </div>
+                                                                                                                    }
+                                                                                                                    
+                                                                                                                </div>
+                                                                                                                
+                                                                                                            )
+                                                                                                        })
+                                                                                                    }
+                                                                                                </div>
+                                                                                            }
+                                                                                        </div>
+                                                                                    </li>
                                                                                     :
-                                                                                    (secondItemModifier?.select_single_option === 1 && (secondItemModifier?.min_permitted === 0 && secondItemModifier?.max_permitted >= 1)) ? 
-                                                                                        <li key={index} className='mb-10'>
-                                                                                            <div className="k5modifier-modal-item">
-                                                                                                <div>
-                                                                                                    <hr className="edipiqgdmodifier-hr"></hr>
-
-                                                                                                    <div className="alaqg5fxmodifier-modal-div" onClick={() => handleModalModifierToggle(selectedModifierId, selectedModifierItemId, secondItemModifier?.id)}>
-                                                                                                        <div className="alammodifier-modal">
-                                                                                                            <div className="product-modifier-name">{secondItemModifier?.title}</div>
-                                                                                                            <div className="chcicwd3czmodifier-choose">
-                                                                                                                <span>Choose {secondItemModifier?.max_permitted}</span>
+                                                                                    <li key={index} className='mb-10'>
+                                                                                        <div>
+                                                                                            <div>
+                                                                                                <hr className="product_hr"></hr>
+                                                                                                <div className="product-list-div" onClick={() => handleModalModifierToggle(selectedModifierId, selectedModifierItemId, secondItemModifier?.id)}>
+                                                                                                    <div className="product-modifier-groups">
+                                                                                                        <div className="product-modifier-name">Add:{secondItemModifier?.title}</div>
+                                                                                                            <div className="product-modifier-option">
+                                                                                                                <span>Choose up to {secondItemModifier?.max_permitted}</span>
                                                                                                                 <div className="irmodifier-modal">
                                                                                                                     <div className={`isafcbitiuivcymodifier-modal ${secondItemModifier?.valid_class}`}>
                                                                                                                         {(parseInt(secondItemModifier?.min_permitted) > parseInt(0)) ? "Required" : "Optional"}
@@ -2889,7 +3076,7 @@ function productDetails({params})
                                                                                                                 secondItemModifier?.secondary_items_modifier_items?.map((dispayItemCounter, index) =>
                                                                                                                 {
                                                                                                                     return(
-                                                                                                                        (dispayItemCounter?.is_item_select) &&
+                                                                                                                        getAmountConvertToFloatWithFixed(dispayItemCounter?.counter,2) > getAmountConvertToFloatWithFixed(0,2) &&
                                                                                                                         <div key={index}>{(parseInt(dispayItemCounter?.title?.length) > parseInt(20) ? dispayItemCounter?.title?.substring(0,20)+"..." : dispayItemCounter?.title)}</div>
                                                                                                                     )
                                                                                                                 })
@@ -2911,181 +3098,77 @@ function productDetails({params})
                                                                                                                 }
                                                                                                             </div>
                                                                                                         </div>
-                                                                                                    </div>
                                                                                                 </div>
+                                                                                            </div>
+                                                                                            
+                                                                                            {
+                                                                                                <div className={`iwmodifier-data ${secondItemModifier?.is_second_item_modifier_clicked ? "show" : "fade"}`}>
 
-                                                                                                {
-                                                                                                    <div className={`iwmodifier-data ${secondItemModifier?.is_second_item_modifier_clicked ? "show" : "fade"}`}>
+                                                                                                    {
+                                                                                                        secondItemModifier?.secondary_items_modifier_items?.map((item,index) => 
                                                                                                         {
-                                                                                                            secondItemModifier?.secondary_items_modifier_items?.map((item, index) =>
-                                                                                                            {
-                                                                                                                return(
-                                                                                                                    <div key={index} >
-                                                                                                                        <hr className="edb9jegdmodifier-hr"></hr>
-                                                                                                                        {
-                                                                                                                            item?.activeClass !== "mchw" ?
-                                                                                                                                <div className="alakixc5modifier-data" onClick={() => handleModalCheckInput(selectedModifierId, selectedModifierItemId, secondItemModifier?.id, item?.id)}>
-                                                                                                                                    <input type="checkbox" className="checkbox-input" />
-                                                                                                                                    
-                                                                                                                                    <label className={`modifier-product-item-name-checkbox ${item?.activeClass}`}>
-                                                                                                                                        <div className="spacer _16"></div>
-                                                                                                                                        <div className="d1alg5j9modifier-modal">
-                                                                                                                                            <div className="ald1ame6jajbjcmodifier-modal">
-                                                                                                                                                <div className="alaqmodifier-modal">
-                                                                                                                                                    <div className="alamdxdvmodifier-modal">
-                                                                                                                                                        <div className="chcicjckjdmodifier-modal">{item?.title}</div>
-                                                                                                                                                        <div className="spacer _8"></div>
-                                                                                                                                                        <div className="modifier-group-price">+{item?.country_price_symbol}{parseFloat(item?.price_info).toFixed(2)}</div>
-                                                                                                                                                    </div>
-                                                                                                                                                </div>
-                                                                                                                                            </div>
-                                                                                                                                        </div>
-                                                                                                                                    </label>
-                                            
-                                                                                                                                </div>
-                                                                                                                            :
-
-                                                                                                                            <div className="alakixc5modifier-data">
-                                                                                                                                <input type="checkbox" className="checkbox-input" />
-                                                                                                                                
-                                                                                                                                <label className={`modifier-product-item-name-checkbox ${item?.activeClass}`}>
-                                                                                                                                    <div className="spacer _16"></div>
-                                                                                                                                    <div className="d1alg5j9modifier-modal">
-                                                                                                                                        <div className="ald1ame6jajbjcmodifier-modal">
-                                                                                                                                            <div className="alaqmodifier-modal">
-                                                                                                                                                <div className="alamdxdvmodifier-modal">
-                                                                                                                                                    <div className="chcicjckjdmodifier-modal">{item?.title}</div>
-                                                                                                                                                    <div className="spacer _8"></div>
-                                                                                                                                                    <div className="modifier-group-price">+{item?.country_price_symbol}{parseFloat(item?.price_info).toFixed(2)}</div>
-                                                                                                                                                </div>
-                                                                                                                                            </div>
+                                                                                                            return(
+                                                                                                                <div key={index}>
+                                                                                                                    <hr className="product-modifier-items-hr"></hr>
+                                                                                                                    <div className="product-modifier-item-detail">
+                                
+                                                                                                                        <div className="modifier-product-item-name-inc-dec">
+                                                                                                                            
+                                                                                                                            <div className="modifier-inc-dec">
+                                                                                                                                <button className="modifier-btn" disabled={item?.is_item_select} onClick={() => handleModalDecrement(selectedModifierId, selectedModifierItemId, secondItemModifier?.id, item?.id)}>
+                                
+                                                                                                                                    <div className="modifier-btn-div">
+                                                                                                                                        <div className="modifier-btn-svg">
+                                                                                                                                            <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                                                                                                                                <path d="m7.33325 13v-2h9.33335v2z" fill="#000000"></path>
+                                                                                                                                            </svg>
                                                                                                                                         </div>
                                                                                                                                     </div>
-                                                                                                                                </label>
-                                        
-                                                                                                                            </div>
-                                                                                                                        }
-                                                                                                                        
-                                                                                                                    </div>
-                                                                                                                    
-                                                                                                                )
-                                                                                                            })
-                                                                                                        }
-                                                                                                    </div>
-                                                                                                }
-                                                                                            </div>
-                                                                                        </li>
-                                                                                    :
-                                                                                        <li key={index} className='mb-10'>
-                                                                                            <div>
-                                                                                                <div>
-                                                                                                    <hr className="product_hr"></hr>
-                                                                                                    <div className="product-list-div" onClick={() => handleModalModifierToggle(selectedModifierId, selectedModifierItemId, secondItemModifier?.id)}>
-                                                                                                        <div className="product-modifier-groups">
-                                                                                                            <div className="product-modifier-name">Add:{secondItemModifier?.title}</div>
-                                                                                                                <div className="product-modifier-option">
-                                                                                                                    <span>Choose up to {secondItemModifier?.max_permitted}</span>
-                                                                                                                    <div className="irmodifier-modal">
-                                                                                                                        <div className={`isafcbitiuivcymodifier-modal ${secondItemModifier?.valid_class}`}>
-                                                                                                                            {(parseInt(secondItemModifier?.min_permitted) > parseInt(0)) ? "Required" : "Optional"}
-                                                                                                                        </div>
-                                                                                                                    </div>
-                                                                                                                </div>
-                                                                                                                {
-                                                                                                                    (! secondItemModifier?.is_second_item_modifier_clicked) &&
-                                                                                                                    secondItemModifier?.secondary_items_modifier_items?.map((dispayItemCounter, index) =>
-                                                                                                                    {
-                                                                                                                        return(
-                                                                                                                            parseInt(dispayItemCounter?.counter) > parseInt(0) &&
-                                                                                                                            <div key={index}>{(parseInt(dispayItemCounter?.title?.length) > parseInt(20) ? dispayItemCounter?.title?.substring(0,20)+"..." : dispayItemCounter?.title)}</div>
-                                                                                                                        )
-                                                                                                                    })
-                                                                                                                }
-                                                                                                            </div>
-
-                                                                                                            <div className="single-product-svg-div accordion">
-                                                                                                                <div className="single-product-svg-div-one">
-                                                                                                                    {
-                                                                                                                        secondItemModifier?.is_second_item_modifier_clicked ?
-                                                                                                                            <svg className="bottom-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                                                                                                                <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(180, 12, 12)"></path>
-                                                                                                                            </svg>
-                                                                                                                        :
-
-                                                                                                                            <svg className="rigth-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{cursor: "pointer"}}>
-                                                                                                                                <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(90, 12, 12)"></path>
-                                                                                                                            </svg>
-                                                                                                                    }
-                                                                                                                </div>
-                                                                                                            </div>
-                                                                                                    </div>
-                                                                                                </div>
-                                                                                                
-                                                                                                {
-                                                                                                    <div className={`iwmodifier-data ${secondItemModifier?.is_second_item_modifier_clicked ? "show" : "fade"}`}>
-
-                                                                                                        {
-                                                                                                            secondItemModifier?.secondary_items_modifier_items?.map((item,index) => 
-                                                                                                            {
-                                                                                                                return(
-                                                                                                                    <div key={index}>
-                                                                                                                        <hr className="product-modifier-items-hr"></hr>
-                                                                                                                        <div className="product-modifier-item-detail">
-                                    
-                                                                                                                            <div className="modifier-product-item-name-inc-dec">
+                                
+                                                                                                                                </button>
                                                                                                                                 
-                                                                                                                                <div className="modifier-inc-dec">
-                                                                                                                                    <button className="modifier-btn" disabled={item?.is_item_select} onClick={() => handleModalDecrement(selectedModifierId, selectedModifierItemId, secondItemModifier?.id, item?.id)}>
-                                    
-                                                                                                                                        <div className="modifier-btn-div">
-                                                                                                                                            <div className="modifier-btn-svg">
-                                                                                                                                                <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                                                                                                                                    <path d="m7.33325 13v-2h9.33335v2z" fill="#000000"></path>
-                                                                                                                                                </svg>
-                                                                                                                                            </div>
+                                                                                                                                <div className="incremented-values">{item?.counter}</div>
+                                                                                                                                
+                                                                                                                                <button className="modifier-btn" disabled={(parseInt(secondItemModifier?.max_permitted) === parseInt(secondItemModifier?.modifier_counter)) ? true : false} onClick={() => handleModalIncrement(selectedModifierId, selectedModifierItemId, secondItemModifier?.id, item?.id)}>
+                                
+                                                                                                                                    <div className="modifier-btn-div">
+                                                                                                                                        <div className="modifier-btn-svg">
+                                                                                                                                            <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                                                                                                                                <path d="m16.6666 11.0007h-3.6667v-3.66672h-2v3.66672h-3.66665v2h3.66665v3.6666h2v-3.6666h3.6667z" fill="#000000"></path>
+                                                                                                                                            </svg>
                                                                                                                                         </div>
-                                    
-                                                                                                                                    </button>
-                                                                                                                                    
-                                                                                                                                    <div className="incremented-values">{item?.counter}</div>
-                                                                                                                                    
-                                                                                                                                    <button className="modifier-btn" disabled={(parseInt(secondItemModifier?.max_permitted) === parseInt(secondItemModifier?.modifier_counter)) ? true : false} onClick={() => handleModalIncrement(selectedModifierId, selectedModifierItemId, secondItemModifier?.id, item?.id)}>
-                                    
-                                                                                                                                        <div className="modifier-btn-div">
-                                                                                                                                            <div className="modifier-btn-svg">
-                                                                                                                                                <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                                                                                                                                    <path d="m16.6666 11.0007h-3.6667v-3.66672h-2v3.66672h-3.66665v2h3.66665v3.6666h2v-3.6666h3.6667z" fill="#000000"></path>
-                                                                                                                                                </svg>
-                                                                                                                                            </div>
-                                                                                                                                        </div>
-                                    
-                                                                                                                                    </button>
-                                                                                                                                </div>
-                                    
-                                                                                                                                <div className="spacer _16"></div>
-                                                                                                                                <div className="modifier-product-item-name-one-div">
-                                                                                                                                    <div className="modifier-product-item-name-one-nested-div">
-                                                                                                                                        <div className="modifier-product-item-name-one-nested-div-one">
-                                                                                                                                            <div className="modifier-product-item-name-one-nested-div-one-nested">
-                                                                                                                                                <div className="modifier-product-item-name-one-nested-div-one-nested-div">{item?.title}</div>
-                                                                                                                                                <div className="spacer _8"></div>
-                                                                                                                                                <div className="modifier-group-price">+{item?.country_price_symbol}{parseFloat(item?.price_info).toFixed(2)}</div>
-                                                                                                                                            </div>
+                                                                                                                                    </div>
+                                
+                                                                                                                                </button>
+                                                                                                                            </div>
+                                
+                                                                                                                            <div className="spacer _16"></div>
+                                                                                                                            <div className="modifier-product-item-name-one-div">
+                                                                                                                                <div className="modifier-product-item-name-one-nested-div">
+                                                                                                                                    <div className="modifier-product-item-name-one-nested-div-one">
+                                                                                                                                        <div className="modifier-product-item-name-one-nested-div-one-nested">
+                                                                                                                                            <div className="modifier-product-item-name-one-nested-div-one-nested-div">{item?.title}</div>
+                                                                                                                                            <div className="spacer _8"></div>
+                                                                                                                                            {
+                                                                                                                                                getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                                                                                                                <div className="modifier-group-price">{item?.country_price_symbol}{parseFloat(item?.price_info).toFixed(2)}</div>
+                                                                                                                                            }
                                                                                                                                         </div>
                                                                                                                                     </div>
                                                                                                                                 </div>
                                                                                                                             </div>
-                                    
                                                                                                                         </div>
+                                
                                                                                                                     </div>
-                                                                                                                )
-                                                                                                            })
-                                                                                                        }
-                                                                                                    </div>
-                                                                                                }
-                                                                                                
-                                                                                            </div>
-                                                                                        </li>
+                                                                                                                </div>
+                                                                                                            )
+                                                                                                        })
+                                                                                                    }
+                                                                                                </div>
+                                                                                            }
+                                                                                            
+                                                                                        </div>
+                                                                                    </li>
                                                                                 )
                                                                             })
                                                                         }
@@ -3123,7 +3206,7 @@ function productDetails({params})
                     })
                 }
             </>
-            <Loader loader={loader}/>
+            {/* <Loader loader={loader}/> */}
         </>
     )
 }

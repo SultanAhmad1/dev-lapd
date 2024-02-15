@@ -20,6 +20,7 @@ export default function Cart() {
   const route = useRouter();
   const {
     setIscouponcodeapplied,
+    loader,
     setLoader,
     storeGUID,
     totalOrderAmountValue,
@@ -42,6 +43,7 @@ export default function Cart() {
     setCouponDiscountapplied,
   } = useContext(HomeContext);
 
+  const [itemindividuallyupdate, setItemindividuallyupdate] = useState(false)
   const [subtotalOrderAmount, setSubtotalOrderAmount] = useState(0);
   const [totalOrderAmount, setTotalOrderAmount] = useState(0);
 
@@ -151,16 +153,24 @@ export default function Cart() {
 
       // Calculate the Delivery Fee
       // If the User select the delivery, then delivery fee will be charge.
-      if (selectedFilter?.id === DELIVERY_ID) {
-        if (parseFloat(totalValue) >= parseFloat(deliverymatrix?.order_value)) {
-          if (deliverymatrix?.above_order_value === null) {
+      
+      if (selectedFilter?.id === DELIVERY_ID) 
+      {
+        if (parseFloat(totalValue) >= parseFloat(deliverymatrix?.order_value)) 
+        {
+          if (deliverymatrix?.above_order_value === null) 
+          {
             const textMessage = <strong>Free Delivery</strong>;
             setDeliverymessage(textMessage);
             const fee = getAmountConvertToFloatWithFixed(0, 2);
             setDeliveryfee(fee);
-          } else {
+          } 
+          else 
+          {
+            setDeliverymessage("");
             const fee = getAmountConvertToFloatWithFixed(deliverymatrix?.above_order_value,2);
             setDeliveryfee(fee);
+            setIsordersubtotallessthanordervalue(true)
           }
 
           if (parseFloat(deliverymatrix?.delivery_matrix_row_values) >parseFloat(0)) {
@@ -200,16 +210,13 @@ export default function Cart() {
         } else {
           const textMessage = (
             <span style={{color: "red",background: "#eda7a7",textAlign: "center",padding: "10px",}}>
-              Minimum order is{" "}
+              Minimum order is 
               <strong>{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(deliverymatrix?.order_value,2)}</strong>{" "}
               to your postcode
             </span>
           );
           setDeliverymessage(textMessage);
-          const fee = getAmountConvertToFloatWithFixed(
-            deliverymatrix?.above_order_value,
-            2
-          );
+          const fee = getAmountConvertToFloatWithFixed(deliverymatrix?.above_order_value,2);
           setDeliveryfee(fee);
           setIsordersubtotallessthanordervalue(false);
         }
@@ -226,6 +233,8 @@ export default function Cart() {
       }
     }
     setLocalStorage(`${BRANDSIMPLEGUID}cart`, cartdata);
+    setItemindividuallyupdate(false)
+    setLoader(false)
   }, [cartdata]);
 
   function handlePromoCodeToggle() {
@@ -424,17 +433,8 @@ export default function Cart() {
   
   function handleEditItem(findByIndex, storeName, categorySlug, itemSlug) 
   {
+    setLoader(true)
     setLocalStorage(`${BRANDSIMPLEGUID}set_index`, findByIndex);
-    const updateCartModal = cartdata?.map((cart, index) => {
-      if (findByIndex === index) {
-        return {
-          ...cart,
-          is_cart_modal_clicked: false,
-        };
-      }
-      return cart;
-    });
-    setCartdata(updateCartModal);
     setIscartbtnclicked(false);
     route.push(`${storeName}/${categorySlug}/${itemSlug}/edit`);
   }
@@ -472,6 +472,7 @@ export default function Cart() {
 
   const decrementQuantity = (index) =>
   {
+    setItemindividuallyupdate(true)
     const updateCartQuantity = cartdata?.map((decCartItemQuantity,indexCartItem) =>
     {
       if(parseInt(index) === parseInt(indexCartItem))
@@ -491,6 +492,7 @@ export default function Cart() {
 
   const incrementQuantity = (index) =>
   {
+    setItemindividuallyupdate(true)
     const updateCartQuantity = cartdata?.map((incCartItemQuantity,indexCartItem) =>
     {
       if(parseInt(index) === parseInt(indexCartItem))
@@ -507,7 +509,6 @@ export default function Cart() {
 
     setCartdata(updateCartQuantity)
   }
-
   return (
     <>
       <div className="cart-level-one-div">
@@ -783,7 +784,7 @@ export default function Cart() {
                           )}
                         </div>
                         {isaddpromocodebtntoggle && (
-                          <div className="btaucheckout-window">
+                          <div className="btaucheckout-window" style={{marginBottom: "10px"}}>
                             <input
                               type="text"
                               placeholder="Add promo code...."
@@ -809,38 +810,28 @@ export default function Cart() {
                           <div className="drdsbscjcheckout"></div>
                         </div>
                       </div>
-
-                      {/* Order Amount Discount */}
-                      {/* {
-                          amountdiscount?.map((discount, index) =>
-                          {
-                              return(
-                                  (parseFloat(discount?.need_to_spend) >= parseFloat(subtotalOrderAmount)) &&
-                                  <div key={index}>
-                                      <div className="dxc6checkout"></div>
-                                      <p>Spend <strong>{getCountryCurrencySymbol()} {getAmountConvertToFloatWithFixed(discount?.need_to_spend - subtotalOrderAmount,2)}</strong> more to get <strong>{discount?.name}</strong></p>
-                                      <div className="dxc6checkout"></div>
-                                      <div className='drdsbscjcheckout'></div>
-                                  </div>
-                              )
-                          })
-                      } */}
-
-                      <div>
-                        <div className="dxc6checkout"></div>
-                        {amountdiscountmessage}
-                        <div className="dxc6checkout"></div>
-                        <div className="drdsbscjcheckout"></div>
-                      </div>
-
+                      {
+                        amountdiscountmessage !== "" &&
+                        <div>
+                          <div className="dxc6checkout"></div>
+                          {amountdiscountmessage}
+                          <div className="dxc6checkout"></div>
+                          <div className="drdsbscjcheckout"></div>
+                        </div>
+                      }
                       {/* Order Amount Discount End */}
-                      <div className="dxc6checkout"></div>
-                      {deliverymessage}
+                      {
+                        deliverymessage !== "" &&
+                        <>
+                          <div className="dxc6checkout"></div>
+                          {deliverymessage}
+                          <div className="dxc6checkout"></div>
+                          <div className="drdsbscjcheckout"></div>
+                        </>
+                      }
 
-                      <div className="dxc6checkout"></div>
-                      <div className="drdsbscjcheckout"></div>
                       <ul>
-                        <li className="bobpcheckout-sutotals">
+                        <li className="bobpcheckout-sutotals" style={{marginTop:"10px"}}>
                           <div className="albcaqcheckout">
                             <div className="bobpbqbrb1checkout">Subtotal</div>
                           </div>
@@ -948,14 +939,7 @@ export default function Cart() {
                     <div className="akgzcheckout">
                       <div className="atbaagcheckout">
                         <div className="">
-                          {isordersubtotallessthanordervalue && (
-                            <Link
-                              className="fwbrbocheckout-place-order"
-                              href="/place-order"
-                            >
-                              Checkout
-                            </Link>
-                          )}
+                          {isordersubtotallessthanordervalue && <Link className="fwbrbocheckout-place-order" href="/place-order">Checkout</Link>}
                           <div style={{ height: "10px" }}></div>
 
                           <button

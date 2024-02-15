@@ -9,21 +9,16 @@ import React, { useContext, useEffect, useState } from 'react'
 
 function productEdit({params})
 {
-  const{storeGUID,setBrandlogo,setIscartbtnclicked,setCartdata,cartdata} = useContext(HomeContext)
-
-  const [loader, setLoader] = useState(true)
+  const{setIscartbtnclicked,setCartdata,cartdata, setLoader} = useContext(HomeContext)
 
   const router = useRouter()
   
-  // const {setIsitemclicked, handleInput} = useContext(HomeContext)
   const [isitemclicked, setIsitemclicked] = useState(false)
   const [isaccordianclicked, setIsaccordianclicked] = useState(true)
 
   const [ismodifierclicked, setIsmodifierclicked] = useState(false)
 
   const [singleitem, setSingleitem] = useState(null)
-  
-  const [nestedmodifieritemhasmodifier, setnestedmodifieritemhasmodifier] = useState(null)
 
   const [quantity, setQuantity] = useState(1)
   const [itemprice, setItemprice] = useState(0)
@@ -42,7 +37,9 @@ function productEdit({params})
 
     // When component load first this useEffect will be used
   useEffect(() => {
-    setLoader(false)
+    setTimeout(() => {
+      setLoader(false)
+    }, 3000);
     const getIndex = window.localStorage.getItem(`${BRANDSIMPLEGUID}set_index`)
     const getCart = window.localStorage.getItem(`${BRANDSIMPLEGUID}cart`)
 
@@ -52,16 +49,14 @@ function productEdit({params})
     setQuantity(getFilterItem?.quantity)
     setItemprice(getFilterItem?.total_order_amount / getFilterItem?.quantity)
 
-    // setBrandlogo(BrandLogoPath)
-    // setTimeout(() => {
-      
-    // }, 3000);
-
-    return () => {
-      // setBrandlogo(BrandLogoPath)
-    }
-
   }, [])
+
+  const handleMScroll = (event) =>
+  {
+      let element = document.querySelector('.ctascusingle-product')
+          
+      element.style.position = (event.deltaY === 100) ? "absolute" : "sticky"
+  }
 
   const handleRadioInput = (modifierId, itemId, itemName ,secondaryItemModifierCounter) =>
   {
@@ -69,7 +64,6 @@ function productEdit({params})
     {
       const findModifierItemNestedModifier = singleitem?.modifier_group?.find((modifier) => modifier?.id === modifierId)
       const findModifierItemNestedModifierItem = findModifierItemNestedModifier?.modifier_secondary_items?.find((item) => item?.id === itemId)
-      // setnestedmodifieritemhasmodifier(findModifierItemNestedModifierItem)
 
       setselectedModifierId(modifierId)
       setSelectedModifierItemId(itemId)
@@ -1256,7 +1250,7 @@ function productEdit({params})
   }, [ishandlemodalcheckiputclicked])
   
   // Website Cart Button
-  const handleEditCart = () =>
+  const handleUpdateItem = () =>
   {
     if(singleitem)
     {
@@ -1271,16 +1265,90 @@ function productEdit({params})
         }
       }
 
+      let indexArrForScroll = []
       if(parseInt(countMinPermit) > parseInt(0))
       {
         const addErrorClassinModifier = {
             ...singleitem,
-            modifier_group: singleitem?.modifier_group?.map((addErrorClass) =>
+            modifier_group: singleitem?.modifier_group?.map((addErrorClass,index) =>
+            {
+              let addClass = addErrorClass?.valid_class
+              if(parseInt(addErrorClass?.min_permitted) > parseInt(0) && addErrorClass.is_modifier_selected === false)
+              {
+                  addClass = "error_check"
+                  indexArrForScroll.push(index)
+              }
+              return{
+                  ...addErrorClass,
+                  valid_class: addClass
+              }
+            })
+        }
+
+        setSingleitem(addErrorClassinModifier)
+      }
+      else
+      {
+        const removeIndex = window.localStorage.getItem(`${BRANDSIMPLEGUID}set_index`)
+        
+        const filterCartFirst = cartdata?.filter((cart, index) => index !== JSON.parse(removeIndex))
+        setCartdata(filterCartFirst)
+
+        const addTotalAmount = {
+          ...singleitem,
+          total_order_amount: parseFloat(quantity * itemprice).toFixed(2),
+          price_total_without_quantity: parseFloat(itemprice).toFixed(2),
+          quantity: parseInt(quantity),
+          is_cart_modal_clicked: false
+        }
+       
+        setCartdata((prevData) => [...prevData, addTotalAmount])
+        router.push("/")
+        setIscartbtnclicked(true)
+      }
+
+      if(indexArrForScroll.length > 0)
+      {
+        for(let indexArr = 0; indexArr < indexArrForScroll.length; indexArr++)
+        {
+          if(indexArr === 0)
+          {
+            let element = document.querySelector(`.section${indexArrForScroll[indexArr]}`)
+            element.scrollIntoView({ behavior: 'smooth' });
+            return
+          }
+        }
+      }
+    }
+  }
+
+   // Website Cart Button
+   const handleMUpdateItem = () =>
+   {
+     if(singleitem)
+     {
+      // Count the number of modifier is min_permit is greater than zero.
+      
+      let countMinPermit = 0
+      for(const minPermit of singleitem?.modifier_group)
+      {
+        if(parseInt(minPermit?.min_permitted) > parseInt(0) && minPermit?.is_modifier_selected === false)
+        {
+          countMinPermit += 1
+        }
+      }
+      let indexArrForScroll = []
+      if(parseInt(countMinPermit) > parseInt(0))
+      {
+        const addErrorClassinModifier = {
+            ...singleitem,
+            modifier_group: singleitem?.modifier_group?.map((addErrorClass,index) =>
             {
                 let addClass = addErrorClass?.valid_class
                 if(parseInt(addErrorClass?.min_permitted) > parseInt(0) && addErrorClass.is_modifier_selected === false)
                 {
                     addClass = "error_check"
+                    indexArrForScroll.push(index)
                 }
                 return{
                     ...addErrorClass,
@@ -1301,61 +1369,37 @@ function productEdit({params})
         const addTotalAmount = {
           ...singleitem,
           total_order_amount: parseFloat(quantity * itemprice).toFixed(2),
+          price_total_without_quantity: parseFloat(itemprice).toFixed(2),
           quantity: parseInt(quantity),
           is_cart_modal_clicked: false
         }
-       
-        
+      
         setCartdata((prevData) => [...prevData, addTotalAmount])
         router.push("/")
         setIscartbtnclicked(true)
       }
-    }
-  }
-
-  // Mobile Cart Click button
-  const handleMobileAddtoCart = () =>
-  {
-    const addTotalAmount = {
-      ...singleitem,
-      total_order_amount: parseFloat(quantity * itemprice).toFixed(2),
-      quantity: parseInt(quantity),
-      is_cart_modal_clicked: false
-    }
-    setCartdata((prevData) => [...prevData, addTotalAmount])
-    router.push("/")
-    setIscartbtnclicked(true)
-  }
-
-  // useEffect(() => {
-
-  //     if(isaccordianclicked)
-  //     {
-  //       var acc = document.getElementsByClassName("accordion");
-  //       var i;
-  
-  //       for (i = 0; i < acc.length; i++) 
-  //       {
-  //         acc[i].addEventListener("click", function() 
-  //         {
-  //           var panel = this.parentNode.parentNode.nextElementSibling;
-  //           if (panel.style.display === "block") {
-  //             panel.style.display = "none";
-  //             this.children[0].children[0].style.display = 'none'
-  //             this.children[0].children[1].style.display = 'block'
-  //           } else {
-  //             panel.style.display = "block";
-  //             this.children[0].children[0].style.display = 'block'
-  //             this.children[0].children[1].style.display = 'none'
-  //           }
-  //         });
-  //       }
-      
-  //       setIsaccordianclicked(false)
-  //     }
-  // }, [isaccordianclicked])
-
-  // Mobile Decrement quantity
+      if(indexArrForScroll.length > 0)
+      {
+        for(let indexArr = 0; indexArr < indexArrForScroll.length; indexArr++)
+        {
+            if(indexArr === 0)
+            {
+                let element = document.querySelector(`.msection${indexArrForScroll[indexArr]}`)
+                element.scrollIntoView({ 
+                    behavior: 'smooth',
+                    block: 'start', // Adjust to 'center' or 'end' if needed
+                    inline: 'nearest'
+                  });
+                element.offsetTop
+                let elementCross = document.querySelector('.ctascusingle-product')
+    
+                elementCross.style.position = "absolute"
+                return
+            }
+        }
+      }
+     }
+   }
   
   const handleMobileQuantityDecrement = () => 
   {
@@ -1607,7 +1651,7 @@ function productEdit({params})
                       return(
                           // {/* minimum option = '1' and maximum option = 1 and single item select = 1 */}
                           (modifier?.select_single_option === 1 && (modifier?.min_permitted === 1 && modifier?.max_permitted === 1)) ? 
-                            <li key={index}>
+                            <li key={index} className={`section${index}`}>
                               <div>
                                 <div>
                                   <hr className="product_hr"></hr>
@@ -1647,9 +1691,12 @@ function productEdit({params})
                                                   <div className="modifier-product-item-name-one-nested-div">
                                                     <div className="modifier-product-item-name-one-nested-div-one">
                                                       <div className="modifier-product-item-name-one-nested-div-one-nested">
-                                                        <div className="modifier-product-item-name-one-nested-div-one-nested-div">Add: {seconditems?.title}</div>
+                                                        <div className="modifier-product-item-name-one-nested-div-one-nested-div">{seconditems?.title}</div>
                                                         <div className="spacer _8"></div>
-                                                        <div className="modifier-group-price">+{seconditems?.country_price_symbol}{getAmountConvertToFloatWithFixed(seconditems?.price,2)}</div>
+                                                        {
+                                                          getAmountConvertToFloatWithFixed(seconditems?.price,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                          <div className="modifier-group-price">{seconditems?.country_price_symbol}{getAmountConvertToFloatWithFixed(seconditems?.price,2)}</div>
+                                                        }
                                                       </div>
                                                     </div>
                                                   </div>
@@ -1666,7 +1713,7 @@ function productEdit({params})
                           :
                           // {/* minimum option = '0' and maximum option = 1 and single item select = 1 */}
                           (modifier?.select_single_option === 1 && (modifier?.min_permitted === 0 && modifier?.max_permitted >= 1)) ? 
-                            <li key={index}>
+                            <li key={index} className={`section${index}`}>
                               <div>
                                 <div>
                                   <hr className="product_hr"></hr>
@@ -1701,9 +1748,12 @@ function productEdit({params})
                                                       <div className="modifier-product-item-name-one-nested-div">
                                                         <div className="modifier-product-item-name-one-nested-div-one">
                                                           <div className="modifier-product-item-name-one-nested-div-one-nested">
-                                                            <div className="modifier-product-item-name-one-nested-div-one-nested-div">Add: {seconditems?.title}</div>
+                                                            <div className="modifier-product-item-name-one-nested-div-one-nested-div">{seconditems?.title}</div>
                                                             <div className="spacer _8"></div>
-                                                            <div className="modifier-group-price">+{seconditems?.country_price_symbol}{getAmountConvertToFloatWithFixed(seconditems?.price,2)}</div>
+                                                            {
+                                                              getAmountConvertToFloatWithFixed(seconditems?.price,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                              <div className="modifier-group-price">{seconditems?.country_price_symbol}{getAmountConvertToFloatWithFixed(seconditems?.price,2)}</div>
+                                                            }
                                                           </div>
                                                         </div>
                                                       </div>
@@ -1721,7 +1771,10 @@ function productEdit({params})
                                                           <div className="modifier-product-item-name-one-nested-div-one-nested">
                                                             <div className="modifier-product-item-name-one-nested-div-one-nested-div">{seconditems?.title}</div>
                                                             <div className="spacer _8"></div>
-                                                            <div className="modifier-group-price">+{seconditems?.country_price_symbol}{parseFloat(seconditems?.price).toFixed(2)}</div>
+                                                            {
+                                                              getAmountConvertToFloatWithFixed(seconditems?.price,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                              <div className="modifier-group-price">{seconditems?.country_price_symbol}{getAmountConvertToFloatWithFixed(seconditems?.price,2)}</div>
+                                                            }
                                                           </div>
                                                         </div>
                                                       </div>
@@ -1739,7 +1792,7 @@ function productEdit({params})
                           :
                           // (modifier?.select_single_option > 1 && (modifier?.min_permitted === 0 && modifier?.max_permitted > 1)) &&
                           // {/* minimum option = '- / 0' and maximum option = 5 and single item select = 2 */}
-                            <li key={index}>
+                            <li key={index} className={`section${index}`}>
                               <div>
                                 <div>
                                   <hr className="product_hr"></hr>
@@ -1796,9 +1849,12 @@ function productEdit({params})
                                                 <div className="modifier-product-item-name-one-nested-div">
                                                   <div className="modifier-product-item-name-one-nested-div-one">
                                                     <div className="modifier-product-item-name-one-nested-div-one-nested">
-                                                      <div className="modifier-product-item-name-one-nested-div-one-nested-div">Add: {seconditems?.title}</div>
+                                                      <div className="modifier-product-item-name-one-nested-div-one-nested-div">{seconditems?.title}</div>
                                                       <div className="spacer _8"></div>
-                                                      <div className="modifier-group-price">+{seconditems?.country_price_symbol}{getAmountConvertToFloatWithFixed(seconditems?.price,2)}</div>
+                                                      {
+                                                        getAmountConvertToFloatWithFixed(seconditems?.price,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                        <div className="modifier-group-price">{seconditems?.country_price_symbol}{getAmountConvertToFloatWithFixed(seconditems?.price,2)}</div>
+                                                      }
                                                     </div>
                                                   </div>
                                                 </div>
@@ -1935,7 +1991,7 @@ function productEdit({params})
                       </div>
                     </div>
                     <div className="da c7"></div>
-                    <button className="add-to-cart-btn-item" onClick={handleEditCart}>
+                    <button className="add-to-cart-btn-item" onClick={handleUpdateItem}>
                         Update {quantity} to order
                         <span className="add-cart-span">&nbsp;•&nbsp;</span>
                         {getCountryCurrencySymbol()} {parseFloat(quantity * itemprice).toFixed(2)}
@@ -1950,7 +2006,7 @@ function productEdit({params})
       {/* Mobile Responsive */}
       <div>
         <div>
-          <div className="agassingle-product">
+          <div className="agassingle-product" onWheel={handleMScroll}>
             <div  style={{width: "1px", height: "0px", padding: "0px", overflow: "hidden", position: "fixed", top: "1px", left: "1px"}}></div>
             <div>
               <div className="arc2single-product">
@@ -2011,7 +2067,7 @@ function productEdit({params})
                           // {/* minimum option = '1' and maximum option = 1 and single item select = 1 */}
                           (modifier?.select_single_option === 1 && (modifier?.min_permitted === 1 && modifier?.max_permitted === 1)) ?
 
-                            <li key={index}>
+                            <li key={index} className={`msection${index}`}>
                                 <div className="fusingle-productlidiv" >
                                     <hr className="efeqeofvsingle-product"></hr>
 
@@ -2075,9 +2131,12 @@ function productEdit({params})
                                                                         <div className="ale4amc4gjgkglsingle-product">
                                                                             <div className="alaqsingle-product">
                                                                                 <div className="alamgmgnsingle-product">
-                                                                                    <div className="bresdpg4gosingle-product">Add: {mobileSecondItems?.title}</div>
-                                                                                    <div className="spacer _8"></div>
-                                                                                    <div className="bresbtdqb1bzsingle-productincdecprice">+{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
+                                                                                  <div className="bresdpg4gosingle-product">{mobileSecondItems?.title}</div>
+                                                                                  <div className="spacer _8"></div>
+                                                                                  {
+                                                                                    getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                                                    <div className="bresbtdqb1bzsingle-productincdecprice">{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
+                                                                                  }
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -2101,7 +2160,7 @@ function productEdit({params})
                             // {/* minimum option = '0' and maximum option = 1 and single item select = 1 */}
                             (modifier?.select_single_option === 1 && (modifier?.min_permitted === 0 && modifier?.max_permitted >= 1)) ?
 
-                            <li key={index}>
+                            <li key={index} className={`msection${index}`}>
                               <div className="fusingle-productlidiv">
                                 <hr className="efeqeofvsingle-product"></hr>
 
@@ -2154,9 +2213,12 @@ function productEdit({params})
                                                     <div className="ale4amc4gjgkglsingle-product">
                                                       <div className="alaqsingle-product">
                                                         <div className="alamgmgnsingle-product">
-                                                          <div className="bresdpg4gosingle-product">Add: {mobileSecondItems?.title}</div>
+                                                          <div className="bresdpg4gosingle-product">{mobileSecondItems?.title}</div>
                                                           <div className="spacer _8"></div>
-                                                          <div className="bresbtdqb1bzsingle-productincdecprice">+{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
+                                                          {
+                                                            getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                            <div className="bresbtdqb1bzsingle-productincdecprice">{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
+                                                          }
                                                         </div>
                                                       </div>
                                                     </div>
@@ -2176,9 +2238,12 @@ function productEdit({params})
                                                     <div className="ale4amc4gjgkglsingle-product">
                                                       <div className="alaqsingle-product">
                                                         <div className="alamgmgnsingle-product">
-                                                          <div className="bresdpg4gosingle-product">Add: {mobileSecondItems?.title}</div>
+                                                          <div className="bresdpg4gosingle-product">{mobileSecondItems?.title}</div>
                                                           <div className="spacer _8"></div>
-                                                          <div className="bresbtdqb1bzsingle-productincdecprice">+{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
+                                                          {
+                                                            getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                            <div className="bresbtdqb1bzsingle-productincdecprice">{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
+                                                          }
                                                         </div>
                                                       </div>
                                                     </div>
@@ -2198,7 +2263,7 @@ function productEdit({params})
                           :
                             // (modifier?.select_single_option > 1 && (modifier?.min_permitted === 0 && modifier?.max_permitted > 1)) &&
                             // {/* minimum option = '- / 0' and maximum option = 5 and single item select = 2 */}
-                            <li key={index}>
+                            <li key={index} className={`msection${index}`}>
                               <div className="fusingle-productlidiv">
                                 <hr className="efeqeofvsingle-product"></hr>
 
@@ -2272,7 +2337,10 @@ function productEdit({params})
                                                       <div className="alamglgmsingle-productincdec">
                                                         <div className="bresdpg3gnsingle-productincdecheading">Add: {mobileSecondItems?.title}</div>
                                                         <div className="spacer _8"></div>
-                                                        <div className="bresbtdqb1bzsingle-productincdecprice">+{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
+                                                        {
+                                                          getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                          <div className="bresbtdqb1bzsingle-productincdecprice">{mobileSecondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}</div>
+                                                        }
                                                       </div>
                                                     </div>
                                                   </div>
@@ -2325,7 +2393,7 @@ function productEdit({params})
                   <div className="iosignle-product"></div>
                   <div className="i7single-product"></div>
                     <div className="iaibicblidieifigcsctbcsingle-product">
-                      <button className="e3bubrdpb9ihbkalbfc4afh2iibbijikilgwgxsingle-product" onClick={handleEditCart}>
+                      <button className="e3bubrdpb9ihbkalbfc4afh2iibbijikilgwgxsingle-product" onClick={handleMUpdateItem}>
                         Update {quantity} to order
                         <span className="bre3dpbud6imbfsingle-product-span">&nbsp;•&nbsp;</span>
                         {getCountryCurrencySymbol()} {getAmountConvertToFloatWithFixed(quantity * itemprice,2)}
@@ -2437,7 +2505,10 @@ function productEdit({params})
                                                                         <div className="alamdxdvmodifier-modal">
                                                                           <div className="chcicjckjdmodifier-modal">{item?.title}</div>
                                                                           <div className="spacer _8"></div>
-                                                                          <div className="modifier-group-price">+{item?.country_price_symbol}{parseFloat(item?.price_info).toFixed(2)}</div>
+                                                                          {
+                                                                            getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                                            <div className="modifier-group-price">{item?.country_price_symbol}{parseFloat(item?.price_info).toFixed(2)}</div>
+                                                                          }
                                                                         </div>
                                                                       </div>
                                                                     </div>
@@ -2511,7 +2582,10 @@ function productEdit({params})
                                                                               <div className="alamdxdvmodifier-modal">
                                                                                 <div className="chcicjckjdmodifier-modal">{item?.title}</div>
                                                                                 <div className="spacer _8"></div>
-                                                                                <div className="modifier-group-price">+{item?.country_price_symbol}{parseFloat(item?.price_info).toFixed(2)}</div>
+                                                                                {
+                                                                                  getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                                                  <div className="modifier-group-price">{item?.country_price_symbol}{parseFloat(item?.price_info).toFixed(2)}</div>
+                                                                                }
                                                                               </div>
                                                                             </div>
                                                                           </div>
@@ -2531,17 +2605,18 @@ function productEdit({params})
                                                                               <div className="alamdxdvmodifier-modal">
                                                                                 <div className="chcicjckjdmodifier-modal">{item?.title}</div>
                                                                                 <div className="spacer _8"></div>
-                                                                                <div className="modifier-group-price">+{item?.country_price_symbol}{parseFloat(item?.price_info).toFixed(2)}</div>
+                                                                                {
+                                                                                  getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                                                  <div className="modifier-group-price">{item?.country_price_symbol}{parseFloat(item?.price_info).toFixed(2)}</div>
+                                                                                }
                                                                               </div>
                                                                             </div>
                                                                           </div>
                                                                         </div>
                                                                       </label>
                                                                     </div>
-                                                                }
-                                                                  
+                                                                } 
                                                               </div>
-                                                                
                                                             )
                                                         })
                                                       }
@@ -2625,7 +2700,10 @@ function productEdit({params})
                                                                     <div className="modifier-product-item-name-one-nested-div-one-nested">
                                                                       <div className="modifier-product-item-name-one-nested-div-one-nested-div">{item?.title}</div>
                                                                       <div className="spacer _8"></div>
-                                                                      <div className="modifier-group-price">+{item?.country_price_symbol}{parseFloat(item?.price_info).toFixed(2)}</div>
+                                                                      {
+                                                                        getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) &&
+                                                                        <div className="modifier-group-price">{item?.country_price_symbol}{getAmountConvertToFloatWithFixed(item?.price_info,2)}</div>
+                                                                      }
                                                                     </div>
                                                                   </div>
                                                                 </div>
@@ -2677,7 +2755,7 @@ function productEdit({params})
           })
         }
       </>
-      <Loader loader={loader}/>
+      {/* <Loader loader={loader}/> */}
 </>
   )
 }
