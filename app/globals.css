@@ -1,6 +1,8 @@
 * {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  margin: 0px;
+  padding: 0px;
 }
 
 .body-tag {
@@ -1785,6 +1787,10 @@ ul {
   white-space: nowrap;
   overflow: hidden;
   color: #000000;
+}
+
+.navigation-btn:active {
+  border-bottom: 2px solid rgb(0, 0, 0);
 }
 
 .navigation-btn-div {
@@ -8926,6 +8932,7 @@ ul.track-steps {
   .cmakp3p4-delivery-type 
   {
     width: 374px;
+    margin: 0 auto;
   }
 
   .item-details {
@@ -9007,7 +9014,13 @@ ul.track-steps {
   }
 
   .top-bar {
-    height: 0px;
+    /* height: 0px; */
+    z-index: 2;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    scroll-behavior: smooth;
   }
 
   .scrolled {
@@ -9016,10 +9029,6 @@ ul.track-steps {
 
   .top-bar-div-level-one {
     z-index: 1;
-    position: fixed;
-    top: 0px;
-    left: 0px;
-    width: 100%;
   }
 
   .akaptopbar-div {

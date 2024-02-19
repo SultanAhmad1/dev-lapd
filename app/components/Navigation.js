@@ -20,7 +20,7 @@ function Navigation({handleCategoryClick})
                                     return(
                                         parseInt(category?.items?.length) > parseInt(0) &&
                                         <div className="navigation-div" key={index}>
-                                            <button className={`navigation-btn ${category.id === navmobileindex ? "active" : ""}`} onClick={() => handleCategoryClick(category?.id)}>
+                                            <button  className={`navigation-btn ${index === navmobileindex ? "active" : ""}`} onClick={() => handleCategoryClick(index)}>
                                                 <div className="navigation-btn-div" style={{color: (websiteModificationData?.websiteModificationLive !== null && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor !== null) && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor}}>{category.title}</div>
                                             </button>
                                         </div>
