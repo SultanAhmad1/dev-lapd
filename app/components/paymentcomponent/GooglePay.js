@@ -18,10 +18,10 @@ const GooglePay = ({orderTotal}) => {
         if(parseInt(orderTotal) > parseInt(0))
         {
 
-            if (!stripe || !elements) {
-            return;
+            if (!stripe || !elements) 
+            {
+                return;
             }
-            console.log("Total value:", orderTotal * 100);
     
             const pr = stripe.paymentRequest({
             country: 'GB',

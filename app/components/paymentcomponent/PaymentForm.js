@@ -15,6 +15,7 @@ const PaymentForm = ({orderId}) =>
   const router = useRouter()
   
   const {
+    setCartdata,
     totalOrderAmountValue,
     settotalOrderAmountValue
   } = useContext(HomeContext)
@@ -88,6 +89,12 @@ const PaymentForm = ({orderId}) =>
     {
       window.alert(error?.response?.data?.error)
       setLoader(false)
+      setLocalStorage(`${BRANDSIMPLEGUID}cart`,[])
+      setLocalStorage(`${BRANDSIMPLEGUID}order_amount_number`,null)
+      setLocalStorage(`${BRANDSIMPLEGUID}applied_coupon`,[])
+      setLocalStorage(`${BRANDSIMPLEGUID}customer_information`,null)
+      setLocalStorage(`${BRANDSIMPLEGUID}order_guid`,null)
+      setCartdata([])
       router.push(`/track-order/${orderId}`)
     }
   }

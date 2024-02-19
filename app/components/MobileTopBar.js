@@ -5,7 +5,7 @@ function MobileTopBar({handleCategoryClick,isscrolled,scrollPosition})
 {
     const {websiteModificationData,navigationcategories,navmobileindex} = useContext(HomeContext)
   return (
-    <div className={`top-bar ${isscrolled ? 'scrolled' : ''}`}>
+    <div className="top-bar" style={{display: isscrolled ? "unset" : "none"}}>
         <div className="top-bar-div-level-one">
             <div className="akaptopbar-div">
                 <div className="b0albctopbar-div">
@@ -22,7 +22,7 @@ function MobileTopBar({handleCategoryClick,isscrolled,scrollPosition})
                         {
                             return(
                                 parseInt(category?.items?.length) > parseInt(0) &&
-                                <button style={{transform: `translate3d(-${scrollPosition}px, 0px,0px)`}}  key={category.id} className={`bycsc0ctnmalc8bcc6nptopbar-div ${navmobileindex === category.id ? "np" : ""}`} onClick={() => handleCategoryClick(category.id)}>
+                                <button style={{transform: `translate3d(-${scrollPosition}px, 0px,0px)`}}  key={index} className={`bycsc0ctnmalc8bcc6nptopbar-div ${navmobileindex === index ? "np" : ""}`} onClick={() => handleCategoryClick(index)}>
                                     <div className="bycsd3d4topbar-div" style={{color: (websiteModificationData?.websiteModificationLive !== null && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor !== null) && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor}}>
                                         {category.title}
                                     </div>

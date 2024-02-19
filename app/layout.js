@@ -114,7 +114,7 @@ export default function RootLayout({ children })
       setSelectedFilter(getFilterDataFromObj === null ? convertToJSobj.filters[0] : getFilterDataFromObj)
       setFilters(convertToJSobj.filters)
       setNavigationcategories(convertToJSobj.categories)
-      setNavmobileindex(convertToJSobj.categories[0].id)
+      setNavmobileindex(0)
 
       const getDayInformation = convertToJSobj.menus[0].service_availability?.find((dayinformation) => dayinformation.day_of_week === moment().format('dddd').toLowerCase())
       setStoretodaydayname(moment().format('dddd'))

@@ -20,21 +20,10 @@ function UserForm()
     setIsTimeToClosed,
     storeGUID,
     cartdata,
-    setCartdata,
     postcode,
-    setPostcode,
     street1,
-    setStreet1,
     street2,
-    setStreet2,
-    iscartitemdottedbtnclicked,
-    setIsdeliverybtnclicked,
-    setIscartitemdottedbtnclicked,
     setIscartbtnclicked,
-    isdeliverybtnclicked,
-    isdeliverychangedbtnclicked,
-    setIsdeliverychangedbtnclicked,
-    daynumber,
     setHeaderCartBtnDisplay,
     setHeaderPostcodeBtnDisplay,
   } = useContext(HomeContext)
@@ -469,6 +458,7 @@ function UserForm()
   function handlePayNow()
   {
     setLoader(true)
+    console.log('Door:', doorhousename.length, "First",firstname.length,"last",lastname.length,"email",email.length, "phone",phone.length);
     if(parseInt(doorhousename.length) === parseInt(0) || parseInt(email.length) === parseInt(0) || parseInt(phone.length) === parseInt(0) || parseInt(firstname.length) === parseInt(0) || parseInt(lastname.length) === parseInt(0))
     {
       setPayNowBottomError("Please check * (asterisk) mark field and fill them.")
