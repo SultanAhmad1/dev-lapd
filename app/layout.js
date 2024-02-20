@@ -103,7 +103,7 @@ export default function RootLayout({ children })
       }
 
       const response = await axiosPrivate.post(`/menu`, data);
-      const convertToJSobj = JSON.parse(response.data?.data?.menu.menu_json_log)
+      const convertToJSobj = response.data?.data?.menu.menu_json_log
       setMenu(convertToJSobj)
       
       const getFilterDataFromObj = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}filter`))
