@@ -104,7 +104,7 @@ function PostcodeModal()
     return (
         <div className="deliver-to-body-content">
             <h1 className="deliver-to-body-content-h1">
-                Order Food Now YEs
+                Order Food Now
             </h1>
             <div className="deliver-to-body-content-nested-div-level-one">
                 <label
