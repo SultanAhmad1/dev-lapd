@@ -458,7 +458,7 @@ function UserForm()
   function handlePayNow()
   {
     setLoader(true)
-    console.log('Door:', doorhousename.length, "First",firstname.length,"last",lastname.length,"email",email.length, "phone",phone.length);
+    // console.log('Door:', doorhousename.length, "First",firstname.length,"last",lastname.length,"email",email.length, "phone",phone.length);
     if(parseInt(doorhousename.length) === parseInt(0) || parseInt(email.length) === parseInt(0) || parseInt(phone.length) === parseInt(0) || parseInt(firstname.length) === parseInt(0) || parseInt(lastname.length) === parseInt(0))
     {
       setPayNowBottomError("Please check * (asterisk) mark field and fill them.")
