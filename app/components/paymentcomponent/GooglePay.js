@@ -23,7 +23,7 @@ const GooglePay = () => {
       requestPayerName: true,
       requestPayerEmail: true,
     });
-
+    setPaymentRequest(pr)
     // Check the availability of the Payment Request API.
     // pr.canMakePayment().then(result => {
     //   if (result) {
