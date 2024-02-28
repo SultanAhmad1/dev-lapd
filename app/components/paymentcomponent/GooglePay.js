@@ -23,13 +23,12 @@ const GooglePay = () => {
       requestPayerName: true,
       requestPayerEmail: true,
     });
-    setPaymentRequest(pr)
     // Check the availability of the Payment Request API.
-    // pr.canMakePayment().then(result => {
-    //   if (result) {
-    //     setPaymentRequest(pr);
-    //   }
-    // });
+    pr.canMakePayment().then(result => {
+      if (result) {
+        setPaymentRequest(pr);
+      }
+    });
 
     // pr.on('paymentmethod', async (e) => {
     //   const {error: backendError, clientSecret} = await fetch(
