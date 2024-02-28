@@ -25,6 +25,7 @@ const GooglePay = () => {
     });
     // Check the availability of the Payment Request API.
     pr.canMakePayment().then(result => {
+        console.log("REturn the result:", result);
       if (result) {
         setPaymentRequest(pr);
       }
