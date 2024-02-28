@@ -1,12 +1,15 @@
 import React, {useEffect, useState} from 'react';
 import {PaymentRequestButtonElement, useStripe, useElements} from '@stripe/react-stripe-js';
+import { axiosPrivate } from '@/app/global/Axios';
+import { getAmountConvertToFloatWithFixed } from '@/app/global/Store';
 
 const ApplePay = () => {
   const stripe = useStripe();
   const elements = useElements();
   const [paymentRequest, setPaymentRequest] = useState(null);
-  const [messages, setAddMessage] = useState();
+  const [message, setMessage] = useState("")
 
+  const [clientSecret, setClientSecret] = useState("")
   useEffect(() => {
     if (!stripe || !elements) {
       return;
@@ -30,27 +33,42 @@ const ApplePay = () => {
       }
     });
 
-    pr.on('paymentmethod', async (e) => {
-      const {error: backendError, clientSecret} = await fetch(
-        '/create-payment-intent',
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify({
-            paymentMethodType: 'card',
-            currency: 'usd',
-          }),
-        }
-      ).then((r) => r.json());
+    async function paymentMethod()
+    {
+      try {
+        const response = await axiosPrivate.post('/create-payment-intent',{
+          order_total: getAmountConvertToFloatWithFixed(133.2,2) / 100,
+        })
+        const { clientSecret } = response.data;
 
-      if (backendError) {
-        setAddMessage(backendError.message);
-        return;
+        console.log("Success for apple pay:", response);
+        setClientSecret(clientSecret)
+      } catch (error) {
+        console.log("Error from apple pay:", error);
       }
+    }
+    pr.on('paymentmethod', async (e) => {
+      paymentMethod()
+      // const {error: backendError, clientSecret} = await fetch(
+      //   '/create-payment-intent',
+      //   {
+      //     method: 'POST',
+      //     headers: {
+      //       'Content-Type': 'application/json',
+      //     },
+      //     body: JSON.stringify({
+      //       paymentMethodType: 'card',
+      //       currency: 'usd',
+      //     }),
+      //   }
+      // ).then((r) => r.json());
 
-      setAddMessage('Client secret returned');
+      // if (backendError) {
+      //   setMessage(backendError.message);
+      //   return;
+      // }
+
+      setMessage('Client secret returned');
 
       const {
         error: stripeError,
@@ -61,7 +79,7 @@ const ApplePay = () => {
 
       if (stripeError) {
         // Show error to your customer (e.g., insufficient funds)
-        setAddMessage(stripeError.message);
+        setMessage(stripeError.message);
         return;
       }
 
@@ -70,29 +88,18 @@ const ApplePay = () => {
       // execution. Set up a webhook or plugin to listen for the
       // payment_intent.succeeded event that handles any business critical
       // post-payment actions.
-      setAddMessage(`Payment ${paymentIntent.status}: ${paymentIntent.id}`);
+      setMessage(`Payment ${paymentIntent.status}: ${paymentIntent.id}`);
     });
-  }, [stripe, elements, setAddMessage]);
+    console.log("Payment requests inside useEffect:",paymentRequest);
+  }, [stripe, elements, setMessage]);
 
+  console.log("Payment requests:",paymentRequest);
   return (
     <>
       <h1>Apple Pay</h1>
 
-      {/* <p>
-        Before you start, you need to:
-        <ul>
-          <li><a href="https://stripe.com/docs/stripe-js/elements/payment-request-button#html-js-testing" target="_blank">Add a payment method to your browser.</a> For example, add a card to your Wallet for Safari.</li>
-          <li>Serve your application over HTTPS. This is a requirement both in development and in production. One way to get up and running is to use a service like <a href="https://ngrok.com/" target="_blank" rel="noopener noreferrer">ngrok</a>.</li>
-          <li><a href="https://stripe.com/docs/stripe-js/elements/payment-request-button#verifying-your-domain-with-apple-pay" target="_blank">Verify your domain with Apple Pay</a>, both in development and production.</li>
-        </ul>
-      </p> */}
-
-      {/* <a href="https://stripe.com/docs/stripe-js/elements/payment-request-button" target="_blank">Stripe Documentation</a> */}
-
       {paymentRequest && <PaymentRequestButtonElement options={{paymentRequest}} />}
 
-
-      {/* <p> <a href="https://youtu.be/bMCsJfJyQKA" target="_blank">Watch a demo walkthrough</a> </p> */}
     </>
   );
 };
