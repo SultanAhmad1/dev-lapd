@@ -5,7 +5,7 @@ import {PaymentRequestButtonElement, useStripe, useElements} from '@stripe/react
 const GooglePay = () => {
   const stripe = useStripe();
   const elements = useElements();
-  const [paymentRequest, setPaymentRequest] = useState(null);
+  const [paymentRequests, setPaymentRequests] = useState(null);
   const [messages, setAddMessage] = useState();
 
   useEffect(() => {
@@ -16,12 +16,13 @@ const GooglePay = () => {
     const pr = stripe.paymentRequest({
       country: 'US',
       currency: 'usd',
+      requestPayerName: true,
+      requestPayerEmail: true,
       total: {
         label: 'Demo total',
         amount: 1999,
       },
-      requestPayerName: true,
-      requestPayerEmail: true,
+     
     });
     // Check the availability of the Payment Request API.
     pr.canMakePayment().then(result => {
@@ -30,8 +31,10 @@ const GooglePay = () => {
             ...result,
             googlePay: true
         }
+
+        console.log("Updated result:", updateResult);
     //   if (result) {
-        setPaymentRequest(updateResult);
+        setPaymentRequests(result);
     //   }
     });
 
@@ -79,11 +82,12 @@ const GooglePay = () => {
     // });
   }, [stripe, elements, setAddMessage]);
 
+  console.log("Payment request handle:", paymentRequests);
   return (
     <>
       <h1>Google Pay</h1>
 
-      {paymentRequest && <PaymentRequestButtonElement options={{paymentRequest}} />}
+      {paymentRequests && <PaymentRequestButtonElement options={{paymentRequests}} />}
 
       {/* <StatusMessages messages={messages} /> */}
     </>
