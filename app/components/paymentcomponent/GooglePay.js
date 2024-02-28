@@ -90,8 +90,8 @@ const GooglePay = () => {
 
       {/* <a href="https://stripe.com/docs/stripe-js/elements/payment-request-button" target="_blank">Stripe Documentation</a> */}
 
-      {paymentRequest && <PaymentRequestButtonElement options={{paymentRequest}} />}
-
+      {/* {paymentRequest && <PaymentRequestButtonElement options={{paymentRequest}} />} */}
+      <PaymentRequestButtonElement options={{paymentRequest}} />
       {/* <StatusMessages messages={messages} /> */}
     </>
   );
