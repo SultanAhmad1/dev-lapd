@@ -4,7 +4,7 @@ import {PaymentRequestButtonElement, useStripe, useElements} from '@stripe/react
 const GooglePay = () => {
   const stripe = useStripe();
   const elements = useElements();
-  const [paymentRequest, setPaymentRequest] = useState(null);
+  const [paymentRequests, setPaymentRequests] = useState(null);
   const [messages, setAddMessage] = useState();
 
   useEffect(() => {
@@ -12,21 +12,22 @@ const GooglePay = () => {
       return;
     }
 
-    const pr = stripe.paymentRequest({
-      country: 'US',
-      currency: 'usd',
-      total: {
+    var pr = stripe.paymentRequest({
+    country: 'US',
+    currency: 'usd',
+    total: {
         label: 'Demo total',
-        amount: 1999,
-      },
-      requestPayerName: true,
-      requestPayerEmail: true,
+        amount: 1000,
+    },
+    requestPayerName: true,
+    requestPayerEmail: true,
     });
+
 
     // Check the availability of the Payment Request API.
     pr.canMakePayment().then(result => {
       if (result) {
-        setPaymentRequest(pr);
+        setPaymentRequests(pr);
       }
     });
 
@@ -72,10 +73,10 @@ const GooglePay = () => {
       // post-payment actions.
       setAddMessage(`Payment ${paymentIntent.status}: ${paymentIntent.id}`);
     });
-    console.log("Google payment intent Inside useEffect:",paymentRequest);
+    console.log("Google payment intent Inside useEffect:",paymentRequests);
   }, [stripe, elements, setAddMessage]);
 
-  console.log("Google payment intent outside useEffect:",paymentRequest);
+  console.log("Google payment intent outside useEffect:",paymentRequests);
   return (
     <>
       <h1>Google Pay</h1>
@@ -90,8 +91,8 @@ const GooglePay = () => {
 
       {/* <a href="https://stripe.com/docs/stripe-js/elements/payment-request-button" target="_blank">Stripe Documentation</a> */}
 
-      {/* {paymentRequest && <PaymentRequestButtonElement options={{paymentRequest}} />} */}
-      <PaymentRequestButtonElement options={{paymentRequest}} />
+      {/* {paymentRequests && <PaymentRequestButtonElement options={{paymentRequests}} />} */}
+      <PaymentRequestButtonElement options={{paymentRequests}} />
       {/* <StatusMessages messages={messages} /> */}
     </>
   );
