@@ -26,9 +26,13 @@ const GooglePay = () => {
     // Check the availability of the Payment Request API.
     pr.canMakePayment().then(result => {
         console.log("REturn the result:", result);
-      if (result) {
-        setPaymentRequest(pr);
-      }
+        const updateResult = {
+            ...result,
+            googlePay: true
+        }
+    //   if (result) {
+        setPaymentRequest(updateResult);
+    //   }
     });
 
     // pr.on('paymentmethod', async (e) => {
