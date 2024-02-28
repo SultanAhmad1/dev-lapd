@@ -1,6 +1,7 @@
 import axios from "axios";
 // const BASE_URL = 'http://127.0.0.1:8000/api'
-const BASE_URL = "https://laravel-jouleskitchen.cleartwo.uk/api";
+// const BASE_URL = "https://laravel-jouleskitchen.cleartwo.uk/api";
+const BASE_URL = 'https://laravel-jouleskitchen.cleartwo.xyz/api'
 
 export default axios.create({
   baseURL: BASE_URL,

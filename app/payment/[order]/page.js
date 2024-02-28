@@ -12,8 +12,8 @@ function Payment({params})
   return (
     <Elements stripe={stripePromise}>
         {/* <PaymentForm orderId={params?.order}/> */}
-        <ApplePay orderId={params?.order}/>
-        {/* <GooglePay orderId={params?.order}/> */}
+        {/* <ApplePay orderId={params?.order}/> */}
+        <GooglePay orderId={params?.order}/>
     </Elements>
   )
 }

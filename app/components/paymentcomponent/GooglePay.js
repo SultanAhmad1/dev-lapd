@@ -86,6 +86,7 @@ const GooglePay = ({orderTotal}) => {
         }
     }, [orderTotal]);
 
+    console.log("Google pay payment requests:",paymentRequest);
     return (
         <>
             {/* <h1>Google Pay</h1> */}
