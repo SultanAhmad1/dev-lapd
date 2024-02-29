@@ -16,10 +16,12 @@ const GooglePay = () => {
         },
         requestPayerName: true,
         requestPayerEmail: true,
+        requestShipping: false,
       });
 
       // Check the availability of the Payment Request API.
       pr.canMakePayment().then(result => {
+        console.log("Result from Google Pay:", result);
         if (result) {
           setPaymentRequest(pr);
         }
@@ -30,9 +32,6 @@ const GooglePay = () => {
   if (paymentRequest) {
     return <PaymentRequestButtonElement options={{paymentRequest}} />
   }
-
-  // Use a traditional checkout form.
-  return 'Insert your form or button component here.';
 }
 
 export default GooglePay
