@@ -8,11 +8,15 @@ const GooglePay = (props) => {
   } = props
   const stripe = useStripe();
   const [paymentRequest, setPaymentRequest] = useState(null);
+  
+  console.log("Out Side Check the amount from database:", getAmountConvertToFloatWithFixed(orderTotal,2) * 100);
 
-  console.log("Check the amount from database:", getAmountConvertToFloatWithFixed(orderTotal,2) * 100);
   const [message, setMessage] = useState("")
   useEffect(() => {
     if (stripe) {
+
+  console.log("Check the amount from database:", getAmountConvertToFloatWithFixed(orderTotal,2) * 100);
+
       const pr = stripe.paymentRequest({
         country: country,
         currency: currency,
@@ -25,6 +29,7 @@ const GooglePay = (props) => {
         requestShipping: false,
       });
 
+      console.log("Payment Request:", pr);
       // Check the availability of the Payment Request API.
       pr.canMakePayment().then(result => {
         console.log("Result from Google Pay:", result);
@@ -69,7 +74,7 @@ const GooglePay = (props) => {
         }
       })
     }
-  }, [stripe]);
+  }, [stripe,orderTotal]);
 
   console.log("Google pay has message:", message);
   if (paymentRequest) {
