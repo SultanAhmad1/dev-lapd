@@ -49,12 +49,12 @@ const GooglePay = (props) => {
           const { clientSecret } = response.data;
           setMessage('Client secret returned');
 
-          const {
-            error: stripeError,
-            paymentIntent,
-          } = await stripe.confirmCardPayment(clientSecret, {
-            payment_method: e.paymentMethod.id,
-          }, { handleActions: false });
+          console.log("Payment method:",e.paymentMethod);
+
+          const {error: stripeError,paymentIntent} = await stripe.confirmCardPayment(
+            clientSecret, 
+            {payment_method: e.paymentMethod.id}, { handleActions: false }
+          );
 
           console.log("Confirm card payment response from google pay component:", stripeError, "Payment intent:", paymentIntent);
           if (stripeError) {
