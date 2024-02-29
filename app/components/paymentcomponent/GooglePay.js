@@ -17,12 +17,13 @@ const GooglePay = (props) => {
 
   console.log("Check the amount from database:", getAmountConvertToFloatWithFixed(orderTotal,2) * 100);
 
+      const orderTotalSimpleForm = getAmountConvertToFloatWithFixed(orderTotal,2) * 100
       const pr = stripe.paymentRequest({
         country: country,
         currency: currency,
         total: {
           label: 'Total',
-          amount: getAmountConvertToFloatWithFixed(orderTotal,2) * 100,
+          amount: orderTotalSimpleForm,
         },
         requestPayerName: true,
         requestPayerEmail: true,
