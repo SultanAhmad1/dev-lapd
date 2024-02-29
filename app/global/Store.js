@@ -3,6 +3,8 @@ let isUserEnteredPostcode = false
 let categoryUUID = 0
 let itemUUID = 0
 let countryCurrencySymbol = "£"
+export const country = "GB"
+export const currency = "gbp"
 
 export function setStoreName(useEnterStore)
 {
