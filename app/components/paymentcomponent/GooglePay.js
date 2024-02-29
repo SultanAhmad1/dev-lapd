@@ -13,19 +13,20 @@ const GooglePay = () => {
       return;
     }
 
-    const pr = stripe.paymentRequest({
+    var paymentRequest = stripe.paymentRequest({
       country: 'US',
       currency: 'usd',
-      requestPayerName: true,
-      requestPayerEmail: true,
       total: {
         label: 'Demo total',
-        amount: 1999,
+        amount: 1000,
       },
-     
+      requestPayerName: true,
+      requestPayerEmail: true,
     });
+
+    console.log("Payment request instance:", paymentRequest);
     // Check the availability of the Payment Request API.
-    pr.canMakePayment().then(result => {
+    paymentRequest.canMakePayment().then(result => {
         console.log("REturn the result:", result);
         // const updateResult = {
         //     ...result,
@@ -38,7 +39,7 @@ const GooglePay = () => {
       }
     });
 
-    // pr.on('paymentmethod', async (e) => {
+    // paymentRequest.on('paymentmethod', async (e) => {
     //   const {error: backendError, clientSecret} = await fetch(
     //     '/create-payment-intent',
     //     {
