@@ -16,8 +16,8 @@ const GooglePay = (props) => {
         country: country,
         currency: currency,
         total: {
-          label: 'Demo total',
-          amount: 1099,
+          label: 'Total',
+          amount: getAmountConvertToFloatWithFixed(orderTotal,2) * 100,
         },
         requestPayerName: true,
         requestPayerEmail: true,
