@@ -5,7 +5,7 @@ import {PaymentRequestButtonElement, useStripe, useElements} from '@stripe/react
 const GooglePay = () => {
   const stripe = useStripe();
   const elements = useElements();
-  const [paymentRequests, setPaymentRequests] = useState(null);
+  const [paymentRequest, setPaymentRequest] = useState(null);
   const [messages, setAddMessage] = useState();
 
   useEffect(() => {
@@ -13,7 +13,7 @@ const GooglePay = () => {
       return;
     }
 
-    var paymentRequest = stripe.paymentRequest({
+    var pr = stripe.paymentRequest({
       country: 'US',
       currency: 'usd',
       total: {
@@ -24,9 +24,9 @@ const GooglePay = () => {
       requestPayerEmail: true,
     });
 
-    console.log("Payment request instance:", paymentRequest);
+    console.log("Payment request instance:", pr);
     // Check the availability of the Payment Request API.
-    paymentRequest.canMakePayment().then(result => {
+    pr.canMakePayment().then(result => {
         console.log("REturn the result:", result);
         // const updateResult = {
         //     ...result,
@@ -35,7 +35,7 @@ const GooglePay = () => {
 
         // console.log("Updated result:", updateResult);
       if (result) {
-        setPaymentRequests(result);
+        setPaymentRequest(result);
       }
     });
 
@@ -83,16 +83,14 @@ const GooglePay = () => {
     // });
   }, [stripe, elements, setAddMessage]);
 
-  console.log("Payment request handle:", paymentRequests);
-  return (
-    <>
-      <h1>Google Pay</h1>
+  console.log("Payment request handle:", paymentRequest);
+  
+  if (paymentRequest) {
+    return <PaymentRequestButtonElement options={{paymentRequest}} />
+  }
 
-      {paymentRequests && <PaymentRequestButtonElement options={{paymentRequests}} />}
-
-      {/* <StatusMessages messages={messages} /> */}
-    </>
-  );
+  // Use a traditional checkout form.
+  return 'Insert your form or button component here.';
 };
 
 export default GooglePay;
