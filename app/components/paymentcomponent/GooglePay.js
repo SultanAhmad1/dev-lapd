@@ -39,7 +39,7 @@ const GooglePay = (props) => {
         }
       });
       
-      pr.on("", async function(e){
+      pr.on("paymentmethod", async function(e){
         try {
      
           const response = await axiosPrivate.post('/create-payment-intent', {
