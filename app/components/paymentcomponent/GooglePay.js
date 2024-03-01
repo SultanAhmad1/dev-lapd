@@ -40,7 +40,7 @@ const GooglePay = (props) => {
         }
       });
       
-      pr.on("token", async function(e)
+      pr.on("paymentMethod", async function(e)
       {
         try {
 
@@ -53,10 +53,15 @@ const GooglePay = (props) => {
 
           console.log("Payment method:",e);
 
-          const {error: stripeError,paymentIntent} = await stripe.confirmCardPayment(
-            clientSecret, 
-            {payment_method: e.token.id}, { handleActions: false }
-          );
+          // const {error: stripeError,paymentIntent} = await stripe.confirmCardPayment(
+          //   clientSecret, 
+          //   {
+          //     payment_method: e.token.id
+          //   }, 
+          //   { 
+          //     handleActions: false 
+          //   }
+          // );
 
           console.log("Confirm card payment response from google pay component:", stripeError, "Payment intent:", paymentIntent);
           if (stripeError) {
