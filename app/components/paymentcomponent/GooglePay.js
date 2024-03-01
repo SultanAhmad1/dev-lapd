@@ -40,7 +40,7 @@ const GooglePay = (props) => {
         }
       });
       
-      pr.on("token", async function(e)
+      pr.on("paymentMethod", async function(e)
       {
         try {
 
