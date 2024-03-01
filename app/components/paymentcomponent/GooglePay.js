@@ -51,7 +51,7 @@ const GooglePay = (props) => {
           const { clientSecret } = response.data;
           setMessage('Client secret returned');
 
-          console.log("Payment method:",e.paymentMethod);
+          console.log("Payment method:",e);
 
           const {error: stripeError,paymentIntent} = await stripe.confirmCardPayment(
             clientSecret, 
