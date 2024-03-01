@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {CardElement, PaymentRequestButtonElement, useStripe} from '@stripe/react-stripe-js';
+import {CardElement, PaymentRequestButtonElement, useElements, useStripe} from '@stripe/react-stripe-js';
 import { country, currency, getAmountConvertToFloatWithFixed } from '@/app/global/Store';
 import { axiosPrivate } from '@/app/global/Axios';
 
@@ -7,7 +7,10 @@ const GooglePay = (props) => {
   const{
     orderTotal
   } = props
+
   const stripe = useStripe();
+  const elements = useElements();
+
   const [paymentRequest, setPaymentRequest] = useState(null);
   
   console.log("Out Side Check the amount from database:", getAmountConvertToFloatWithFixed(orderTotal,2) * 100);
@@ -53,15 +56,24 @@ const GooglePay = (props) => {
 
           console.log("Payment method:",e);
 
-          // const {error: stripeError,paymentIntent} = await stripe.confirmCardPayment(
-          //   clientSecret, 
-          //   {
-          //     payment_method: e.token.card.type
-          //   },
-          //   { 
-          //     handleActions: false 
-          //   }
-          // );
+          // payment_method: {
+          //   card: cardElement,
+          //   // billing_details: {
+          //   //   name: 'John Doe', // replace with user's name
+          //   // },
+          // },
+
+          const {error: stripeError,paymentIntent} = await stripe.confirmCardPayment(
+            clientSecret, 
+            {
+              payment_method: {
+                card: elements.getElement(CardElement)
+              }
+            },
+            { 
+              handleActions: false 
+            }
+          );
 
           console.log("Confirm card payment response from google pay component:", stripeError, "Payment intent:", paymentIntent);
           if (stripeError) {
