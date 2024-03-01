@@ -40,7 +40,7 @@ const GooglePay = (props) => {
         }
       });
       
-      paymentRequest.on('paymentmethod', function(event) {
+      pr.on('paymentmethod', function(event) {
         // event.paymentMethod is available
         console.log("Payment Method:", event);
       });
