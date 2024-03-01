@@ -389,7 +389,10 @@ function UserForm()
 
     let orderFromDatabaseGUID = window.localStorage.getItem(`${BRANDSIMPLEGUID}order_guid`)
     
+    console.log("Order From Database GUID:", orderFromDatabaseGUID);
     let customerURL = (orderFromDatabaseGUID === null) ?  `/store-customer-details` : `/update-customer-details`
+
+    console.log("CUstomer URL:",customerURL);
 
     const customerInformationInLocalStorage = {
       doorhousename: doorhousename,

@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {PaymentRequestButtonElement, useStripe} from '@stripe/react-stripe-js';
+import {CardElement, PaymentRequestButtonElement, useStripe} from '@stripe/react-stripe-js';
 import { country, currency, getAmountConvertToFloatWithFixed } from '@/app/global/Store';
 
 const GooglePay = (props) => {
@@ -39,9 +39,10 @@ const GooglePay = (props) => {
         }
       });
       
-      pr.on("", async function(e){
+      pr.on("token", async function(e)
+      {
         try {
-     
+
           const response = await axiosPrivate.post('/create-payment-intent', {
             order_total: getAmountConvertToFloatWithFixed(orderTotal,2) * 100, // replace with your desired amount
           });
