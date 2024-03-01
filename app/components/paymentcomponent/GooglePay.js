@@ -10,7 +10,7 @@ const GooglePay = (props) => {
   const stripe = useStripe();
   const [paymentRequest, setPaymentRequest] = useState(null);
   
-  console.log("Out Side Check the amount from database:", getAmountConvertToFloatWithFixed(orderTotal,2) * 100);
+  console.log("Out Side Check the amount from database:",orderTotal,  getAmountConvertToFloatWithFixed(orderTotal,2) * 100);
 
   const [message, setMessage] = useState("")
   useEffect(() => {
