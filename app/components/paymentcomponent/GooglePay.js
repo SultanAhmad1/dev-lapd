@@ -56,7 +56,7 @@ const GooglePay = (props) => {
           const {error: stripeError,paymentIntent} = await stripe.confirmCardPayment(
             clientSecret, 
             {
-              payment_method: e.token.card.id
+              payment_method: e.token.card.type
             },
             { 
               handleActions: false 
