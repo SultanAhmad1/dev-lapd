@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from 'react';
 import {CardElement, PaymentRequestButtonElement, useStripe} from '@stripe/react-stripe-js';
 import { country, currency, getAmountConvertToFloatWithFixed } from '@/app/global/Store';
+import { axiosPrivate } from '@/app/global/Axios';
 
 const GooglePay = (props) => {
   const{
