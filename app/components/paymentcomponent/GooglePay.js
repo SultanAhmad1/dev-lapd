@@ -63,17 +63,17 @@ const GooglePay = (props) => {
           //   // },
           // },
 
-          const {error: stripeError,paymentIntent} = await stripe.confirmCardPayment(
-            clientSecret, 
-            {
-              payment_method: {
-                card: elements.getElement(CardElement)
-              }
-            },
-            { 
-              handleActions: false 
-            }
-          );
+          // const {error: stripeError,paymentIntent} = await stripe.confirmCardPayment(
+          //   clientSecret, 
+          //   {
+          //     payment_method: {
+          //       card: elements.getElement(CardElement)
+          //     }
+          //   },
+          //   { 
+          //     handleActions: false 
+          //   }
+          // );
 
           console.log("Confirm card payment response from google pay component:", stripeError, "Payment intent:", paymentIntent);
           if (stripeError) {
