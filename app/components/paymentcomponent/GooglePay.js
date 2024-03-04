@@ -5,7 +5,9 @@ import { axiosPrivate } from '@/app/global/Axios';
 
 const GooglePay = (props) => {
   const{
-    orderTotal
+    orderTotal,
+    setLoader,
+    afterPaymentSavedOrderUpdate
   } = props
   const stripe = useStripe();
   const [paymentRequest, setPaymentRequest] = useState(null);
@@ -13,6 +15,7 @@ const GooglePay = (props) => {
   console.log("Out Side Check the amount from database:",orderTotal,  parseFloat(orderTotal) * 100);
 
   const [message, setMessage] = useState("")
+
   useEffect(() => {
     if (stripe) {
 
@@ -112,20 +115,28 @@ const GooglePay = (props) => {
               // Check if the PaymentIntent requires any actions and if so let Stripe.js
               // handle the flow. If using an API version older than "2019-02-11" instead
               // instead check for: `paymentIntent.status === "requires_source_action"`.
-              if (confirmResult.paymentIntent.status === "requires_action") {
-                  // Let Stripe.js handle the rest of the payment flow.
-                  stripe.confirmCardPayment(client).then(function(result) {
-                      if (result.error) {
-                          // The payment failed -- ask your customer for a new payment method.
-                          console.log("strip confirmcard ask your customer new payment method if part:", result);
-                      } else {  
-                          // The payment has succeeded.
-                          console.log("strip confirmcard ask your customer new payment method else:", result);
-                      }
-                  });
-              } else {
-                  // The payment has succeeded.
-                  console.log("Payment intent:",confirmResult.paymentIntent.id)
+              if (confirmResult.paymentIntent.status === "requires_action") 
+              {
+                // Let Stripe.js handle the rest of the payment flow.
+                stripe.confirmCardPayment(client).then(function(result) 
+                {
+                  if (result.error) 
+                  {
+                    // The payment failed -- ask your customer for a new payment method.
+                    console.log("strip confirmcard ask your customer new payment method if part:", result);
+                  } 
+                  else 
+                  {  
+                    // The payment has succeeded.
+                    console.log("strip confirmcard ask your customer new payment method else:", result);
+                  }
+                });
+              } 
+              else 
+              {
+                // The payment has succeeded.
+                console.log("Payment intent:",confirmResult.paymentIntent.id)
+                afterPaymentSavedOrderUpdate(confirmResult.paymentIntent.id)
               }
           }
         });
