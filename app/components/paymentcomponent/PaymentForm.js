@@ -119,6 +119,7 @@ const PaymentForm = ({orderId}) =>
     } 
     catch (error) 
     {
+      console.log("Update Order After successfully payment save:", error);
     }
   }
 
