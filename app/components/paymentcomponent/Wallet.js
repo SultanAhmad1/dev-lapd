@@ -3,7 +3,7 @@ import {CardElement, PaymentRequestButtonElement, useStripe} from '@stripe/react
 import { country, currency, getAmountConvertToFloatWithFixed } from '@/app/global/Store';
 import { axiosPrivate } from '@/app/global/Axios';
 
-const GooglePay = (props) => {
+const Wallet = (props) => {
 
   const{
     orderTotal,
@@ -103,4 +103,4 @@ const GooglePay = (props) => {
   }
 }
 
-export default GooglePay
+export const WalletMemo = React.memo(Wallet)
