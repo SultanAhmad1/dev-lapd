@@ -108,6 +108,8 @@ const PaymentForm = ({orderId}) =>
         amount_paid: getAmountConvertToFloatWithFixed(paymentIntent.amount / 100,2),
         stripeid: paymentIntent.id,
       }  
+
+      console.log("After Payment Save Order Udate data:", data);
       const response = await axiosPrivate.post(`/update-order-after-successfully-payment-save`, data)
       // Here need to hit sms and email call.
 
