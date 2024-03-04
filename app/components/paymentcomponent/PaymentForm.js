@@ -6,8 +6,7 @@ import HomeContext from '@/app/contexts/HomeContext';
 import { getAmountConvertToFloatWithFixed, setLocalStorage } from '@/app/global/Store';
 import { useRouter } from 'next/navigation';
 import Loader from '../modals/Loader';
-import Link from 'next/link';
-import GooglePay from './GooglePay';
+import { WalletMemo } from './Wallet';
 // import stripePromise from './stripe';
 
 const PaymentForm = ({orderId}) => 
@@ -109,7 +108,6 @@ const PaymentForm = ({orderId}) =>
         stripeid: paymentIntent.id,
       }  
 
-      console.log("After Payment Save Order Udate data:", data);
       const response = await axiosPrivate.post(`/update-order-after-successfully-payment-save`, data)
       // Here need to hit sms and email call.
 
@@ -121,27 +119,34 @@ const PaymentForm = ({orderId}) =>
     } 
     catch (error) 
     {
-      console.log("Update Order After successfully payment save:", error);
+      // console.log("Update Order After successfully payment save:", error);
     }
   }
 
-  const handleSubmit = async (event) => {
+  const handleSubmit = async (event) => 
+  {
+
     event.preventDefault();
     setLoader(true)
+
     if (!stripe || !elements) 
     {
       setLoader(false)
       return;
     }
 
-    try {
+    try 
+    {
       const cardElement = elements.getElement(CardElement);
 
       const { token, error,type } = await stripe.createToken(cardElement);
 
-      if (error) {
+      if (error) 
+      {
         setPaymentError(error.message);
-      } else {
+      } 
+      else 
+      {
         const response = await axiosPrivate.post('/create-payment-intent', {
           order_total: getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) * 100, // replace with your desired amount
           token: token.id,
@@ -158,14 +163,17 @@ const PaymentForm = ({orderId}) =>
           },
         });
 
-        if (result.error) {
+        if (result.error) 
+        {
           setPaymentError(result.error.message);
-        } else {
+        } 
+        else 
+        {
           afterPaymentSavedOrderUpdate(result.paymentIntent)
         }
       }
     } catch (error) {
-      console.error(error);
+      // console.error(error);
     }
   };
 
@@ -222,7 +230,7 @@ const PaymentForm = ({orderId}) =>
                   <div className="gqpayment-desk">
                     <div className='boh7bqh8payment-desk'>
                       <button className="h7brboe1payment-btn" style={{marginBottom: "10px"}} disabled={!stripe} onClick={handleSubmit}>Submit</button>
-                      <GooglePay orderTotal={totalOrderAmountValue} setLoader={setLoader} afterPaymentSavedOrderUpdate={afterPaymentSavedOrderUpdate}/>
+                      <WalletMemo orderTotal={totalOrderAmountValue} setLoader={setLoader} afterPaymentSavedOrderUpdate={afterPaymentSavedOrderUpdate}/>
                     </div>
                   </div>
                 </div>
