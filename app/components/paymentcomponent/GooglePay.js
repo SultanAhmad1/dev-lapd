@@ -136,7 +136,7 @@ const GooglePay = (props) => {
               {
                 // The payment has succeeded.
                 console.log("Payment intent:",confirmResult.paymentIntent.id)
-                afterPaymentSavedOrderUpdate(confirmResult.paymentIntent.id)
+                afterPaymentSavedOrderUpdate(confirmResult.paymentIntent)
               }
           }
         });
