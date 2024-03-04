@@ -40,47 +40,96 @@ const GooglePay = (props) => {
         }
       });
    
-      pr.on("token", async function(e)
-      {
-        try {
+      // pr.on("token", async function(e)
+      // {
+      //   try {
 
-          const response = await axiosPrivate.post('/create-payment-intent', {
-            order_total: getAmountConvertToFloatWithFixed(orderTotal,2) * 100, // replace with your desired amount
-          });
+      //     const response = await axiosPrivate.post('/create-payment-intent', {
+      //       order_total: getAmountConvertToFloatWithFixed(orderTotal,2) * 100, // replace with your desired amount
+      //     });
   
-          const { clientSecret } = response.data;
-          setMessage('Client secret returned');
+      //     const { clientSecret } = response.data;
+      //     setMessage('Client secret returned');
 
-          console.log("Payment method:",e);
+      //     console.log("Payment method:",e);
 
-          const {error: stripeError,paymentIntent} = await stripe.confirmCardPayment(
-            clientSecret, 
-            {
-              payment_method: e.token.card.type
-            },
-            { 
-              handleActions: false 
-            }
-          );
+      //     const {error: stripeError,paymentIntent} = await stripe.confirmCardPayment(
+      //       clientSecret, 
+      //       {
+      //         payment_method: e.token.card.type
+      //       },
+      //       { 
+      //         handleActions: false 
+      //       }
+      //     );
 
-          console.log("Confirm card payment response from google pay component:", stripeError, "Payment intent:", paymentIntent);
-          if (stripeError) {
-            // Show error to your customer (e.g., insufficient funds)
-            setMessage(stripeError.message);
-            return;
+      //     console.log("Confirm card payment response from google pay component:", stripeError, "Payment intent:", paymentIntent);
+      //     if (stripeError) {
+      //       // Show error to your customer (e.g., insufficient funds)
+      //       setMessage(stripeError.message);
+      //       return;
+      //     }
+
+      //     // Show a success message to your customer
+      //     // There's a risk of the customer closing the window before callback
+      //     // execution. Set up a webhook or plugin to listen for the
+      //     // payment_intent.succeeded event that handles any business critical
+      //     // post-payment actions.
+      //     setMessage(`Payment ${paymentIntent.status}: ${paymentIntent.id}`);
+
+      //   } catch (error) {
+      //     console.log("Google pay console error:", error);
+      //   }
+      // })
+
+      paymentRequest.on('paymentmethod', async function(ev) {
+        
+        const response = await axiosPrivate.post('/create-payment-intent', {
+          order_total: getAmountConvertToFloatWithFixed(orderTotal,2) * 100, // replace with your desired amount
+        });
+  
+        console.log("Client secret key:", response);
+        const { clientSecret } = response.data;
+        // Confirm the PaymentIntent without handling potential next actions (yet).
+        stripe.confirmCardPayment(
+          clientSecret,
+          {payment_method: ev.paymentMethod.id},
+          {handleActions: false}
+        ).then(function(confirmResult) {
+          console.log("Confirm Result:", confirmResult);
+          if (confirmResult.error) 
+          {
+            // Report to the browser that the payment failed, prompting it to
+            // re-show the payment interface, or show an error message and close
+            // the payment interface.
+            ev.complete('fail');
+            
+          } else {
+            console.log("Confirm success: ", ev);
+              // Report to the browser that the confirmation was successful, prompting
+              // it to close the browser payment method collection interface.
+              ev.complete('success');
+              // Check if the PaymentIntent requires any actions and if so let Stripe.js
+              // handle the flow. If using an API version older than "2019-02-11" instead
+              // instead check for: `paymentIntent.status === "requires_source_action"`.
+              if (confirmResult.paymentIntent.status === "requires_action") {
+                  // Let Stripe.js handle the rest of the payment flow.
+                  stripe.confirmCardPayment(client).then(function(result) {
+                      if (result.error) {
+                          // The payment failed -- ask your customer for a new payment method.
+                          console.log("strip confirmcard ask your customer new payment method if part:", result);
+                      } else {  
+                          // The payment has succeeded.
+                          console.log("strip confirmcard ask your customer new payment method else:", result);
+                      }
+                  });
+              } else {
+                  // The payment has succeeded.
+                  console.log("Payment intent:",confirmResult.paymentIntent.id)
+              }
           }
-
-          // Show a success message to your customer
-          // There's a risk of the customer closing the window before callback
-          // execution. Set up a webhook or plugin to listen for the
-          // payment_intent.succeeded event that handles any business critical
-          // post-payment actions.
-          setMessage(`Payment ${paymentIntent.status}: ${paymentIntent.id}`);
-
-        } catch (error) {
-          console.log("Google pay console error:", error);
-        }
-      })
+        });
+      });
     }
   }, [stripe,orderTotal]);
 
