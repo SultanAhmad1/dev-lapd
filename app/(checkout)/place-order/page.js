@@ -387,10 +387,15 @@ function UserForm()
     const couponCodes = (parseInt(getCouponCode.length) > parseInt(0) ? getCouponCode : couponDiscountapplied)
     const updatedDeliveryTime = moment(`${moment().format('YYYY-MM-DD')} ${deliverytime}`, 'YYYY-MM-DD HH:mm:ss')
 
-    let orderFromDatabaseGUID = window.localStorage.getItem(`${BRANDSIMPLEGUID}order_guid`)
+    let orderFromDatabaseGUID = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}order_guid`))
     
     console.log("Order From Database GUID:", orderFromDatabaseGUID);
-    let customerURL = (orderFromDatabaseGUID === null) ?  `/store-customer-details` : `/update-customer-details`
+    let customerURL = `/store-customer-details`
+
+    if(orderFromDatabaseGUID !== null)
+    {
+      customerURL = `/update-customer-details`
+    }
 
     console.log("CUstomer URL:",customerURL);
 

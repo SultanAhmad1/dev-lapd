@@ -98,6 +98,7 @@ const GooglePay = (props) => {
       });
     }
   }, [stripe,orderTotal]);
+
   if (paymentRequest) {
     return <PaymentRequestButtonElement options={{paymentRequest}} />
   }
