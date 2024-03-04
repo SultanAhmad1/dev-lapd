@@ -16,7 +16,7 @@ const GooglePay = (props) => {
   useEffect(() => {
     if (stripe) {
 
-  console.log("Check the amount from database:", parseFloat(orderTotal) * 100);
+      console.log("Check the amount from database:", parseFloat(orderTotal) * 100);
 
       const orderTotalSimpleForm = parseFloat(orderTotal) * 100
       const pr = stripe.paymentRequest({
@@ -82,7 +82,7 @@ const GooglePay = (props) => {
       //   }
       // })
 
-      paymentRequest.on('paymentmethod', async function(ev) {
+      pr.on('paymentmethod', async function(ev) {
         
         const response = await axiosPrivate.post('/create-payment-intent', {
           order_total: getAmountConvertToFloatWithFixed(orderTotal,2) * 100, // replace with your desired amount
