@@ -219,7 +219,7 @@ const PaymentForm = ({orderId}) =>
                   <div className="gqpayment-desk">
                     <div className='boh7bqh8payment-desk'>
                       <button className="h7brboe1payment-btn" style={{marginBottom: "10px"}} disabled={!stripe} onClick={handleSubmit}>Submit</button>
-                      <GooglePay orderTotal={totalOrderAmountValue}/>
+                      <GooglePay orderTotal={totalOrderAmountValue} setLoader={setLoader} afterPaymentSavedOrderUpdate={afterPaymentSavedOrderUpdate}/>
                     </div>
                   </div>
                 </div>
