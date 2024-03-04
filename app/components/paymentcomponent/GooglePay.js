@@ -84,47 +84,50 @@ const GooglePay = (props) => {
 
       paymentRequest.on('paymentmethod', async function(ev) {
         
-            const response = await axiosPrivate.post('/create-payment-intent', {
-            order_total: getAmountConvertToFloatWithFixed(orderTotal,2) * 100, // replace with your desired amount
-          });
+        const response = await axiosPrivate.post('/create-payment-intent', {
+          order_total: getAmountConvertToFloatWithFixed(orderTotal,2) * 100, // replace with your desired amount
+        });
   
-          const { clientSecret } = response.data;
+        console.log("Client secret key:", response);
+        const { clientSecret } = response.data;
         // Confirm the PaymentIntent without handling potential next actions (yet).
         stripe.confirmCardPayment(
-            clientSecret,
-            {payment_method: ev.paymentMethod.id},
-            {handleActions: false}
+          clientSecret,
+          {payment_method: ev.paymentMethod.id},
+          {handleActions: false}
         ).then(function(confirmResult) {
           console.log("Confirm Result:", confirmResult);
-            if (confirmResult.error) {
-                // Report to the browser that the payment failed, prompting it to
-                // re-show the payment interface, or show an error message and close
-                // the payment interface.
-                ev.complete('fail');
-               
-            } else {
-                // Report to the browser that the confirmation was successful, prompting
-                // it to close the browser payment method collection interface.
-                ev.complete('success');
-                // Check if the PaymentIntent requires any actions and if so let Stripe.js
-                // handle the flow. If using an API version older than "2019-02-11" instead
-                // instead check for: `paymentIntent.status === "requires_source_action"`.
-                if (confirmResult.paymentIntent.status === "requires_action") {
-                    // Let Stripe.js handle the rest of the payment flow.
-                    stripe.confirmCardPayment(client).then(function(result) {
-                        if (result.error) {
-                            // The payment failed -- ask your customer for a new payment method.
-                            console.log("strip confirmcard ask your customer new payment method if part:", result);
-                        } else {  
-                            // The payment has succeeded.
-                            console.log("strip confirmcard ask your customer new payment method else:", result);
-                        }
-                    });
-                } else {
-                    // The payment has succeeded.
-                    console.log("Payment intent:",confirmResult.paymentIntent.id)
-                }
-            }
+          if (confirmResult.error) 
+          {
+            // Report to the browser that the payment failed, prompting it to
+            // re-show the payment interface, or show an error message and close
+            // the payment interface.
+            ev.complete('fail');
+            
+          } else {
+            console.log("Confirm success: ", ev);
+              // Report to the browser that the confirmation was successful, prompting
+              // it to close the browser payment method collection interface.
+              ev.complete('success');
+              // Check if the PaymentIntent requires any actions and if so let Stripe.js
+              // handle the flow. If using an API version older than "2019-02-11" instead
+              // instead check for: `paymentIntent.status === "requires_source_action"`.
+              if (confirmResult.paymentIntent.status === "requires_action") {
+                  // Let Stripe.js handle the rest of the payment flow.
+                  stripe.confirmCardPayment(client).then(function(result) {
+                      if (result.error) {
+                          // The payment failed -- ask your customer for a new payment method.
+                          console.log("strip confirmcard ask your customer new payment method if part:", result);
+                      } else {  
+                          // The payment has succeeded.
+                          console.log("strip confirmcard ask your customer new payment method else:", result);
+                      }
+                  });
+              } else {
+                  // The payment has succeeded.
+                  console.log("Payment intent:",confirmResult.paymentIntent.id)
+              }
+          }
         });
       });
     }
