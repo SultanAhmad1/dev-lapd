@@ -45,8 +45,8 @@ function SubAtLoadLoadShow({setLoader})
 
     function handlePostCode(event)
     {   
-        const countPostcodeLength = event.target.value
-        setValidpostcode(event.target.value.toUpperCase())
+        const countPostcodeLength = event.target.value.toUpperCase().trim()
+        setValidpostcode(countPostcodeLength)
         setPostcodeerror("")
 
         if(parseInt(countPostcodeLength.length) > parseInt(3))
