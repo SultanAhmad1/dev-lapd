@@ -3,16 +3,16 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import HeadMetaData from './components/HeadMetaData'
 import Header from './components/Header'
-import Banner from './components/Banner'
+// import Banner from './components/Banner'
 import Footer from './components/Footer'
 import HomeContext from './contexts/HomeContext'
 import { useEffect, useState } from 'react'
 import Cart from './components/Cart'
 import AtLoadModalShow from './components/modals/AtLoadModalShow'
 import DeliveryModal from './components/modals/DeliveryModal'
-import AvailableStoresShow from './components/modals/AvailableStoresShow'
+// import AvailableStoresShow from './components/modals/AvailableStoresShow'
 import moment from 'moment/moment'
-import { BRANDSIMPLEGUID, BRAND_GUID, BrandLogoPath, PARTNER_ID, axiosPrivate } from './global/Axios'
+import { BRANDSIMPLEGUID, BRAND_GUID, PARTNER_ID, axiosPrivate } from './global/Axios'
 import StoreClosedModal from './components/modals/StoreClosedModal'
 import { setLocalStorage } from './global/Store'
 import Loader from './components/modals/Loader'
@@ -30,7 +30,7 @@ export default function RootLayout({ children })
 
   const [websiteModificationData, setWebsiteModificationData] = useState(null)
   // Header Bar buttons to be displayed.
-  const [brandlogo, setBrandlogo] = useState(BrandLogoPath)
+  const [brandlogo, setBrandlogo] = useState(null)
   const [headerUserBtnDisplay, setHeaderUserBtnDisplay] = useState(true)
   const [headerPostcodeBtnDisplay, setHeaderPostcodeBtnDisplay] = useState(true)
   const [headerSearchBarDisplay, setHeaderSearchBarDisplay] = useState(false)

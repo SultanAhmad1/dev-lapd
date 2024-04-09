@@ -3,6 +3,7 @@ import Image from 'next/image'
 import React, { useContext } from 'react'
 import HomeContext from '../contexts/HomeContext'
 import Link from 'next/link'
+import { BrandLogoPath, IMAGE_URL } from '../global/Axios'
 
 export default function Header() 
 {
@@ -27,7 +28,7 @@ export default function Header()
                         }
                         <div className={`spacer _48`}></div>
                         <a href="/">
-                            <Image  src={brandlogo} width={146} height={24} className="brand-logo" alt='brand-logo'/>
+                            <Image  src={brandlogo === null ? BrandLogoPath : IMAGE_URL +''+ brandlogo} width={146} height={24} className="brand-logo" alt='brand-logo'/>
                             {/* <Image  src="https://laravel-jouleskitchen.cleartwo.uk/storage/lapd/Logo/1_LAPD.svg" width={146} height={24} className="brand-logo" alt='brand-logo'/> */}
                         </a>
                         <div className="spacer _40"></div>
