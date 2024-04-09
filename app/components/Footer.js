@@ -2,6 +2,7 @@ import React, { Fragment, useContext, useEffect, useState } from "react";
 import HomeContext from "../contexts/HomeContext";
 import moment from "moment";
 import Link from "next/link";
+import { BrandLogoPath, IMAGE_URL } from "../global/Axios";
 
 function Footer() {
   const { websiteModificationData, brandlogo } = useContext(HomeContext);
@@ -19,7 +20,7 @@ function Footer() {
           <div className="footer-brand-logo-partner-logo">
             <div className="footer-brand-logo">
               <img
-                src={brandlogo}
+                src={brandlogo === null ? BrandLogoPath : IMAGE_URL+''+brandlogo}
                 width="146"
                 height="24"
                 className="brand-logo"
