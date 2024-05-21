@@ -20,7 +20,11 @@ function Footer() {
           <div className="footer-brand-logo-partner-logo">
             <div className="footer-brand-logo">
               <img
-                src={brandlogo === null ? BrandLogoPath : IMAGE_URL+''+brandlogo}
+                src={
+                  brandlogo === null
+                    ? BrandLogoPath
+                    : IMAGE_URL + "" + brandlogo
+                }
                 width="146"
                 height="24"
                 className="brand-logo"
@@ -101,11 +105,7 @@ function Footer() {
                   <a
                     className="footer-brand-conditions-btn"
                     href={
-                      parseInt(
-                        websiteModificationData?.brand?.brand_social_links
-                          .length
-                      ) > parseInt(0) &&
-                      websiteModificationData?.brand?.brand_social_links[0]
+                      websiteModificationData?.brand?.brand_social_links?.[0]
                         ?.social_links
                     }
                     target="_blank"

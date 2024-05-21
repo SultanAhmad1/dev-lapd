@@ -9,6 +9,8 @@ function SubAtLoadLoadShow({setLoader})
 {
    const route = useRouter()
     const {
+        setDayOpeningClosingTime,
+        setIsTimeToClosed,
         setMenu,
         setSelectedFilter,
         setFilters,
@@ -137,7 +139,31 @@ function SubAtLoadLoadShow({setLoader})
         }
 
         const response = await axiosPrivate.post(`/menu`, data);
+
+        /**
+         * Day 
+         * Current Time
+         */
+        const dayNumber = moment().day();
+        const dateTime  = moment().format('HH:mm')
+        const dayName = moment().format('dddd');
+
         const convertToJSobj = response.data?.data?.menu.menu_json_log
+
+        const currentDay = convertToJSobj?.menus?.[0]?.service_availability?.find((day) => day?.day_of_week?.toLowerCase().includes(dayName.toLowerCase()))
+        setDayOpeningClosingTime(currentDay)
+        if(currentDay)
+        {
+            const timePeriods = currentDay?.time_periods
+            if(timePeriods)
+            {
+                if(timePeriods?.[0]?.start_time >=dateTime && dateTime <= timePeriods?.[0]?.end_time )
+                {
+                    setIsTimeToClosed(true)
+                    setAtfirstload(false)
+                }
+            }
+        }
         setMenu(convertToJSobj)
         
         const getFilterDataFromObj = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}filter`))
@@ -316,16 +342,13 @@ function SubAtLoadLoadShow({setLoader})
                         {
                             isstoreavailable === false &&
                             <>
-                            <div className="available-stores-show" style={{cursor: "pointer",textAlign: "center", marginTop: "10px", fontWeight:"bold"}}>
-                                <div className="available-stores">Your are out of radius.</div>
-                                <div className="spacer _8"></div>
-                            </div>
+                                <div className="available-stores-show" style={{cursor: "pointer",textAlign: "center", marginTop: "10px", fontWeight:"bold"}}>
+                                    <div className="available-stores">Your are out of radius.</div>
+                                    <div className="spacer _8"></div>
+                                </div>
                             </>
                         }
-                        {
-                            isgobtnclickable &&
-                            <button className="deliver-to-done-button" onClick={handleGoBtn}>Go</button>
-                        }
+                        {isgobtnclickable && <button className="deliver-to-done-button" onClick={handleGoBtn}>Go</button>}
                     </div>
                     
                 </div>

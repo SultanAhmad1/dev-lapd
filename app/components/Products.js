@@ -6,6 +6,7 @@ import Navigation from "./Navigation";
 import ViewCartMobileBtn from "./ViewCartMobileBtn";
 import MobileTopBar from "./MobileTopBar";
 import Link from "next/link";
+import { IMAGE_URL, IMAGE_URL_Without_Storage } from "../global/Axios";
 
 export default function Products() {
   const {
@@ -24,59 +25,52 @@ export default function Products() {
 
   const scrollContainerRef = useRef(null);
 
-  const handleCategoryClick = (navmobileindex) => 
-  {
+  const handleCategoryClick = (navmobileindex) => {
     setNavmobileindex(navmobileindex);
     scrollTo(navmobileindex, "smooth");
   };
 
-  const scrollTo = (target, behavior) => 
-  {
-    const element = target === "top" ? document.body : document.querySelector(`.section${target}`);
-    if (element) 
-    {
+  const scrollTo = (target, behavior) => {
+    const element =
+      target === "top"
+        ? document.body
+        : document.querySelector(`.section${target}`);
+    if (element) {
       element.scrollIntoView({ behavior: behavior });
     }
   };
 
-  const handleProductSelect = (categoryId, itemId) => 
-  {
+  const handleProductSelect = (categoryId, itemId) => {
     setLoader(true);
     setSelectedcategoryid(categoryId);
     setSelecteditemid(itemId);
   };
-  
+
   useEffect(() => {
-    let listElements = document.querySelectorAll('.item-lists')
-  
-    window.addEventListener("scroll",function(){
-      if(window.scrollY > 300)
-      {
+    let listElements = document.querySelectorAll(".item-lists");
+
+    window.addEventListener("scroll", function () {
+      if (window.scrollY > 300) {
         listElements.forEach((list) => {
-  
-          let top = window.scrollY
-          let offset = list.offsetTop
-          let height = list.offsetHeight
-    
-          if(top >= offset && top < offset + height)
-          {
-            setIsScrolled(true)
-            let scrollData = scrollPosition + parseInt(list.getAttribute('data-index'))
+          let top = window.scrollY;
+          let offset = list.offsetTop;
+          let height = list.offsetHeight;
+
+          if (top >= offset && top < offset + height) {
+            setIsScrolled(true);
+            let scrollData =
+              scrollPosition + parseInt(list.getAttribute("data-index"));
             setScrollPosition(scrollData);
-            setNavmobileindex(parseInt(list.getAttribute('data-index')))
+            setNavmobileindex(parseInt(list.getAttribute("data-index")));
           }
-        })
+        });
+      } else {
+        setScrollPosition(0);
+        setIsScrolled(false);
       }
-      else
-      {
-        setScrollPosition(0)
-        setIsScrolled(false)
-      }
-    
-    })
-  })
-  
-  
+    });
+  });
+
   return (
     <>
       <Banner websiteModificationData={websiteModificationData} />
@@ -85,7 +79,10 @@ export default function Products() {
       <FilterLocationTime />
       <div className="content">
         <div className="content-div-level-one">
-          <Navigation websiteModificationData={websiteModificationData} handleCategoryClick={handleCategoryClick}/>
+          <Navigation
+            websiteModificationData={websiteModificationData}
+            handleCategoryClick={handleCategoryClick}
+          />
           <div></div>
           <div className="spacer _40"></div>
           {/* Navigation bar for 900 or lesser width device */}
@@ -99,100 +96,107 @@ export default function Products() {
             <ul className="items-ul">
               {navigationcategories?.map((category, index) => {
                 return (
-                  category?.items?.length > 0 &&
-                  <li key={category.id} className={`item-lists section${index}`} data-index={index} id={`${category?.title?.replace(/\s+/g,'')}`}>
-                    <div className="item-title">
-                      <h3
-                        className="item-title-h3"
-                        style={{
-                          color:
-                            websiteModificationData?.websiteModificationLive !==
-                              null &&
-                            websiteModificationData?.websiteModificationLive
-                              ?.json_log[0]?.categoryFontColor !== null &&
-                            websiteModificationData?.websiteModificationLive
-                              ?.json_log[0]?.categoryFontColor,
-                        }}
-                      >
-                        {category.title}
-                      </h3>
-                    </div>
-                    <div className="item-list-empty-div"></div>
+                  category?.items?.length > 0 && (
+                    <li
+                      key={category.id}
+                      className={`item-lists section${index}`}
+                      data-index={index}
+                      id={`${category?.title?.replace(/\s+/g, "")}`}
+                    >
+                      <div className="item-title">
+                        <h3
+                          className="item-title-h3"
+                          style={{
+                            color:
+                              websiteModificationData?.websiteModificationLive !==
+                                null &&
+                              websiteModificationData?.websiteModificationLive
+                                ?.json_log[0]?.categoryFontColor !== null &&
+                              websiteModificationData?.websiteModificationLive
+                                ?.json_log[0]?.categoryFontColor,
+                          }}
+                        >
+                          {category.title}
+                        </h3>
+                      </div>
+                      <div className="item-list-empty-div"></div>
 
-                    <ul className="items-list-nested-ul">
-                      {category.items?.map((item, itemIndex) => {
-                        return (
-                          <li
-                            ref={scrollContainerRef}
-                            key={itemIndex}
-                            className="items-list-nested-list"
-                            onClick={() =>
-                              handleProductSelect(category?.id, item?.id)
-                            }
-                          >
-                            <Link
-                              href={`${storeName}/${category?.slug}/${item?.slug}`}
+                      <ul className="items-list-nested-ul">
+                        {category.items?.map((item, itemIndex) => {
+                          const { title, price, description, image_url } = item;
+
+                          return (
+                            <li
+                              ref={scrollContainerRef}
+                              key={itemIndex}
+                              className="items-list-nested-list"
+                              onClick={() =>
+                                handleProductSelect(category?.id, item?.id)
+                              }
                             >
-                              <div className="items-nested-div">
-                                <div className="items-nested-div-one">
-                                  <div className="item-detail-style">
-                                    <div className="item-detail">
-                                      <div
-                                        className="item-title"
-                                        style={{
-                                          color:
-                                            websiteModificationData?.websiteModificationLive !==
-                                              null &&
-                                            websiteModificationData
-                                              ?.websiteModificationLive
-                                              ?.json_log[0]?.itemFontColor !==
-                                              null &&
-                                            websiteModificationData
-                                              ?.websiteModificationLive
-                                              ?.json_log[0]?.itemFontColor,
-                                        }}
-                                      >
-                                        <span>{item.title}</span>
-                                      </div>
+                              <Link
+                                href={`${storeName}/${category?.slug}/${item?.slug}`}
+                              >
+                                <div className="items-nested-div">
+                                  <div className="items-nested-div-one">
+                                    <div className="item-detail-style">
+                                      <div className="item-detail">
+                                        <div
+                                          className="item-title"
+                                          style={{
+                                            color:
+                                              websiteModificationData?.websiteModificationLive &&
+                                              websiteModificationData
+                                                ?.websiteModificationLive
+                                                ?.json_log[0]?.itemFontColor &&
+                                              websiteModificationData
+                                                ?.websiteModificationLive
+                                                ?.json_log[0]?.itemFontColor,
+                                          }}
+                                        >
+                                          <span>{title}</span>
+                                        </div>
 
-                                      <div className="item-price">
-                                        <span className="item-price-span">
-                                          {item?.country_price_symbol}
-                                          {parseFloat(item?.price).toFixed(2)}
-                                        </span>
-                                      </div>
-
-                                      <div className="item-description-style">
-                                        <div className="item-description">
-                                          <span className="item-description-span">
-                                            {item?.description}
+                                        <div className="item-price">
+                                          <span className="item-price-span">
+                                            {/* {item?.country_price_symbol} */}
+                                            &pound;
+                                            {parseFloat(price).toFixed(2)}
                                           </span>
                                         </div>
-                                      </div>
-                                    </div>
-                                    {item?.image_url !== null && (
-                                      <div className="item-img-style">
-                                        <div className="lazyload-wrapper">
-                                          <img
-                                            className="item-img"
-                                            src={item?.image_url}
-                                            alt="Product"
-                                          ></img>
+
+                                        <div className="item-description-style">
+                                          <div className="item-description">
+                                            <span className="item-description-span">
+                                              {description}
+                                            </span>
+                                          </div>
                                         </div>
                                       </div>
-                                    )}
-                                  </div>
-                                  {/* <div className="item-review">
+                                      {image_url && (
+                                        <div className="item-img-style">
+                                          <div className="lazyload-wrapper">
+                                            <img
+                                              className="item-img"
+                                              src={image_url}
+                                              alt={title}
+                                            />
+                                          </div>
+                                        </div>
+                                      )}
+                                    </div>
+                                    {/* <div className="item-review">
                                     <a className="quick-review-btn" onClick={handleQuickViewClicked}>Quick view</a>
                                   </div> */}
+                                  </div>
                                 </div>
-                              </div>
-                            </Link>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </li>
+                              </Link>
+                            </li>
+                          );
+                        })}
+                      </ul>
+                    </li>
+                  )
                 );
               })}
             </ul>
