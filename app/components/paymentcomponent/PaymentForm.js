@@ -7,17 +7,14 @@ import { getAmountConvertToFloatWithFixed, setLocalStorage } from '@/app/global/
 import { useRouter } from 'next/navigation';
 import Loader from '../modals/Loader';
 import { WalletMemo } from './Wallet';
+import moment from 'moment';
 // import stripePromise from './stripe';
 
 const PaymentForm = ({orderId}) => 
 {
   const router = useRouter()
   
-  const {
-    setCartdata,
-    totalOrderAmountValue,
-    settotalOrderAmountValue
-  } = useContext(HomeContext)
+  const {setCartdata,totalOrderAmountValue,settotalOrderAmountValue,dayOpeningClosingTime,setIsTimeToClosed} = useContext(HomeContext)
 
   const [loader, setLoader] = useState(true)   
   const stripe = useStripe();
@@ -44,6 +41,23 @@ const PaymentForm = ({orderId}) =>
   }
 
   useEffect(() => {
+    const dayNumber = moment().day();
+    const dateTime  = moment().format('HH:mm')
+    const dayName = moment().format('dddd');
+
+    if(dayOpeningClosingTime?.day_of_week?.toLowerCase().includes(dayName.toLowerCase()))
+    {
+      const timePeriods = dayOpeningClosingTime?.time_periods
+      if(timePeriods)
+      {
+        if(timePeriods?.[0]?.start_time >=dateTime && dateTime <= timePeriods?.[0]?.end_time )
+        {
+          setIsTimeToClosed(true)
+          return
+        }
+      }
+    }
+
     const orderTotalFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}total_order_value_storage`))
     if(orderTotalFromLocalStorage !== null)
     {
