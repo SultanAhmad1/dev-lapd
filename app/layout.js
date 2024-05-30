@@ -1,26 +1,23 @@
 "use client";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import HeadMetaData from "./components/HeadMetaData";
-import Header from "./components/Header";
-// import Banner from './components/Banner'
-import Footer from "./components/Footer";
-import HomeContext from "./contexts/HomeContext";
 import { useEffect, useState } from "react";
-import Cart from "./components/Cart";
-import AtLoadModalShow from "./components/modals/AtLoadModalShow";
-import DeliveryModal from "./components/modals/DeliveryModal";
-// import AvailableStoresShow from './components/modals/AvailableStoresShow'
 import moment from "moment/moment";
+import HeadMetaData from "@/components/HeadMetaData";
+import HomeContext from "@/contexts/HomeContext";
+import Header from "@/components/Header";
+import AtLoadModalShow from "@/components/modals/AtLoadModalShow";
+import DeliveryModal from "@/components/modals/DeliveryModal";
+import StoreClosedModal from "@/components/modals/StoreClosedModal";
+import Footer from "@/components/Footer";
+import Loader from "@/components/modals/Loader";
 import {
   BRANDSIMPLEGUID,
   BRAND_GUID,
   PARTNER_ID,
   axiosPrivate,
-} from "./global/Axios";
-import StoreClosedModal from "./components/modals/StoreClosedModal";
-import { setLocalStorage } from "./global/Store";
-import Loader from "./components/modals/Loader";
+} from "@/global/Axios";
+import Cart from "@/components/Cart";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -277,116 +274,119 @@ export default function RootLayout({ children }) {
     }, 30 * 60 * 1000);
     setTimeout(() => {
       setLoader(false);
-    }, 4000);
+    }, 3000);
     // Clear the timeout if the component is unmounted before 20 minutes
     return () => clearTimeout(timeoutId);
   }, []);
 
+  console.log("Is cart btn clicked:", iscartbtnclicked);
   return (
     <html lang="en">
       <HeadMetaData />
       <body className="body-tag">
-        <HomeContext.Provider
-          value={{
-            websiteModificationData,
-            setIscouponcodeapplied,
-            loader,
-            setLoader,
-            totalOrderAmountValue,
-            settotalOrderAmountValue,
-            dayOpeningClosingTime,
-            setDayOpeningClosingTime,
-            setIsTimeToClosed,
-            selectedFilter,
-            setSelectedFilter,
-            filters,
-            setFilters,
-            selectedcategoryid,
-            setSelectedcategoryid,
-            selecteditemid,
-            setSelecteditemid,
-            brandlogo,
-            setBrandlogo,
-            storeGUID,
-            storeName,
-            storetodaydayname,
-            storetodayopeningtime,
-            storetodayclosingtime,
-            setMenu,
-            setStoreGUID,
-            setStoreName,
-            setStoretodaydayname,
-            setStoretodayopeningtime,
-            setStoretodayclosingtime,
-            Menu,
-            navigationcategories,
-            navmobileindex,
-            ismenuavailable,
-            setNavigationcategories,
-            setNavmobileindex,
-            setIsmenuavailable,
-            headerSearchBarDisplay,
-            setHeaderSearchBarDisplay,
-            headerPostcodeBtnDisplay,
-            headerCartBtnDisplay,
-            headerUserBtnDisplay,
-            setHeaderPostcodeBtnDisplay,
-            setHeaderCartBtnDisplay,
-            setHeaderUserBtnDisplay,
-            dayname,
-            daynumber,
-            setIsgobtnclicked,
-            firstname,
-            lastname,
-            setAtfirstload,
-            postcode,
-            setPostcode,
-            street1,
-            setStreet1,
-            street2,
-            setStreet2,
-            isdeliverychangedbtnclicked,
-            setIsdeliverychangedbtnclicked,
-            ischeckoutclicked,
-            setIscheckoutclicked,
-            iscartitemdottedbtnclicked,
-            setIscartitemdottedbtnclicked,
-            iscartfull,
-            iscartbtnclicked,
-            setIscartbtnclicked,
-            setIsitemclicked,
-            setIsdeliverybtnclicked,
-            setCartdata,
-            amountDiscountapplied,
-            setAmountDiscountapplied,
-            couponDiscountapplied,
-            setCouponDiscountapplied,
-            cartdata,
-            deliverymatrix,
-            setDeliverymatrix,
-            postcodefororderamount,
-            setPostcodefororderamount,
-          }}
-        >
-          <Header />
+        <div>
+          <HomeContext.Provider
+            value={{
+              websiteModificationData,
+              setIscouponcodeapplied,
+              loader,
+              setLoader,
+              totalOrderAmountValue,
+              settotalOrderAmountValue,
+              dayOpeningClosingTime,
+              setDayOpeningClosingTime,
+              setIsTimeToClosed,
+              selectedFilter,
+              setSelectedFilter,
+              filters,
+              setFilters,
+              selectedcategoryid,
+              setSelectedcategoryid,
+              selecteditemid,
+              setSelecteditemid,
+              brandlogo,
+              setBrandlogo,
+              storeGUID,
+              storeName,
+              storetodaydayname,
+              storetodayopeningtime,
+              storetodayclosingtime,
+              setMenu,
+              setStoreGUID,
+              setStoreName,
+              setStoretodaydayname,
+              setStoretodayopeningtime,
+              setStoretodayclosingtime,
+              Menu,
+              navigationcategories,
+              navmobileindex,
+              ismenuavailable,
+              setNavigationcategories,
+              setNavmobileindex,
+              setIsmenuavailable,
+              headerSearchBarDisplay,
+              setHeaderSearchBarDisplay,
+              headerPostcodeBtnDisplay,
+              headerCartBtnDisplay,
+              headerUserBtnDisplay,
+              setHeaderPostcodeBtnDisplay,
+              setHeaderCartBtnDisplay,
+              setHeaderUserBtnDisplay,
+              dayname,
+              daynumber,
+              setIsgobtnclicked,
+              firstname,
+              lastname,
+              setAtfirstload,
+              postcode,
+              setPostcode,
+              street1,
+              setStreet1,
+              street2,
+              setStreet2,
+              isdeliverychangedbtnclicked,
+              setIsdeliverychangedbtnclicked,
+              ischeckoutclicked,
+              setIscheckoutclicked,
+              iscartitemdottedbtnclicked,
+              setIscartitemdottedbtnclicked,
+              iscartfull,
+              iscartbtnclicked,
+              setIscartbtnclicked,
+              setIsitemclicked,
+              setIsdeliverybtnclicked,
+              setCartdata,
+              amountDiscountapplied,
+              setAmountDiscountapplied,
+              couponDiscountapplied,
+              setCouponDiscountapplied,
+              cartdata,
+              deliverymatrix,
+              setDeliverymatrix,
+              postcodefororderamount,
+              setPostcodefororderamount,
+            }}
+          >
+            <Header />
 
-          {children}
+            {children}
 
-          {atfirstload && <AtLoadModalShow />}
+            {atfirstload && <AtLoadModalShow />}
 
-          {iscartbtnclicked && <Cart />}
+            {iscartbtnclicked && <Cart />}
 
-          {isdeliverybtnclicked && <DeliveryModal />}
+            {isdeliverybtnclicked && <DeliveryModal />}
 
-          {/* {isgobtnclicked && <AvailableStoresShow />} */}
+            {/* {isgobtnclicked && <AvailableStoresShow />} */}
 
-          {isTimeToClosed && <StoreClosedModal />}
+            {isTimeToClosed && <StoreClosedModal />}
 
-          {/* {iscouponcodeapplied && <StoreClosedModal />} */}
+            {/* {iscouponcodeapplied && <StoreClosedModal />} */}
 
-          <Footer />
-          <Loader loader={loader} />
-        </HomeContext.Provider>
+            <Footer />
+            <Loader loader={loader} />
+          </HomeContext.Provider>
+        </div>
       </body>
     </html>
   );

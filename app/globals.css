@@ -2027,13 +2027,13 @@ ul {
   position: relative;
 }
 
-.item-img-style:hover {
+/* .item-img-style:hover {
   transform: scale(1.5);
   transition: auto;
   z-index: 1000;
   width: 403px;
   height: auto;
-}
+} */
 
 .lazyload-wrapper {
 }
@@ -2043,7 +2043,7 @@ ul {
   transform: scale(1);
   outline: rgba(0, 0, 0, 0.03) solid 1px;
   height: 158px;
-  object-fit: cover;
+  object-fit: contain;
   opacity: 1;
   flex-shrink: 0;
   width: 100%;
@@ -2141,7 +2141,7 @@ ul {
   width: 100%;
 }
 
-.agassingle-product {
+.mobile-view {
   display: none;
 }
 
@@ -9321,7 +9321,7 @@ ul.track-steps {
     display: none;
   }
 
-  .agassingle-product {
+  .mobile-view {
     z-index: 7;
     right: 0;
     left: 0;

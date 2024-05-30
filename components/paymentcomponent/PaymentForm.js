@@ -1,20 +1,27 @@
 // PaymentForm.js
 import React, { useContext, useEffect, useState } from 'react';
-import { CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
-import { BRANDSIMPLEGUID, axiosPrivate } from '@/app/global/Axios';
-import HomeContext from '@/app/contexts/HomeContext';
-import { getAmountConvertToFloatWithFixed, setLocalStorage } from '@/app/global/Store';
-import { useRouter } from 'next/navigation';
-import Loader from '../modals/Loader';
-import { WalletMemo } from './Wallet';
+
 import moment from 'moment';
+import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { BRANDSIMPLEGUID, axiosPrivate } from '@/global/Axios';
+import HomeContext from '@/contexts/HomeContext';
+import { useRouter } from "next/navigation";
+import { WalletMemo } from './Wallet';
+import Loader from '../modals/Loader';
+import { getAmountConvertToFloatWithFixed, setLocalStorage } from '@/global/Store';
 // import stripePromise from './stripe';
 
 const PaymentForm = ({orderId}) => 
 {
   const router = useRouter()
   
-  const {setCartdata,totalOrderAmountValue,settotalOrderAmountValue,dayOpeningClosingTime,setIsTimeToClosed} = useContext(HomeContext)
+  const {
+    setCartdata,
+    setIsTimeToClosed,
+    totalOrderAmountValue,
+    dayOpeningClosingTime,
+    settotalOrderAmountValue,
+  } = useContext(HomeContext)
 
   const [loader, setLoader] = useState(true)   
   const stripe = useStripe();
@@ -22,13 +29,13 @@ const PaymentForm = ({orderId}) =>
   const [paymentError, setPaymentError] = useState(null);
 
   const [isgeterrorfromdatabase, setIsgeterrorfromdatabase] = useState(false)
+
+  // Fetch Order Price related to Order GUID.
   const forceFullyGetOrderPriceFromDatabase = async () =>
   {
     try 
     {
-      const data = {
-        guid: orderId,
-      }  
+      const data = {guid: orderId,}  
       const response = await axiosPrivate.post(`/order-price-to-payable-get`, data)
       setIsgeterrorfromdatabase(response.data.data?.orderAmountDetails === null ? true : false)
 
@@ -112,6 +119,7 @@ const PaymentForm = ({orderId}) =>
     }
   }
 
+  // This method will hit when payment successfully done, to send sms and email to user.
   const afterPaymentSavedOrderUpdate = async (paymentIntent) =>
   {
     try 
@@ -137,6 +145,7 @@ const PaymentForm = ({orderId}) =>
     }
   }
 
+  // This submit send request to Database and stripe.
   const handleSubmit = async (event) => 
   {
 
@@ -161,10 +170,12 @@ const PaymentForm = ({orderId}) =>
       } 
       else 
       {
-        const response = await axiosPrivate.post('/create-payment-intent', {
-          order_total: getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) * 100, // replace with your desired amount
-          token: token.id,
-        });
+        const response = await axiosPrivate.post('/create-payment-intent', 
+          {
+            order_total: getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) * 100, // replace with your desired amount
+            token: token.id,
+          }
+        );
 
         const { clientSecret } = response.data;
 
@@ -179,6 +190,7 @@ const PaymentForm = ({orderId}) =>
 
         if (result.error) 
         {
+          setLoader(false)
           setPaymentError(result.error.message);
         } 
         else 
@@ -187,7 +199,8 @@ const PaymentForm = ({orderId}) =>
         }
       }
     } catch (error) {
-      // console.error(error);
+      setLoader(false)
+      // console.error("Payment form error:",error);
     }
   };
 

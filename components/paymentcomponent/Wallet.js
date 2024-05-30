@@ -1,7 +1,8 @@
+import { axiosPrivate } from '@/global/Axios';
+import { country, currency, getAmountConvertToFloatWithFixed } from '@/global/Store';
+import { PaymentRequestButtonElement, useStripe } from '@stripe/react-stripe-js';
 import React, {useState, useEffect} from 'react';
-import {CardElement, PaymentRequestButtonElement, useStripe} from '@stripe/react-stripe-js';
-import { country, currency, getAmountConvertToFloatWithFixed } from '@/app/global/Store';
-import { axiosPrivate } from '@/app/global/Axios';
+
 
 const Wallet = (props) => {
 
@@ -39,9 +40,7 @@ const Wallet = (props) => {
    
       pr.on('paymentmethod', async function(ev) {
         
-        const response = await axiosPrivate.post('/create-payment-intent', {
-          order_total: getAmountConvertToFloatWithFixed(orderTotal,2) * 100, // replace with your desired amount
-        });
+        const response = await axiosPrivate.post('/create-payment-intent', {order_total: getAmountConvertToFloatWithFixed(orderTotal,2) * 100,});
   
         const { clientSecret } = response.data;
 
@@ -93,6 +92,8 @@ const Wallet = (props) => {
       });
     }
   }, [stripe,orderTotal]);
+
+  console.log("Wallert order total", orderTotal);
   if (paymentRequest) {
     return <PaymentRequestButtonElement options={{paymentRequest}} />
   }
