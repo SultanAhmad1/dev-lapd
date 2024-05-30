@@ -1,23 +1,14 @@
 "use client";
-import Loader from "@/app/components/modals/Loader";
-import PostcodeModal from "@/app/components/modals/PostcodeModal";
-import HomeContext from "@/app/contexts/HomeContext";
-import {
-  BRANDSIMPLEGUID,
-  BRAND_GUID,
-  PARTNER_ID,
-  axiosPrivate,
-} from "@/app/global/Axios";
-import {
-  getAmountConvertToFloatWithFixed,
-  getCountryCurrencySymbol,
-  setLocalStorage,
-  validatePhoneNumber,
-} from "@/app/global/Store";
-import { listtime, round15 } from "@/app/global/Time";
+
+import Loader from "@/components/modals/Loader";
+import PostcodeModal from "@/components/modals/PostcodeModal";
+import HomeContext from "@/contexts/HomeContext";
+import { BRANDSIMPLEGUID, BRAND_GUID, PARTNER_ID, axiosPrivate } from "@/global/Axios";
+import { getAmountConvertToFloatWithFixed, setLocalStorage, validatePhoneNumber } from "@/global/Store";
+import { listtime, round15 } from "@/global/Time";
 import moment from "moment";
 import { useRouter } from "next/navigation";
-import { useContext, useEffect, useRef, useState } from "react";
+import { Fragment, useContext, useEffect, useRef, useState } from "react";
 
 function UserForm() {
   const route = useRouter();
@@ -204,15 +195,11 @@ function UserForm() {
       const response = await axiosPrivate.post(`/website-delivery-time`, data);
 
       // Write logic if the closing is up or come closer than show information.
-      var startTime =
-        response?.data?.data?.brandDeliveryEstimatePartner?.start_time;
-      var endTime =
-        response?.data?.data?.brandDeliveryEstimatePartner?.end_time;
+      var startTime   = response?.data?.data?.brandDeliveryEstimatePartner?.start_time;
+      var endTime     = response?.data?.data?.brandDeliveryEstimatePartner?.end_time;
 
-      var timeForm =
-        response?.data?.data?.brandDeliveryEstimatePartner?.time_from;
-      var deliveryTo =
-        response?.data?.data?.brandDeliveryEstimatePartner?.time_to;
+      var timeForm    = response?.data?.data?.brandDeliveryEstimatePartner?.time_from;
+      var deliveryTo  = response?.data?.data?.brandDeliveryEstimatePartner?.time_to;
       var d = new Date();
       var months = [
         "January",
@@ -231,36 +218,23 @@ function UserForm() {
       if (startTime == "24:00:00") {
         startTime = "23:59:59";
       }
-      var time_from_temp =
-        months[d.getMonth()] +
-        " " +
-        d.getDate() +
-        ", " +
-        d.getFullYear() +
-        " " +
-        startTime;
-      var time_to_temp =
-        months[d.getMonth()] +
-        " " +
-        d.getDate() +
-        ", " +
-        d.getFullYear() +
-        " " +
-        endTime;
+      var time_from_temp = months[d.getMonth()] +" " +d.getDate() +", " +d.getFullYear() +" " +startTime;
+      var time_to_temp   = months[d.getMonth()] +" " +d.getDate() +", " +d.getFullYear() +" " +endTime;
 
       var time_from = new Date(time_from_temp);
       var time_to = new Date(time_to_temp);
 
-      if (Date.parse(time_from) > Date.parse(d)) {
+      if (Date.parse(time_from) > Date.parse(d)) 
+      {
         time_from.setMinutes(time_from.getMinutes() + parseInt(deliveryTo));
         var start_time = new Date(time_from);
-        start_time =
-          start_time.getHours() + ":" + round15(start_time.getMinutes());
-      } else {
+        start_time = start_time.getHours() + ":" + round15(start_time.getMinutes());
+      } 
+      else 
+      {
         d.setMinutes(d.getMinutes() + parseInt(deliveryTo));
-        var start_time = new Date(d);
-        start_time =
-          start_time.getHours() + ":" + round15(start_time.getMinutes());
+        var start_time  = new Date(d);
+        start_time      = start_time.getHours() + ":" + round15(start_time.getMinutes());
       }
       var current_date = new Date();
       // Changed to brand closing time + max delivery time at 4/6/2021
@@ -273,17 +247,19 @@ function UserForm() {
       let end_time = new Date(time_to);
 
       end_time = end_time.getHours() + ":" + end_time.getMinutes();
-      if (start_time == "23:60") {
+      if (start_time == "23:60") 
+      {
         end_time = start_time;
       }
 
-      if (parseFloat(end_time.split(":")[0]) == 0) {
+      if (parseFloat(end_time.split(":")[0]) == 0) 
+      {
         end_time = "23:59";
       }
 
-      if (start_time.split(":")[1].length == 1) {
-        start_time =
-          start_time.split(":")[0] + ":" + start_time.split(":")[1] + "0";
+      if (start_time.split(":")[1].length == 1) 
+      {
+        start_time = start_time.split(":")[0] + ":" + start_time.split(":")[1] + "0";
       }
 
       if (parseFloat(start_time.split(":")[1]) == 60) {
@@ -294,19 +270,14 @@ function UserForm() {
       // temp_time = tConvert(temp_time);
 
       setDeliveryTime(temp_time);
+
       setOpeningtime(temp_time);
+
       // setOpeningtime(response?.data?.data?.brandDeliveryEstimatePartner?.start_time)
-      setClosingtime(
-        response?.data?.data?.brandDeliveryEstimatePartner?.end_time
-      );
-      setDeliverytimefrom(
-        response?.data?.data?.brandDeliveryEstimatePartner?.time_from
-      );
-      setDeliverytimeend(
-        response?.data?.data?.brandDeliveryEstimatePartner?.time_to
-      );
-      if (parseInt(listtime.length) > parseInt(0)) {
-      }
+      setClosingtime(response?.data?.data?.brandDeliveryEstimatePartner?.end_time);
+      setDeliverytimefrom(response?.data?.data?.brandDeliveryEstimatePartner?.time_from);
+      setDeliverytimeend(response?.data?.data?.brandDeliveryEstimatePartner?.time_to);
+      if (parseInt(listtime.length) > parseInt(0)) {}
 
       setTimeout(() => {
         setLoader(false);
@@ -343,17 +314,8 @@ function UserForm() {
       }
     }
 
-    const placeOrderLocalStorageTotal = JSON.parse(
-      window.localStorage.getItem(`${BRANDSIMPLEGUID}total_order_value_storage`)
-    );
-    settotalOrderAmountValue(
-      placeOrderLocalStorageTotal === null
-        ? totalOrderAmountValue
-        : getAmountConvertToFloatWithFixed(
-            JSON.parse(placeOrderLocalStorageTotal),
-            2
-          )
-    );
+    const placeOrderLocalStorageTotal = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}total_order_value_storage`));
+    settotalOrderAmountValue(placeOrderLocalStorageTotal === null ? totalOrderAmountValue : getAmountConvertToFloatWithFixed(JSON.parse(placeOrderLocalStorageTotal),2));
 
     setIscartbtnclicked(false);
     fetchLocationDeliveryEstimate();
@@ -362,10 +324,10 @@ function UserForm() {
     setHeaderCartBtnDisplay(false);
     setHeaderPostcodeBtnDisplay(false);
 
-    const getCustomerInforation = JSON.parse(
-      window.localStorage.getItem(`${BRANDSIMPLEGUID}customer_information`)
-    );
-    if (getCustomerInforation !== null) {
+    const getCustomerInforation = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}customer_information`));
+
+    if (getCustomerInforation !== null) 
+    {
       setDoorhousename(getCustomerInforation.doorhousename);
       setDriverinstruction(getCustomerInforation.driverinstruction);
       setEmail(getCustomerInforation.email);
@@ -468,139 +430,95 @@ function UserForm() {
               `${BRANDSIMPLEGUID}total_order_value_storage`
             )
           );
-    const orderAmountDiscountValue =
-      JSON.parse(
-        window.localStorage.getItem(`${BRANDSIMPLEGUID}order_amount_number`)
-      ) === null
-        ? null
-        : JSON.parse(
-            window.localStorage.getItem(`${BRANDSIMPLEGUID}order_amount_number`)
-          );
-    const orderFilter = JSON.parse(
-      window.localStorage.getItem(`${BRANDSIMPLEGUID}filter`)
-    );
-    const deliveryFeeLocalStorage =
-      JSON.parse(
-        window.localStorage.getItem(`${BRANDSIMPLEGUID}delivery_fee`)
-      ) === null
-        ? null
-        : getAmountConvertToFloatWithFixed(
-            JSON.parse(
-              window.localStorage.getItem(`${BRANDSIMPLEGUID}delivery_fee`)
-            ),
-            2
-          );
-    const getCouponCode = JSON.parse(
-      window.localStorage.getItem(`${BRANDSIMPLEGUID}applied_coupon`)
-    );
+    const orderAmountDiscountValue  = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}order_amount_number`)) === null ? null: JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}order_amount_number`));
+    const orderFilter               = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}filter`));
+    const deliveryFeeLocalStorage   = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}delivery_fee`)) === null ? null : getAmountConvertToFloatWithFixed(JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}delivery_fee`)),2);
+    const getCouponCode             = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}applied_coupon`));
 
-    const couponCodes =
-      parseInt(getCouponCode.length) > parseInt(0)
-        ? getCouponCode
-        : couponDiscountapplied;
-    const updatedDeliveryTime = moment(
-      `${moment().format("YYYY-MM-DD")} ${deliverytime}`,
-      "YYYY-MM-DD HH:mm:ss"
-    );
+    const couponCodes               = parseInt(getCouponCode.length) > parseInt(0) ? getCouponCode : couponDiscountapplied;
+    const updatedDeliveryTime       = moment(`${moment().format("YYYY-MM-DD")} ${deliverytime}`,"YYYY-MM-DD HH:mm:ss");
 
-    let orderFromDatabaseGUID = JSON.parse(
-      window.localStorage.getItem(`${BRANDSIMPLEGUID}order_guid`)
-    );
+    let orderFromDatabaseGUID = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}order_guid`));
 
     let customerURL = `/store-customer-details`;
 
-    if (orderFromDatabaseGUID !== null) {
-      customerURL = `/update-customer-details`;
-    }
+    if (orderFromDatabaseGUID !== null) { customerURL = `/update-customer-details`;}
 
     const customerInformationInLocalStorage = {
-      doorhousename: doorhousename,
-      driverinstruction: driverinstruction,
-      email: email,
-      phone: phone,
-      firstname: firstname,
-      lastname: lastname,
-      deliverytime: deliverytime,
-      isbyemailclicked: isbyemailclicked,
-      isbysmsclicked: isbysmsclicked,
+      email,
+      phone,
+      lastname,
+      firstname,
+      deliverytime,
+      doorhousename,
+      isbysmsclicked,
+      isbyemailclicked,
+      driverinstruction,
     };
 
-    setLocalStorage(
-      `${BRANDSIMPLEGUID}customer_information`,
-      customerInformationInLocalStorage
-    );
+    setLocalStorage(`${BRANDSIMPLEGUID}customer_information`,customerInformationInLocalStorage);
+
     try {
       const data = {
-        store: storeGUID,
-        brand: BRAND_GUID,
-        partner: PARTNER_ID,
-        postcode: postcode,
-        street1: street1,
-        street2: street2,
-        doorhousename: doorhousename,
-        password: password,
-        driverinstruction: driverinstruction,
-        email: email,
-        phone: phone,
-        firstname: firstname,
-        lastname: lastname,
-        deliverytime: deliverytime,
-        isbyemailclicked: isbyemailclicked,
-        isbysmsclicked: isbysmsclicked,
-        sub_total_order: subTotalOrderLocal,
-        total_order:
-          localStorageTotal === null
-            ? getAmountConvertToFloatWithFixed(totalOrderAmountValue, 2)
-            : getAmountConvertToFloatWithFixed(
-                JSON.parse(localStorageTotal),
-                2
-              ),
-        order: cartdata,
+        due:                due,
+        email:              email,
+        phone:              phone,
+        street1:            street1,
+        street2:            street2,
+        postcode:           postcode,
+        lastname:           lastname,
+        firstname:          firstname,
+        password:           password,
+        store:              storeGUID,
+        brand:              BRAND_GUID,
+        order:              cartdata,
+        filterId:           orderFilter === null ? selectedFilter?.id : orderFilter.id,
+        filterName:         orderFilter === null ? selectedFilter?.name : orderFilter.name,
+        partner:            PARTNER_ID,
+        total_order:        localStorageTotal === null? getAmountConvertToFloatWithFixed(totalOrderAmountValue, 2): getAmountConvertToFloatWithFixed(JSON.parse(localStorageTotal),2),
+        deliverytime:       deliverytime,
+        doorhousename:      doorhousename,
+        isbysmsclicked:     isbysmsclicked,
+        
+        isbyemailclicked:   isbyemailclicked,
+        driverinstruction:  driverinstruction,
+        sub_total_order:    subTotalOrderLocal,
+        
+        
         orderAmountDiscount_guid: orderAmountDiscountValue,
-        filterId: orderFilter === null ? selectedFilter?.id : orderFilter.id,
-        filterName:
-          orderFilter === null ? selectedFilter?.name : orderFilter.name,
-        delivery_estimate_time: updatedDeliveryTime._i,
-        due: due,
+        delivery_estimate_time:   updatedDeliveryTime._i,
+        
         // delivery_estimate_time: moment(deliverytime, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
-        delivery_fee: deliveryFeeLocalStorage,
-        coupons: couponCodes,
-        order_guid:
-          orderFromDatabaseGUID !== null
-            ? JSON.parse(orderFromDatabaseGUID)
-            : null,
+        delivery_fee:             deliveryFeeLocalStorage,
+        coupons:                  couponCodes,
+        order_guid:               orderFromDatabaseGUID !== null ? JSON.parse(orderFromDatabaseGUID) : null,
       };
-
       // first check the order guid id in localStorage if it is null then store information then update them.
 
       const response = await axiosPrivate.post(customerURL, data);
 
       const responseData = response?.data?.data?.order?.order_total;
-      if (response?.data?.status === "success") {
-        setLocalStorage(
-          `${BRANDSIMPLEGUID}order_guid`,
-          response?.data?.data?.order?.external_order_id
-        );
+      if (response?.data?.status === "success") 
+      {
+        setLocalStorage(`${BRANDSIMPLEGUID}order_guid`,response?.data?.data?.order?.external_order_id);
         setLoader(false);
 
-        if (parseFloat(responseData) === parseFloat(0.0)) {
-          route.push(
-            `/track-order/${response?.data?.data?.order?.external_order_id}`
-          );
+        if (parseFloat(responseData) === parseFloat(0.0)) 
+        {
+          route.push(`/track-order/${response?.data?.data?.order?.external_order_id}`);
           return;
         }
-        route.push(
-          `/payment/${response?.data?.data?.order?.external_order_id}`
-        );
+        route.push(`/payment/${response?.data?.data?.order?.external_order_id}`);
       }
-    } catch (error) {
-      setTimeout(() => {
-        setLoader(false);
-      }, 2000);
+    } 
+    catch (error) 
+    {
+      setTimeout(() => { setLoader(false);}, 2000);
     }
   }
 
-  function handlePayNow() {
+  function handlePayNow() 
+  {
     setLoader(true);
     // console.log('Door:', doorhousename.length, "First",firstname.length,"last",lastname.length,"email",email.length, "phone",phone.length);
     if (
@@ -610,12 +528,8 @@ function UserForm() {
       parseInt(firstname.length) === parseInt(0) ||
       parseInt(lastname.length) === parseInt(0)
     ) {
-      setPayNowBottomError(
-        "Please check * (asterisk) mark field and fill them."
-      );
-      setTimeout(() => {
-        setLoader(false);
-      }, 2000);
+      setPayNowBottomError("Please check * (asterisk) mark field and fill them.");
+      setTimeout(() => {setLoader(false);}, 2000);
       return;
     }
 
@@ -623,9 +537,7 @@ function UserForm() {
     if (!checkNumber) {
       setIsavefasterdetailsclicked(false);
       setPayNowBottomError("Kindly enter valid contact number!.");
-      setTimeout(() => {
-        setLoader(false);
-      }, 2000);
+      setTimeout(() => {setLoader(false);}, 2000);
       return;
     }
     setPayNowBottomError("");
@@ -633,7 +545,7 @@ function UserForm() {
   }
 
   return (
-    <>
+    <Fragment>
       <div className="e5ald0m1m2amc5checkout-desk">
         <div className="m3m4m5gim6checkout-desk">
           <div className="hmg1checkout-desk">
@@ -698,32 +610,11 @@ function UserForm() {
 
                     {ispostcodeeditclicked && (
                       <div className="btautrackorder-postcode-edit">
-                        <input
-                          type="text"
-                          className="strtpostcode"
-                          value={street1}
-                        ></input>
-                        <input
-                          type="text"
-                          className="strtpostcode"
-                          value={street2}
-                        ></input>
+                        <input type="text" className="strtpostcode" value={street1} />
+                        <input type="text" className="strtpostcode" value={street2} />
                         <div className="strtpostcode-btn">
-                          <input
-                            type="text"
-                            className="strtpostcode"
-                            value={postcode}
-                          ></input>
-                          <button
-                            className="change_postcode_btn"
-                            onClick={() =>
-                              setIschangepostcodeclicked(
-                                !ischangepostcodeclicked
-                              )
-                            }
-                          >
-                            Change postcode
-                          </button>
+                          <input type="text" className="strtpostcode" value={postcode} />
+                          <button className="change_postcode_btn" onClick={() => setIschangepostcodeclicked( !ischangepostcodeclicked )}>Change postcode</button>
                         </div>
                       </div>
                     )}
@@ -736,12 +627,7 @@ function UserForm() {
                   <div className="d1g1checkout-desk">
                     <div className="allzc5checkout-desk">
                       <div className="kgcheckout-desk">
-                        <svg
-                          aria-hidden="true"
-                          focusable="false"
-                          viewBox="0 0 26 26"
-                          className="cxcwd0d1checkout-svg"
-                        >
+                        <svg aria-hidden="true"focusable="false"viewBox="0 0 26 26"className="cxcwd0d1checkout-svg">
                           <path
                             fillRule="evenodd"
                             clipRule="evenodd"
@@ -782,18 +668,7 @@ function UserForm() {
 
                     {isdoorinputdisplayclicked && (
                       <div className="btaucheckout-window">
-                        <input
-                          type="text"
-                          ref={addDoorNumberRef}
-                          placeholder="Enter door number or name"
-                          value={doorhousename}
-                          className={`door_number ${
-                            parseInt(doorhousename.length) > parseInt(0)
-                              ? "parse-success"
-                              : "parse-erorr"
-                          }`}
-                          onChange={handleDoorOrHouse}
-                        />
+                        <input type="text" ref={addDoorNumberRef} placeholder="Enter door number or name" value={doorhousename} className={`door_number ${parseInt(doorhousename.length) > parseInt(0)? "parse-success": "parse-erorr"}`} onChange={handleDoorOrHouse}/>
                       </div>
                     )}
                     <div className="alcheckout-desk">
@@ -1123,25 +998,19 @@ function UserForm() {
                             Schedule
                           </span>
                         </div>
-                        <select
-                          value={moment(deliverytime, "HH:mm").format("HH:mm")}
-                          className="bubvbwbdbxbybkaubzc0checkout-window-input"
-                          onChange={handleDeliveryTime}
-                        >
-                          {listtime?.map((time, index) => {
-                            return (
-                              moment(time?.time, "HH:mm").format("HH:mm") >=
-                                moment(openingtime, "HH:mm").format("HH:mm") &&
-                              moment(closingtime, "HH:mm").format("HH:mm") >=
-                                moment(time?.time, "HH:mm").format("HH:mm") && (
-                                <option key={index} value={time?.time}>
-                                  {moment(time?.time, "HH:mm A").format(
-                                    "HH:mm A"
-                                  )}
-                                </option>
-                              )
-                            );
-                          })}
+                        <select value={moment(deliverytime).format("HH:mm A")} className="bubvbwbdbxbybkaubzc0checkout-window-input" onChange={handleDeliveryTime}>
+                          {
+                            listtime?.map((time, index) => {
+                              return (
+                                (moment(time?.time,"HH:mm").format("HH:mm")   >= moment(openingtime,"HH:mm").format("HH:mm") && moment(closingtime,"HH:mm").format("HH:mm")  >= moment(time?.time,"HH:mm").format("HH:mm")) && 
+                                (
+                                  <option key={index} value={time?.time}>
+                                    {moment(time?.time, "HH:mm A").format("HH:mm A")}
+                                  </option>
+                                )
+                              );
+                            })
+                          }
                         </select>
                       </h3>
                     </div>
@@ -1149,19 +1018,11 @@ function UserForm() {
                 </div>
               </div>
 
-              {parseInt(saveMyDetailsError.length) > parseInt(0) && (
-                <p
-                  style={{
-                    color: "red",
-                    background: "#eda7a7",
-                    textAlign: "center",
-                    padding: "10px",
-                    marginBottom: "10px",
-                  }}
-                >
-                  {saveMyDetailsError}
-                </p>
-              )}
+              {
+                parseInt(saveMyDetailsError.length) > parseInt(0) && (
+                  <p style={{color: "red",background: "#eda7a7",textAlign: "center",padding: "10px",marginBottom: "10px",}}>{saveMyDetailsError}</p>
+                )
+              }
               {/* <div className='mimjepmkmlmmcheckout-desk'>
                 <div className="allzc5checkout-desk">
                   <div className="f2checkout-desk">
@@ -1324,8 +1185,7 @@ function UserForm() {
                   {/* <hr className='f7bsh1f8checkout-hr'></hr> */}
                   <div className="bkhybmh8aldfcheckout-desk">
                     <div className="albcaqcheckout">Total</div>
-                    {getCountryCurrencySymbol()}
-                    {getAmountConvertToFloatWithFixed(totalOrderAmountValue, 2)}
+                    &pound;{getAmountConvertToFloatWithFixed(totalOrderAmountValue, 2)}
                   </div>
 
                   <div className="itcheckout-desk">
@@ -2116,7 +1976,6 @@ function UserForm() {
         </div>
 
         <div className="dtcxcybgd0d1checkout">
-          
           <div className="bocubqcve9checkout">
             <div className="bocubqcvb1checkout">
               <span className="bocubqcvgycheckout">
@@ -2130,7 +1989,6 @@ function UserForm() {
           <div className="dxgvcheck"></div>
 
           <div className="bocubqcve9checkout">
-
             <div className="bocubqcvb1checkout">
               <span className="bocubqcvgycheckout">
                 If you’re not around when the delivery person arrives, they’ll
@@ -2141,7 +1999,6 @@ function UserForm() {
                 not available.
               </span>
             </div>
-
           </div>
           <div className="dxgvcheck"></div>
 
@@ -2157,7 +2014,6 @@ function UserForm() {
           </div>
 
           <div className="dxgvcheck"></div>
-
         </div>
 
         <div className="">
@@ -2188,7 +2044,6 @@ function UserForm() {
             </div>
           </div>
         </div>
-
       </div>
       {/* Modal Testing */}
 
@@ -2224,11 +2079,7 @@ function UserForm() {
                   </div>
                 </button>
               </div>
-              {ischangepostcodeclicked && (
-                <div>
-                  <PostcodeModal />
-                </>
-              )}
+              {ischangepostcodeclicked && <PostcodeModal />}
             </div>
             <div className="modal-delivery-details-level-one-div-height"></div>
           </div>
@@ -2236,7 +2087,7 @@ function UserForm() {
       )}
 
       <Loader loader={loader} />
-    </>
+    </Fragment>
   );
 }
 

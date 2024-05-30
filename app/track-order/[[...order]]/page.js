@@ -1,8 +1,8 @@
 "use client"
 
-import { BRAND_GUID, axiosPrivate } from "@/app/global/Axios";
+
 import moment from "moment";
-import { useContext, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import notOrderRecieved from "../../../public/gallery/trackorder/track-icon-1.svg"
 import orderRecieved from "../../../public/gallery/trackorder/track-icon-hover-1.svg"
@@ -15,9 +15,11 @@ import outForDelivery from "../../../public/gallery/trackorder/track-icon-hover-
 
 import notCompleted from "../../../public/gallery/trackorder/track-icon-4.svg"
 import Completed from "../../../public/gallery/trackorder/track-icon-hover-4.svg"
-import { getAmountConvertToFloatWithFixed, getCountryCurrencySymbol } from "@/app/global/Store";
+
 import Link from "next/link";
-import Loader from "@/app/components/modals/Loader";
+import { getAmountConvertToFloatWithFixed } from "@/global/Store";
+import { BRAND_GUID, axiosPrivate } from "@/global/Axios";
+import Loader from "@/components/modals/Loader";
 
 function TrackOrder({params}) 
 {
@@ -226,7 +228,7 @@ function TrackOrder({params})
                                                                                                             <span className="bodgdfcvcheckout-li-modi-title">{modifier?.modifier_group_name}:</span>
                                                                                                             <div className="spacer _4"></div>
                                                                                                             <span className="albodgbqcvcheckout-li-modi-detail">
-                                                                                                                {modifier?.product_name} ({getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(modifier?.price,2)})
+                                                                                                                {modifier?.product_name} (&pound;{getAmountConvertToFloatWithFixed(modifier?.price,2)})
                                                                                                                 <div></div>
                                                                                                             </span>
                                                                                                         </li>
@@ -243,13 +245,13 @@ function TrackOrder({params})
                                                                                                                             secondaryProductModifier?.quantity > 0 ?
                                                                                                                             <>
                                                                                                                                 <span className="albodgbqcvcheckout-li-modi-detail">
-                                                                                                                                {parseInt(secondaryProductModifier?.quantity)} x {secondaryProductModifier?.product_name} ({getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(secondaryProductModifier?.quantity * secondaryProductModifier?.price,2)})
+                                                                                                                                {parseInt(secondaryProductModifier?.quantity)} x {secondaryProductModifier?.product_name} (&pound;{getAmountConvertToFloatWithFixed(secondaryProductModifier?.quantity * secondaryProductModifier?.price,2)})
                                                                                                                                     <div></div>
                                                                                                                                 </span>
                                                                                                                             </>
                                                                                                                             :
                                                                                                                             <span className="albodgbqcvcheckout-li-modi-detail">
-                                                                                                                                {secondaryProductModifier?.product_name} ({getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(secondaryProductModifier?.price,2)})
+                                                                                                                                {secondaryProductModifier?.product_name} (&pound;{getAmountConvertToFloatWithFixed(secondaryProductModifier?.price,2)})
                                                                                                                                 <div></div>
                                                                                                                             </span>
                                                                                                                         }
@@ -300,7 +302,7 @@ function TrackOrder({params})
                                                                                     </ul>
                                                                                 </div>
                                                                                 <div className="f1alamcheckout-item-qty">
-                                                                                    <span className="gye2gzcheckout-item-qty-span">{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(orderLine?.total,2)}</span>
+                                                                                    <span className="gye2gzcheckout-item-qty-span">&pound;{getAmountConvertToFloatWithFixed(orderLine?.total,2)}</span>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
@@ -327,7 +329,7 @@ function TrackOrder({params})
                                                             </div>
 
                                                             <div className="bobpbqbrb1checkout">
-                                                                <span className="">{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(trackorders?.order_subtotal,2)}</span>
+                                                                <span className="">&pound;{getAmountConvertToFloatWithFixed(trackorders?.order_subtotal,2)}</span>
                                                             </div>
                                                         </li>
 
@@ -341,7 +343,7 @@ function TrackOrder({params})
                                                             </div>
 
                                                             <div className="bobpbqbrb1checkout">
-                                                                <span className="">{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(trackorders?.service_charge,2)}</span>
+                                                                <span className="">&pound;{getAmountConvertToFloatWithFixed(trackorders?.service_charge,2)}</span>
                                                             </div>
                                                         </li>
 
@@ -351,7 +353,7 @@ function TrackOrder({params})
                                                             </div>
 
                                                             <div className="bobpbqbrb1checkout">
-                                                                <span className="">({getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(discountamount, 2)})</span>
+                                                                <span className="">(&pound;{getAmountConvertToFloatWithFixed(discountamount, 2)})</span>
                                                             </div>
                                                         </li>
 
@@ -363,13 +365,13 @@ function TrackOrder({params})
                                                             </div>
 
                                                             <div className="bobpbqbrb1checkout">
-                                                                <span className="">{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(trackorders?.delivery_charge,2)}</span>
+                                                                <span className="">&pound;{getAmountConvertToFloatWithFixed(trackorders?.delivery_charge,2)}</span>
                                                             </div>
                                                         </li>
                                                     </ul>
 
                                                     <div className="bkgfbmggalcheckout">
-                                                        <div className="albcaqcheckout-total">Total</div>{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed((parseFloat(trackorders?.order_subtotal) + parseFloat(trackorders?.delivery_charge) + parseFloat(trackorders?.service_charge)) - parseFloat(discountamount),2)}
+                                                        <div className="albcaqcheckout-total">Total</div>&pound;{getAmountConvertToFloatWithFixed((parseFloat(trackorders?.order_subtotal) + parseFloat(trackorders?.delivery_charge) + parseFloat(trackorders?.service_charge)) - parseFloat(discountamount),2)}
                                                     </div>
 
                                                 </div>

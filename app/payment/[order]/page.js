@@ -1,9 +1,8 @@
 "use client";
 
-import PaymentForm from "@/app/components/paymentcomponent/PaymentForm";
-import stripePromise from "@/app/components/paymentcomponent/Stripe";
+import PaymentForm from "@/components/paymentcomponent/PaymentForm";
+import stripePromise from "@/components/paymentcomponent/Stripe";
 import { Elements } from "@stripe/react-stripe-js";
-
 
 function Payment({params}) 
 {

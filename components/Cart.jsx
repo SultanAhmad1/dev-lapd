@@ -516,6 +516,8 @@ export default function Cart() {
     setCartdata(updateCartQuantity)
   }
 
+  console.log("Cart data:", cartdata);
+
   return (
     <div className="cart-level-one-div">
       <div className="cart-level-one-div-screen-one"></div>
@@ -614,7 +616,7 @@ export default function Cart() {
                                     {
                                       cartitem?.image_url &&
                                       <div className="md-cart-item-display">
-                                        <img alt={cartitem?.title} src={IMAGE_URL_Without_Storage+""+cartitem?.image_url} className="d1llf9memf-cart-item-display" />
+                                        <img alt={cartitem?.title} src={cartitem?.image_url} className="d1llf9memf-cart-item-display" />
                                       </div>
                                     }
                                   </div>
