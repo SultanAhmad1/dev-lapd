@@ -25,6 +25,7 @@ function UserForm() {
     postcode,
     street1,
     street2,
+    setAtfirstload,
     setIscartbtnclicked,
     setHeaderCartBtnDisplay,
     setHeaderPostcodeBtnDisplay,
@@ -43,12 +44,10 @@ function UserForm() {
 
   // Boolean States
   const [isadddoororhouseclicked, setIsadddoororhouseclicked] = useState(false);
-  const [isdoorinputdisplayclicked, setIsdoorinputdisplayclicked] =
-    useState(true);
+  const [isdoorinputdisplayclicked, setIsdoorinputdisplayclicked] = useState(true);
 
   const [isadddrivertoggle, setIsadddrivertoggle] = useState(false);
-  const [isadddriverdisplayclicked, setIsadddriverdisplayclicked] =
-    useState(false);
+  const [isadddriverdisplayclicked, setIsadddriverdisplayclicked] = useState(false);
 
   const [isemailtoggle, setIsemailtoggle] = useState(true);
   const [isemailinputtoggle, setIsemailinputtoggle] = useState(true);
@@ -57,20 +56,19 @@ function UserForm() {
   const [isphoneinputtoggle, setIsphoneinputtoggle] = useState(true);
 
   const [isfirstnametoggle, setIsfirstnametoggle] = useState(true);
-  const [isfirtnameinputtoggle, setIsfirtnameinputtoggle] = useState(true);
   const [iscustomerhaspassword, setIscustomerhaspassword] = useState(false);
 
-  const [isbyemailclicked, setIsbyemailclicked] = useState(false);
   const [isbysmsclicked, setIsbysmsclicked] = useState(false);
+  const [isbyemailclicked, setIsbyemailclicked] = useState(false);
 
   // Get value states
-  const [doorhousename, setDoorhousename] = useState("");
-  const [driverinstruction, setDriverinstruction] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [firstname, setFirstName] = useState("");
-  const [lastname, setLastName] = useState("");
   const [password, setPassword] = useState("");
+  const [lastname, setLastName] = useState("");
+  const [firstname, setFirstName] = useState("");
+  const [doorhousename, setDoorhousename] = useState("");
+  const [driverinstruction, setDriverinstruction] = useState("");
 
   const [openingtime, setOpeningtime] = useState("");
   const [closingtime, setClosingtime] = useState("");
@@ -84,10 +82,9 @@ function UserForm() {
   // Message
   const [Message, setMessage] = useState("");
   // Error states
-  const [emailError, setEmailError] = useState("");
   const [phoneError, setPhoneError] = useState("");
-  const [saveMyDetailsError, setSaveMyDetailsError] = useState("");
   const [PayNowBottomError, setPayNowBottomError] = useState("");
+  const [saveMyDetailsError, setSaveMyDetailsError] = useState("");
 
   function handleDoorHouseClicked() {
     setIsadddoororhouseclicked(!isadddoororhouseclicked);
@@ -152,8 +149,9 @@ function UserForm() {
     setDue("requested");
   }
   // Change Postcode and Address states
-  const [ispostcodeeditclicked, setIspostcodeeditclicked] = useState(false);
   const [deliverydetailtext, setDeliverydetailtext] = useState("Edit");
+  const [ispostcodeeditclicked, setIspostcodeeditclicked] = useState(false);
+
   function handlePostcodeEdit() {
     setIspostcodeeditclicked(!ispostcodeeditclicked);
     setDeliverydetailtext(deliverydetailtext === "Edit" ? "Save" : "Edit");
@@ -162,8 +160,7 @@ function UserForm() {
   const [ischangepostcodeclicked, setIschangepostcodeclicked] = useState(false);
 
   // Save details for Faster Checkout next time
-  const [isavefasterdetailsclicked, setIsavefasterdetailsclicked] =
-    useState(false);
+  const [isavefasterdetailsclicked, setIsavefasterdetailsclicked] = useState(false);
 
   function handleLogin() {
     setIsauth(false);
@@ -179,14 +176,10 @@ function UserForm() {
   async function fetchLocationDeliveryEstimate() {
     // Get the current day name
     try {
-      const placeOrderGetStoreGUID = JSON.parse(
-        window.localStorage.getItem(`${BRANDSIMPLEGUID}user_selected_store`)
-      );
+      const placeOrderGetStoreGUID = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}user_selected_store`));
+
       const data = {
-        location_guid:
-          placeOrderGetStoreGUID === null
-            ? storeGUID
-            : placeOrderGetStoreGUID?.display_id,
+        location_guid: placeOrderGetStoreGUID === null ? storeGUID : placeOrderGetStoreGUID?.display_id,
         brand_guid: BRAND_GUID,
         day_number: moment().day(),
         partner: PARTNER_ID,
@@ -297,11 +290,7 @@ function UserForm() {
     const dateTime = moment().format("HH:mm");
     const dayName = moment().format("dddd");
 
-    if (
-      dayOpeningClosingTime?.day_of_week
-        ?.toLowerCase()
-        .includes(dayName.toLowerCase())
-    ) {
+    if (dayOpeningClosingTime?.day_of_week?.toLowerCase().includes(dayName.toLowerCase())) {
       const timePeriods = dayOpeningClosingTime?.time_periods;
       if (timePeriods) {
         if (
@@ -339,6 +328,22 @@ function UserForm() {
       setIsbysmsclicked(getCustomerInforation.isbysmsclicked);
     }
   }, []);
+
+  useEffect(() => {
+    // Set a timeout to clear localStorage after 20 minutes (20 * 60 * 1000 milliseconds)
+    const timeoutId = setTimeout(() => {
+      // Clear all items in localStorage
+      localStorage.clear();
+      window.location.reload(true);
+      window.location.href = "/"
+      setTimeout(() => {
+        setLoader(false);
+      }, 3000);
+    }, 30 * 60 * 1000); 
+
+    // Clear the timeout if the component is unmounted before 20 minutes
+    return () => clearTimeout(timeoutId);
+  });
 
   async function fetchCustomerLoginDetails() {
     try {
@@ -380,16 +385,9 @@ function UserForm() {
   }
 
   function handleSaveMyDetails() {
-    if (
-      doorhousename === "" ||
-      email === "" ||
-      phone === "" ||
-      firstname === "" ||
-      lastname === ""
-    ) {
-      setSaveMyDetailsError(
-        "Please check * (asterisk) mark field and fill them."
-      );
+    if (doorhousename === "" || email === "" || phone === "" || firstname === "" || lastname === "") 
+    {
+      setSaveMyDetailsError("Please check * (asterisk) mark field and fill them.");
       setIsavefasterdetailsclicked(false);
       return;
     }
@@ -401,35 +399,8 @@ function UserForm() {
   }
 
   async function storeCustomerDetail() {
-    const subTotalOrderLocal =
-      JSON.parse(
-        JSON.parse(
-          window.localStorage.getItem(`${BRANDSIMPLEGUID}sub_order_total_local`)
-        )
-      ) === null
-        ? null
-        : getAmountConvertToFloatWithFixed(
-            JSON.parse(
-              JSON.parse(
-                window.localStorage.getItem(
-                  `${BRANDSIMPLEGUID}sub_order_total_local`
-                )
-              )
-            ),
-            2
-          );
-    const localStorageTotal =
-      JSON.parse(
-        window.localStorage.getItem(
-          `${BRANDSIMPLEGUID}total_order_value_storage`
-        )
-      ) === null
-        ? null
-        : JSON.parse(
-            window.localStorage.getItem(
-              `${BRANDSIMPLEGUID}total_order_value_storage`
-            )
-          );
+    const subTotalOrderLocal = JSON.parse(JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}sub_order_total_local`))) === null ? null: getAmountConvertToFloatWithFixed(JSON.parse(JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}sub_order_total_local`))),2);
+    const localStorageTotal = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}total_order_value_storage`)) === null? null: JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}total_order_value_storage`));
     const orderAmountDiscountValue  = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}order_amount_number`)) === null ? null: JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}order_amount_number`));
     const orderFilter               = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}filter`));
     const deliveryFeeLocalStorage   = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}delivery_fee`)) === null ? null : getAmountConvertToFloatWithFixed(JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}delivery_fee`)),2);
@@ -520,7 +491,6 @@ function UserForm() {
   function handlePayNow() 
   {
     setLoader(true);
-    // console.log('Door:', doorhousename.length, "First",firstname.length,"last",lastname.length,"email",email.length, "phone",phone.length);
     if (
       parseInt(doorhousename.length) === parseInt(0) ||
       parseInt(email.length) === parseInt(0) ||

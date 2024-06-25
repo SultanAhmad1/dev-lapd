@@ -32,14 +32,9 @@ function productDetails({ params }) {
   } = useContext(HomeContext);
   // const {setIsitemclicked, handleInput} = useContext(HomeContext)
   const [isitemclicked, setIsitemclicked] = useState(false);
-  const [isaccordianclicked, setIsaccordianclicked] = useState(true);
-
   const [ismodifierclicked, setIsmodifierclicked] = useState(false);
 
   const [singleitem, setSingleitem] = useState(null);
-
-  const [nestedmodifieritemhasmodifier, setnestedmodifieritemhasmodifier] =
-    useState(null);
 
   const [quantity, setQuantity] = useState(1);
   const [itemprice, setItemprice] = useState(0);
@@ -48,22 +43,13 @@ function productDetails({ params }) {
   const [selectedModifierItemId, setSelectedModifierItemId] = useState(0);
   const [selectedModifierItemPrice, setSelectedModifierItemPrice] = useState(0);
 
-  const [ishandlecheckinputclicked, setIshandlecheckinputclicked] =
-    useState(false);
+  const [ishandlecheckinputclicked, setIshandlecheckinputclicked] = useState(false);
   const [handleCheckModifierId, setHandleCheckModifierId] = useState(0);
 
-  const [
-    ishandlemodalcheckinputparentmodifierID,
-    setIshandlemodalcheckinputparentmodifierID,
-  ] = useState(0);
-  const [
-    ishandlemodalcheckinputparentitemID,
-    setIshandlemodalcheckinputparentitemID,
-  ] = useState(0);
-  const [ishandlemodalcheckiputclicked, setIshandlemodalcheckiputclicked] =
-    useState(false);
-  const [handlemodalcheckmodifierid, setHandlemodalcheckmodifierid] =
-    useState(0);
+  const [ishandlemodalcheckinputparentmodifierID,setIshandlemodalcheckinputparentmodifierID,] = useState(0);
+  const [ishandlemodalcheckinputparentitemID,setIshandlemodalcheckinputparentitemID,] = useState(0);
+  const [ishandlemodalcheckiputclicked, setIshandlemodalcheckiputclicked] = useState(false);
+  const [handlemodalcheckmodifierid, setHandlemodalcheckmodifierid] = useState(0);
 
   const filterItem = async () => {
     try {
@@ -82,386 +68,361 @@ function productDetails({ params }) {
       const response = await axiosPrivate.post(`/menu`, data);
       const convertToJSobj = response.data?.data?.menu.menu_json_log;
 
-      const getSingleCategory = convertToJSobj?.categories?.find(
-        (category) => category.slug === params.category
-      );
-      const getItemFromCategory = getSingleCategory?.items?.find(
-        (item) => item.slug === params.product
-      );
+      const getSingleCategory = convertToJSobj?.categories?.find((category) => category.slug === params.category);
 
-      const updateModifier = getItemFromCategory?.modifier_group?.map(
-        (modifier) => {
-          if (
-            modifier?.select_single_option === 1 &&
-            modifier?.min_permitted === 1 &&
-            modifier?.max_permitted === 1
-          ) {
-            const modifier_secondary_items =
-              modifier?.modifier_secondary_items?.map((modifieritem) => {
-                if (
-                  parseInt(modifieritem?.secondary_item_modifiers.length) >
-                  parseInt(0)
-                ) {
-                  const updateNestedItems =
-                    modifieritem?.secondary_item_modifiers?.map(
-                      (secondItemModifier) => {
-                        if (
-                          secondItemModifier?.select_single_option === 1 &&
-                          secondItemModifier?.min_permitted === 1 &&
-                          secondItemModifier?.max_permitted === 1
-                        ) {
-                          const updateSecondaryItemModifierItem =
-                            secondItemModifier?.secondary_items_modifier_items?.map(
-                              (secondItemModiItem) => {
-                                return {
-                                  ...secondItemModiItem,
-                                  activeClass: "ob",
-                                  total_price: 0,
-                                  is_item_select: false,
-                                  item_select_to_sale: false,
-                                };
-                              }
-                            );
+      const getItemFromCategory = getSingleCategory?.items?.find((item) => item.slug === params.product);
 
-                          return {
-                            ...secondItemModifier,
-                            valid_class: "default_check",
-                            is_second_item_modifier_clicked: true,
-                            is_modifier_selected: false,
-                            secondary_items_modifier_items:
-                              updateSecondaryItemModifierItem,
-                          };
-                        } else if (
-                          secondItemModifier?.select_single_option === 1 &&
-                          secondItemModifier?.min_permitted === 0 &&
-                          secondItemModifier?.max_permitted >= 1
-                        ) {
-                          const updateSecondaryItemModifierItem =
-                            secondItemModifier?.secondary_items_modifier_items?.map(
-                              (secondItemModiItem) => {
-                                return {
-                                  ...secondItemModiItem,
-                                  activeClass: "mche",
-                                  // total_price: secondItemModiItem?.price_info,
-                                  total_price: 0,
-                                  is_item_select: false,
-                                  item_select_to_sale: false,
-                                };
-                              }
-                            );
+      const updateModifier = getItemFromCategory?.modifier_group?.map((modifier) => 
+      {
+        // if (modifier?.select_single_option === 1 && modifier?.min_permitted === 1 && modifier?.max_permitted === 1) 
+        if (modifier?.min_permitted === 1 && modifier?.max_permitted === 1) 
+        {
+          const modifier_secondary_items = modifier?.modifier_secondary_items?.map((modifieritem) => 
+            {
+              if (parseInt(modifieritem?.secondary_item_modifiers.length) > parseInt(0)) {
+                const updateNestedItems = modifieritem?.secondary_item_modifiers?.map((secondItemModifier) => 
+                {
+                  if (secondItemModifier?.min_permitted === 1 && secondItemModifier?.max_permitted === 1) 
+                  {
+                    const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
+                    {
+                      return {
+                        ...secondItemModiItem,
+                        activeClass: "ob",
+                        total_price: 0,
+                        is_item_select: false,
+                        item_select_to_sale: false,
+                      };
+                    });
 
-                          return {
-                            ...secondItemModifier,
-                            valid_class: "default_check",
-                            modifier_counter: 0,
-                            is_modifier_clickable: false,
-                            is_second_item_modifier_clicked: true,
-                            is_modifier_selected: false,
-                            secondary_items_modifier_items:
-                              updateSecondaryItemModifierItem,
-                          };
-                        } else {
-                          const updateSecondaryItemModifierItem =
-                            secondItemModifier?.secondary_items_modifier_items?.map(
-                              (secondItemModiItem) => {
-                                return {
-                                  ...secondItemModiItem,
-                                  counter: 0,
-                                  // total_price: secondItemModiItem?.price_info,
-                                  total_price: 0,
-                                  is_item_select: true,
-                                  item_select_to_sale: false,
-                                };
-                              }
-                            );
+                    return {
+                      ...secondItemModifier,
+                      valid_class: "default_check",
+                      is_second_item_modifier_clicked: true,
+                      is_modifier_selected: false,
+                      secondary_items_modifier_items:
+                        updateSecondaryItemModifierItem,
+                    };
+                  } 
+                  else 
+                  // if (secondItemModifier?.select_single_option === 1 && secondItemModifier?.min_permitted === 0 && secondItemModifier?.max_permitted >= 1) 
+                  if (secondItemModifier?.max_permitted >= 1) 
+                  {
+                    const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
+                    {
+                      return {
+                        ...secondItemModiItem,
+                        activeClass: "mche",
+                        // total_price: secondItemModiItem?.price_info,
+                        total_price: 0,
+                        is_item_select: false,
+                        item_select_to_sale: false,
+                      };
+                    });
 
-                          return {
-                            ...secondItemModifier,
-                            valid_class: "default_check",
-                            modifier_counter: 0,
-                            is_modifier_clickable: false,
-                            is_second_item_modifier_clicked: true,
-                            is_modifier_selected: false,
-                            secondary_items_modifier_items:
-                              updateSecondaryItemModifierItem,
-                          };
-                        }
-                      }
-                    );
+                    return {
+                      ...secondItemModifier,
+                      valid_class: "default_check",
+                      modifier_counter: 0,
+                      is_modifier_clickable: false,
+                      is_second_item_modifier_clicked: true,
+                      is_modifier_selected: false,
+                      secondary_items_modifier_items:
+                        updateSecondaryItemModifierItem,
+                    };
+                  }
+                  //  else {
+                  //   const updateSecondaryItemModifierItem =
+                  //     secondItemModifier?.secondary_items_modifier_items?.map(
+                  //       (secondItemModiItem) => {
+                  //         return {
+                  //           ...secondItemModiItem,
+                  //           counter: 0,
+                  //           // total_price: secondItemModiItem?.price_info,
+                  //           total_price: 0,
+                  //           is_item_select: true,
+                  //           item_select_to_sale: false,
+                  //         };
+                  //       }
+                  //     );
 
-                  return {
-                    ...modifieritem,
-                    activeClass: "ob",
-                    is_item_select: false,
-                    // total_price: modifieritem?.price,
-                    total_price: 0,
-                    secondary_item_modifiers: updateNestedItems,
-                    item_select_to_sale: false,
-                  };
-                }
+                  //   return {
+                  //     ...secondItemModifier,
+                  //     valid_class: "default_check",
+                  //     modifier_counter: 0,
+                  //     is_modifier_clickable: false,
+                  //     is_second_item_modifier_clicked: true,
+                  //     is_modifier_selected: false,
+                  //     secondary_items_modifier_items:
+                  //       updateSecondaryItemModifierItem,
+                  //   };
+                  // }
+                });
+
                 return {
                   ...modifieritem,
                   activeClass: "ob",
-                  // total_price: modifieritem?.price,
-                  total_price: 0,
                   is_item_select: false,
-                  item_select_to_sale: false,
-                };
-              });
-            return {
-              ...modifier,
-              valid_class: "default_check",
-              is_toggle_active: true,
-              is_modifier_selected: false,
-              modifier_secondary_items: modifier_secondary_items,
-            };
-          } else if (
-            modifier?.select_single_option === 1 &&
-            modifier?.min_permitted === 0 &&
-            modifier?.max_permitted >= 1
-          ) {
-            const modifier_secondary_items =
-              modifier?.modifier_secondary_items?.map((modifieritem) => {
-                if (
-                  parseInt(modifieritem?.secondary_item_modifiers.length) >
-                  parseInt(0)
-                ) {
-                  const updateNestedItems =
-                    modifieritem?.secondary_item_modifiers?.map(
-                      (secondItemModifier) => {
-                        if (
-                          secondItemModifier?.select_single_option === 1 &&
-                          secondItemModifier?.min_permitted === 1 &&
-                          secondItemModifier?.max_permitted === 1
-                        ) {
-                          const updateSecondaryItemModifierItem =
-                            secondItemModifier?.secondary_items_modifier_items?.map(
-                              (secondItemModiItem) => {
-                                return {
-                                  ...secondItemModiItem,
-                                  activeClass: "ob",
-                                  total_price: 0,
-                                  is_item_select: false,
-                                  item_select_to_sale: false,
-                                };
-                              }
-                            );
-
-                          return {
-                            ...secondItemModifier,
-                            valid_class: "default_check",
-                            is_second_item_modifier_clicked: true,
-                            is_modifier_selected: false,
-                            secondary_items_modifier_items:
-                              updateSecondaryItemModifierItem,
-                          };
-                        } else if (
-                          secondItemModifier?.select_single_option === 1 &&
-                          secondItemModifier?.min_permitted === 0 &&
-                          secondItemModifier?.max_permitted >= 1
-                        ) {
-                          const updateSecondaryItemModifierItem =
-                            secondItemModifier?.secondary_items_modifier_items?.map(
-                              (secondItemModiItem) => {
-                                return {
-                                  ...secondItemModiItem,
-                                  activeClass: "mche",
-                                  total_price: 0,
-                                  is_item_select: false,
-                                  item_select_to_sale: false,
-                                };
-                              }
-                            );
-
-                          return {
-                            ...secondItemModifier,
-                            valid_class: "default_check",
-                            modifier_counter: 0,
-                            is_modifier_clickable: false,
-                            is_second_item_modifier_clicked: true,
-                            is_modifier_selected: false,
-                            secondary_items_modifier_items:
-                              updateSecondaryItemModifierItem,
-                          };
-                        } else {
-                          const updateSecondaryItemModifierItem =
-                            secondItemModifier?.secondary_items_modifier_items?.map(
-                              (secondItemModiItem) => {
-                                return {
-                                  ...secondItemModiItem,
-                                  counter: 0,
-                                  total_price: 0,
-                                  is_item_select: true,
-                                  item_select_to_sale: false,
-                                };
-                              }
-                            );
-
-                          return {
-                            ...secondItemModifier,
-                            valid_class: "default_check",
-                            modifier_counter: 0,
-                            is_modifier_clickable: false,
-                            is_second_item_modifier_clicked: true,
-                            is_modifier_selected: false,
-                            secondary_items_modifier_items:
-                              updateSecondaryItemModifierItem,
-                          };
-                        }
-                      }
-                    );
-
-                  return {
-                    ...modifieritem,
-                    activeClass: "mche",
-                    // total_price: modifieritem?.price,
-                    total_price: 0,
-                    is_item_select: false,
-                    secondary_item_modifiers: updateNestedItems,
-                    item_select_to_sale: false,
-                  };
-                }
-                return {
-                  ...modifieritem,
-                  activeClass: "mche",
                   // total_price: modifieritem?.price,
                   total_price: 0,
-                  is_item_select: false,
+                  secondary_item_modifiers: updateNestedItems,
                   item_select_to_sale: false,
                 };
-              });
+              }
+              return {
+                ...modifieritem,
+                activeClass: "ob",
+                // total_price: modifieritem?.price,
+                total_price: 0,
+                is_item_select: false,
+                item_select_to_sale: false,
+              };
+            });
+          return {
+            ...modifier,
+            valid_class: "default_check",
+            is_toggle_active: true,
+            is_modifier_selected: false,
+            modifier_secondary_items: modifier_secondary_items,
+          };
+        } 
+        else 
+        if (modifier?.min_permitted === 0 && modifier?.max_permitted >= 1) 
+        {
+          const modifier_secondary_items = modifier?.modifier_secondary_items?.map((modifieritem) => {if (parseInt(modifieritem?.secondary_item_modifiers.length) > parseInt(0)) 
+          {
+              const updateNestedItems = modifieritem?.secondary_item_modifiers?.map((secondItemModifier) => 
+              {
+                if (secondItemModifier?.min_permitted === 1 && secondItemModifier?.max_permitted === 1) 
+                {
+                    const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
+                    {
+                      return {
+                        ...secondItemModiItem,
+                        activeClass: "ob",
+                        total_price: 0,
+                        is_item_select: false,
+                        item_select_to_sale: false,
+                      };
+                    });
+
+                    return {
+                      ...secondItemModifier,
+                      valid_class: "default_check",
+                      is_second_item_modifier_clicked: true,
+                      is_modifier_selected: false,
+                      secondary_items_modifier_items:
+                        updateSecondaryItemModifierItem,
+                    };
+                } 
+                else 
+                if (secondItemModifier?.min_permitted === 0 && secondItemModifier?.max_permitted >= 1) 
+                {
+                      const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
+                      {
+                            return {
+                              ...secondItemModiItem,
+                              activeClass: "mche",
+                              total_price: 0,
+                              is_item_select: false,
+                              item_select_to_sale: false,
+                            };
+                          }
+                        );
+
+                      return {
+                        ...secondItemModifier,
+                        valid_class: "default_check",
+                        modifier_counter: 0,
+                        is_modifier_clickable: false,
+                        is_second_item_modifier_clicked: true,
+                        is_modifier_selected: false,
+                        secondary_items_modifier_items:
+                          updateSecondaryItemModifierItem,
+                      };
+                    } 
+                    // else {
+                    //   const updateSecondaryItemModifierItem =
+                    //     secondItemModifier?.secondary_items_modifier_items?.map(
+                    //       (secondItemModiItem) => {
+                    //         return {
+                    //           ...secondItemModiItem,
+                    //           counter: 0,
+                    //           total_price: 0,
+                    //           is_item_select: true,
+                    //           item_select_to_sale: false,
+                    //         };
+                    //       }
+                    //     );
+
+                    //   return {
+                    //     ...secondItemModifier,
+                    //     valid_class: "default_check",
+                    //     modifier_counter: 0,
+                    //     is_modifier_clickable: false,
+                    //     is_second_item_modifier_clicked: true,
+                    //     is_modifier_selected: false,
+                    //     secondary_items_modifier_items:
+                    //       updateSecondaryItemModifierItem,
+                    //   };
+                    // }
+                  }
+                );
+
+              return {
+                ...modifieritem,
+                activeClass: "mche",
+                // total_price: modifieritem?.price,
+                total_price: 0,
+                is_item_select: false,
+                secondary_item_modifiers: updateNestedItems,
+                item_select_to_sale: false,
+              };
+            }
             return {
-              ...modifier,
-              valid_class: "default_check",
-              is_toggle_active: true,
-              modifier_counter: 0,
-              is_modifier_clickable: false,
-              is_modifier_selected: false,
-              modifier_secondary_items: modifier_secondary_items,
+              ...modifieritem,
+              activeClass: "mche",
+              // total_price: modifieritem?.price,
+              total_price: 0,
+              is_item_select: false,
+              item_select_to_sale: false,
             };
-          } else {
-            const modifier_secondary_items =
-              modifier?.modifier_secondary_items?.map((modifieritem) => {
-                if (
-                  parseInt(modifieritem?.secondary_item_modifiers.length) >
-                  parseInt(0)
-                ) {
-                  const updateNestedItems =
-                    modifieritem?.secondary_item_modifiers?.map(
-                      (secondItemModifier) => {
-                        if (
-                          secondItemModifier?.select_single_option === 1 &&
-                          secondItemModifier?.min_permitted === 1 &&
-                          secondItemModifier?.max_permitted === 1
-                        ) {
-                          const updateSecondaryItemModifierItem =
-                            secondItemModifier?.secondary_items_modifier_items?.map(
-                              (secondItemModiItem) => {
-                                return {
-                                  ...secondItemModiItem,
-                                  activeClass: "ob",
-                                  total_price: 0,
-                                  is_item_select: false,
-                                  item_select_to_sale: false,
-                                };
-                              }
-                            );
+          });
+          return {
+            ...modifier,
+            valid_class: "default_check",
+            is_toggle_active: true,
+            modifier_counter: 0,
+            is_modifier_clickable: false,
+            is_modifier_selected: false,
+            modifier_secondary_items: modifier_secondary_items,
+          };
+        } 
 
-                          return {
-                            ...secondItemModifier,
-                            valid_class: "default_check",
-                            is_second_item_modifier_clicked: true,
-                            is_modifier_selected: false,
-                            secondary_items_modifier_items:
-                              updateSecondaryItemModifierItem,
-                          };
-                        } else if (
-                          secondItemModifier?.select_single_option === 1 &&
-                          secondItemModifier?.min_permitted === 0 &&
-                          secondItemModifier?.max_permitted >= 1
-                        ) {
-                          const updateSecondaryItemModifierItem =
-                            secondItemModifier?.secondary_items_modifier_items?.map(
-                              (secondItemModiItem) => {
-                                return {
-                                  ...secondItemModiItem,
-                                  total_price: 0,
-                                  activeClass: "mche",
-                                  is_item_select: false,
-                                  item_select_to_sale: false,
-                                };
-                              }
-                            );
+        // else 
+        // {
+        //   const modifier_secondary_items =
+        //     modifier?.modifier_secondary_items?.map((modifieritem) => {
+        //       if (
+        //         parseInt(modifieritem?.secondary_item_modifiers.length) >
+        //         parseInt(0)
+        //       ) {
+        //         const updateNestedItems =
+        //           modifieritem?.secondary_item_modifiers?.map(
+        //             (secondItemModifier) => {
+        //               if (
+        //                 secondItemModifier?.select_single_option === 1 &&
+        //                 secondItemModifier?.min_permitted === 1 &&
+        //                 secondItemModifier?.max_permitted === 1
+        //               ) {
+        //                 const updateSecondaryItemModifierItem =
+        //                   secondItemModifier?.secondary_items_modifier_items?.map(
+        //                     (secondItemModiItem) => {
+        //                       return {
+        //                         ...secondItemModiItem,
+        //                         activeClass: "ob",
+        //                         total_price: 0,
+        //                         is_item_select: false,
+        //                         item_select_to_sale: false,
+        //                       };
+        //                     }
+        //                   );
 
-                          return {
-                            ...secondItemModifier,
-                            valid_class: "default_check",
-                            modifier_counter: 0,
-                            is_modifier_clickable: false,
-                            is_second_item_modifier_clicked: true,
-                            is_modifier_selected: false,
-                            secondary_items_modifier_items:
-                              updateSecondaryItemModifierItem,
-                          };
-                        } else {
-                          const updateSecondaryItemModifierItem =
-                            secondItemModifier?.secondary_items_modifier_items?.map(
-                              (secondItemModiItem) => {
-                                return {
-                                  ...secondItemModiItem,
-                                  counter: 0,
-                                  total_price: 0,
-                                  is_item_select: true,
-                                  item_select_to_sale: false,
-                                };
-                              }
-                            );
+        //                 return {
+        //                   ...secondItemModifier,
+        //                   valid_class: "default_check",
+        //                   is_second_item_modifier_clicked: true,
+        //                   is_modifier_selected: false,
+        //                   secondary_items_modifier_items:
+        //                     updateSecondaryItemModifierItem,
+        //                 };
+        //               } else if (
+        //                 secondItemModifier?.select_single_option === 1 &&
+        //                 secondItemModifier?.min_permitted === 0 &&
+        //                 secondItemModifier?.max_permitted >= 1
+        //               ) {
+        //                 const updateSecondaryItemModifierItem =
+        //                   secondItemModifier?.secondary_items_modifier_items?.map(
+        //                     (secondItemModiItem) => {
+        //                       return {
+        //                         ...secondItemModiItem,
+        //                         total_price: 0,
+        //                         activeClass: "mche",
+        //                         is_item_select: false,
+        //                         item_select_to_sale: false,
+        //                       };
+        //                     }
+        //                   );
 
-                          return {
-                            ...secondItemModifier,
-                            valid_class: "default_check",
-                            modifier_counter: 0,
-                            is_modifier_clickable: false,
-                            is_second_item_modifier_clicked: true,
-                            is_modifier_selected: false,
-                            secondary_items_modifier_items:
-                              updateSecondaryItemModifierItem,
-                          };
-                        }
-                      }
-                    );
+        //                 return {
+        //                   ...secondItemModifier,
+        //                   valid_class: "default_check",
+        //                   modifier_counter: 0,
+        //                   is_modifier_clickable: false,
+        //                   is_second_item_modifier_clicked: true,
+        //                   is_modifier_selected: false,
+        //                   secondary_items_modifier_items:
+        //                     updateSecondaryItemModifierItem,
+        //                 };
+        //               } else {
+        //                 const updateSecondaryItemModifierItem =
+        //                   secondItemModifier?.secondary_items_modifier_items?.map(
+        //                     (secondItemModiItem) => {
+        //                       return {
+        //                         ...secondItemModiItem,
+        //                         counter: 0,
+        //                         total_price: 0,
+        //                         is_item_select: true,
+        //                         item_select_to_sale: false,
+        //                       };
+        //                     }
+        //                   );
 
-                  return {
-                    ...modifieritem,
-                    counter: 0,
-                    is_item_select: true,
-                    // total_price: modifieritem?.price,
-                    total_price: 0,
-                    secondary_item_modifiers: updateNestedItems,
-                    item_select_to_sale: false,
-                  };
-                }
-                return {
-                  ...modifieritem,
-                  counter: 0,
-                  // total_price: modifieritem?.price,
-                  total_price: 0,
-                  is_item_select: true,
-                  item_select_to_sale: false,
-                };
-              });
-            return {
-              ...modifier,
-              valid_class: "default_check",
-              is_toggle_active: true,
-              modifier_counter: 0,
-              is_modifier_clickable: false,
-              is_modifier_selected: false,
-              modifier_secondary_items: modifier_secondary_items,
-            };
-          }
-        }
-      );
+        //                 return {
+        //                   ...secondItemModifier,
+        //                   valid_class: "default_check",
+        //                   modifier_counter: 0,
+        //                   is_modifier_clickable: false,
+        //                   is_second_item_modifier_clicked: true,
+        //                   is_modifier_selected: false,
+        //                   secondary_items_modifier_items:
+        //                     updateSecondaryItemModifierItem,
+        //                 };
+        //               }
+        //             }
+        //           );
+
+        //         return {
+        //           ...modifieritem,
+        //           counter: 0,
+        //           is_item_select: true,
+        //           // total_price: modifieritem?.price,
+        //           total_price: 0,
+        //           secondary_item_modifiers: updateNestedItems,
+        //           item_select_to_sale: false,
+        //         };
+        //       }
+        //       return {
+        //         ...modifieritem,
+        //         counter: 0,
+        //         // total_price: modifieritem?.price,
+        //         total_price: 0,
+        //         is_item_select: true,
+        //         item_select_to_sale: false,
+        //       };
+        //     });
+        //   return {
+        //     ...modifier,
+        //     valid_class: "default_check",
+        //     is_toggle_active: true,
+        //     modifier_counter: 0,
+        //     is_modifier_clickable: false,
+        //     is_modifier_selected: false,
+        //     modifier_secondary_items: modifier_secondary_items,
+        //   };
+        // }
+      });
+
       getItemFromCategory.modifier_group = updateModifier;
 
       setSingleitem(getItemFromCategory);
@@ -517,7 +478,6 @@ function productDetails({ params }) {
           findModifierItemNestedModifier?.modifier_secondary_items?.find(
             (item) => item?.id === itemId
           );
-        // setnestedmodifieritemhasmodifier(findModifierItemNestedModifierItem)
 
         setselectedModifierId(modifierId);
         setSelectedModifierItemId(itemId);
@@ -1283,16 +1243,7 @@ function productDetails({ params }) {
       }
       setSelectedModifierItemPrice(parseFloat(totalAmount).toFixed(2));
       setIshandlemodalcheckiputclicked(true);
-    },
-    [
-      ishandlemodalcheckinputparentmodifierID,
-      ishandlemodalcheckinputparentitemID,
-      handlemodalcheckmodifierid,
-      singleitem,
-      selectedModifierItemPrice,
-      ishandlemodalcheckiputclicked,
-    ]
-  );
+    },[ishandlemodalcheckinputparentmodifierID,ishandlemodalcheckinputparentitemID,handlemodalcheckmodifierid,singleitem,selectedModifierItemPrice,ishandlemodalcheckiputclicked,]);
 
   const handleModalIncrement = useCallback(
     (modifierId, itemId, secondModifierId, secondItemId) => {
@@ -1842,10 +1793,25 @@ function productDetails({ params }) {
     }
   }, [ishandlemodalcheckiputclicked]);
 
+  useEffect(() => {
+    // Set a timeout to clear localStorage after 20 minutes (20 * 60 * 1000 milliseconds)
+    const timeoutId = setTimeout(() => {
+      // Clear all items in localStorage
+      localStorage.clear();
+      window.location.reload(true);
+      window.location.href = "/"
+      setTimeout(() => {
+        setLoader(false);
+      }, 3000);
+    }, 30 * 60 * 1000); 
+
+    // Clear the timeout if the component is unmounted before 20 minutes
+    return () => clearTimeout(timeoutId);
+  });
+
   // Website Cart Button
   const handleAddtoCart = useCallback(() => {
 
-    console.log("Handle add to cart method clicked:");
     if (singleitem) {
       // Count the number of modifier is min_permit is greater than zero.
 
@@ -1914,7 +1880,7 @@ function productDetails({ params }) {
         }
       }
     }
-  }, [singleitem, cartdata, iscartbtnclicked]);
+  }, [singleitem, cartdata, iscartbtnclicked,quantity]);
 
   const handleMobileAddtoCart = useCallback(() => {
     if (singleitem) {
@@ -1993,7 +1959,7 @@ function productDetails({ params }) {
         }
       }
     }
-  }, [singleitem, cartdata, iscartbtnclicked]);
+  }, [singleitem, cartdata, iscartbtnclicked,quantity]);
 
   // Mobile Decrement quantity
   const handleMobileQuantityDecrement = useCallback(() => {
@@ -2177,16 +2143,20 @@ function productDetails({ params }) {
     <>
       <div className="single-product">
         <WebsiteSingleItem
-          singleitem={singleitem}
-          quantity={quantity}
-          itemprice={itemprice}
-          setIsitemclicked={setIsitemclicked}
-          handleRadioInput={handleRadioInput}
-          handleCheckInput={handleCheckInput}
-          handleDecrement={handleDecrement}
-          handleIncrement={handleIncrement}
-          handleQuantity={handleQuantity}
-          handleAddtoCart={handleAddtoCart}
+          {
+            ...{
+              singleitem,
+              quantity,
+              itemprice,
+              setIsitemclicked,
+              handleRadioInput,
+              handleCheckInput,
+              handleDecrement,
+              handleIncrement,
+              handleQuantity,
+              handleAddtoCart,
+            }
+          }
         />
       </div>
 
@@ -2194,17 +2164,22 @@ function productDetails({ params }) {
       <div>
         <div className="mobile-view">
           <MobileSingleItem
-            handleMScroll={handleMScroll}
-            singleitem={singleitem}
-            quantity={quantity}
-            itemprice={itemprice}
-            handleCheckInput={handleCheckInput}
-            handleMobileModifierToggle={handleMobileModifierToggle}
-            handleDecrement={handleDecrement}
-            handleIncrement={handleIncrement}
-            handleMobileQuantityDecrement={handleMobileQuantityDecrement}
-            handleMobileQuantityIncrement={handleMobileQuantityIncrement}
-            handleMobileAddtoCart={handleMobileAddtoCart}
+            {
+              ...{
+                singleitem,
+                quantity,
+                itemprice,
+                handleRadioInput,
+                handleMScroll,
+                handleCheckInput,
+                handleMobileModifierToggle,
+                handleDecrement,
+                handleIncrement,
+                handleMobileQuantityDecrement,
+                handleMobileQuantityIncrement,
+                handleMobileAddtoCart,
+              }
+            }
           />
         </div>
       </div>

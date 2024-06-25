@@ -30,7 +30,6 @@ const GooglePay = (props) => {
         requestShipping: false,
       });
 
-      console.log("Payment Request:", pr);
       pr.canMakePayment().then(result => {
         if (result) 
         {

@@ -93,7 +93,6 @@ const Wallet = (props) => {
     }
   }, [stripe,orderTotal]);
 
-  console.log("Wallert order total", orderTotal);
   if (paymentRequest) {
     return <PaymentRequestButtonElement options={{paymentRequest}} />
   }
