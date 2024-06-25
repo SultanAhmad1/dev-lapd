@@ -1,18 +1,13 @@
 import axios from "axios";
-// const BASE_URL = 'http://127.0.0.1:8000/api'
-export const BASE_URL = "https://laravel-jouleskitchen.cleartwo.uk/api";
-export const IMAGE_URL = "https://laravel-jouleskitchen.cleartwo.uk/storage/";
-export const IMAGE_URL_Without_Storage =
-  "https://laravel-jouleskitchen.cleartwo.uk/";
+// export const BASE_URL = "https://laravel-jouleskitchen.cleartwo.uk/api";
+// export const IMAGE_URL = "https://laravel-jouleskitchen.cleartwo.uk/storage/";
+// export const IMAGE_URL_Without_Storage = "https://laravel-jouleskitchen.cleartwo.uk/";
 
-// export const BASE_URL = "https://laravel-jouleskitchen.cleartwo.xyz/api";
-// export const IMAGE_URL = "https://laravel-jouleskitchen.cleartwo.xyz/storage/";
-// export const IMAGE_URL_Without_Storage =
-//   "https://laravel-jouleskitchen.cleartwo.xyz/";
+export const BASE_URL = "https://laravel-jouleskitchen.cleartwo.xyz/api";
+export const IMAGE_URL = "https://laravel-jouleskitchen.cleartwo.xyz/storage/";
+export const IMAGE_URL_Without_Storage ="https://laravel-jouleskitchen.cleartwo.xyz/";
 
-export default axios.create({
-  baseURL: BASE_URL,
-});
+export default axios.create({baseURL: BASE_URL,});
 
 export const axiosPrivate = axios.create({
   baseURL: BASE_URL,

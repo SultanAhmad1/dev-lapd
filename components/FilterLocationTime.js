@@ -26,9 +26,7 @@ function FilterLocationTime()
     }
 
     return (
-        <div className='c2c3c1afc4-delivery-type'>
-            <div className="chcicjckotalou-delivery-type">
-            
+        <div className='location-openclose-filter'>
             <div>
                 <h1 className='gfj0ggge-store-head'>{storeName}</h1>
 
@@ -43,9 +41,9 @@ function FilterLocationTime()
 
             </div>
 
-            <div className='cmakp3p4-delivery-type'>
+            <div className='openclosetime-type'>
 
-                <div className="coalclp5afbdaqc5ae-delivery-type">
+                <div className="filter-type">
                     {
                         filters?.map((fitler,index) =>
                         {
@@ -73,7 +71,7 @@ function FilterLocationTime()
                             )
                         })
                     }
-             
+            
 
                     {/* <div className={`akd0afbz-delivery-type ${ordertypeselect === 2 && "delivery-type-active"}`} onClick={() => handleOrderType(2)}>
                         <div className="algid0amc5-delvery-type">
@@ -89,7 +87,6 @@ function FilterLocationTime()
                     </div> */}
                 </div>
 
-            </div>
             </div>
         </div>
     )

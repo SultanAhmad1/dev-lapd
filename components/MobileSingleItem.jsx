@@ -1,3 +1,4 @@
+import { IMAGE_URL_Without_Storage } from "@/global/Axios";
 import {
   getAmountConvertToFloatWithFixed,
   getCountryCurrencySymbol,
@@ -21,6 +22,11 @@ export const MobileSingleItem = memo((props) => {
     handleMobileQuantityIncrement,
     handleMobileAddtoCart,
   } = props;
+
+  const isValidHttpsUrl = (url) => {
+    return url.startsWith('https://');
+  };
+
   return (
     <div onWheel={handleMScroll}>
       <div
@@ -67,19 +73,29 @@ export const MobileSingleItem = memo((props) => {
                   </div>
                 </div>
               </div>
-
+              
               <div>
                 <div className="akbkbxc3single-product">
                   <div className="bkeaebalsingle-product">
                     <div className="ecsingle-product">
                       <div className="akedeebkefsingle-product">
-                        {/* <img alt="" role="presentation" src="https://tb-static.uber.com/prod/image-proc/processed_images/3bef7aecf15103ae8c8a02cf68277fc8/859baff1d76042a45e319d1de80aec7a.jpeg" className="egbkaeeheisingle-productimg" /> */}
-                        <img
-                          role="presentation"
-                          src={singleitem?.image_url}
-                          alt={singleitem?.title}
-                          className="egbkaeeheisingle-productimg"
-                        />
+                        {
+                          (singleitem?.image_url && singleitem?.image_url !== null) &&
+                          isValidHttpsUrl(singleitem?.image_url) ?
+                            <img
+                              role="presentation"
+                              src={singleitem?.image_url}
+                              alt={singleitem?.title}
+                              className="egbkaeeheisingle-productimg"
+                            />
+                          :
+                            <img
+                              role="presentation"
+                              src={singleitem?.image_url}
+                              alt={IMAGE_URL_Without_Storage+""+singleitem?.title}
+                              className="egbkaeeheisingle-productimg"
+                            />
+                        }
                         <div className="agasatbdbcajsingle-product"></div>
                       </div>
                     </div>
@@ -116,15 +132,15 @@ export const MobileSingleItem = memo((props) => {
                     modifier?.max_permitted === 1 ? (
                     <li key={index} className={`msection${index}`}>
                       <div className="fusingle-productlidiv">
-                        <hr className="efeqeofvsingle-product"></hr>
+                        <hr className="modifier-hr"></hr>
 
                         <div
-                          className="fwsingle-product"
+                          className="modifier-header"
                           onClick={() =>
                             handleMobileModifierToggle(modifier?.id)
                           }
                         >
-                          <div className="alaqd0fxsingle-product">
+                          <div className="modifier-div">
                             <div className="alamsingle-product">
                               <div className="bnfrbpfsingle-product">
                                 {modifier?.title}
@@ -218,10 +234,7 @@ export const MobileSingleItem = memo((props) => {
                                           modifier?.id,
                                           mobileSecondItems?.id,
                                           mobileSecondItems?.title,
-                                          parseInt(
-                                            mobileSecondItems
-                                              ?.secondary_item_modifiers.length
-                                          )
+                                          parseInt(mobileSecondItems ?.secondary_item_modifiers.length)
                                         )
                                       }
                                     >
@@ -261,7 +274,7 @@ export const MobileSingleItem = memo((props) => {
                                         className={`brbsdpdqbkalbfafg6single-productlable ${mobileSecondItems?.activeClass}`}
                                       >
                                         <div className="spacer _16"></div>
-                                        <div className="e4ald0gisingle-product">
+                                        <div className="modifier-product">
                                           <div className="ale4amc4gjgkglsingle-product">
                                             <div className="alaqsingle-product">
                                               <div className="alamgmgnsingle-product">
@@ -307,15 +320,15 @@ export const MobileSingleItem = memo((props) => {
                     modifier?.max_permitted >= 1 ? (
                     <li key={index} className={`msection${index}`}>
                       <div className="fusingle-productlidiv">
-                        <hr className="efeqeofvsingle-product"></hr>
+                        <hr className="modifier-hr"></hr>
 
                         <div
-                          className="fwsingle-product"
+                          className="modifier-header"
                           onClick={() =>
                             handleMobileModifierToggle(modifier?.id)
                           }
                         >
-                          <div className="alaqd0fxsingle-product">
+                          <div className="modifier-div">
                             <div className="alamsingle-product">
                               <div className="bnfrbpfsingle-product">
                                 {modifier?.title}
@@ -435,7 +448,7 @@ export const MobileSingleItem = memo((props) => {
                                         className={`brbsdpdqbkalbfafg6single-productlablecheck ${mobileSecondItems?.activeClass}`}
                                       >
                                         <div className="spacer _16"></div>
-                                        <div className="e4ald0gisingle-product">
+                                        <div className="modifier-product">
                                           <div className="ale4amc4gjgkglsingle-product">
                                             <div className="alaqsingle-product">
                                               <div className="alamgmgnsingle-product">
@@ -483,7 +496,7 @@ export const MobileSingleItem = memo((props) => {
                                         className={`brbsdpdqbkalbfafg6single-productlablecheck ${mobileSecondItems?.activeClass}`}
                                       >
                                         <div className="spacer _16"></div>
-                                        <div className="e4ald0gisingle-product">
+                                        <div className="modifier-product">
                                           <div className="ale4amc4gjgkglsingle-product">
                                             <div className="alaqsingle-product">
                                               <div className="alamgmgnsingle-product">
@@ -529,15 +542,15 @@ export const MobileSingleItem = memo((props) => {
                     // {/* minimum option = '- / 0' and maximum option = 5 and single item select = 2 */}
                     <li key={index} className={`msection${index}`}>
                       <div className="fusingle-productlidiv">
-                        <hr className="efeqeofvsingle-product"></hr>
+                        <hr className="modifier-hr"></hr>
 
                         <div
-                          className="fwsingle-product"
+                          className="modifier-header"
                           onClick={() =>
                             handleMobileModifierToggle(modifier?.id)
                           }
                         >
-                          <div className="alaqd0fxsingle-product">
+                          <div className="modifier-div">
                             <div className="alamsingle-product">
                               <div className="bnfrbpfsingle-product">
                                 {modifier?.title}

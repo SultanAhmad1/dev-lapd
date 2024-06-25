@@ -111,11 +111,7 @@ function PostcodeModal() {
     <div className="deliver-to-body-content">
       <h1 className="deliver-to-body-content-h1">Order Food Now</h1>
       <div className="deliver-to-body-content-nested-div-level-one">
-        <label
-          id="location-typeahead-location-manager-label"
-          htmlFor="location-typeahead-location-manager-input"
-          className="deliver-to-body-content-nested-div-level-one-label"
-        >
+        <label id="location-typeahead-location-manager-label" htmlFor="location-typeahead-location-manager-input" className="deliver-to-body-content-nested-div-level-one-label">
           When autocomplete results are available, use up and down arrows to
           review and enter to select. Touch device users, explore by touch or
           with swipe gestures.

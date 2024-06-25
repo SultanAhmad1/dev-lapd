@@ -1,7 +1,7 @@
 "use client";
 
 import HomeContext from "@/contexts/HomeContext";
-import { BRANDSIMPLEGUID, BrandLogoPath } from "@/global/Axios";
+import { BRANDSIMPLEGUID, BrandLogoPath, IMAGE_URL_Without_Storage } from "@/global/Axios";
 import {
   getAmountConvertToFloatWithFixed,
   getCountryCurrencySymbol,
@@ -30,22 +30,13 @@ function productEdit({ params }) {
   const [selectedModifierItemId, setSelectedModifierItemId] = useState(0);
   const [selectedModifierItemPrice, setSelectedModifierItemPrice] = useState(0);
 
-  const [ishandlecheckinputclicked, setIshandlecheckinputclicked] =
-    useState(false);
   const [handleCheckModifierId, setHandleCheckModifierId] = useState(0);
+  const [ishandlecheckinputclicked, setIshandlecheckinputclicked] = useState(false);
 
-  const [
-    ishandlemodalcheckinputparentmodifierID,
-    setIshandlemodalcheckinputparentmodifierID,
-  ] = useState(0);
-  const [
-    ishandlemodalcheckinputparentitemID,
-    setIshandlemodalcheckinputparentitemID,
-  ] = useState(0);
-  const [ishandlemodalcheckiputclicked, setIshandlemodalcheckiputclicked] =
-    useState(false);
-  const [handlemodalcheckmodifierid, setHandlemodalcheckmodifierid] =
-    useState(0);
+  const [handlemodalcheckmodifierid, setHandlemodalcheckmodifierid] = useState(0);
+  const [ishandlemodalcheckiputclicked, setIshandlemodalcheckiputclicked] = useState(false);
+  const [ishandlemodalcheckinputparentitemID,setIshandlemodalcheckinputparentitemID] = useState(0);
+  const [ishandlemodalcheckinputparentmodifierID,setIshandlemodalcheckinputparentmodifierID] = useState(0);
 
   // When component load first this useEffect will be used
   useEffect(() => {
@@ -63,6 +54,22 @@ function productEdit({ params }) {
     setQuantity(getFilterItem?.quantity);
     setItemprice(getFilterItem?.total_order_amount / getFilterItem?.quantity);
   }, []);
+
+  useEffect(() => {
+    // Set a timeout to clear localStorage after 20 minutes (20 * 60 * 1000 milliseconds)
+    const timeoutId = setTimeout(() => {
+      // Clear all items in localStorage
+      localStorage.clear();
+      window.location.reload(true);
+      window.location.href = "/"
+      setTimeout(() => {
+        setLoader(false);
+      }, 3000);
+    }, 30 * 60 * 1000); 
+
+    // Clear the timeout if the component is unmounted before 20 minutes
+    return () => clearTimeout(timeoutId);
+  });
 
   const handleMScroll = (event) => {
     let element = document.querySelector(".ctascusingle-product");
@@ -1692,6 +1699,10 @@ function productEdit({ params }) {
     setIsmodifierclicked(false);
   };
 
+  const isValidHttpsUrl = (url) => {
+    return url.startsWith('https://');
+  };
+
   return (
     <>
       <div className="single-product">
@@ -1746,12 +1757,23 @@ function productEdit({ params }) {
                     <div className="product-img-div-one-div-nested">
                       <div className="product-img-div-one-div-nested-div">
                         <div className="product-img-zoom">
-                          <img
-                            alt={singleitem?.title}
-                            role="presentation"
-                            src={singleitem?.image_url}
-                            className="product-img-display"
-                          />
+                          {
+                            (singleitem?.image_url && singleitem?.image_url !== null) &&
+                            isValidHttpsUrl(singleitem?.image_url) ?
+                              <img
+                                alt={singleitem?.title}
+                                role="presentation"
+                                src={singleitem?.image_url}
+                                className="product-img-display"
+                              />
+                            :
+                              <img
+                                alt={singleitem?.title}
+                                role="presentation"
+                                src={IMAGE_URL_Without_Storage+""+singleitem?.image_url}
+                                className="product-img-display"
+                              />
+                          }
                           <div className="img-hr"></div>
                         </div>
                       </div>
@@ -1786,9 +1808,7 @@ function productEdit({ params }) {
                 {singleitem?.modifier_group?.map((modifier, index) => {
                   return (
                     // {/* minimum option = '1' and maximum option = 1 and single item select = 1 */}
-                    modifier?.select_single_option === 1 &&
-                      modifier?.min_permitted === 1 &&
-                      modifier?.max_permitted === 1 ? (
+                    modifier?.select_single_option === 1 && modifier?.min_permitted === 1 && modifier?.max_permitted === 1 ? (
                       <li key={index} className={`section${index}`}>
                         <div>
                           <div>
@@ -1909,9 +1929,7 @@ function productEdit({ params }) {
                         </div>
                       </li>
                     ) : // {/* minimum option = '0' and maximum option = 1 and single item select = 1 */}
-                    modifier?.select_single_option === 1 &&
-                      modifier?.min_permitted === 0 &&
-                      modifier?.max_permitted >= 1 ? (
+                    modifier?.min_permitted === 0 && modifier?.max_permitted >= 1 && (
                       <li key={index} className={`section${index}`}>
                         <div>
                           <div>
@@ -2052,164 +2070,165 @@ function productEdit({ params }) {
                           </div>
                         </div>
                       </li>
-                    ) : (
+                    ) 
+                    // : (
                       // (modifier?.select_single_option > 1 && (modifier?.min_permitted === 0 && modifier?.max_permitted > 1)) &&
                       // {/* minimum option = '- / 0' and maximum option = 5 and single item select = 2 */}
-                      <li key={index} className={`section${index}`}>
-                        <div>
-                          <div>
-                            <hr className="product_hr"></hr>
-                            <div className="product-list-div">
-                              <div className="product-modifier-groups">
-                                <div className="product-modifier-name">
-                                  {modifier?.title}
-                                </div>
-                                <div className="product-modifier-option">
-                                  <span>
-                                    Choose up to {modifier?.max_permitted}
-                                  </span>
-                                </div>
-                              </div>
-                              <div className="product-required">
-                                <div
-                                  className={`product-required-div ${modifier?.valid_class}`}
-                                >
-                                  {parseInt(modifier?.min_permitted) >
-                                  parseInt(0)
-                                    ? "Required"
-                                    : "Optional"}
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                          {/* List of all modifier group products */}
-                          <div className="hg">
-                            {modifier?.modifier_secondary_items?.map(
-                              (seconditems, indexSecondItem) => {
-                                return (
-                                  <div key={indexSecondItem}>
-                                    <hr className="product-modifier-items-hr"></hr>
+                    //   <li key={index} className={`section${index}`}>
+                    //     <div>
+                    //       <div>
+                    //         <hr className="product_hr"></hr>
+                    //         <div className="product-list-div">
+                    //           <div className="product-modifier-groups">
+                    //             <div className="product-modifier-name">
+                    //               {modifier?.title}
+                    //             </div>
+                    //             <div className="product-modifier-option">
+                    //               <span>
+                    //                 Choose up to {modifier?.max_permitted}
+                    //               </span>
+                    //             </div>
+                    //           </div>
+                    //           <div className="product-required">
+                    //             <div
+                    //               className={`product-required-div ${modifier?.valid_class}`}
+                    //             >
+                    //               {parseInt(modifier?.min_permitted) >
+                    //               parseInt(0)
+                    //                 ? "Required"
+                    //                 : "Optional"}
+                    //             </div>
+                    //           </div>
+                    //         </div>
+                    //       </div>
+                    //       {/* List of all modifier group products */}
+                    //       <div className="hg">
+                    //         {modifier?.modifier_secondary_items?.map(
+                    //           (seconditems, indexSecondItem) => {
+                    //             return (
+                    //               <div key={indexSecondItem}>
+                    //                 <hr className="product-modifier-items-hr"></hr>
 
-                                    <div className="product-modifier-item-detail">
-                                      <div className="modifier-product-item-name-inc-dec">
-                                        <div className="modifier-inc-dec">
-                                          <button
-                                            className="modifier-btn"
-                                            disabled={
-                                              seconditems?.is_item_select
-                                            }
-                                            onClick={() =>
-                                              handleDecrement(
-                                                modifier?.id,
-                                                seconditems?.id
-                                              )
-                                            }
-                                          >
-                                            <div className="modifier-btn-div">
-                                              <div className="modifier-btn-svg">
-                                                <svg
-                                                  width="24px"
-                                                  height="24px"
-                                                  fill="none"
-                                                  viewBox="0 0 24 24"
-                                                  xmlns="http://www.w3.org/2000/svg"
-                                                  aria-hidden="true"
-                                                  focusable="false"
-                                                >
-                                                  <path
-                                                    d="m7.33325 13v-2h9.33335v2z"
-                                                    fill="#000000"
-                                                  ></path>
-                                                </svg>
-                                              </div>
-                                            </div>
-                                          </button>
+                    //                 <div className="product-modifier-item-detail">
+                    //                   <div className="modifier-product-item-name-inc-dec">
+                    //                     <div className="modifier-inc-dec">
+                    //                       <button
+                    //                         className="modifier-btn"
+                    //                         disabled={
+                    //                           seconditems?.is_item_select
+                    //                         }
+                    //                         onClick={() =>
+                    //                           handleDecrement(
+                    //                             modifier?.id,
+                    //                             seconditems?.id
+                    //                           )
+                    //                         }
+                    //                       >
+                    //                         <div className="modifier-btn-div">
+                    //                           <div className="modifier-btn-svg">
+                    //                             <svg
+                    //                               width="24px"
+                    //                               height="24px"
+                    //                               fill="none"
+                    //                               viewBox="0 0 24 24"
+                    //                               xmlns="http://www.w3.org/2000/svg"
+                    //                               aria-hidden="true"
+                    //                               focusable="false"
+                    //                             >
+                    //                               <path
+                    //                                 d="m7.33325 13v-2h9.33335v2z"
+                    //                                 fill="#000000"
+                    //                               ></path>
+                    //                             </svg>
+                    //                           </div>
+                    //                         </div>
+                    //                       </button>
 
-                                          <div className="incremented-values">
-                                            {seconditems?.counter}
-                                          </div>
+                    //                       <div className="incremented-values">
+                    //                         {seconditems?.counter}
+                    //                       </div>
 
-                                          <button
-                                            className="modifier-btn"
-                                            disabled={
-                                              parseInt(
-                                                modifier?.max_permitted
-                                              ) ===
-                                              parseInt(
-                                                modifier?.modifier_counter
-                                              )
-                                                ? true
-                                                : false
-                                            }
-                                            onClick={() =>
-                                              handleIncrement(
-                                                modifier?.id,
-                                                seconditems?.id
-                                              )
-                                            }
-                                          >
-                                            <div className="modifier-btn-div">
-                                              <div className="modifier-btn-svg">
-                                                <svg
-                                                  width="24px"
-                                                  height="24px"
-                                                  fill="none"
-                                                  viewBox="0 0 24 24"
-                                                  xmlns="http://www.w3.org/2000/svg"
-                                                  aria-hidden="true"
-                                                  focusable="false"
-                                                >
-                                                  <path
-                                                    d="m16.6666 11.0007h-3.6667v-3.66672h-2v3.66672h-3.66665v2h3.66665v3.6666h2v-3.6666h3.6667z"
-                                                    fill="#000000"
-                                                  ></path>
-                                                </svg>
-                                              </div>
-                                            </div>
-                                          </button>
-                                        </div>
+                    //                       <button
+                    //                         className="modifier-btn"
+                    //                         disabled={
+                    //                           parseInt(
+                    //                             modifier?.max_permitted
+                    //                           ) ===
+                    //                           parseInt(
+                    //                             modifier?.modifier_counter
+                    //                           )
+                    //                             ? true
+                    //                             : false
+                    //                         }
+                    //                         onClick={() =>
+                    //                           handleIncrement(
+                    //                             modifier?.id,
+                    //                             seconditems?.id
+                    //                           )
+                    //                         }
+                    //                       >
+                    //                         <div className="modifier-btn-div">
+                    //                           <div className="modifier-btn-svg">
+                    //                             <svg
+                    //                               width="24px"
+                    //                               height="24px"
+                    //                               fill="none"
+                    //                               viewBox="0 0 24 24"
+                    //                               xmlns="http://www.w3.org/2000/svg"
+                    //                               aria-hidden="true"
+                    //                               focusable="false"
+                    //                             >
+                    //                               <path
+                    //                                 d="m16.6666 11.0007h-3.6667v-3.66672h-2v3.66672h-3.66665v2h3.66665v3.6666h2v-3.6666h3.6667z"
+                    //                                 fill="#000000"
+                    //                               ></path>
+                    //                             </svg>
+                    //                           </div>
+                    //                         </div>
+                    //                       </button>
+                    //                     </div>
 
-                                        <div className="spacer _16"></div>
-                                        <div className="modifier-product-item-name-one-div">
-                                          <div className="modifier-product-item-name-one-nested-div">
-                                            <div className="modifier-product-item-name-one-nested-div-one">
-                                              <div className="modifier-product-item-name-one-nested-div-one-nested">
-                                                <div className="modifier-product-item-name-one-nested-div-one-nested-div">
-                                                  {seconditems?.title}
-                                                </div>
-                                                <div className="spacer _8"></div>
-                                                {getAmountConvertToFloatWithFixed(
-                                                  seconditems?.price,
-                                                  2
-                                                ) >
-                                                  getAmountConvertToFloatWithFixed(
-                                                    0,
-                                                    2
-                                                  ) && (
-                                                  <div className="modifier-group-price">
-                                                    {
-                                                      seconditems?.country_price_symbol
-                                                    }
-                                                    {getAmountConvertToFloatWithFixed(
-                                                      seconditems?.price,
-                                                      2
-                                                    )}
-                                                  </div>
-                                                )}
-                                              </div>
-                                            </div>
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                );
-                              }
-                            )}
-                          </div>
-                        </div>
-                      </li>
-                    )
+                    //                     <div className="spacer _16"></div>
+                    //                     <div className="modifier-product-item-name-one-div">
+                    //                       <div className="modifier-product-item-name-one-nested-div">
+                    //                         <div className="modifier-product-item-name-one-nested-div-one">
+                    //                           <div className="modifier-product-item-name-one-nested-div-one-nested">
+                    //                             <div className="modifier-product-item-name-one-nested-div-one-nested-div">
+                    //                               {seconditems?.title}
+                    //                             </div>
+                    //                             <div className="spacer _8"></div>
+                    //                             {getAmountConvertToFloatWithFixed(
+                    //                               seconditems?.price,
+                    //                               2
+                    //                             ) >
+                    //                               getAmountConvertToFloatWithFixed(
+                    //                                 0,
+                    //                                 2
+                    //                               ) && (
+                    //                               <div className="modifier-group-price">
+                    //                                 {
+                    //                                   seconditems?.country_price_symbol
+                    //                                 }
+                    //                                 {getAmountConvertToFloatWithFixed(
+                    //                                   seconditems?.price,
+                    //                                   2
+                    //                                 )}
+                    //                               </div>
+                    //                             )}
+                    //                           </div>
+                    //                         </div>
+                    //                       </div>
+                    //                     </div>
+                    //                   </div>
+                    //                 </div>
+                    //               </div>
+                    //             );
+                    //           }
+                    //         )}
+                    //       </div>
+                    //     </div>
+                    //   </li>
+                    // )
                   );
                 })}
               </ul>
@@ -2566,19 +2585,10 @@ function productEdit({ params }) {
 
       {/* Mobile Responsive */}
       <div>
-        <div>
+        <div className="mobile-view">
           <div className="agassingle-product" onWheel={handleMScroll}>
-            <div
-              style={{
-                width: "1px",
-                height: "0px",
-                padding: "0px",
-                overflow: "hidden",
-                position: "fixed",
-                top: "1px",
-                left: "1px",
-              }}
-            ></div>
+            <div style={{width: "1px",height: "0px",padding: "0px",overflow: "hidden",position: "fixed",top: "1px",left: "1px",}}></div>
+
             <div>
               <div className="arc2single-product">
                 <div className="albfsingle-product">
@@ -2620,13 +2630,23 @@ function productEdit({ params }) {
                         <div className="bkeaebalsingle-product">
                           <div className="ecsingle-product">
                             <div className="akedeebkefsingle-product">
-                              {/* <img alt="" role="presentation" src="https://tb-static.uber.com/prod/image-proc/processed_images/3bef7aecf15103ae8c8a02cf68277fc8/859baff1d76042a45e319d1de80aec7a.jpeg" className="egbkaeeheisingle-productimg" /> */}
-                              <img
-                                role="presentation"
-                                src={singleitem?.image_url}
-                                alt={singleitem?.title}
-                                className="egbkaeeheisingle-productimg"
-                              />
+                              {
+                                (singleitem?.image_url && singleitem?.image_url !== null) &&
+                                isValidHttpsUrl(singleitem?.image_url) ? 
+                                  <img
+                                    role="presentation"
+                                    src={singleitem?.image_url}
+                                    alt={singleitem?.title}
+                                    className="egbkaeeheisingle-productimg"
+                                  />
+                                :
+                                  <img
+                                    role="presentation"
+                                    src={singleitem?.image_url}
+                                    alt={IMAGE_URL_Without_Storage+""+singleitem?.title}
+                                    className="egbkaeeheisingle-productimg"
+                                  />
+                              }
                               <div className="agasatbdbcajsingle-product"></div>
                             </div>
                           </div>
@@ -2636,10 +2656,7 @@ function productEdit({ params }) {
 
                     <div className="eksingle-product">
                       {/* <div className="bnelbpemeneoalbfsingle-product">Banoffee Waffle</div> */}
-                      <span
-                        data-testid="rich-text"
-                        className="fnfofpbnfqbpfrb1single-product-price"
-                      >
+                      <span data-testid="rich-text" className="fnfofpbnfqbpfrb1single-product-price">
                         {singleitem?.country_price_symbol}
                         {parseFloat(singleitem?.price).toFixed(2)}
                       </span>
@@ -2652,117 +2669,308 @@ function productEdit({ params }) {
                     </div>
 
                     <ul className="ftsingle-productul">
-                      {singleitem?.modifier_group?.map((modifier, index) => {
-                        return (
-                          // {/* minimum option = '1' and maximum option = 1 and single item select = 1 */}
-                          modifier?.select_single_option === 1 &&
-                            modifier?.min_permitted === 1 &&
-                            modifier?.max_permitted === 1 ? (
-                            <li key={index} className={`msection${index}`}>
-                              <div className="fusingle-productlidiv">
-                                <hr className="efeqeofvsingle-product"></hr>
+                      {
+                        singleitem?.modifier_group?.map((modifier, index) => {
+                          return (
+                            // {/* minimum option = '1' and maximum option = 1 and single item select = 1 */}
+                            modifier?.select_single_option === 1 &&
+                              modifier?.min_permitted === 1 &&
+                              modifier?.max_permitted === 1 ? (
+                              <li key={index} className={`msection${index}`}>
+                                <div className="fusingle-productlidiv">
+                                  <hr className="modifier-hr"></hr>
 
-                                <div
-                                  className="fwsingle-product"
-                                  onClick={() =>
-                                    handleMobileModifierToggle(modifier?.id)
-                                  }
-                                >
-                                  <div className="alaqd0fxsingle-product">
-                                    <div className="alamsingle-product">
-                                      <div className="bnfrbpfsingle-product">
-                                        {modifier?.title}
-                                      </div>
-                                      <div className="bresbtdqfysingle-product">
-                                        <span>
-                                          Choose {modifier?.max_permitted}
-                                        </span>
-                                        <div className="fzsingle-product">
-                                          <div
-                                            className={`g0afg1single-product ${modifier?.valid_class}`}
-                                          >
-                                            {parseInt(modifier?.min_permitted) >
-                                            parseInt(0)
-                                              ? "Required"
-                                              : "Optional"}
+                                  <div
+                                    className="modifier-header"
+                                    onClick={() =>
+                                      handleMobileModifierToggle(modifier?.id)
+                                    }
+                                  >
+                                    <div className="modifier-div">
+                                      <div className="alamsingle-product">
+                                        <div className="bnfrbpfsingle-product">
+                                          {modifier?.title}
+                                        </div>
+                                        <div className="bresbtdqfysingle-product">
+                                          <span>
+                                            Choose {modifier?.max_permitted}
+                                          </span>
+                                          <div className="fzsingle-product">
+                                            <div
+                                              className={`g0afg1single-product ${modifier?.valid_class}`}
+                                            >
+                                              {parseInt(modifier?.min_permitted) >
+                                              parseInt(0)
+                                                ? "Required"
+                                                : "Optional"}
+                                            </div>
                                           </div>
                                         </div>
+                                        <div>
+                                          Choosed:{" "}
+                                          {parseInt(
+                                            modifier?.selected_item_name?.length
+                                          ) > parseInt(20)
+                                            ? modifier?.selected_item_name?.substring(
+                                                0,
+                                                20
+                                              ) + "..."
+                                            : modifier?.selected_item_name}
+                                        </div>
                                       </div>
-                                      <div>
-                                        Choosed:{" "}
-                                        {parseInt(
-                                          modifier?.selected_item_name?.length
-                                        ) > parseInt(20)
-                                          ? modifier?.selected_item_name?.substring(
-                                              0,
-                                              20
-                                            ) + "..."
-                                          : modifier?.selected_item_name}
-                                      </div>
-                                    </div>
 
-                                    <div className="single-product-svg-div accordion">
-                                      <div className="single-product-svg-div-one">
-                                        {modifier?.is_toggle_active ? (
-                                          <svg
-                                            className="bottom-arrow-head-svg"
-                                            width="30px"
-                                            height="30px"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            aria-hidden="true"
-                                            focusable="false"
-                                          >
-                                            <path
-                                              d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
-                                              fill="currentColor"
-                                              transform="rotate(180, 12, 12)"
-                                            ></path>
-                                          </svg>
-                                        ) : (
-                                          <svg
-                                            className="rigth-arrow-head-svg"
-                                            width="30px"
-                                            height="30px"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            aria-hidden="true"
-                                            focusable="false"
-                                            style={{ cursor: "pointer" }}
-                                          >
-                                            <path
-                                              d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
-                                              fill="currentColor"
-                                              transform="rotate(90, 12, 12)"
-                                            ></path>
-                                          </svg>
-                                        )}
+                                      <div className="single-product-svg-div accordion">
+                                        <div className="single-product-svg-div-one">
+                                          {modifier?.is_toggle_active ? (
+                                            <svg
+                                              className="bottom-arrow-head-svg"
+                                              width="30px"
+                                              height="30px"
+                                              fill="none"
+                                              viewBox="0 0 24 24"
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              aria-hidden="true"
+                                              focusable="false"
+                                            >
+                                              <path
+                                                d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
+                                                fill="currentColor"
+                                                transform="rotate(180, 12, 12)"
+                                              ></path>
+                                            </svg>
+                                          ) : (
+                                            <svg
+                                              className="rigth-arrow-head-svg"
+                                              width="30px"
+                                              height="30px"
+                                              fill="none"
+                                              viewBox="0 0 24 24"
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              aria-hidden="true"
+                                              focusable="false"
+                                              style={{ cursor: "pointer" }}
+                                            >
+                                              <path
+                                                d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
+                                                fill="currentColor"
+                                                transform="rotate(90, 12, 12)"
+                                              ></path>
+                                            </svg>
+                                          )}
+                                        </div>
                                       </div>
                                     </div>
                                   </div>
-                                </div>
 
-                                {/* Listed Data */}
-                                {
+                                  {/* Listed Data */}
+                                  {
+                                    <div
+                                      className={`g5single-product ${
+                                        modifier?.is_toggle_active && "show"
+                                      }`}
+                                    >
+                                      {modifier?.modifier_secondary_items?.map(
+                                        (mobileSecondItems, index) => {
+                                          return (
+                                            <>
+                                              <div
+                                                className="alakg6bfsingle-product"
+                                                key={index}
+                                                onClick={() =>
+                                                  handleRadioInput(
+                                                    modifier?.id,
+                                                    mobileSecondItems?.id,
+                                                    mobileSecondItems?.title,
+                                                    parseInt(
+                                                      mobileSecondItems
+                                                        ?.secondary_item_modifiers
+                                                        .length
+                                                    )
+                                                  )
+                                                }
+                                              >
+                                                {parseInt(
+                                                  mobileSecondItems
+                                                    ?.secondary_item_modifiers
+                                                    ?.length
+                                                ) > parseInt(0) && (
+                                                  <div className="poquickreview-modal">
+                                                    <div className="c8c7cuquickreview-modal">
+                                                      <svg
+                                                        style={{
+                                                          cursor: "pointer",
+                                                        }}
+                                                        width="30px"
+                                                        height="30px"
+                                                        fill="none"
+                                                        viewBox="0 0 24 24"
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        aria-hidden="true"
+                                                        focusable="false"
+                                                      >
+                                                        <path
+                                                          d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
+                                                          fill="#AFAFAF"
+                                                          transform="rotate(90, 12, 12)"
+                                                        ></path>
+                                                      </svg>
+                                                    </div>
+                                                  </div>
+                                                )}
+                                                <input
+                                                  type="radio"
+                                                  className="radio-input"
+                                                ></input>
+
+                                                <label
+                                                  className={`brbsdpdqbkalbfafg6single-productlable ${mobileSecondItems?.activeClass}`}
+                                                >
+                                                  <div className="spacer _16"></div>
+                                                  <div className="modifier-product">
+                                                    <div className="ale4amc4gjgkglsingle-product">
+                                                      <div className="alaqsingle-product">
+                                                        <div className="alamgmgnsingle-product">
+                                                          <div className="bresdpg4gosingle-product">
+                                                            {
+                                                              mobileSecondItems?.title
+                                                            }
+                                                          </div>
+                                                          <div className="spacer _8"></div>
+                                                          {getAmountConvertToFloatWithFixed(
+                                                            mobileSecondItems?.price,
+                                                            2
+                                                          ) >
+                                                            getAmountConvertToFloatWithFixed(
+                                                              0,
+                                                              2
+                                                            ) && (
+                                                            <div className="bresbtdqb1bzsingle-productincdecprice">
+                                                              {getCountryCurrencySymbol()}
+                                                              {getAmountConvertToFloatWithFixed(
+                                                                mobileSecondItems?.price,
+                                                                2
+                                                              )}
+                                                            </div>
+                                                          )}
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </label>
+                                              </div>
+
+                                              <hr className="efbvgpgq"></hr>
+                                            </>
+                                          );
+                                        }
+                                      )}
+                                    </div>
+                                  }
+                                </div>
+                              </li>
+                            ) : // {/* minimum option = '0' and maximum option = 1 and single item select = 1 */}
+                            modifier?.select_single_option === 1 &&
+                              modifier?.min_permitted === 0 &&
+                              modifier?.max_permitted >= 1 ? (
+                              <li key={index} className={`msection${index}`}>
+                                <div className="fusingle-productlidiv">
+                                  <hr className="modifier-hr"></hr>
+
                                   <div
-                                    className={`g5single-product ${
-                                      modifier?.is_toggle_active && "show"
-                                    }`}
+                                    className="modifier-header"
+                                    onClick={() =>
+                                      handleMobileModifierToggle(modifier?.id)
+                                    }
                                   >
-                                    {modifier?.modifier_secondary_items?.map(
-                                      (mobileSecondItems, index) => {
-                                        return (
-                                          <>
+                                    <div className="modifier-div">
+                                      <div className="alamsingle-product">
+                                        <div className="bnfrbpfsingle-product">
+                                          {modifier?.title}
+                                        </div>
+                                        <div className="bresbtdqfysingle-product">
+                                          <span>
+                                            Choose {modifier?.max_permitted}
+                                          </span>
+                                          <div className="fzsingle-product">
                                             <div
-                                              className="alakg6bfsingle-product"
+                                              className={`g0afg1single-product ${modifier?.valid_class}`}
+                                            >
+                                              {parseInt(modifier?.min_permitted) >
+                                              parseInt(0)
+                                                ? "Required"
+                                                : "Optional"}
+                                            </div>
+                                          </div>
+                                        </div>
+                                        <div>
+                                          Regular - Half - 7" Fresh Waffle
+                                        </div>
+                                      </div>
+                                      <div
+                                        className="single-product-svg-div accordion"
+                                        onClick={() =>
+                                          setIsaccordianclicked(true)
+                                        }
+                                      >
+                                        <div className="single-product-svg-div-one">
+                                          {modifier?.is_toggle_active ? (
+                                            <svg
+                                              className="bottom-arrow-head-svg"
+                                              width="30px"
+                                              height="30px"
+                                              fill="none"
+                                              viewBox="0 0 24 24"
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              aria-hidden="true"
+                                              focusable="false"
+                                            >
+                                              <path
+                                                d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
+                                                fill="currentColor"
+                                                transform="rotate(180, 12, 12)"
+                                              ></path>
+                                            </svg>
+                                          ) : (
+                                            <svg
+                                              className="rigth-arrow-head-svg"
+                                              width="30px"
+                                              height="30px"
+                                              fill="none"
+                                              viewBox="0 0 24 24"
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              aria-hidden="true"
+                                              focusable="false"
+                                              style={{ cursor: "pointer" }}
+                                            >
+                                              <path
+                                                d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
+                                                fill="currentColor"
+                                                transform="rotate(90, 12, 12)"
+                                              ></path>
+                                            </svg>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Listed Data */}
+                                  {
+                                    <div
+                                      className={`g5single-product ${
+                                        modifier?.is_toggle_active && "show"
+                                      }`}
+                                    >
+                                      {modifier?.modifier_secondary_items?.map(
+                                        (mobileSecondItems, index) => {
+                                          return mobileSecondItems.activeClass !==
+                                            "mchw" ? (
+                                            <div
                                               key={index}
                                               onClick={() =>
-                                                handleRadioInput(
+                                                handleCheckInput(
                                                   modifier?.id,
                                                   mobileSecondItems?.id,
-                                                  mobileSecondItems?.title,
                                                   parseInt(
                                                     mobileSecondItems
                                                       ?.secondary_item_modifiers
@@ -2771,512 +2979,323 @@ function productEdit({ params }) {
                                                 )
                                               }
                                             >
-                                              {parseInt(
-                                                mobileSecondItems
-                                                  ?.secondary_item_modifiers
-                                                  ?.length
-                                              ) > parseInt(0) && (
-                                                <div className="poquickreview-modal">
-                                                  <div className="c8c7cuquickreview-modal">
-                                                    <svg
-                                                      style={{
-                                                        cursor: "pointer",
-                                                      }}
-                                                      width="30px"
-                                                      height="30px"
-                                                      fill="none"
-                                                      viewBox="0 0 24 24"
-                                                      xmlns="http://www.w3.org/2000/svg"
-                                                      aria-hidden="true"
-                                                      focusable="false"
-                                                    >
-                                                      <path
-                                                        d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
-                                                        fill="#AFAFAF"
-                                                        transform="rotate(90, 12, 12)"
-                                                      ></path>
-                                                    </svg>
-                                                  </div>
-                                                </div>
-                                              )}
-                                              <input
-                                                type="radio"
-                                                className="radio-input"
-                                              ></input>
+                                              <div className="alakg6bfsingle-product">
+                                                <input
+                                                  type="checkbox"
+                                                  className="checkbox-input"
+                                                />
 
-                                              <label
-                                                className={`brbsdpdqbkalbfafg6single-productlable ${mobileSecondItems?.activeClass}`}
-                                              >
-                                                <div className="spacer _16"></div>
-                                                <div className="e4ald0gisingle-product">
-                                                  <div className="ale4amc4gjgkglsingle-product">
-                                                    <div className="alaqsingle-product">
-                                                      <div className="alamgmgnsingle-product">
-                                                        <div className="bresdpg4gosingle-product">
-                                                          {
-                                                            mobileSecondItems?.title
-                                                          }
-                                                        </div>
-                                                        <div className="spacer _8"></div>
-                                                        {getAmountConvertToFloatWithFixed(
-                                                          mobileSecondItems?.price,
-                                                          2
-                                                        ) >
-                                                          getAmountConvertToFloatWithFixed(
-                                                            0,
-                                                            2
-                                                          ) && (
-                                                          <div className="bresbtdqb1bzsingle-productincdecprice">
-                                                            {getCountryCurrencySymbol()}
-                                                            {getAmountConvertToFloatWithFixed(
-                                                              mobileSecondItems?.price,
-                                                              2
-                                                            )}
-                                                          </div>
-                                                        )}
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                              </label>
-                                            </div>
-
-                                            <hr className="efbvgpgq"></hr>
-                                          </>
-                                        );
-                                      }
-                                    )}
-                                  </div>
-                                }
-                              </div>
-                            </li>
-                          ) : // {/* minimum option = '0' and maximum option = 1 and single item select = 1 */}
-                          modifier?.select_single_option === 1 &&
-                            modifier?.min_permitted === 0 &&
-                            modifier?.max_permitted >= 1 ? (
-                            <li key={index} className={`msection${index}`}>
-                              <div className="fusingle-productlidiv">
-                                <hr className="efeqeofvsingle-product"></hr>
-
-                                <div
-                                  className="fwsingle-product"
-                                  onClick={() =>
-                                    handleMobileModifierToggle(modifier?.id)
-                                  }
-                                >
-                                  <div className="alaqd0fxsingle-product">
-                                    <div className="alamsingle-product">
-                                      <div className="bnfrbpfsingle-product">
-                                        {modifier?.title}
-                                      </div>
-                                      <div className="bresbtdqfysingle-product">
-                                        <span>
-                                          Choose {modifier?.max_permitted}
-                                        </span>
-                                        <div className="fzsingle-product">
-                                          <div
-                                            className={`g0afg1single-product ${modifier?.valid_class}`}
-                                          >
-                                            {parseInt(modifier?.min_permitted) >
-                                            parseInt(0)
-                                              ? "Required"
-                                              : "Optional"}
-                                          </div>
-                                        </div>
-                                      </div>
-                                      <div>
-                                        Regular - Half - 7" Fresh Waffle
-                                      </div>
-                                    </div>
-                                    <div
-                                      className="single-product-svg-div accordion"
-                                      onClick={() =>
-                                        setIsaccordianclicked(true)
-                                      }
-                                    >
-                                      <div className="single-product-svg-div-one">
-                                        {modifier?.is_toggle_active ? (
-                                          <svg
-                                            className="bottom-arrow-head-svg"
-                                            width="30px"
-                                            height="30px"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            aria-hidden="true"
-                                            focusable="false"
-                                          >
-                                            <path
-                                              d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
-                                              fill="currentColor"
-                                              transform="rotate(180, 12, 12)"
-                                            ></path>
-                                          </svg>
-                                        ) : (
-                                          <svg
-                                            className="rigth-arrow-head-svg"
-                                            width="30px"
-                                            height="30px"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            aria-hidden="true"
-                                            focusable="false"
-                                            style={{ cursor: "pointer" }}
-                                          >
-                                            <path
-                                              d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
-                                              fill="currentColor"
-                                              transform="rotate(90, 12, 12)"
-                                            ></path>
-                                          </svg>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                {/* Listed Data */}
-                                {
-                                  <div
-                                    className={`g5single-product ${
-                                      modifier?.is_toggle_active && "show"
-                                    }`}
-                                  >
-                                    {modifier?.modifier_secondary_items?.map(
-                                      (mobileSecondItems, index) => {
-                                        return mobileSecondItems.activeClass !==
-                                          "mchw" ? (
-                                          <div
-                                            key={index}
-                                            onClick={() =>
-                                              handleCheckInput(
-                                                modifier?.id,
-                                                mobileSecondItems?.id,
-                                                parseInt(
-                                                  mobileSecondItems
-                                                    ?.secondary_item_modifiers
-                                                    .length
-                                                )
-                                              )
-                                            }
-                                          >
-                                            <div className="alakg6bfsingle-product">
-                                              <input
-                                                type="checkbox"
-                                                className="checkbox-input"
-                                              />
-
-                                              <label
-                                                className={`brbsdpdqbkalbfafg6single-productlablecheck ${mobileSecondItems?.activeClass}`}
-                                              >
-                                                <div className="spacer _16"></div>
-                                                <div className="e4ald0gisingle-product">
-                                                  <div className="ale4amc4gjgkglsingle-product">
-                                                    <div className="alaqsingle-product">
-                                                      <div className="alamgmgnsingle-product">
-                                                        <div className="bresdpg4gosingle-product">
-                                                          {
-                                                            mobileSecondItems?.title
-                                                          }
-                                                        </div>
-                                                        <div className="spacer _8"></div>
-                                                        {getAmountConvertToFloatWithFixed(
-                                                          mobileSecondItems?.price,
-                                                          2
-                                                        ) >
-                                                          getAmountConvertToFloatWithFixed(
-                                                            0,
-                                                            2
-                                                          ) && (
-                                                          <div className="bresbtdqb1bzsingle-productincdecprice">
-                                                            {
-                                                              mobileSecondItems?.country_price_symbol
-                                                            }
-                                                            {getAmountConvertToFloatWithFixed(
-                                                              mobileSecondItems?.price,
-                                                              2
-                                                            )}
-                                                          </div>
-                                                        )}
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                              </label>
-                                            </div>
-                                            <hr className="efbvgpgq"></hr>
-                                          </div>
-                                        ) : (
-                                          <div key={index}>
-                                            <div className="alakg6bfsingle-product">
-                                              <input
-                                                type="checkbox"
-                                                className="checkbox-input"
-                                              />
-
-                                              <label
-                                                className={`brbsdpdqbkalbfafg6single-productlablecheck ${mobileSecondItems?.activeClass}`}
-                                              >
-                                                <div className="spacer _16"></div>
-                                                <div className="e4ald0gisingle-product">
-                                                  <div className="ale4amc4gjgkglsingle-product">
-                                                    <div className="alaqsingle-product">
-                                                      <div className="alamgmgnsingle-product">
-                                                        <div className="bresdpg4gosingle-product">
-                                                          {
-                                                            mobileSecondItems?.title
-                                                          }
-                                                        </div>
-                                                        <div className="spacer _8"></div>
-                                                        {getAmountConvertToFloatWithFixed(
-                                                          mobileSecondItems?.price,
-                                                          2
-                                                        ) >
-                                                          getAmountConvertToFloatWithFixed(
-                                                            0,
-                                                            2
-                                                          ) && (
-                                                          <div className="bresbtdqb1bzsingle-productincdecprice">
-                                                            {
-                                                              mobileSecondItems?.country_price_symbol
-                                                            }
-                                                            {getAmountConvertToFloatWithFixed(
-                                                              mobileSecondItems?.price,
-                                                              2
-                                                            )}
-                                                          </div>
-                                                        )}
-                                                      </div>
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                              </label>
-                                            </div>
-                                            <hr className="efbvgpgq"></hr>
-                                          </div>
-                                        );
-                                      }
-                                    )}
-                                  </div>
-                                }
-                              </div>
-                            </li>
-                          ) : (
-                            // (modifier?.select_single_option > 1 && (modifier?.min_permitted === 0 && modifier?.max_permitted > 1)) &&
-                            // {/* minimum option = '- / 0' and maximum option = 5 and single item select = 2 */}
-                            <li key={index} className={`msection${index}`}>
-                              <div className="fusingle-productlidiv">
-                                <hr className="efeqeofvsingle-product"></hr>
-
-                                <div
-                                  className="fwsingle-product"
-                                  onClick={() =>
-                                    handleMobileModifierToggle(modifier?.id)
-                                  }
-                                >
-                                  <div className="alaqd0fxsingle-product">
-                                    <div className="alamsingle-product">
-                                      <div className="bnfrbpfsingle-product">
-                                        {modifier?.title}
-                                      </div>
-                                      <div className="bresbtdqfysingle-product">
-                                        <span>
-                                          Choose {modifier?.max_permitted}
-                                        </span>
-                                        <div className="fzsingle-product">
-                                          <div
-                                            className={`g0afg1single-product ${modifier?.valid_class}`}
-                                          >
-                                            {parseInt(modifier?.min_permitted) >
-                                            parseInt(0)
-                                              ? "Required"
-                                              : "Optional"}
-                                          </div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                    <div className="single-product-svg-div accordion">
-                                      <div className="single-product-svg-div-one">
-                                        {modifier?.is_toggle_active ? (
-                                          <svg
-                                            className="bottom-arrow-head-svg"
-                                            width="30px"
-                                            height="30px"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            aria-hidden="true"
-                                            focusable="false"
-                                          >
-                                            <path
-                                              d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
-                                              fill="currentColor"
-                                              transform="rotate(180, 12, 12)"
-                                            ></path>
-                                          </svg>
-                                        ) : (
-                                          <svg
-                                            className="rigth-arrow-head-svg"
-                                            width="30px"
-                                            height="30px"
-                                            fill="none"
-                                            viewBox="0 0 24 24"
-                                            xmlns="http://www.w3.org/2000/svg"
-                                            aria-hidden="true"
-                                            focusable="false"
-                                            style={{ cursor: "pointer" }}
-                                          >
-                                            <path
-                                              d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
-                                              fill="currentColor"
-                                              transform="rotate(90, 12, 12)"
-                                            ></path>
-                                          </svg>
-                                        )}
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-
-                                {/* Listed Data */}
-                                {
-                                  <div
-                                    className={`g5single-product ${
-                                      modifier?.is_toggle_active && "show"
-                                    }`}
-                                  >
-                                    {modifier?.modifier_secondary_items?.map(
-                                      (mobileSecondItems, index) => {
-                                        return (
-                                          <div key={index}>
-                                            <div className="alg5bfsingle-product">
-                                              <div className="alaqbfsingle-product">
-                                                <button
-                                                  className="b9bmalambfc4b1gtgugvgwgxgygzh0single-product-incdec-btn"
-                                                  disabled={
-                                                    mobileSecondItems?.is_item_select
-                                                  }
-                                                  onClick={() =>
-                                                    handleDecrement(
-                                                      modifier?.id,
-                                                      mobileSecondItems?.id
-                                                    )
-                                                  }
+                                                <label
+                                                  className={`brbsdpdqbkalbfafg6single-productlablecheck ${mobileSecondItems?.activeClass}`}
                                                 >
-                                                  <div className="ezfj">
-                                                    <div className="fjezh1">
-                                                      <svg
-                                                        width="24px"
-                                                        height="24px"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        aria-hidden="true"
-                                                        focusable="false"
-                                                      >
-                                                        <path
-                                                          d="m7.33325 13v-2h9.33335v2z"
-                                                          fill="#000000"
-                                                        ></path>
-                                                      </svg>
-                                                    </div>
-                                                  </div>
-                                                </button>
-
-                                                <div className="bresbtdqiqsingle-product">
-                                                  {parseInt(
-                                                    mobileSecondItems?.counter
-                                                  )}
-                                                </div>
-
-                                                <button
-                                                  className="b9bmalambfc4b1gtgugvgwgxgygzh0single-product-incdec-btn"
-                                                  disabled={
-                                                    parseInt(
-                                                      modifier?.max_permitted
-                                                    ) ===
-                                                    parseInt(
-                                                      modifier?.modifier_counter
-                                                    )
-                                                      ? true
-                                                      : false
-                                                  }
-                                                  onClick={() =>
-                                                    handleIncrement(
-                                                      modifier?.id,
-                                                      mobileSecondItems?.id
-                                                    )
-                                                  }
-                                                >
-                                                  <div className="ez fj">
-                                                    <div className="fj ez h1">
-                                                      <svg
-                                                        width="24px"
-                                                        height="24px"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        aria-hidden="true"
-                                                        focusable="false"
-                                                      >
-                                                        <path
-                                                          d="m16.6666 11.0007h-3.6667v-3.66672h-2v3.66672h-3.66665v2h3.66665v3.6666h2v-3.6666h3.6667z"
-                                                          fill="#000000"
-                                                        ></path>
-                                                      </svg>
-                                                    </div>
-                                                  </div>
-                                                </button>
-                                              </div>
-
-                                              <div className="spacer _16"></div>
-                                              <div className="e4ald0ghsingle-productincdec">
-                                                <div className="ale4amc4gigjgksingle-productincdec">
-                                                  <div className="alaqsingle-product">
-                                                    <div className="alamglgmsingle-productincdec">
-                                                      <div className="bresdpg3gnsingle-productincdecheading">
-                                                        Add:{" "}
-                                                        {
-                                                          mobileSecondItems?.title
-                                                        }
-                                                      </div>
-                                                      <div className="spacer _8"></div>
-                                                      {getAmountConvertToFloatWithFixed(
-                                                        mobileSecondItems?.price,
-                                                        2
-                                                      ) >
-                                                        getAmountConvertToFloatWithFixed(
-                                                          0,
-                                                          2
-                                                        ) && (
-                                                        <div className="bresbtdqb1bzsingle-productincdecprice">
-                                                          {
-                                                            mobileSecondItems?.country_price_symbol
-                                                          }
+                                                  <div className="spacer _16"></div>
+                                                  <div className="modifier-product">
+                                                    <div className="ale4amc4gjgkglsingle-product">
+                                                      <div className="alaqsingle-product">
+                                                        <div className="alamgmgnsingle-product">
+                                                          <div className="bresdpg4gosingle-product">
+                                                            {
+                                                              mobileSecondItems?.title
+                                                            }
+                                                          </div>
+                                                          <div className="spacer _8"></div>
                                                           {getAmountConvertToFloatWithFixed(
                                                             mobileSecondItems?.price,
                                                             2
+                                                          ) >
+                                                            getAmountConvertToFloatWithFixed(
+                                                              0,
+                                                              2
+                                                            ) && (
+                                                            <div className="bresbtdqb1bzsingle-productincdecprice">
+                                                              {
+                                                                mobileSecondItems?.country_price_symbol
+                                                              }
+                                                              {getAmountConvertToFloatWithFixed(
+                                                                mobileSecondItems?.price,
+                                                                2
+                                                              )}
+                                                            </div>
                                                           )}
                                                         </div>
-                                                      )}
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </label>
+                                              </div>
+                                              <hr className="efbvgpgq"></hr>
+                                            </div>
+                                          ) : (
+                                            <div key={index}>
+                                              <div className="alakg6bfsingle-product">
+                                                <input
+                                                  type="checkbox"
+                                                  className="checkbox-input"
+                                                />
+
+                                                <label
+                                                  className={`brbsdpdqbkalbfafg6single-productlablecheck ${mobileSecondItems?.activeClass}`}
+                                                >
+                                                  <div className="spacer _16"></div>
+                                                  <div className="modifier-product">
+                                                    <div className="ale4amc4gjgkglsingle-product">
+                                                      <div className="alaqsingle-product">
+                                                        <div className="alamgmgnsingle-product">
+                                                          <div className="bresdpg4gosingle-product">
+                                                            {
+                                                              mobileSecondItems?.title
+                                                            }
+                                                          </div>
+                                                          <div className="spacer _8"></div>
+                                                          {getAmountConvertToFloatWithFixed(
+                                                            mobileSecondItems?.price,
+                                                            2
+                                                          ) >
+                                                            getAmountConvertToFloatWithFixed(
+                                                              0,
+                                                              2
+                                                            ) && (
+                                                            <div className="bresbtdqb1bzsingle-productincdecprice">
+                                                              {
+                                                                mobileSecondItems?.country_price_symbol
+                                                              }
+                                                              {getAmountConvertToFloatWithFixed(
+                                                                mobileSecondItems?.price,
+                                                                2
+                                                              )}
+                                                            </div>
+                                                          )}
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                  </div>
+                                                </label>
+                                              </div>
+                                              <hr className="efbvgpgq"></hr>
+                                            </div>
+                                          );
+                                        }
+                                      )}
+                                    </div>
+                                  }
+                                </div>
+                              </li>
+                            ) : (
+                              // (modifier?.select_single_option > 1 && (modifier?.min_permitted === 0 && modifier?.max_permitted > 1)) &&
+                              // {/* minimum option = '- / 0' and maximum option = 5 and single item select = 2 */}
+                              <li key={index} className={`msection${index}`}>
+                                <div className="fusingle-productlidiv">
+                                  <hr className="modifier-hr"></hr>
+
+                                  <div
+                                    className="modifier-header"
+                                    onClick={() =>
+                                      handleMobileModifierToggle(modifier?.id)
+                                    }
+                                  >
+                                    <div className="modifier-div">
+                                      <div className="alamsingle-product">
+                                        <div className="bnfrbpfsingle-product">
+                                          {modifier?.title}
+                                        </div>
+                                        <div className="bresbtdqfysingle-product">
+                                          <span>
+                                            Choose {modifier?.max_permitted}
+                                          </span>
+                                          <div className="fzsingle-product">
+                                            <div
+                                              className={`g0afg1single-product ${modifier?.valid_class}`}
+                                            >
+                                              {parseInt(modifier?.min_permitted) >
+                                              parseInt(0)
+                                                ? "Required"
+                                                : "Optional"}
+                                            </div>
+                                          </div>
+                                        </div>
+                                      </div>
+                                      <div className="single-product-svg-div accordion">
+                                        <div className="single-product-svg-div-one">
+                                          {modifier?.is_toggle_active ? (
+                                            <svg
+                                              className="bottom-arrow-head-svg"
+                                              width="30px"
+                                              height="30px"
+                                              fill="none"
+                                              viewBox="0 0 24 24"
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              aria-hidden="true"
+                                              focusable="false"
+                                            >
+                                              <path
+                                                d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
+                                                fill="currentColor"
+                                                transform="rotate(180, 12, 12)"
+                                              ></path>
+                                            </svg>
+                                          ) : (
+                                            <svg
+                                              className="rigth-arrow-head-svg"
+                                              width="30px"
+                                              height="30px"
+                                              fill="none"
+                                              viewBox="0 0 24 24"
+                                              xmlns="http://www.w3.org/2000/svg"
+                                              aria-hidden="true"
+                                              focusable="false"
+                                              style={{ cursor: "pointer" }}
+                                            >
+                                              <path
+                                                d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
+                                                fill="currentColor"
+                                                transform="rotate(90, 12, 12)"
+                                              ></path>
+                                            </svg>
+                                          )}
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+
+                                  {/* Listed Data */}
+                                  {
+                                    <div
+                                      className={`g5single-product ${
+                                        modifier?.is_toggle_active && "show"
+                                      }`}
+                                    >
+                                      {modifier?.modifier_secondary_items?.map(
+                                        (mobileSecondItems, index) => {
+                                          return (
+                                            <div key={index}>
+                                              <div className="alg5bfsingle-product">
+                                                <div className="alaqbfsingle-product">
+                                                  <button
+                                                    className="b9bmalambfc4b1gtgugvgwgxgygzh0single-product-incdec-btn"
+                                                    disabled={
+                                                      mobileSecondItems?.is_item_select
+                                                    }
+                                                    onClick={() =>
+                                                      handleDecrement(
+                                                        modifier?.id,
+                                                        mobileSecondItems?.id
+                                                      )
+                                                    }
+                                                  >
+                                                    <div className="ezfj">
+                                                      <div className="fjezh1">
+                                                        <svg
+                                                          width="24px"
+                                                          height="24px"
+                                                          fill="none"
+                                                          viewBox="0 0 24 24"
+                                                          xmlns="http://www.w3.org/2000/svg"
+                                                          aria-hidden="true"
+                                                          focusable="false"
+                                                        >
+                                                          <path
+                                                            d="m7.33325 13v-2h9.33335v2z"
+                                                            fill="#000000"
+                                                          ></path>
+                                                        </svg>
+                                                      </div>
+                                                    </div>
+                                                  </button>
+
+                                                  <div className="bresbtdqiqsingle-product">
+                                                    {parseInt(
+                                                      mobileSecondItems?.counter
+                                                    )}
+                                                  </div>
+
+                                                  <button
+                                                    className="b9bmalambfc4b1gtgugvgwgxgygzh0single-product-incdec-btn"
+                                                    disabled={
+                                                      parseInt(
+                                                        modifier?.max_permitted
+                                                      ) ===
+                                                      parseInt(
+                                                        modifier?.modifier_counter
+                                                      )
+                                                        ? true
+                                                        : false
+                                                    }
+                                                    onClick={() =>
+                                                      handleIncrement(
+                                                        modifier?.id,
+                                                        mobileSecondItems?.id
+                                                      )
+                                                    }
+                                                  >
+                                                    <div className="ez fj">
+                                                      <div className="fj ez h1">
+                                                        <svg
+                                                          width="24px"
+                                                          height="24px"
+                                                          fill="none"
+                                                          viewBox="0 0 24 24"
+                                                          xmlns="http://www.w3.org/2000/svg"
+                                                          aria-hidden="true"
+                                                          focusable="false"
+                                                        >
+                                                          <path
+                                                            d="m16.6666 11.0007h-3.6667v-3.66672h-2v3.66672h-3.66665v2h3.66665v3.6666h2v-3.6666h3.6667z"
+                                                            fill="#000000"
+                                                          ></path>
+                                                        </svg>
+                                                      </div>
+                                                    </div>
+                                                  </button>
+                                                </div>
+
+                                                <div className="spacer _16"></div>
+                                                <div className="e4ald0ghsingle-productincdec">
+                                                  <div className="ale4amc4gigjgksingle-productincdec">
+                                                    <div className="alaqsingle-product">
+                                                      <div className="alamglgmsingle-productincdec">
+                                                        <div className="bresdpg3gnsingle-productincdecheading">
+                                                          Add:{" "}
+                                                          {
+                                                            mobileSecondItems?.title
+                                                          }
+                                                        </div>
+                                                        <div className="spacer _8"></div>
+                                                        {getAmountConvertToFloatWithFixed(
+                                                          mobileSecondItems?.price,
+                                                          2
+                                                        ) >
+                                                          getAmountConvertToFloatWithFixed(
+                                                            0,
+                                                            2
+                                                          ) && (
+                                                          <div className="bresbtdqb1bzsingle-productincdecprice">
+                                                            {
+                                                              mobileSecondItems?.country_price_symbol
+                                                            }
+                                                            {getAmountConvertToFloatWithFixed(
+                                                              mobileSecondItems?.price,
+                                                              2
+                                                            )}
+                                                          </div>
+                                                        )}
+                                                      </div>
                                                     </div>
                                                   </div>
                                                 </div>
                                               </div>
+                                              <hr className="efbvgogpsingle-producthr"></hr>
                                             </div>
-                                            <hr className="efbvgogpsingle-producthr"></hr>
-                                          </div>
-                                        );
-                                      }
-                                    )}
-                                  </div>
-                                }
-                              </div>
-                            </li>
-                          )
-                        );
-                      })}
+                                          );
+                                        }
+                                      )}
+                                    </div>
+                                  }
+                                </div>
+                              </li>
+                            )
+                          );
+                        })
+                      }
                     </ul>
 
                     <div className="h2single-product"></div>

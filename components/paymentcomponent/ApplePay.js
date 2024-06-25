@@ -41,10 +41,8 @@ const ApplePay = () => {
         })
         const { clientSecret } = response.data;
 
-        // console.log("Success for apple pay:", response);
         setClientSecret(clientSecret)
       } catch (error) {
-        // console.log("Error from apple pay:", error);
       }
     }
     pr.on('paymentmethod', async (e) => {
@@ -90,10 +88,8 @@ const ApplePay = () => {
       // post-payment actions.
       setMessage(`Payment ${paymentIntent.status}: ${paymentIntent.id}`);
     });
-    // console.log("Payment requests inside useEffect:",paymentRequest);
   }, [stripe, elements, setMessage]);
 
-  // console.log("Payment requests:",paymentRequest);
   return (
     <>
       <h1>Apple Pay</h1>

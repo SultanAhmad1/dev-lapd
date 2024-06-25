@@ -2,7 +2,8 @@ import React, { Fragment, useContext, useEffect, useState } from "react";
 import HomeContext from "../contexts/HomeContext";
 import moment from "moment";
 import Link from "next/link";
-import { BrandLogoPath, IMAGE_URL } from "../global/Axios";
+import { BrandLogoPath, IMAGE_URL_Without_Storage } from "../global/Axios";
+import Image from "next/image";
 
 function Footer() {
   const { websiteModificationData, brandlogo } = useContext(HomeContext);
@@ -19,16 +20,12 @@ function Footer() {
         <div className="footer-div">
           <div className="footer-brand-logo-partner-logo">
             <div className="footer-brand-logo">
-              <img
-                src={
-                  brandlogo === null
-                    ? BrandLogoPath
-                    : IMAGE_URL + "" + brandlogo
-                }
-                width="146"
-                height="24"
-                className="brand-logo"
-              ></img>
+              {
+                  brandlogo !== null ?
+                    <Image  src={IMAGE_URL_Without_Storage+''+brandlogo} width={146} height={24} className="brand-logo" alt='Brand Name'/>
+                  :
+                    <Image  src={BrandLogoPath} width={146} height={24} className="brand-logo" alt='Brand Name'/>
+              }
 
               <div className="footer-partners-log">
                 <div className="footer-partners-div">

@@ -71,10 +71,14 @@ export default function Products() {
     });
   });
 
+  const isValidHttpsUrl = (url) => {
+    return url.startsWith('https://');
+  };
+
   return (
     <>
       <Banner websiteModificationData={websiteModificationData} />
-      <div className="main-empt-div"></div>
+      {/* <div className="main-empt-div"></div> */}
       <div></div>
       <FilterLocationTime />
       <div className="content">
@@ -104,18 +108,7 @@ export default function Products() {
                       id={`${category?.title?.replace(/\s+/g, "")}`}
                     >
                       <div className="item-title">
-                        <h3
-                          className="item-title-h3"
-                          style={{
-                            color:
-                              websiteModificationData?.websiteModificationLive !==
-                                null &&
-                              websiteModificationData?.websiteModificationLive
-                                ?.json_log[0]?.categoryFontColor !== null &&
-                              websiteModificationData?.websiteModificationLive
-                                ?.json_log[0]?.categoryFontColor,
-                          }}
-                        >
+                        <h3 className="item-title-h3" style={{color: websiteModificationData?.websiteModificationLive !== null && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor !== null && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor,}}>
                           {category.title}
                         </h3>
                       </div>
@@ -124,19 +117,9 @@ export default function Products() {
                       <ul className="items-list-nested-ul">
                         {category.items?.map((item, itemIndex) => {
                           const { title, price, description, image_url } = item;
-
                           return (
-                            <li
-                              ref={scrollContainerRef}
-                              key={itemIndex}
-                              className="items-list-nested-list"
-                              onClick={() =>
-                                handleProductSelect(category?.id, item?.id)
-                              }
-                            >
-                              <Link
-                                href={`${storeName}/${category?.slug}/${item?.slug}`}
-                              >
+                            <li ref={scrollContainerRef} key={itemIndex} className="items-list-nested-list" onClick={() => handleProductSelect(category?.id, item?.id)}>
+                              <Link href={`${storeName}/${category?.slug}/${item?.slug}`}>
                                 <div className="items-nested-div">
                                   <div className="items-nested-div-one">
                                     <div className="item-detail-style">
@@ -176,11 +159,20 @@ export default function Products() {
                                       {image_url && (
                                         <div className="item-img-style">
                                           <div className="lazyload-wrapper">
-                                            <img
-                                              className="item-img"
-                                              src={image_url}
-                                              alt={title}
-                                            />
+                                            {
+                                              isValidHttpsUrl(image_url) ?
+                                                <img
+                                                  className="item-img"
+                                                  src={image_url}
+                                                  alt={title}
+                                                />
+                                              :
+                                                <img
+                                                  className="item-img"
+                                                  src={IMAGE_URL_Without_Storage+""+image_url}
+                                                  alt={title}
+                                                />
+                                            }
                                           </div>
                                         </div>
                                       )}

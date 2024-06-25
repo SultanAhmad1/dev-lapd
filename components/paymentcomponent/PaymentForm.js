@@ -79,6 +79,22 @@ const PaymentForm = ({orderId}) =>
     }, 3000);
   }, [])
   
+  useEffect(() => {
+    // Set a timeout to clear localStorage after 20 minutes (20 * 60 * 1000 milliseconds)
+    const timeoutId = setTimeout(() => {
+      // Clear all items in localStorage
+      localStorage.clear();
+      window.location.reload(true);
+      window.location.href = "/"
+      setTimeout(() => {
+        setLoader(false);
+      }, 3000);
+    }, 30 * 60 * 1000); 
+
+    // Clear the timeout if the component is unmounted before 20 minutes
+    return () => clearTimeout(timeoutId);
+  });
+
   const hitSmsAndEmailCall = async () =>
   {
     const url = window.location.origin
