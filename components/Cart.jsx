@@ -63,6 +63,7 @@ export default function Cart() {
   const [isappliedbtnactive, setIsappliedbtnactive] = useState(true);
 
   const [couponCodeError, setCouponCodeError] = useState("")
+
   async function getOrderAmount(subTotalArgument)
   {
     try {
@@ -74,18 +75,19 @@ export default function Cart() {
         postcode: postcodefororderamount,
       };
 
-      const response = await axiosPrivate.post(
-        `/apply-amount-discount`,
-        filterData
-      );
+      const response = await axiosPrivate.post(`/apply-amount-discount`,filterData);
       const amountDiscounts = response?.data?.data?.applyAmountDiscount;
       let workingIndex = 0;
-      if (parseInt(amountDiscounts.length) > parseInt(0)) {
+
+      if (parseInt(amountDiscounts.length) > parseInt(0)) 
+      {
         // Stage - I get the Index.
-        for (let index = 0; index < parseInt(amountDiscounts.length); index++) {
+        for (let index = 0; index < parseInt(amountDiscounts.length); index++) 
+        {
           if ( parseInt(subTotalArgument) >= parseInt(amountDiscounts[index]?.need_to_spend)) 
           {
-            if (parseInt(subTotalArgument) >=parseInt(amountDiscounts[++index]?.need_to_spend)) {
+            if (parseInt(subTotalArgument) >=parseInt(amountDiscounts[++index]?.need_to_spend)) 
+            {
               workingIndex = ++index;
               break;
             } 
@@ -98,7 +100,8 @@ export default function Cart() {
         }
 
         // Stage - II match the index and get related data.
-        if (amountDiscounts[workingIndex] === undefined) {
+        if (amountDiscounts[workingIndex] === undefined) 
+        {
           workingIndex -= 1;
         }
 
@@ -112,7 +115,9 @@ export default function Cart() {
             const getThePercentage = amountDiscounts[workingIndex].value / 100;
             const getDiscount = parseFloat(subTotalArgument) * parseFloat(getThePercentage);
             setDiscountValue(getAmountConvertToFloatWithFixed(getDiscount, 2));
-          } else {
+          } 
+          else 
+          {
             const getDiscount = parseFloat(subTotalArgument) - parseFloat(amountDiscounts[workingIndex].value);
             setDiscountValue(getAmountConvertToFloatWithFixed(getDiscount, 2));
           }
@@ -121,11 +126,11 @@ export default function Cart() {
         {
           const getAmountDiscountDifference = parseInt(subTotalArgument) >= parseInt(amountDiscounts[workingIndex].need_to_spend) ? parseFloat(subTotalArgument) - parseFloat(amountDiscounts[workingIndex].need_to_spend) : parseFloat(amountDiscounts[workingIndex].need_to_spend) - parseFloat(subTotalArgument);
           const amountText = (
-            <span>Spend{" "}<strong>{getCountryCurrencySymbol()}{parseFloat(getAmountDiscountDifference).toFixed(2)}</strong>{" "}more to get{" "}
+            <span>Spend<strong>&pound;{parseFloat(getAmountDiscountDifference).toFixed(2)}</strong>more to get
               <strong>
                 {amountDiscounts[workingIndex].discount_type === "M" &&
-                  getCountryCurrencySymbol()}{" "}
-                {amountDiscounts[workingIndex].value}{" "}
+                  getCountryCurrencySymbol()}
+                {amountDiscounts[workingIndex].value}
                 {amountDiscounts[workingIndex].discount_type === "P" && "%"} off
               </strong>
             </span>
@@ -144,12 +149,11 @@ export default function Cart() {
       // Calculate Items Total Order Value.
       let totalValue = 0;
 
-      for (const total of cartdata) {
-        totalValue =
-          parseFloat(totalValue) + parseFloat(total?.total_order_amount);
+      for (const total of cartdata) 
+      {
+        totalValue = parseFloat(totalValue) + parseFloat(total?.total_order_amount);
       }
       setLocalStorage(`${BRANDSIMPLEGUID}sub_order_total_local`,JSON.stringify(getAmountConvertToFloatWithFixed(totalValue, 2)));
-
       setSubtotalOrderAmount(getAmountConvertToFloatWithFixed(totalValue, 2));
 
       // Calculate the Delivery Fee
@@ -174,8 +178,10 @@ export default function Cart() {
             setIsordersubtotallessthanordervalue(true)
           }
 
-          if (parseFloat(deliverymatrix?.delivery_matrix_row_values) >parseFloat(0)) {
-            for (const deliveryMatrixRowValues of deliverymatrix?.delivery_matrix_row_values) {
+          if (parseFloat(deliverymatrix?.delivery_matrix_row_values) >parseFloat(0)) 
+          {
+            for (const deliveryMatrixRowValues of deliverymatrix?.delivery_matrix_row_values) 
+            {
               if (parseFloat(totalValue) >=parseFloat(deliveryMatrixRowValues?.min_order_value)) 
               {
                 if (deliveryMatrixRowValues?.above_minimum_order_value === null) 
@@ -184,23 +190,19 @@ export default function Cart() {
                   setDeliverymessage(textMessage);
                   const fee = getAmountConvertToFloatWithFixed(0, 2);
                   setDeliveryfee(fee);
-                } else {
-                  const fee = parseFloat(
-                    deliveryMatrixRowValues?.above_minimum_order_value
-                  ).toFixed(2);
+                } 
+                else 
+                {
+                  const fee = parseFloat(deliveryMatrixRowValues?.above_minimum_order_value).toFixed(2);
                   setDeliveryfee(fee);
                 }
-              } else {
-                const getDifference =
-                  parseFloat(deliveryMatrixRowValues?.min_order_value) -
-                  parseFloat(totalValue);
+              } 
+              else 
+              {
+                const getDifference = parseFloat(deliveryMatrixRowValues?.min_order_value) - parseFloat(totalValue);
                 const textMessage = (
                   <span>
-                    Spend{" "}
-                    <strong>
-                      {getCountryCurrencySymbol()}
-                      {parseFloat(getDifference).toFixed(2)}
-                    </strong>{" "}
+                    Spend <strong>&pound;{parseFloat(getDifference).toFixed(2)}</strong>
                     more to get <strong>Free Delivery</strong>
                   </span>
                 );
@@ -212,7 +214,7 @@ export default function Cart() {
           const textMessage = (
             <span style={{color: "red",background: "#eda7a7",textAlign: "center",padding: "10px",}}>
               Minimum order is 
-              <strong>{getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(deliverymatrix?.order_value,2)}</strong>{" "}
+              <strong>&pound;{getAmountConvertToFloatWithFixed(deliverymatrix?.order_value,2)}</strong>
               to your postcode
             </span>
           );
@@ -221,7 +223,9 @@ export default function Cart() {
           setDeliveryfee(fee);
           setIsordersubtotallessthanordervalue(false);
         }
-      } else {
+      } 
+      else 
+      {
         setDeliveryfee(0);
         setIsordersubtotallessthanordervalue(true);
       }
@@ -238,22 +242,28 @@ export default function Cart() {
     setLoader(false)
   }, [cartdata]);
 
-  function handlePromoCodeToggle() {
+  function handlePromoCodeToggle() 
+  {
     setIsaddpromocodebtntoggle(!isaddpromocodebtntoggle);
   }
 
-  function handleCheckoutBtn() {
+  function handleCheckoutBtn() 
+  {
     setIscheckoutclicked(true);
   }
 
-  function handleAddItems() {
+  function handleAddItems() 
+  {
     route.push("/");
     setIscartbtnclicked(false);
   }
 
-  function handleDotedBtn(id) {
-    const updateIsCartModalFlag = cartdata?.map((cart, index) => {
-      if (id === index) {
+  function handleDotedBtn(id) 
+  {
+    const updateIsCartModalFlag = cartdata?.map((cart, index) => 
+    {
+      if (id === index) 
+      {
         return {
           ...cart,
           is_cart_modal_clicked: !cart?.is_cart_modal_clicked,
@@ -261,10 +271,12 @@ export default function Cart() {
       }
       return cart;
     });
+
     setCartdata(updateIsCartModalFlag);
   }
 
-  function removeItem(id) {
+  function removeItem(id) 
+  {
     const filterItems = cartdata?.filter((cart, index) => index !== id);
     if(parseInt(filterItems.length) === parseInt(0))
     {
@@ -272,17 +284,18 @@ export default function Cart() {
       setCouponDiscountapplied([])
     }
     setCartdata(filterItems);
-
   }
 
   // Handle Coupon Code functionality
-  function handleCouponCode(event) {
+  function handleCouponCode(event) 
+  {
     setCoupon(event.target.value);
     setIsappliedbtnactive(false);
     setCouponCodeError("")
   }
 
-  async function handleFindCouponCode() {
+  async function handleFindCouponCode() 
+  {
     // setIsaddpromocodebtntoggle(!isaddpromocodebtntoggle);
     setLoader(true)
     const checkCouponCodeIsAlreadyApplied = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}applied_coupon`))
@@ -303,6 +316,7 @@ export default function Cart() {
         return
       }
     }
+
     try {
       const data = {
         coupon:   coupon,
@@ -379,13 +393,13 @@ export default function Cart() {
 
       if(updateCouponToggle?.user_in_conjuction === 0)
       {
-        console.warn("User conjuction 0:", updateCouponToggle?.user_in_conjuction);
+        // console.warn("User conjuction 0:", updateCouponToggle?.user_in_conjuction);
         setCouponDiscountapplied([])
         setCouponDiscountapplied((prevData) => [...prevData, updateCouponToggle])
       }
       else
       {
-        console.warn("User conjuction 1:", updateCouponToggle?.user_in_conjuction);
+        // console.warn("User conjuction 1:", updateCouponToggle?.user_in_conjuction);
         setCouponDiscountapplied((prevData) => [...prevData, updateCouponToggle])
       }
       
@@ -403,7 +417,7 @@ export default function Cart() {
       }, 3000);
       setIscouponcodeapplied(true)
     } catch (error) {
-      console.warn("Error:", error);
+      // console.warn("Error:", error);
     }
   }
 
@@ -526,480 +540,388 @@ export default function Cart() {
       <div className="cart-level-one-div-screen-two">
         <div className="cart jp">
           <div className="cart-close-btn-div-level-one">
-            <button
-              className="cart-close-btn"
-              onClick={() => setIscartbtnclicked(false)}
-            >
+            <button className="cart-close-btn" onClick={() => setIscartbtnclicked(false)}>
               <div className="cart-close-btn-div">
-                <svg
-                  width="24px"
-                  height="24px"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                  aria-hidden="true"
-                  focusable="false"
-                >
-                  <path
-                    d="m19.5831 6.24931-1.8333-1.83329-5.75 5.83328-5.75-5.83328-1.8333 1.83329 5.8333 5.74999-5.8333 5.75 1.8333 1.8333 5.75-5.8333 5.75 5.8333 1.8333-1.8333-5.8333-5.75z"
-                    fill="currentColor"
-                  ></path>
+                <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                  <path d="m19.5831 6.24931-1.8333-1.83329-5.75 5.83328-5.75-5.83328-1.8333 1.83329 5.8333 5.74999-5.8333 5.75 1.8333 1.8333 5.75-5.8333 5.75 5.8333 1.8333-1.8333-5.8333-5.75z" fill="currentColor" ></path>
                 </svg>
               </div>
             </button>
           </div>
-          {parseInt(cartdata?.length) > parseInt(0) ? (
-            <>
-              <div className="afcart">
-                <div className="">
-                  <div className="dtcxcyczd0d1checkout">
-                    <div className="alaqcheckout">
-                      <h3 className="dualbcheckout-order-summary">
-                        <span className="cjcheckout">Cart summary</span>
-                      </h3>
-                    </div>
-                    <div className="alc6cart">
-                      <div className="cid3ckd4d1">{cartdata.length} item</div>
-                      <div className="c3hmeljuhoq6">Subtotal:</div>
-                      <div className="c3hmc5em"><span aria-label="Subtotal"> {getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(subtotalOrderAmount,2)}</span></div>
-                    </div>  
-                    <div className="dze0checkout"></div>
+          {
+            parseInt(cartdata?.length) > parseInt(0) ?
+            <div className="afcart">
+              <div className="">
+                <div className="dtcxcyczd0d1checkout">
+                  <div className="alaqcheckout">
+                    <h3 className="dualbcheckout-order-summary">
+                      <span className="cjcheckout">Cart summary</span>
+                    </h3>
+                  </div>
+                  <div className="alc6cart">
+                    <div className="cid3ckd4d1">{cartdata.length} item</div>
+                    <div className="c3hmeljuhoq6">Subtotal:</div>
+                    <div className="c3hmc5em"><span aria-label="Subtotal"> &pound;{getAmountConvertToFloatWithFixed(subtotalOrderAmount,2)}</span></div>
+                  </div>  
+                  <div className="dze0checkout"></div>
 
-                    {/* Cart item display with new style */}
-                    <div className="ex-cart-width"></div>
-                    <ul>
+                  {/* Cart item display with new style */}
+                  <div className="ex-cart-width"></div>
+                  <ul>
+                    {
+                      cartdata?.map((cartitem,indexItem) =>
                       {
-                        cartdata?.map((cartitem,indexItem) =>
-                        {
-                          return(
-                            <Fragment  key={indexItem}>
-                              <a className="blhv-cart-item-display">
-                                <li className="blmc-cart-item-display">
-                                  <div className="blf7al-cart-item-display" onClick={() => handleEditItem(indexItem,storeName,cartitem?.category_slug,cartitem?.slug)}>
-                                    <div className="cv-cart-item-display">
-                                      <div className="c3cic5chfe-cart-item-display">{cartitem?.title}</div>
-                                      <ul className="ibcv-cart-item-display">
+                        return(
+                          <Fragment  key={indexItem}>
+                            <a className="blhv-cart-item-display">
+                              <li className="blmc-cart-item-display">
+                                <div className="blf7al-cart-item-display" onClick={() => handleEditItem(indexItem,storeName,cartitem?.category_slug,cartitem?.slug)}>
+                                  <div className="cv-cart-item-display">
+                                    <div className="c3cic5chfe-cart-item-display">{cartitem?.title}</div>
+                                    <ul className="ibcv-cart-item-display">
+                                      {
+                                        cartitem?.modifier_group?.map((modifier,indexItemModifier) =>
                                         {
-                                          cartitem?.modifier_group?.map((modifier,indexItemModifier) =>
+                                          return modifier?.modifier_secondary_items?.map((secondItem,indexSecondItem) =>
                                           {
-                                            return modifier?.modifier_secondary_items?.map((secondItem,indexSecondItem) =>
-                                            {
-                                              return(
-                                                secondItem?.item_select_to_sale &&
-                                                <Fragment key={indexItem + indexItemModifier + indexSecondItem}>
-                                                  <div >
-                                                    <span className="fdfeffc3c4cgchj9-cart-item-display">{modifier?.title}: </span>
-                                                    <span className="fdfeffc3c4cgchj9-cart-item-display">{secondItem?.title} {parseInt(secondItem?.price) > parseInt(0) && `(${secondItem?.country_price_symbol} ${parseFloat(secondItem?.price).toFixed(2)})`}</span>
-                                                  </div>
+                                            return(
+                                              secondItem?.item_select_to_sale &&
+                                              <Fragment key={indexItem + indexItemModifier + indexSecondItem}>
+                                                <div >
+                                                  <span className="fdfeffc3c4cgchj9-cart-item-display">{modifier?.title}: </span>
+                                                  <span className="fdfeffc3c4cgchj9-cart-item-display">{secondItem?.title} {parseInt(secondItem?.price) > parseInt(0) && `(${secondItem?.country_price_symbol} ${parseFloat(secondItem?.price).toFixed(2)})`}</span>
+                                                </div>
+                                                {
+                                                  secondItem?.secondary_item_modifiers?.map((secondModifer,indexSecondModifier) =>
                                                   {
-                                                    secondItem?.secondary_item_modifiers?.map((secondModifer,indexSecondModifier) =>
+                                                    return secondModifer?.secondary_items_modifier_items?.map((secondNestItems, indexSecondNestItem) =>
                                                     {
-                                                      return secondModifer?.secondary_items_modifier_items?.map((secondNestItems, indexSecondNestItem) =>
-                                                      {
-                                                        return(
-                                                          secondNestItems?.item_select_to_sale &&
-                                                          <div key={indexItem + indexItemModifier + indexSecondItem + indexSecondModifier + indexSecondNestItem}>
-                                                            <span className="fdfeffc3c4cgchj9-cart-item-display">{secondModifer?.title}: </span>
-                                                            <span className="fdfeffc3c4cgchj9-cart-item-display">{secondNestItems?.title} {parseInt(secondNestItems?.price) > parseInt(0) && `(${secondNestItems?.country_price_symbol} ${parseFloat(secondNestItems?.price).toFixed(2)})`}</span>
-                                                          </div>
-                                                        )
-                                                      })
+                                                      return(
+                                                        secondNestItems?.item_select_to_sale &&
+                                                        <div key={indexItem + indexItemModifier + indexSecondItem + indexSecondModifier + indexSecondNestItem}>
+                                                          <span className="fdfeffc3c4cgchj9-cart-item-display">{secondModifer?.title}: </span>
+                                                          <span className="fdfeffc3c4cgchj9-cart-item-display">{secondNestItems?.title} {parseInt(secondNestItems?.price) > parseInt(0) && `(${secondNestItems?.country_price_symbol} ${parseFloat(secondNestItems?.price).toFixed(2)})`}</span>
+                                                        </div>
+                                                      )
                                                     })
-                                                  }
-                                                </Fragment>
-                                              )
-                                            })
-
+                                                  })
+                                                }
+                                              </Fragment>
+                                            )
                                           })
-                                        }
-                                      </ul>
-                                    </div>
-                                    
-                                    {
-                                      cartitem?.image_url &&
-                                      <div className="md-cart-item-display">
-                                        {
-                                          isValidHttpsUrl(cartitem?.image_url) ? 
-                                            <img alt={cartitem?.title} src={cartitem?.image_url} className="d1llf9memf-cart-item-display" />
-                                          :
-                                            <img alt={cartitem?.title} src={IMAGE_URL_Without_Storage+""+cartitem?.image_url} className="d1llf9memf-cart-item-display" />
-                                        }
-                                      </div>
-                                    }
+
+                                        })
+                                      }
+                                    </ul>
                                   </div>
                                   
-                                  <div className="mgalbb-cart-inc">
-                                    <div className="al-cart">
-                                      <div className="akm2c1mhc2cmcpb1mi-cart-inc-div">
-                                        <div className="agbafbe3albc-cart-inc-div">
+                                  {
+                                    cartitem?.image_url &&
+                                    <div className="md-cart-item-display">
+                                      {
+                                        isValidHttpsUrl(cartitem?.image_url) ? 
+                                          <img alt={cartitem?.title} src={cartitem?.image_url} className="d1llf9memf-cart-item-display" />
+                                        :
+                                          <img alt={cartitem?.title} src={IMAGE_URL_Without_Storage+""+cartitem?.image_url} className="d1llf9memf-cart-item-display" />
+                                      }
+                                    </div>
+                                  }
+                                </div>
+                                
+                                <div className="mgalbb-cart-inc">
+                                  <div className="al-cart">
+                                    <div className="akm2c1mhc2cmcpb1mi-cart-inc-div">
+                                      <div className="agbafbe3albc-cart-inc-div">
+                                      
+                                        <button disabled={parseInt(cartitem?.quantity) === parseInt(1) ? true : false} className="ecbrboc1byfcenalbccmafeodffddefefffgfhfifj" onClick={() => decrementQuantity(indexItem)}>
+                                          <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" className="hfg0ebhgsingle-product-svg"><path d="M15.833 8.75H4.167v2.5h11.666v-2.5z"></path></svg>
+                                        </button>
+                                        <div className="cart-spacer _width48"></div>
                                         
-                                          <button disabled={parseInt(cartitem?.quantity) === parseInt(1) ? true : false} className="ecbrboc1byfcenalbccmafeodffddefefffgfhfifj" onClick={() => decrementQuantity(indexItem)}>
-                                            <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" className="hfg0ebhgsingle-product-svg"><path d="M15.833 8.75H4.167v2.5h11.666v-2.5z"></path></svg>
-                                          </button>
-                                          <div className="cart-spacer _width48"></div>
-                                          
-                                          <button className="ecbrboc1byfcenalbccmafeodffddefefffgfhfifj" onClick={() => incrementQuantity(indexItem)}>
-                                            <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" className="bhbibjbk-inc"><path d="M15.833 8.75H11.25V4.167h-2.5V8.75H4.167v2.5H8.75v4.583h2.5V11.25h4.583v-2.5z"></path></svg>
-                                          </button>
-                                        
-                                          <div className="agezmrc3jgc5d2albmbbcoei">
-                                            <div>{parseInt(cartitem?.quantity)}</div>
-                                          </div>
+                                        <button className="ecbrboc1byfcenalbccmafeodffddefefffgfhfifj" onClick={() => incrementQuantity(indexItem)}>
+                                          <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" className="bhbibjbk-inc"><path d="M15.833 8.75H11.25V4.167h-2.5V8.75H4.167v2.5H8.75v4.583h2.5V11.25h4.583v-2.5z"></path></svg>
+                                        </button>
+                                      
+                                        <div className="agezmrc3jgc5d2albmbbcoei">
+                                          <div>{parseInt(cartitem?.quantity)}</div>
                                         </div>
                                       </div>
-                                        
-                                      <button className="ecbrboc1byfcenalbccmafeodffddefefffgfhfifj-del" onClick={() => removeItem(indexItem)}>
-                                          <svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" className="cwcxbjbk-del"><path fillRule="evenodd" clipRule="evenodd" d="M10.667.667V2H14v2H2V2h3.333V.667h5.334zM3.333 5.333h9.334v10H3.333v-10z"></path></svg>
-                                      </button>
-
-                                      <div className="spacer _8"></div>
                                     </div>
                                       
-                                    <div className="cvalk1bb-cart-amount">
-                                      <div className="dialamgsb1c3c5cich">
-                                        {/* <span className="fdfeffc3c4c5c6j9">{cartitem?.country_price_symbol}{parseFloat(cartitem?.total_order_amount).toFixed(2)}</span>setCouponDiscountapplied */}
-                                        <span className="fdfeffc3c4c5c6j9">&pound;{parseFloat(cartitem?.total_order_amount).toFixed(2)}</span>
-                                      </div>
-                                    </div>
-                                    
+                                    <button className="ecbrboc1byfcenalbccmafeodffddefefffgfhfifj-del" onClick={() => removeItem(indexItem)}>
+                                        <svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" className="cwcxbjbk-del"><path fillRule="evenodd" clipRule="evenodd" d="M10.667.667V2H14v2H2V2h3.333V.667h5.334zM3.333 5.333h9.334v10H3.333v-10z"></path></svg>
+                                    </button>
+
+                                    <div className="spacer _8"></div>
                                   </div>
-
-                                </li>
-                              </a>
-                              <div className="ex-cart-width"></div>
-                            </Fragment>
-                          )
-                        })
-                      }
-                    </ul>
-                    {/* <div className="ex-cart-width"></div> */}
-                    {/* Cart item new design */}
-                    {/* Amount Discount */}
-                    {
-                      amountDiscountapplied !== null &&
-                      <div className="esetcheckout">
-                        <div className="ald5egbhddeteud1checkout-edit-item d1">
-                          <div className="bodgdfcheckout-amountdiscount">
-                            Amount Discount:
-                            {/* Amount Discount {amountDiscountapplied.value}{(amountDiscountapplied.discount_type.toLowerCase() === "p" ? "%" : getCountryCurrencySymbol())}: */}
-                          </div>
-                          <div className="alamcjewcheckout">
-                            <span className="bobpdfcvcheckout-item-header">
-                              {amountDiscountapplied?.name}
-                            </span>
-                          </div>
-                          <div className="f1alamcheckout-item-qty">
-                            <span className="gye2gzcheckout-item-qty-span">
-
-                              -({getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(subtotalOrderAmount * (amountDiscountapplied.value / 100),2)})
-                            </span>
-                          </div>
-                        </div>
-                      </div>
-                    }
-                    {/* Coupon Code Discount */}
-                    {
-                      // parseInt(couponDiscountapplied.length) > parseInt(0) &&
-                      couponDiscountapplied?.map((coupon, index) => {
-                        return(
-                          <div className="esetcheckout" key={index}>
-                            <a className="ald5egbhddeteud1checkout-edit-item d1">
-                              <div className="bodgdfcheckout-amountdiscount">
-                                Discount:
-                                {/* Amount Discount {amountDiscountapplied.value}{(amountDiscountapplied.discount_type.toLowerCase() === "p" ? "%" : getCountryCurrencySymbol())}: */}
-                              </div>
-                              <div className="alamcjewcheckout">
-                                <span className="bobpdfcvcheckout-item-header">
-                                  {coupon?.name}
-                                </span>
-                              </div>
-                              <div className="f1alamcheckout-item-qty">
-                                <span className="gye2gzcheckout-item-qty-span">
-                                  -({getCountryCurrencySymbol()}{getAmountConvertToFloatWithFixed(coupon.discount,2)})
-                                </span>
-                              </div>
-                            </a>
-
-                            <div className="checkout-item-edit-delete">
-                              {/* Remove Discount */}
-                              <button className="cart-header-dotted-btn cp" onClick={() => handleCouponRemoveToggleBtn(index)}>
-                                <svg
-                                  aria-hidden="true"
-                                  focusable="false"
-                                  viewBox="0 0 24 24"
-                                  style={{ transform: "rotate(90deg)" }}
-                                  className="c8c7cccdcheckout"
-                                >
-                                  <g>
-                                    <path d="M17 12a1.667 1.667 0 103.333 0A1.667 1.667 0 0017 12zM10.333 12a1.667 1.667 0 103.334 0 1.667 1.667 0 00-3.334 0zM5.333 13.667a1.667 1.667 0 110-3.333 1.667 1.667 0 010 3.333z"></path>
-                                  </g>
-                                </svg>
-                              </button>
-                              {
-                                coupon?.is_coupon_remove &&
-                                <div className="cart-item-clear-or-add-modal">
-                                  <li className="cart-remove-item-list" onClick={() => handleDeleteCouponCode(coupon?.id)}>
-                                    <div className="cart-remove-item-svg-div">
-                                      <svg
-                                        aria-hidden="true"
-                                        focusable="false"
-                                        viewBox="0 0 16 16"
-                                        className="cart-remove-item-svg"
-                                      >
-                                        <path
-                                          fillRule="evenodd"
-                                          clipRule="evenodd"
-                                          d="M10.667.667V2H14v2H2V2h3.333V.667h5.334zM3.333 5.333h9.334v10H3.333v-10z"
-                                        ></path>
-                                      </svg>
+                                    
+                                  <div className="cvalk1bb-cart-amount">
+                                    <div className="dialamgsb1c3c5cich">
+                                      <span className="fdfeffc3c4c5c6j9">&pound;{parseFloat(cartitem?.total_order_amount).toFixed(2)}</span>
                                     </div>
-
-                                    <div className="cart-remove-item-btn-text">
-                                      Remove item
-                                    </div>
-                                  </li>
+                                  </div>
+                                  
                                 </div>
-                              }
-                            </div>
-                          </div>
+
+                              </li>
+                            </a>
+                            <div className="ex-cart-width"></div>
+                          </Fragment>
                         )
                       })
                     }
-                  
-                    <div className="cjdchkout">
-                      <div className="alddbccheckout">
-                        <div className="f9checkout">
-                          <svg
-                            aria-hidden="true"
-                            focusable="false"
-                            viewBox="0 0 24 24"
-                            className="c7c6cacbcheckout-pin"
-                          >
-                            <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
+                  </ul>
+                  {/* <div className="ex-cart-width"></div> */}
+                  {/* Cart item new design */}
+                  {/* Amount Discount */}
+                  {
+                    amountDiscountapplied !== null &&
+                    <div className="esetcheckout">
+                      <div className="ald5egbhddeteud1checkout-edit-item d1">
+                        <div className="bodgdfcheckout-amountdiscount">
+                          Amount Discount:
+                        </div>
+                        <div className="alamcjewcheckout">
+                          <span className="bobpdfcvcheckout-item-header">{amountDiscountapplied?.name}</span>
+                        </div>
+                        <div className="f1alamcheckout-item-qty">
+                          <span className="gye2gzcheckout-item-qty-span">
+                            -(&pound;{getAmountConvertToFloatWithFixed(subtotalOrderAmount * (amountDiscountapplied.value / 100),2)})
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                  {/* Coupon Code Discount */}
+                  {
+                    // parseInt(couponDiscountapplied.length) > parseInt(0) &&
+                    couponDiscountapplied?.map((coupon, index) => {
+                      return(
+                        <div className="esetcheckout" key={index}>
+                          <a className="ald5egbhddeteud1checkout-edit-item d1">
+                            <div className="bodgdfcheckout-amountdiscount">
+                              Discount:
+                            </div>
+                            <div className="alamcjewcheckout">
+                              <span className="bobpdfcvcheckout-item-header">{coupon?.name}</span>
+                            </div>
+                            <div className="f1alamcheckout-item-qty">
+                              <span className="gye2gzcheckout-item-qty-span">-(&pound;{getAmountConvertToFloatWithFixed(coupon.discount,2)})</span>
+                            </div>
+                          </a>
+
+                          <div className="checkout-item-edit-delete">
+                            {/* Remove Discount */}
+                            <button className="cart-header-dotted-btn cp" onClick={() => handleCouponRemoveToggleBtn(index)}>
+                              <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" style={{ transform: "rotate(90deg)" }} className="c8c7cccdcheckout">
+                                <g>
+                                  <path d="M17 12a1.667 1.667 0 103.333 0A1.667 1.667 0 0017 12zM10.333 12a1.667 1.667 0 103.334 0 1.667 1.667 0 00-3.334 0zM5.333 13.667a1.667 1.667 0 110-3.333 1.667 1.667 0 010 3.333z"></path>
+                                </g>
+                              </svg>
+                            </button>
+                            {
+                              coupon?.is_coupon_remove &&
+                              <div className="cart-item-clear-or-add-modal">
+                                <li className="cart-remove-item-list" onClick={() => handleDeleteCouponCode(coupon?.id)}>
+                                  <div className="cart-remove-item-svg-div">
+                                    <svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" className="cart-remove-item-svg">
+                                      <path fillRule="evenodd" clipRule="evenodd" d="M10.667.667V2H14v2H2V2h3.333V.667h5.334zM3.333 5.333h9.334v10H3.333v-10z"></path>
+                                    </svg>
+                                  </div>
+
+                                  <div className="cart-remove-item-btn-text">
+                                    Remove item
+                                  </div>
+                                </li>
+                              </div>
+                            }
+                          </div>
+                        </div>
+                      )
+                    })
+                  }
+                
+                  <div className="cjdchkout">
+                    <div className="alddbccheckout">
+                      <div className="f9checkout">
+                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c7c6cacbcheckout-pin">
+                          <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
+                        </svg>
+                      </div>
+
+                      <div className="alamcjdcheckout">
+                        <span className="bobpdfcvb1checkout">
+                          Add discount code
+                        </span>
+                      </div>
+
+                      {
+                        isaddpromocodebtntoggle ? 
+                        <button className="bodgdfdhcheckout-btn" disabled={isappliedbtnactive} onClick={handleFindCouponCode}>
+                          Apply
+                        </button>
+                        : 
+                        <button className="bodgdfdhcheckout-btn" onClick={handlePromoCodeToggle}>
+                          Add
+                        </button>
+                      }
+                    </div>
+                    {
+                      isaddpromocodebtntoggle && 
+                      <div className="btaucheckout-window" style={{marginBottom: "10px"}}>
+                        <input type="text" placeholder="Add promo code...." value={coupon} className="email-checkout" onChange={handleCouponCode} />
+                        <div style={{position: "relative !important",height: "0px !important",width: "0px !important",float: "left !important",}}></div>
+                        {
+                          couponCodeError !== "" &&
+                          <p style={{color: "red", background: "#eda7a7", textAlign: "center", padding:"10px", marginBottom: "10px", marginTop: "10px"}}>{couponCodeError}</p>
+                        }
+                      </div>
+                    }
+                    <div className="alcheckout">
+                      <div className="drdsbscjcheckout"></div>
+                    </div>
+                  </div>
+                  {
+                    amountdiscountmessage !== "" &&
+                    <div>
+                      <div className="dxc6checkout"></div>
+                      {amountdiscountmessage}
+                      <div className="dxc6checkout"></div>
+                      <div className="drdsbscjcheckout"></div>
+                    </div>
+                  }
+                  {/* Order Amount Discount End */}
+                  {
+                    deliverymessage !== "" &&
+                    <>
+                      <div className="dxc6checkout"></div>
+                      {deliverymessage}
+                      <div className="dxc6checkout"></div>
+                      <div className="drdsbscjcheckout"></div>
+                    </>
+                  }
+
+                  <ul>
+                    <li className="bobpcheckout-sutotals" style={{marginTop:"10px"}}>
+                      <div className="albcaqcheckout">
+                        <div className="bobpbqbrb1checkout">Subtotal</div>
+                      </div>
+
+                      <div className="bobpbqbrb1checkout">
+                        <span className="">
+                          &pound;{getAmountConvertToFloatWithFixed(subtotalOrderAmount,2)}
+                        </span>
+                      </div>
+                    </li>
+
+                    <li className="dxgvcheck"></li>
+
+                    <li className="dxgvcheck"></li>
+
+                    <li className="bobpcheckout-sutotals">
+                      <div className="albcaqcheckout">
+                        <div className="bobpbqbrb1checkout">Discount</div>
+                      </div>
+
+                      <div className="bobpbqbrb1checkout">
+                        <span className="">
+                          &pound; {getAmountConvertToFloatWithFixed(discountvalue,2)}
+                        </span>
+                      </div>
+                    </li>
+
+                    <li className="dxgvcheck"></li>
+
+                    <li className="bobpcheckout-sutotals">
+                      <div className="albcaqcheckout">
+                        <div className="bobpbqbrb1checkout">
+                          {selectedFilter?.name}
+                        </div>
+                      </div>
+
+                      <div className="bobpbqbrb1checkout">
+                        <span className="">
+                          &pound; {getAmountConvertToFloatWithFixed(deliveryfee, 2)}
+                        </span>
+                      </div>
+                    </li>
+                  </ul>
+
+                  <div className="bkgfbmggalcheckout">
+                    <div className="albcaqcheckout-total">Total</div>
+                    &pound;
+                    {/* {getAmountConvertToFloatWithFixed(parseFloat(subtotalOrderAmount) + parseFloat(deliveryfee) - parseFloat(discountvalue),2)} */}
+                    {totalOrderAmountValue}
+                  </div>
+                </div>
+              </div>
+
+              <div className="dtcxcybgd0d1checkout">
+                <div className="bocubqcve9checkout">
+                  <div className="bocubqcvb1checkout">
+                    <span className="bocubqcvgycheckout">
+                      <span className="bocudfdhgy">ALLERGIES:</span>
+                      If you or someone you’re ordering for has an allergy,
+                      please contact the merchant directly to let them know.
+                    </span>
+                  </div>
+                </div>
+                <div className="dxgvcheck"></div>
+
+                <div className="bocubqcve9checkout">
+                  <div className="bocubqcvb1checkout">
+                    <span className="bocubqcvgycheckout">
+                      If you’re not around when the delivery person arrives,
+                      they’ll leave your order at the door. By placing your
+                      order, you agree to take full responsibility for it
+                      once it’s delivered. Orders containing alcohol or
+                      other restricted items may not be eligible for leave
+                      at door and will be returned to the store if you are
+                      not available.
+                    </span>
+                  </div>
+                </div>
+                <div className="dxgvcheck"></div>
+
+                <div className="bocubqcve9checkout">
+                  <div className="bocubqcvb1checkout">
+                    <span className="bocubqcvgycheckout">
+                      Whilst we, and our restaurant partners, have safety
+                      measures to mitigate food safety risk, couriers may be
+                      delivering more than one order so we cannot eliminate
+                      the risk of cross-contamination from allergens.
+                    </span>
+                  </div>
+                </div>
+                <div className="dxgvcheck"></div>
+              </div>
+
+              <div className="review-mobile-btn">
+                <div className="akgzcheckout">
+                  <div className="atbaagcheckout">
+                    <div className="">
+                      {isordersubtotallessthanordervalue && <a className="fwbrbocheckout-place-order" href="/place-order">Checkout</a>}
+                      <div style={{ height: "10px" }}></div>
+
+                      <button type="submit" className="fwbrbocheckout-add" onClick={handleAddItems}>
+                        <div className="c7c6crcheckout">
+                          <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                            <path d="m16.6666 11.0007h-3.6667v-3.66672h-2v3.66672h-3.66665v2h3.66665v3.6666h2v-3.6666h3.6667z" fill="currentColor"></path>
                           </svg>
                         </div>
-
-                        <div className="alamcjdcheckout">
-                          <span className="bobpdfcvb1checkout">
-                            Add discount code
-                          </span>
+                        <div className="spacer _4"></div>
+                        <div className="bodgdfdhcheckout-add-div">
+                          Add items
                         </div>
-
-                        {isaddpromocodebtntoggle ? (
-                          <button
-                            className="bodgdfdhcheckout-btn"
-                            disabled={isappliedbtnactive}
-                            onClick={handleFindCouponCode}
-                          >
-                            Apply
-                          </button>
-                        ) : (
-                          <button
-                            className="bodgdfdhcheckout-btn"
-                            onClick={handlePromoCodeToggle}
-                          >
-                            Add
-                          </button>
-                        )}
-                      </div>
-                      {isaddpromocodebtntoggle && (
-                        <div className="btaucheckout-window" style={{marginBottom: "10px"}}>
-                          <input
-                            type="text"
-                            placeholder="Add promo code...."
-                            value={coupon}
-                            className="email-checkout"
-                            onChange={handleCouponCode}
-                          />
-                          <div
-                            style={{
-                              position: "relative !important",
-                              height: "0px !important",
-                              width: "0px !important",
-                              float: "left !important",
-                            }}
-                          ></div>
-                          {
-                            couponCodeError !== "" &&
-                            <p style={{color: "red", background: "#eda7a7", textAlign: "center", padding:"10px", marginBottom: "10px", marginTop: "10px"}}>{couponCodeError}</p>
-                          }
-                        </div>
-                      )}
-                      <div className="alcheckout">
-                        <div className="drdsbscjcheckout"></div>
-                      </div>
-                    </div>
-                    {
-                      amountdiscountmessage !== "" &&
-                      <div>
-                        <div className="dxc6checkout"></div>
-                        {amountdiscountmessage}
-                        <div className="dxc6checkout"></div>
-                        <div className="drdsbscjcheckout"></div>
-                      </div>
-                    }
-                    {/* Order Amount Discount End */}
-                    {
-                      deliverymessage !== "" &&
-                      <>
-                        <div className="dxc6checkout"></div>
-                        {deliverymessage}
-                        <div className="dxc6checkout"></div>
-                        <div className="drdsbscjcheckout"></div>
-                      </>
-                    }
-
-                    <ul>
-                      <li className="bobpcheckout-sutotals" style={{marginTop:"10px"}}>
-                        <div className="albcaqcheckout">
-                          <div className="bobpbqbrb1checkout">Subtotal</div>
-                        </div>
-
-                        <div className="bobpbqbrb1checkout">
-                          <span className="">
-                            {getCountryCurrencySymbol()}
-                            {getAmountConvertToFloatWithFixed(
-                              subtotalOrderAmount,
-                              2
-                            )}
-                          </span>
-                        </div>
-                      </li>
-
-                      <li className="dxgvcheck"></li>
-
-                      <li className="dxgvcheck"></li>
-
-                      <li className="bobpcheckout-sutotals">
-                        <div className="albcaqcheckout">
-                          <div className="bobpbqbrb1checkout">Discount</div>
-                        </div>
-
-                        <div className="bobpbqbrb1checkout">
-                          <span className="">
-                            ({getCountryCurrencySymbol()}
-                            {getAmountConvertToFloatWithFixed(
-                              discountvalue,
-                              2
-                            )}
-                            )
-                          </span>
-                        </div>
-                      </li>
-
-                      <li className="dxgvcheck"></li>
-
-                      <li className="bobpcheckout-sutotals">
-                        <div className="albcaqcheckout">
-                          <div className="bobpbqbrb1checkout">
-                            {selectedFilter?.name}
-                          </div>
-                        </div>
-
-                        <div className="bobpbqbrb1checkout">
-                          <span className="">
-                            {getCountryCurrencySymbol()}
-                            {getAmountConvertToFloatWithFixed(deliveryfee, 2)}
-                          </span>
-                        </div>
-                      </li>
-                    </ul>
-
-                    <div className="bkgfbmggalcheckout">
-                      <div className="albcaqcheckout-total">Total</div>
-                      {getCountryCurrencySymbol()}
-                      {/* {getAmountConvertToFloatWithFixed(parseFloat(subtotalOrderAmount) + parseFloat(deliveryfee) - parseFloat(discountvalue),2)} */}
-                      {totalOrderAmountValue}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="dtcxcybgd0d1checkout">
-                  <div className="bocubqcve9checkout">
-                    <div className="bocubqcvb1checkout">
-                      <span className="bocubqcvgycheckout">
-                        <span className="bocudfdhgy">ALLERGIES:</span>
-                        If you or someone you’re ordering for has an allergy,
-                        please contact the merchant directly to let them know.
-                      </span>
-                    </div>
-                  </div>
-                  <div className="dxgvcheck"></div>
-
-                  <div className="bocubqcve9checkout">
-                    <div className="bocubqcvb1checkout">
-                      <span className="bocubqcvgycheckout">
-                        If you’re not around when the delivery person arrives,
-                        they’ll leave your order at the door. By placing your
-                        order, you agree to take full responsibility for it
-                        once it’s delivered. Orders containing alcohol or
-                        other restricted items may not be eligible for leave
-                        at door and will be returned to the store if you are
-                        not available.
-                      </span>
-                    </div>
-                  </div>
-                  <div className="dxgvcheck"></div>
-
-                  <div className="bocubqcve9checkout">
-                    <div className="bocubqcvb1checkout">
-                      <span className="bocubqcvgycheckout">
-                        Whilst we, and our restaurant partners, have safety
-                        measures to mitigate food safety risk, couriers may be
-                        delivering more than one order so we cannot eliminate
-                        the risk of cross-contamination from allergens.
-                      </span>
-                    </div>
-                  </div>
-                  <div className="dxgvcheck"></div>
-                </div>
-
-                <div className="review-mobile-btn">
-                  <div className="akgzcheckout">
-                    <div className="atbaagcheckout">
-                      <div className="">
-                        {isordersubtotallessthanordervalue && <Link className="fwbrbocheckout-place-order" href="/place-order">Checkout</Link>}
-                        <div style={{ height: "10px" }}></div>
-
-                        <button
-                          className="fwbrbocheckout-add"
-                          onClick={handleAddItems}
-                        >
-                          <div className="c7c6crcheckout">
-                            <svg
-                              width="24px"
-                              height="24px"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              xmlns="http://www.w3.org/2000/svg"
-                              aria-hidden="true"
-                              focusable="false"
-                            >
-                              <path
-                                d="m16.6666 11.0007h-3.6667v-3.66672h-2v3.66672h-3.66665v2h3.66665v3.6666h2v-3.6666h3.6667z"
-                                fill="currentColor"
-                              ></path>
-                            </svg>
-                          </div>
-                          <div className="spacer _4"></div>
-                          <div className="bodgdfdhcheckout-add-div">
-                            Add items
-                          </div>
-                        </button>
-                      </div>
+                      </button>
                     </div>
                   </div>
                 </div>
               </div>
-            </>
-          ) : (
+            </div>
+          : 
             <div className="cart-content">
-              <img
-                alt=""
-                role="presentation"
-                src="https://d3i4yxtzktqr9n.cloudfront.net/web-eats-v2/a023a017672c2488.svg"
-                className="cart-icon"
-              />
+              <img alt="Start Shopping" role="presentation" src="https://d3i4yxtzktqr9n.cloudfront.net/web-eats-v2/a023a017672c2488.svg" className="cart-icon" />
               <span className="cart-span-title-one">
                 Add items to start a cart
               </span>
@@ -1008,14 +930,11 @@ export default function Cart() {
                 Once you add items from a restaurant or store, your cart will
                 appear here.
               </span>
-              <button
-                className="cart-shopping-start-button"
-                onClick={() => setIscartbtnclicked(false)}
-              >
+              <button type="submit" className="cart-shopping-start-button" onClick={() => setIscartbtnclicked(false)}>
                 Start shopping
               </button>
             </div>
-          )}
+          }
         </div>
       </div>
     </div>

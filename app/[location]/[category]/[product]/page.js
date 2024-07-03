@@ -187,7 +187,7 @@ function productDetails({ params }) {
           };
         } 
         else 
-        if (modifier?.min_permitted === 0 && modifier?.max_permitted >= 1) 
+        if (modifier?.max_permitted >= 1) 
         {
           const modifier_secondary_items = modifier?.modifier_secondary_items?.map((modifieritem) => {if (parseInt(modifieritem?.secondary_item_modifiers.length) > parseInt(0)) 
           {
@@ -216,7 +216,7 @@ function productDetails({ params }) {
                     };
                 } 
                 else 
-                if (secondItemModifier?.min_permitted === 0 && secondItemModifier?.max_permitted >= 1) 
+                if (secondItemModifier?.max_permitted >= 1) 
                 {
                       const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
                       {
@@ -515,8 +515,8 @@ function productDetails({ params }) {
                 modifier.valid_class === "error_check"
                   ? "success_check"
                   : "success_check",
-              modifier_secondary_items: modifier?.modifier_secondary_items?.map(
-                (seconditems) => {
+              modifier_secondary_items: modifier?.modifier_secondary_items?.map((seconditems) => 
+                {
                   if (itemId === seconditems?.id) {
                     return {
                       ...seconditems,
@@ -531,51 +531,41 @@ function productDetails({ params }) {
                     is_item_select: false,
                     total_price: 0,
                     item_select_to_sale: false,
-                    secondary_item_modifiers:
-                      seconditems?.secondary_item_modifiers?.map(
-                        (secondaryModifier) => {
-                          return {
-                            ...secondaryModifier,
-                            secondary_items_modifier_items:
-                              secondaryModifier?.secondary_items_modifier_items?.map(
-                                (secondaryItem) => {
-                                  if (
-                                    secondaryModifier?.select_single_option ===
-                                      1 &&
-                                    secondaryModifier?.min_permitted === 1 &&
-                                    secondaryModifier?.max_permitted === 1
-                                  ) {
-                                    return {
-                                      ...secondaryItem,
-                                      activeClass: "ob",
-                                      total_price: 0,
-                                      is_item_select: false,
-                                    };
-                                  } else if (
-                                    secondaryModifier?.select_single_option ===
-                                      1 &&
-                                    secondaryModifier?.min_permitted === 0 &&
-                                    secondaryModifier?.max_permitted >= 1
-                                  ) {
-                                    return {
-                                      ...secondaryItem,
-                                      activeClass: "mche",
-                                      total_price: 0,
-                                      is_item_select: false,
-                                    };
-                                  } else {
-                                    return {
-                                      ...secondaryItem,
-                                      counter: 0,
-                                      total_price: 0,
-                                      is_item_select: true,
-                                    };
-                                  }
-                                }
-                              ),
-                          };
-                        }
-                      ),
+                    secondary_item_modifiers:seconditems?.secondary_item_modifiers?.map((secondaryModifier) => {
+                      return {
+                        ...secondaryModifier,
+                        secondary_items_modifier_items: secondaryModifier?.secondary_items_modifier_items?.map((secondaryItem) => {
+                          if (secondaryModifier?.select_single_option === 1 && secondaryModifier?.min_permitted === 1 && secondaryModifier?.max_permitted === 1) 
+                          {
+                            return {
+                              ...secondaryItem,
+                              activeClass: "ob",
+                              total_price: 0,
+                              is_item_select: false,
+                            };
+                          } 
+                          else 
+                          if (secondaryModifier?.select_single_option === 1 && secondaryModifier?.min_permitted === 0 && secondaryModifier?.max_permitted >= 1) 
+                          {
+                            return {
+                              ...secondaryItem,
+                              activeClass: "mche",
+                              total_price: 0,
+                              is_item_select: false,
+                            };
+                          }
+                          else 
+                          {
+                            return {
+                              ...secondaryItem,
+                              counter: 0,
+                              total_price: 0,
+                              is_item_select: true,
+                            };
+                          }
+                        }),
+                      };
+                    }),
                   };
                 }
               ),
@@ -666,19 +656,12 @@ function productDetails({ params }) {
       // count the number of item_selected in checkboxes.
       let countItemSelected = 0;
       for (const countSelecteitem of updateItem.modifier_group) {
-        if (
-          countSelecteitem?.select_single_option === 1 &&
-          countSelecteitem?.min_permitted === 0 &&
-          countSelecteitem?.max_permitted >= 1
-        ) {
-          if (
-            parseInt(countSelecteitem?.modifier_secondary_items.length) >
-            parseInt(0)
-          ) {
-            for (const countItem of countSelecteitem?.modifier_secondary_items) {
-              if (countItem?.is_item_select) {
-                countItemSelected += 1;
-              }
+        if (countSelecteitem?.select_single_option === 1 && countSelecteitem?.min_permitted === 0 && countSelecteitem?.max_permitted >= 1) {
+          if (parseInt(countSelecteitem?.modifier_secondary_items.length) >parseInt(0)) 
+          {
+            for (const countItem of countSelecteitem?.modifier_secondary_items) 
+            {
+              if (countItem?.is_item_select){countItemSelected += 1;}
             }
           }
         }

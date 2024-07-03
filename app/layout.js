@@ -110,14 +110,13 @@ export default function RootLayout({ children })
 
       const response = await axiosPrivate.post(`/menu`, data);
       const convertToJSobj = response.data?.data?.menu.menu_json_log;
+      // console.log("Menu Json format:", convertToJSobj);
 
       const dayNumber = moment().day();
       const dateTime = moment().format("HH:mm");
       const dayName = moment().format("dddd");
 
-      const currentDay = convertToJSobj?.menus?.[0]?.service_availability?.find(
-        (day) => day?.day_of_week?.toLowerCase().includes(dayName.toLowerCase())
-      );
+      const currentDay = convertToJSobj?.menus?.[0]?.service_availability?.find((day) => day?.day_of_week?.toLowerCase().includes(dayName.toLowerCase()));
       setDayOpeningClosingTime(currentDay);
       if (currentDay) {
         const timePeriods = currentDay?.time_periods;

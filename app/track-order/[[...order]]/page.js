@@ -103,8 +103,9 @@ function TrackOrder({params})
         }
     }
 
-    const handleSearchOrderCode = () =>
+    const handleSearchOrderCode = (e) =>
     {
+        e.preventDefault()
         setLoader(true)
         getTrakcOrderDetailByOrderCode()
     }
@@ -131,10 +132,10 @@ function TrackOrder({params})
                                         </div>
                                     </div>
 
-                                    <div className="btautrackorder-window">
-                                        <input type="email" placeholder="Enter your order code" value={orderhash} className="track_order" onChange={handleOrderHashTypeByUser}/>
-                                        <button className='trackorder_btn' disabled={issearchdisable} onClick={handleSearchOrderCode}>Search</button>
-                                    </div>
+                                    <form className="btautrackorder-window" onSubmit={handleSearchOrderCode}>
+                                        <input type="text" placeholder="Enter your order code" value={orderhash} className="track_order" onChange={handleOrderHashTypeByUser}/>
+                                        <button type="submit" className='trackorder_btn' disabled={issearchdisable}>Search</button>
+                                    </form>
 
                                     <div className="altrackorder-desk">
                                         <div className="spacer _40"></div>

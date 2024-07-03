@@ -28,18 +28,13 @@ export const WebsiteSingleItem = memo((props) => {
     <div className="e5 e6">
       <div className="single-product-level-one-div">
         <div className="level-one-div-nested-one">
-          <Link className="back-btn" href="/">
-            <svg
-              aria-hidden="true"
-              focusable="false"
-              viewBox="0 0 24 24"
-              className="back-svg"
-            >
+          <a className="back-btn" href="/">
+            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="back-svg">
               <path d="M22 13.5H6.3l5.5 7.5H8.3l-6.5-9 6.5-9h3.5l-5.5 7.5H22v3z"></path>
             </svg>
             <div className="spacer _8"></div>
             Back to list
-          </Link>
+          </a>
 
           <button className="cross-btn" onClick={() => setIsitemclicked(false)}>
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" className="back-svg">
@@ -88,16 +83,11 @@ export const WebsiteSingleItem = memo((props) => {
           <div className="product-title">
             <h2 className="product-h2"></h2>
             <h1 className="product-h1">{singleitem?.title}</h1>
-            <span className="product-price-span">
-              {singleitem?.country_price_symbol}
-              {parseFloat(singleitem?.price).toFixed(2)}
-            </span>
+            <span className="product-price-span">&pound;{parseFloat(singleitem?.price).toFixed(2)}</span>
             <div className="product_h8"></div>
 
             <div className="product-description">
-              <div className="product-description-div">
-                {singleitem?.description}
-              </div>
+              <div className="product-description-div">{singleitem?.description}</div>
             </div>
 
             <div className="product_h8"></div>
@@ -110,7 +100,7 @@ export const WebsiteSingleItem = memo((props) => {
               return (
                 // {/* minimum option = '1' and maximum option = 1 and single item select = 1 */}
                 // modifier?.select_single_option === 1 && modifier?.min_permitted === 1 && modifier?.max_permitted === 1 ? 
-                modifier?.min_permitted === 1 && modifier?.max_permitted === 1 ? 
+                modifier?.select_single_option === 1 && modifier?.min_permitted === 1 && modifier?.max_permitted === 1 ? 
                 (
                   <li key={index} className={`section${index}`} index={index}>
                     <div>
@@ -226,7 +216,7 @@ export const WebsiteSingleItem = memo((props) => {
                   </li>
                 ) : // {/* minimum option = '0' and maximum option = 1 and single item select = 1 */}
                 // modifier?.select_single_option === 1 &&
-                  modifier?.max_permitted >= 1 && (
+                modifier?.max_permitted >= 1 && (
                   <li key={index} className={`section${index}`} index={index}>
                     <div>
                       <div>
@@ -272,10 +262,7 @@ export const WebsiteSingleItem = memo((props) => {
                                               <div className="spacer _8"></div>
                                               {
                                                 getAmountConvertToFloatWithFixed(seconditems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && 
-                                                <div className="modifier-group-price">
-                                                  {seconditems?.country_price_symbol}
-                                                  {getAmountConvertToFloatWithFixed(seconditems?.price,2)}
-                                                </div>
+                                                <div className="modifier-group-price">&pound;{getAmountConvertToFloatWithFixed(seconditems?.price,2)}</div>
                                               }
                                             </div>
                                           </div>
@@ -298,10 +285,7 @@ export const WebsiteSingleItem = memo((props) => {
                                               <div className="spacer _8"></div>
                                               {
                                                 getAmountConvertToFloatWithFixed(seconditems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && (
-                                                <div className="modifier-group-price">
-                                                  {seconditems?.country_price_symbol}
-                                                  {parseFloat(seconditems?.price).toFixed(2)}
-                                                </div>
+                                                <div className="modifier-group-price">&pound;{parseFloat(seconditems?.price).toFixed(2)}</div>
                                               )}
                                             </div>
                                           </div>

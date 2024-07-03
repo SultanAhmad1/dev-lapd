@@ -123,8 +123,7 @@ function Footer() {
             <div className="copy-right-hr"></div>
             <div className="copy-rigth">
               <div className="copy-right-nested-div">
-                @ All Rights Reserved. {websiteModificationData?.brand?.name}{" "}
-                {moment().format("YYYY")}. Powered by ClearTwo
+                @ All Rights Reserved. {websiteModificationData?.brand?.name} {moment().format("YYYY")}. Powered by ClearTwo
               </div>
             </div>
           </div>
