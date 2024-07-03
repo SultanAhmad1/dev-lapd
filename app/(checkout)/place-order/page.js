@@ -488,16 +488,12 @@ function UserForm() {
     }
   }
 
-  function handlePayNow() 
+  const handlePayNow = (e) => 
   {
-    setLoader(true);
-    if (
-      parseInt(doorhousename.length) === parseInt(0) ||
-      parseInt(email.length) === parseInt(0) ||
-      parseInt(phone.length) === parseInt(0) ||
-      parseInt(firstname.length) === parseInt(0) ||
-      parseInt(lastname.length) === parseInt(0)
-    ) {
+    e.preventDefault()
+
+    if (parseInt(doorhousename.length) === parseInt(0) || parseInt(email.length) === parseInt(0) || parseInt(phone.length) === parseInt(0) || parseInt(firstname.length) === parseInt(0) ||parseInt(lastname.length) === parseInt(0)) 
+    {
       setPayNowBottomError("Please check * (asterisk) mark field and fill them.");
       setTimeout(() => {setLoader(false);}, 2000);
       return;
@@ -511,736 +507,34 @@ function UserForm() {
       return;
     }
     setPayNowBottomError("");
+    setLoader(true);
     storeCustomerDetail();
   }
 
   return (
     <Fragment>
       <div className="e5ald0m1m2amc5checkout-desk">
-        <div className="m3m4m5gim6checkout-desk">
-          <div className="hmg1checkout-desk">
-            <div className="hmg1mhb0checkout-desk">
-              <div className="mimjepmkmlmmcheckout-desk">
-                <h3 className="eik5ekk6checkout-desk">
-                  <span className="d1chekcout-desk-span">Delivery Details</span>
-                </h3>
-                <span style={{ color: "red", fontSize: "300" }}>
-                  *Fields marked with an asterisk must be filled in to proceed.
-                </span>
-                <div>
-                  <div className="d1g1checkout-desk">
-                    <a className="allzc5checkout-desk">
-                      <div className="kgcheckout-desk">
-                        <svg
-                          aria-hidden="true"
-                          focusable="false"
-                          viewBox="0 0 24 24"
-                          className="c8c7cccdcheckout"
-                        >
-                          <g clipPath="url(#clip0)">
-                            <path d="M17.583 5.166a7.896 7.896 0 00-11.166 0c-3.084 3.083-3.084 8.167 0 11.25L12 21.999l5.583-5.666c3.084-3 3.084-8.084 0-11.167zM12 12.416c-.917 0-1.667-.75-1.667-1.667 0-.916.75-1.666 1.667-1.666s1.667.75 1.667 1.666c0 .917-.75 1.667-1.667 1.667z"></path>
-                          </g>
-                          <defs>
-                            <clipPath id="clip0">
-                              <path
-                                transform="translate(2 2)"
-                                d="M0 0h20v20H0z"
-                              ></path>
-                            </clipPath>
-                          </defs>
-                        </svg>
-                      </div>
-
-                      <div className="alamd1g1checkout-desk">
-                        <span className="chd2cjd3b1checkout-desk">
-                          {postcode}
-                        </span>
-                        <p
-                          data-baseweb="typo-paragraphsmall"
-                          className="b1chcwcid3checkout-desk"
-                        >
-                          <span
-                            style={{
-                              fontFamily: "UberMoveText",
-                              color: "#545454",
-                            }}
-                          >
-                            {street1} {street2}
-                          </span>
-                        </p>
-                      </div>
-
-                      <button
-                        className="chcicjckhacheckout-desk-btn"
-                        onClick={handlePostcodeEdit}
-                      >
-                        {deliverydetailtext}
-                      </button>
-                    </a>
-
-                    {ispostcodeeditclicked && (
-                      <div className="btautrackorder-postcode-edit">
-                        <input type="text" className="strtpostcode" value={street1} />
-                        <input type="text" className="strtpostcode" value={street2} />
-                        <div className="strtpostcode-btn">
-                          <input type="text" className="strtpostcode" value={postcode} />
-                          <button className="change_postcode_btn" onClick={() => setIschangepostcodeclicked( !ischangepostcodeclicked )}>Change postcode</button>
-                        </div>
-                      </div>
-                    )}
-                    <div className="alcheckout-desk">
-                      <div className="spacer _40"></div>
-                      <div className="edhtb9d1checkout-desk"></div>
-                    </div>
-                  </div>
-
-                  <div className="d1g1checkout-desk">
-                    <div className="allzc5checkout-desk">
-                      <div className="kgcheckout-desk">
-                        <svg aria-hidden="true"focusable="false"viewBox="0 0 26 26"className="cxcwd0d1checkout-svg">
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M18.958 7.042a5.958 5.958 0 11-11.916 0 5.958 5.958 0 0111.916 0zM3.25 21.667c0-3.575 2.925-6.5 6.5-6.5h6.5c3.575 0 6.5 2.925 6.5 6.5v3.25H3.25v-3.25z"
-                          ></path>
-                        </svg>
-                      </div>
-
-                      <div className="alamd1g1checkout-desk">
-                        <span className="chd2cjd3b1checkout-desk">
-                          Add door number{" "}
-                          <span style={{ color: "red" }}>*</span>
-                        </span>
-                        {!isdoorinputdisplayclicked && (
-                          <p
-                            data-baseweb="typo-paragraphsmall"
-                            className="b1chcwcid3checkout-desk"
-                          >
-                            <span
-                              style={{
-                                fontFamily: "UberMoveText",
-                                color: "#05944F",
-                              }}
-                            >
-                              {doorhousename}
-                            </span>
-                          </p>
-                        )}
-                      </div>
-
-                      <button
-                        className="chcicjckhacheckout-desk-btn"
-                        onClick={handleDoorHouseClicked}
-                      >
-                        {doornumbertext}
-                      </button>
-                    </div>
-
-                    {isdoorinputdisplayclicked && (
-                      <div className="btaucheckout-window">
-                        <input type="text" ref={addDoorNumberRef} placeholder="Enter door number or name" value={doorhousename} className={`door_number ${parseInt(doorhousename.length) > parseInt(0)? "parse-success": "parse-erorr"}`} onChange={handleDoorOrHouse}/>
-                      </div>
-                    )}
-                    <div className="alcheckout-desk">
-                      <div className="spacer _40"></div>
-                      <div className="edhtb9d1checkout-desk"></div>
-                    </div>
-                  </div>
-
-                  <div className="d1g1checkout-desk">
-                    <a className="allzc5checkout-desk">
-                      <div className="kgcheckout-desk">
-                        <svg
-                          aria-hidden="true"
-                          focusable="false"
-                          viewBox="0 0 26 26"
-                          className="cxcwd0d1checkout-svg"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M18.958 7.042a5.958 5.958 0 11-11.916 0 5.958 5.958 0 0111.916 0zM3.25 21.667c0-3.575 2.925-6.5 6.5-6.5h6.5c3.575 0 6.5 2.925 6.5 6.5v3.25H3.25v-3.25z"
-                          ></path>
-                        </svg>
-                      </div>
-
-                      <div className="alamd1g1checkout-desk">
-                        <span className="chd2cjd3b1checkout-desk">
-                          Add driver instructions
-                        </span>
-                        {!isadddriverdisplayclicked && (
-                          <p
-                            data-baseweb="typo-paragraphsmall"
-                            className="b1chcwcid3checkout-desk"
-                          >
-                            <span
-                              style={{
-                                fontFamily: "UberMoveText",
-                                color: "#05944F",
-                              }}
-                            >
-                              {driverinstruction}
-                            </span>
-                          </p>
-                        )}
-                      </div>
-
-                      <button
-                        className="chcicjckhacheckout-desk-btn"
-                        onClick={handleDriverInstruction}
-                      >
-                        {isadddoortext}
-                      </button>
-                    </a>
-
-                    {isadddriverdisplayclicked && (
-                      <div className="btaucheckout-window">
-                        <textarea
-                          placeholder="Add delivery instructions"
-                          rows="2"
-                          aria-label="Add delivery instructions"
-                          value={driverinstruction}
-                          onChange={handleDriverInstructionEvent}
-                          className="door_number"
-                          spellCheck="false"
-                        ></textarea>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <hr className="edfhmthtcheckout-desk"></hr>
-              <div className="mimjepmkmlmmcheckout-desk">
-                <h3 className="eik5ekk6checkout-desk">
-                  <span className="d1chekcout-desk-span">Contact Details</span>
-                </h3>
-
-                <div className="d1g1checkout-desk">
-                  <a className="allzc5checkout-desk">
-                    <div className="f2checkout-desk">
-                      <svg
-                        aria-hidden="true"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                        className="c8c7cccdcheckout"
-                      >
-                        <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
-                      </svg>
-                    </div>
-
-                    <div className="alamd1g1checkout-desk">
-                      <span className="chd2cjd3b1checkout-desk">
-                        Add email address{" "}
-                        <span style={{ color: "red" }}>*</span>
-                      </span>
-                      {!isemailinputtoggle && (
-                        <p
-                          data-baseweb="typo-paragraphsmall"
-                          className="b1chcwcid3checkout-desk"
-                        >
-                          <span
-                            style={{
-                              fontFamily: "UberMoveText",
-                              color: "#05944F",
-                            }}
-                          >
-                            {email}
-                          </span>
-                        </p>
-                      )}
-                    </div>
-
-                    <button
-                      className="chcicjckhacheckout-desk-btn"
-                      onClick={handleEmailToggle}
-                    >
-                      {emailaddbtntext}
-                    </button>
-                  </a>
-
-                  {isemailinputtoggle && (
-                    <div className="btaucheckout-window">
-                      <input
-                        type="email"
-                        required
-                        placeholder="Enter email"
-                        value={email}
-                        className={`email-checkout ${
-                          parseInt(email.length) > parseInt(0)
-                            ? "parse-success"
-                            : "parse-erorr"
-                        }`}
-                        onChange={handleUserEmail}
-                      />
-                      {/* {
-                        parseInt(emailError.length) > parseInt(0) &&
-                        <>
-                          <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
-                          
-                          <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
-                            <span style={{color: "red"}}>* This field is required.</span>
-                          </div>
-                        </>
-                      } */}
-                    </div>
-                  )}
-                  <div className="alcheckout-desk">
-                    <div className="spacer _40"></div>
-                    <div className="edhtb9d1checkout-desk"></div>
-                  </div>
-                </div>
-
-                <div className="d1g1checkout-desk">
-                  <a className="allzc5checkout-desk">
-                    <div className="f2checkout-desk">
-                      <svg
-                        aria-hidden="true"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                        className="c8c7cccdcheckout"
-                      >
-                        <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
-                      </svg>
-                    </div>
-
-                    <div className="alamd1g1checkout-desk">
-                      <span className="chd2cjd3b1checkout-desk">
-                        Add phone number <span style={{ color: "red" }}>*</span>
-                      </span>
-                      {!isphoneinputtoggle && (
-                        <p
-                          data-baseweb="typo-paragraphsmall"
-                          className="b1chcwcid3checkout-desk"
-                        >
-                          <span
-                            style={{
-                              fontFamily: "UberMoveText",
-                              color: "#05944F",
-                            }}
-                          >
-                            {phone}
-                          </span>
-                        </p>
-                      )}
-                    </div>
-
-                    <button
-                      className="chcicjckhacheckout-desk-btn"
-                      onClick={handlePhoneToggle}
-                    >
-                      {phoneaddbtntext}
-                    </button>
-                  </a>
-
-                  {isphoneinputtoggle && (
-                    <div className="btaucheckout-window">
-                      <input
-                        type="number"
-                        placeholder="Enter phone number"
-                        value={phone}
-                        className={`email-checkout ${
-                          parseInt(phone.length) > parseInt(0)
-                            ? "parse-success"
-                            : "parse-erorr"
-                        }`}
-                        onChange={handleUserPhone}
-                      />
-                    </div>
-                  )}
-                  <div className="alcheckout-desk">
-                    <div className="spacer _40"></div>
-                    <div className="edhtb9d1checkout-desk"></div>
-                  </div>
-                </div>
-
-                <div className="d1g1checkout-desk">
-                  <a className="allzc5checkout-desk">
-                    <div className="f2checkout-desk">
-                      <svg
-                        aria-hidden="true"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                        className="c8c7cccdcheckout"
-                      >
-                        <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
-                      </svg>
-                    </div>
-
-                    <div className="alamd1g1checkout-desk">
-                      <span className="chd2cjd3b1checkout-desk">
-                        Add name <span style={{ color: "red" }}>*</span>
-                      </span>
-                      {!isfirstnametoggle && (
-                        <p
-                          data-baseweb="typo-paragraphsmall"
-                          className="b1chcwcid3checkout-desk"
-                        >
-                          <span
-                            style={{
-                              fontFamily: "UberMoveText",
-                              color: "#05944F",
-                            }}
-                          >
-                            {firstname} {lastname}
-                          </span>
-                        </p>
-                      )}
-                    </div>
-
-                    <button
-                      className="chcicjckhacheckout-desk-btn"
-                      onClick={handleFirstNameToggle}
-                    >
-                      {firstnameaddbtntext}
-                    </button>
-                  </a>
-
-                  {isfirstnametoggle && (
-                    <>
-                      <div className="btaucheckout-window">
-                        <input
-                          type="text"
-                          style={{ marginBottom: "4px" }}
-                          placeholder="Enter first name"
-                          value={firstname}
-                          className={`email-checkout ${
-                            parseInt(firstname.length) > parseInt(0)
-                              ? "parse-success"
-                              : "parse-erorr"
-                          }`}
-                          onChange={handleUserFirstName}
-                        />
-                      </div>
-
-                      <div className="btaucheckout-window">
-                        <input
-                          type="text"
-                          placeholder="Enter last name"
-                          value={lastname}
-                          className={`email-checkout ${
-                            parseInt(lastname.length) > parseInt(0)
-                              ? "parse-success"
-                              : "parse-erorr"
-                          }`}
-                          onChange={handleUserLastName}
-                        />
-                      </div>
-                    </>
-                  )}
-                  <div className="alcheckout-desk">
-                    <div className="spacer _40"></div>
-                    <div className="edhtb9d1checkout-desk"></div>
-                  </div>
-                </div>
-              </div>
-
-              <hr className="edfhmthtcheckout-desk"></hr>
-              <div className="mimjepmkmlmmcheckout-desk">
-                <h3 className="eik5ekk6checkout-desk">
-                  <span className="d1chekcout-desk-span">
-                    Delivery Estimate
-                  </span>
-                </h3>
-                <div className="g8checkout-desk">
-                  <div className="oagdalc5o7obc9b1npcheckout-desk">
-                    <div className="ale7c5k8hbocheckout-desk">
-                      <svg
-                        width="20"
-                        height="20"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                      >
-                        <title>Calendar</title>
-                        <path
-                          fillRule="evenodd"
-                          clipRule="evenodd"
-                          d="M23 8V4h-3V1h-3v3H7V1H4v3H1v4h22Zm0 15H1V10h22v13ZM8 14H5v3h3v-3Z"
-                          fill="currentColor"
-                        ></path>
-                      </svg>
-                    </div>
-
-                    <div className="ald0fwc5checkout-desk">
-                      <h3 className="alamk3checkout-desk-h3">
-                        <div className="alc5checkout-desk">
-                          <span className="chd2cjd3checkout-desk-span">
-                            Schedule
-                          </span>
-                        </div>
-                        <select value={moment(deliverytime).format("HH:mm A")} className="bubvbwbdbxbybkaubzc0checkout-window-input" onChange={handleDeliveryTime}>
-                          {
-                            listtime?.map((time, index) => {
-                              return (
-                                (moment(time?.time,"HH:mm").format("HH:mm")   >= moment(openingtime,"HH:mm").format("HH:mm") && moment(closingtime,"HH:mm").format("HH:mm")  >= moment(time?.time,"HH:mm").format("HH:mm")) && 
-                                (
-                                  <option key={index} value={time?.time}>
-                                    {moment(time?.time, "HH:mm A").format("HH:mm A")}
-                                  </option>
-                                )
-                              );
-                            })
-                          }
-                        </select>
-                      </h3>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {
-                parseInt(saveMyDetailsError.length) > parseInt(0) && (
-                  <p style={{color: "red",background: "#eda7a7",textAlign: "center",padding: "10px",marginBottom: "10px",}}>{saveMyDetailsError}</p>
-                )
-              }
-              {/* <div className='mimjepmkmlmmcheckout-desk'>
-                <div className="allzc5checkout-desk">
-                  <div className="f2checkout-desk">
-                    <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
-                      <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
-                    </svg>
-                  </div> 
-                  <input type="checkbox" className="agaxlqdflacheckout-desk-input"></input>
-                  <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isavefasterdetailsclicked ? "mch" : ""}`} onClick={handleSaveMyDetails}>
-                    <div className="spacer _16"></div>
-                    <div className="d1alfwllcheckout-desk">
-                      <div className="ald1ame7lmlncheckout-desk">
-                        <div className="alaqcheckout-desk">
-                          <div className="alamjiencheckout-desk">
-                            <div className="chcicjckh6checkout-desk">Save my details for faster checkout next time</div>
-                            <div className="spacer _8"></div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </label>
-                </div>
-                {
-                  isavefasterdetailsclicked &&
-                  <>
-                    <div className='chcicwd3undersavefastercheckout'>
-                      <div className='toundersavefastercheckout'>
-                        <div className="eik4ekk5g8undersavefastercheckout">
-                          <span className="h3euh4eimfekfdundersavefastercheckout-span">{Message}</span>
-                        </div>
-                        {
-                          iscustomerhaspassword === false &&
-                          <div className="btaundersavefastercheckout">
-                            <label className='password-label'><span style={{color: "red"}}>*</span>Password: </label>
-                            <input type="password" placeholder="Enter password" value={password} className="undersavecheckoutinput" onChange={handlePassword}/>
-                          </div>
-                        }
-                        <div className='alh2amenc9jdundersavefastercheckout'>
-                          {
-                            iscustomerhaspassword ?
-                              <button className='agloundersavefastercheckout' onClick={handleLogin}>Login</button>
-                            :
-                              <button className='agloundersavefastercheckout' onClick={handleRegisteration}>Register</button>
-                          }
-                          <button className='coasgundersavefastercheckout' onClick={() => setIsavefasterdetailsclicked(!isavefasterdetailsclicked)}>Continue as guest user</button>
-                        </div>
-                      </div>
-                    </div>
-                   
-                  </>
-                }
-              </div> */}
-
-              <hr className="edfhmthtcheckout-desk"></hr>
-              <div className="mimjepmkmlmmcheckout-desk">
-                <div className="d1g1checkout-desk">
-                  <div className="allzc5checkout-desk">
-                    <div className="alamd1g1checkout-desk">
-                      <span className="chd2cjd3b1checkout-desk">
-                        When you place your order, we will send you occasional
-                        marketing offers and promotions. Please select below if
-                        you do not want to receive this marketing.
-                      </span>
-                    </div>
-                  </div>
-
-                  <div className="almycheckout-desk">
-                    <div
-                      className="allzc5checkout-desk"
-                      onClick={() => setIsbyemailclicked(!isbyemailclicked)}
-                    >
-                      <input
-                        type="checkbox"
-                        className="agaxlqdflacheckout-desk-input"
-                      ></input>
-                      <label
-                        className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${
-                          isbyemailclicked ? "mch" : ""
-                        }`}
-                      >
-                        <div className="spacer _16"></div>
-                        <div className="d1alfwllcheckout-desk">
-                          <div className="ald1ame7lmlncheckout-desk">
-                            <div className="alaqcheckout-desk">
-                              <div className="alamjiencheckout-desk">
-                                <div className="chcicjckh6checkout-desk">
-                                  By Email
-                                </div>
-                                <div className="spacer _8"></div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </label>
-                    </div>
-
-                    <div className="spacer _48"></div>
-                    <div
-                      className="allzc5checkout-desk"
-                      onClick={() => setIsbysmsclicked(!isbysmsclicked)}
-                    >
-                      <input
-                        type="checkbox"
-                        className="agaxlqdflacheckout-desk-input"
-                      ></input>
-                      <label
-                        className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${
-                          isbysmsclicked ? "mch" : ""
-                        }`}
-                      >
-                        <div className="spacer _16"></div>
-                        <div className="d1alfwllcheckout-desk">
-                          <div className="ald1ame7lmlncheckout-desk">
-                            <div className="alaqcheckout-desk">
-                              <div className="alamjiencheckout-desk">
-                                <div className="chcicjckh6checkout-desk">
-                                  By SMS
-                                </div>
-                                <div className="spacer _8"></div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </label>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div></div>
-          </div>
-
-          <div className="d1g1checkout-desk">
-            <div className="gmgngoalamgpcheckout-desk">
-              <div className="gqcheckout-desk">
-                {parseInt(PayNowBottomError.length) > parseInt(0) && (
-                  <p
-                    style={{
-                      color: "red",
-                      background: "#eda7a7",
-                      textAlign: "center",
-                      padding: "10px",
-                      marginBottom: "10px",
-                    }}
-                  >
-                    {PayNowBottomError}
-                  </p>
-                )}
-                <div className="boh7bqh8checkout-desk">
-                  <button
-                    className="h7brboe1checkout-btn"
-                    onClick={handlePayNow}
-                  >
-                    Pay Now
-                  </button>
-                </div>
-              </div>
-              <div className="eeb0checkout-desk">
-                <div className="b5grekcheckout-desk">
-                  {/* <hr className='f7bsh1f8checkout-hr'></hr> */}
-                  <div className="bkhybmh8aldfcheckout-desk">
-                    <div className="albcaqcheckout">Total</div>
-                    &pound;{getAmountConvertToFloatWithFixed(totalOrderAmountValue, 2)}
-                  </div>
-
-                  <div className="itcheckout-desk">
-                    <div className="bodgbqdhfncheckout-desk">
-                      <div className="bodgbqdhb1checkout-desK">
-                        <span className="bodgbqdhiucheckout-desk">
-                          <span className="bodge1exiucheckout-desk-span">
-                            ALLERGIES:{" "}
-                          </span>
-                          If you or someone you’re ordering for has an allergy,
-                          please contact the merchant directly to let them know.
-                        </span>
-                      </div>
-                    </div>
-                    <div className="e6h3checkout-desk"></div>
-
-                    <div className="bodgbqdhfncheckout-desk">
-                      <div className="bodgbqdhb1checkout-desK">
-                        <span className="bodgbqdhiucheckout-desk">
-                          If you’re not around when the delivery person arrives,
-                          they’ll leave your order at the door. By placing your
-                          order, you agree to take full responsibility for it
-                          once it’s delivered. Orders containing alcohol or
-                          other restricted items may not be eligible for leave
-                          at door and will be returned to the store if you are
-                          not available.
-                        </span>
-                      </div>
-                    </div>
-                    <div className="e6h3checkout-desk"></div>
-
-                    <div className="bodgbqdhfncheckout-desk">
-                      <div className="bodgbqdhb1checkout-desK">
-                        <span className="bodgbqdhiucheckout-desk">
-                          Whilst we, and our restaurant partners, have safety
-                          measures to mitigate food safety risk, couriers may be
-                          delivering more than one order so we cannot eliminate
-                          the risk of cross-contamination from allergens.
-                        </span>
-                      </div>
-                    </div>
-                    <div className="e6h3checkout-desk"></div>
-                  </div>
-                </div>
-              </div>
-              <div className="gqcheckout-desk"></div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div className="afcheckout">
-        <div className="">
-          <div className="cwcxcyczd0d1checkout">
+        <form className="m3m4m5gim6checkout-desk" onSubmit={handlePayNow}>
             <div className="hmg1checkout-desk">
               <div className="hmg1mhb0checkout-desk">
                 <div className="mimjepmkmlmmcheckout-desk">
                   <h3 className="eik5ekk6checkout-desk">
-                    <span className="d1chekcout-desk-span">
-                      Delivery Details
-                    </span>
+                    <span className="d1chekcout-desk-span">Delivery Details</span>
                   </h3>
                   <span style={{ color: "red", fontSize: "300" }}>
-                    *Fields marked with an asterisk must be filled in to
-                    proceed.
+                    *Fields marked with an asterisk must be filled in to proceed.
                   </span>
                   <div>
                     <div className="d1g1checkout-desk">
-                      <a className="allzc5checkout-desk">
+                      <div className="allzc5checkout-desk">
                         <div className="kgcheckout-desk">
-                          <svg
-                            aria-hidden="true"
-                            focusable="false"
-                            viewBox="0 0 24 24"
-                            className="c8c7cccdcheckout"
-                          >
+                          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
                             <g clipPath="url(#clip0)">
                               <path d="M17.583 5.166a7.896 7.896 0 00-11.166 0c-3.084 3.083-3.084 8.167 0 11.25L12 21.999l5.583-5.666c3.084-3 3.084-8.084 0-11.167zM12 12.416c-.917 0-1.667-.75-1.667-1.667 0-.916.75-1.666 1.667-1.666s1.667.75 1.667 1.666c0 .917-.75 1.667-1.667 1.667z"></path>
                             </g>
                             <defs>
                               <clipPath id="clip0">
-                                <path
-                                  transform="translate(2 2)"
-                                  d="M0 0h20v20H0z"
-                                ></path>
+                                <path transform="translate(2 2)"d="M0 0h20v20H0z"></path>
                               </clipPath>
                             </defs>
                           </svg>
@@ -1250,56 +544,25 @@ function UserForm() {
                           <span className="chd2cjd3b1checkout-desk">
                             {postcode}
                           </span>
-                          <p
-                            data-baseweb="typo-paragraphsmall"
-                            className="b1chcwcid3checkout-desk"
-                          >
-                            <span
-                              style={{
-                                fontFamily: "UberMoveText",
-                                color: "#545454",
-                              }}
-                            >
+                          <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                            <span style={{fontFamily: "UberMoveText",color: "#545454",}}>
                               {street1} {street2}
                             </span>
                           </p>
                         </div>
 
-                        <button
-                          className="chcicjckhacheckout-desk-btn"
-                          onClick={handlePostcodeEdit}
-                        >
+                        <button className="chcicjckhacheckout-desk-btn" onClick={handlePostcodeEdit}>
                           {deliverydetailtext}
                         </button>
-                      </a>
+                      </div>
+
                       {ispostcodeeditclicked && (
                         <div className="btautrackorder-postcode-edit">
-                          <input
-                            type="text"
-                            className="strtpostcode"
-                            value={street1}
-                          ></input>
-                          <input
-                            type="text"
-                            className="strtpostcode"
-                            value={street2}
-                          ></input>
+                          <input type="text" className="strtpostcode" defaultValue={street1} />
+                          <input type="text" className="strtpostcode" defaultValue={street2} />
                           <div className="strtpostcode-btn">
-                            <input
-                              type="text"
-                              className="strtpostcode"
-                              value={postcode}
-                            ></input>
-                            <button
-                              className="change_postcode_btn"
-                              onClick={() =>
-                                setIschangepostcodeclicked(
-                                  !ischangepostcodeclicked
-                                )
-                              }
-                            >
-                              Change postcode
-                            </button>
+                            <input type="text" className="strtpostcode" defaultValue={postcode} />
+                            <button className="change_postcode_btn" onClick={() => setIschangepostcodeclicked( !ischangepostcodeclicked )}>Change postcode</button>
                           </div>
                         </div>
                       )}
@@ -1312,72 +575,35 @@ function UserForm() {
                     <div className="d1g1checkout-desk">
                       <div className="allzc5checkout-desk">
                         <div className="kgcheckout-desk">
-                          <svg
-                            aria-hidden="true"
-                            focusable="false"
-                            viewBox="0 0 26 26"
-                            className="cxcwd0d1checkout-svg"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              clipRule="evenodd"
-                              d="M18.958 7.042a5.958 5.958 0 11-11.916 0 5.958 5.958 0 0111.916 0zM3.25 21.667c0-3.575 2.925-6.5 6.5-6.5h6.5c3.575 0 6.5 2.925 6.5 6.5v3.25H3.25v-3.25z"
-                            ></path>
+                          <svg aria-hidden="true"focusable="false"viewBox="0 0 26 26"className="cxcwd0d1checkout-svg">
+                            <path fillRule="evenodd" clipRule="evenodd" d="M18.958 7.042a5.958 5.958 0 11-11.916 0 5.958 5.958 0 0111.916 0zM3.25 21.667c0-3.575 2.925-6.5 6.5-6.5h6.5c3.575 0 6.5 2.925 6.5 6.5v3.25H3.25v-3.25z"></path>
                           </svg>
                         </div>
 
                         <div className="alamd1g1checkout-desk">
                           <span className="chd2cjd3b1checkout-desk">
-                            Add door number{" "}
+                            Add door number
                             <span style={{ color: "red" }}>*</span>
                           </span>
                           {!isdoorinputdisplayclicked && (
-                            <p
-                              data-baseweb="typo-paragraphsmall"
-                              className="b1chcwcid3checkout-desk"
-                            >
-                              <span
-                                style={{
-                                  fontFamily: "UberMoveText",
-                                  color: "#05944F",
-                                }}
-                              >
+                            <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                              <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
                                 {doorhousename}
                               </span>
                             </p>
                           )}
                         </div>
 
-                        <button
-                          className="chcicjckhacheckout-desk-btn"
-                          onClick={handleDoorHouseClicked}
-                        >
+                        <button className="chcicjckhacheckout-desk-btn" onClick={handleDoorHouseClicked}>
                           {doornumbertext}
                         </button>
                       </div>
 
                       {isdoorinputdisplayclicked && (
                         <div className="btaucheckout-window">
-                          <input
-                            type="text"
-                            ref={addDoorNumberRef}
-                            placeholder="Enter door number or name"
-                            value={doorhousename}
-                            className={`door_number ${
-                              parseInt(doorhousename.length) > parseInt(0)
-                                ? "parse-success"
-                                : "parse-erorr"
-                            }`}
-                            onChange={handleDoorOrHouse}
-                          />
-                          {/* <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
-                            
-                            <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
-                                <span style={{color: "red"}}>* This field is required.</span>
-                            </div> */}
+                          <input type="text" ref={addDoorNumberRef} placeholder="Enter door number or name" value={doorhousename} className={`door_number ${parseInt(doorhousename.length) > parseInt(0)? "parse-success": "parse-erorr"}`} onChange={handleDoorOrHouse}/>
                         </div>
                       )}
-
                       <div className="alcheckout-desk">
                         <div className="spacer _40"></div>
                         <div className="edhtb9d1checkout-desk"></div>
@@ -1385,19 +611,10 @@ function UserForm() {
                     </div>
 
                     <div className="d1g1checkout-desk">
-                      <a className="allzc5checkout-desk">
+                      <div className="allzc5checkout-desk">
                         <div className="kgcheckout-desk">
-                          <svg
-                            aria-hidden="true"
-                            focusable="false"
-                            viewBox="0 0 26 26"
-                            className="cxcwd0d1checkout-svg"
-                          >
-                            <path
-                              fillRule="evenodd"
-                              clipRule="evenodd"
-                              d="M18.958 7.042a5.958 5.958 0 11-11.916 0 5.958 5.958 0 0111.916 0zM3.25 21.667c0-3.575 2.925-6.5 6.5-6.5h6.5c3.575 0 6.5 2.925 6.5 6.5v3.25H3.25v-3.25z"
-                            ></path>
+                          <svg aria-hidden="true" focusable="false" viewBox="0 0 26 26" className="cxcwd0d1checkout-svg">
+                            <path fillRule="evenodd" clipRule="evenodd" d="M18.958 7.042a5.958 5.958 0 11-11.916 0 5.958 5.958 0 0111.916 0zM3.25 21.667c0-3.575 2.925-6.5 6.5-6.5h6.5c3.575 0 6.5 2.925 6.5 6.5v3.25H3.25v-3.25z"></path>
                           </svg>
                         </div>
 
@@ -1405,46 +622,32 @@ function UserForm() {
                           <span className="chd2cjd3b1checkout-desk">
                             Add driver instructions
                           </span>
-                          {!isadddriverdisplayclicked && (
-                            <p
-                              data-baseweb="typo-paragraphsmall"
-                              className="b1chcwcid3checkout-desk"
-                            >
-                              <span
-                                style={{
-                                  fontFamily: "UberMoveText",
-                                  color: "#05944F",
-                                }}
-                              >
+                          {
+                            !isadddriverdisplayclicked && 
+                            <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                              <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
                                 {driverinstruction}
                               </span>
                             </p>
-                          )}
+                          }
                         </div>
-                        <button
-                          className="chcicjckhacheckout-desk-btn"
-                          onClick={handleDriverInstruction}
-                        >
+
+                        <button className="chcicjckhacheckout-desk-btn" onClick={handleDriverInstruction}>
                           {isadddoortext}
                         </button>
-                      </a>
+                      </div>
+
                       {isadddriverdisplayclicked && (
                         <div className="btaucheckout-window">
-                          {/* <textarea placeholder="Add delivery instructions" className="door_number" ></textarea> */}
                           <textarea
-                            placeholder="Add delivery instructions"
                             rows="2"
-                            aria-label="Add delivery instructions"
-                            value={driverinstruction}
-                            onChange={handleDriverInstructionEvent}
-                            className="door_number"
                             spellCheck="false"
-                          ></textarea>
-                          {/* <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
-                          
-                          <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
-                            <span style={{color: "red"}}>* This field is required.</span>
-                          </div> */}
+                            className="door_number"
+                            value={driverinstruction}
+                            placeholder="Add delivery instructions"
+                            aria-label="Add delivery instructions"
+                            onChange={handleDriverInstructionEvent}
+                          />
                         </div>
                       )}
                     </div>
@@ -1454,77 +657,47 @@ function UserForm() {
                 <hr className="edfhmthtcheckout-desk"></hr>
                 <div className="mimjepmkmlmmcheckout-desk">
                   <h3 className="eik5ekk6checkout-desk">
-                    <span className="d1chekcout-desk-span">
-                      Contact Details
-                    </span>
+                    <span className="d1chekcout-desk-span">Contact Details</span>
                   </h3>
+
                   <div className="d1g1checkout-desk">
-                    <a className="allzc5checkout-desk">
+                    <div className="allzc5checkout-desk">
                       <div className="f2checkout-desk">
-                        <svg
-                          aria-hidden="true"
-                          focusable="false"
-                          viewBox="0 0 24 24"
-                          className="c8c7cccdcheckout"
-                        >
+                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
                           <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
                         </svg>
                       </div>
 
                       <div className="alamd1g1checkout-desk">
                         <span className="chd2cjd3b1checkout-desk">
-                          Add email address{" "}
+                          Add email address
                           <span style={{ color: "red" }}>*</span>
                         </span>
-                        {!isemailinputtoggle && (
-                          <p
-                            data-baseweb="typo-paragraphsmall"
-                            className="b1chcwcid3checkout-desk"
-                          >
-                            <span
-                              style={{
-                                fontFamily: "UberMoveText",
-                                color: "#05944F",
-                              }}
-                            >
+                        {
+                          !isemailinputtoggle && 
+                          <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                            <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
                               {email}
                             </span>
                           </p>
-                        )}
+                        }
                       </div>
 
-                      <button
-                        className="chcicjckhacheckout-desk-btn"
-                        onClick={handleEmailToggle}
-                      >
+                      <button className="chcicjckhacheckout-desk-btn" onClick={handleEmailToggle}>
                         {emailaddbtntext}
                       </button>
-                    </a>
+                    </div>
 
                     {isemailinputtoggle && (
                       <div className="btaucheckout-window">
                         <input
-                          type="email"
                           required
-                          placeholder="Enter email"
+                          type="email"
                           value={email}
-                          className={`email-checkout ${
-                            parseInt(email.length) > parseInt(0)
-                              ? "parse-success"
-                              : "parse-erorr"
-                          }`}
+                          placeholder="Enter email"
                           onChange={handleUserEmail}
+                          className={`email-checkout ${parseInt(email.length) > parseInt(0) ? "parse-success": "parse-erorr"}`}
                         />
-                        {/* {
-                          parseInt(emailError.length) > parseInt(0) &&
-                          <>
-                            <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
-                            
-                            <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
-                              <span style={{color: "red"}}>* This field is required.</span>
-                            </div>
-                          </>
-                        } */}
                       </div>
                     )}
                     <div className="alcheckout-desk">
@@ -1534,65 +707,41 @@ function UserForm() {
                   </div>
 
                   <div className="d1g1checkout-desk">
-                    <a className="allzc5checkout-desk">
+                    <div className="allzc5checkout-desk">
                       <div className="f2checkout-desk">
-                        <svg
-                          aria-hidden="true"
-                          focusable="false"
-                          viewBox="0 0 24 24"
-                          className="c8c7cccdcheckout"
-                        >
+                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
                           <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
                         </svg>
                       </div>
 
                       <div className="alamd1g1checkout-desk">
                         <span className="chd2cjd3b1checkout-desk">
-                          Add phone number{" "}
-                          <span style={{ color: "red" }}>*</span>
+                          Add phone number <span style={{ color: "red" }}>*</span>
                         </span>
-                        {!isphoneinputtoggle && (
-                          <p
-                            data-baseweb="typo-paragraphsmall"
-                            className="b1chcwcid3checkout-desk"
-                          >
-                            <span
-                              style={{
-                                fontFamily: "UberMoveText",
-                                color: "#05944F",
-                              }}
-                            >
+                        {
+                          !isphoneinputtoggle && 
+                          <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                            <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
                               {phone}
                             </span>
                           </p>
-                        )}
+                        }
                       </div>
-                      <button
-                        className="chcicjckhacheckout-desk-btn"
-                        onClick={handlePhoneToggle}
-                      >
+
+                      <button className="chcicjckhacheckout-desk-btn" onClick={handlePhoneToggle}>
                         {phoneaddbtntext}
                       </button>
-                    </a>
+                    </div>
 
                     {isphoneinputtoggle && (
                       <div className="btaucheckout-window">
                         <input
                           type="number"
-                          placeholder="Enter phone number"
                           value={phone}
-                          className={`email-checkout ${
-                            parseInt(phone.length) > parseInt(0)
-                              ? "parse-success"
-                              : "parse-erorr"
-                          }`}
                           onChange={handleUserPhone}
+                          placeholder="Enter phone number"
+                          className={`email-checkout ${parseInt(phone.length) > parseInt(0) ? "parse-success" : "parse-erorr"}`}
                         />
-                        {/* <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
-                      
-                      <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
-                      <span style={{color: "red"}}>* This field is required.</span>
-                      </div> */}
                       </div>
                     )}
                     <div className="alcheckout-desk">
@@ -1602,14 +751,9 @@ function UserForm() {
                   </div>
 
                   <div className="d1g1checkout-desk">
-                    <a className="allzc5checkout-desk">
+                    <div className="allzc5checkout-desk">
                       <div className="f2checkout-desk">
-                        <svg
-                          aria-hidden="true"
-                          focusable="false"
-                          viewBox="0 0 24 24"
-                          className="c8c7cccdcheckout"
-                        >
+                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
                           <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
                         </svg>
                       </div>
@@ -1618,69 +762,42 @@ function UserForm() {
                         <span className="chd2cjd3b1checkout-desk">
                           Add name <span style={{ color: "red" }}>*</span>
                         </span>
-                        {!isfirstnametoggle && (
-                          <p
-                            data-baseweb="typo-paragraphsmall"
-                            className="b1chcwcid3checkout-desk"
-                          >
-                            <span
-                              style={{
-                                fontFamily: "UberMoveText",
-                                color: "#05944F",
-                              }}
-                            >
+                        {
+                          !isfirstnametoggle && 
+                          <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                            <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
                               {firstname} {lastname}
                             </span>
                           </p>
-                        )}
+                        }
                       </div>
-                      <button
-                        className="chcicjckhacheckout-desk-btn"
-                        onClick={handleFirstNameToggle}
-                      >
+
+                      <button className="chcicjckhacheckout-desk-btn" onClick={handleFirstNameToggle}>
                         {firstnameaddbtntext}
                       </button>
-                    </a>
+                    </div>
 
                     {isfirstnametoggle && (
                       <>
                         <div className="btaucheckout-window">
                           <input
                             type="text"
+                            value={firstname}
+                            onChange={handleUserFirstName}
                             placeholder="Enter first name"
                             style={{ marginBottom: "4px" }}
-                            value={firstname}
-                            className={`email-checkout ${
-                              parseInt(firstname.length) > parseInt(0)
-                                ? "parse-success"
-                                : "parse-erorr"
-                            }`}
-                            onChange={handleUserFirstName}
+                            className={`email-checkout ${parseInt(firstname.length) > parseInt(0)? "parse-success": "parse-erorr"}`}
                           />
-                          {/* <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
-                        
-                        <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
-                            <span style={{color: "red"}}>* This field is required.</span>
-                        </div> */}
                         </div>
 
                         <div className="btaucheckout-window">
                           <input
                             type="text"
-                            placeholder="Enter last name"
                             value={lastname}
-                            className={`email-checkout ${
-                              parseInt(lastname.length) > parseInt(0)
-                                ? "parse-success"
-                                : "parse-erorr"
-                            }`}
                             onChange={handleUserLastName}
+                            placeholder="Enter last name"
+                            className={`email-checkout ${parseInt(lastname.length) > parseInt(0)? "parse-success": "parse-erorr"}`}
                           />
-                          {/* <div data-lastpass-icon-root="true" style={{position: "relative !important", height: "0px !important", width: "0px !important", float: "left !important"}}></div>
-
-                        <div style={{marginTop: "5px", lineHeight: "16px", fontSize: "14px"}}>
-                            <span style={{color: "red"}}>* This field is required.</span>
-                        </div> */}
                         </div>
                       </>
                     )}
@@ -1701,19 +818,9 @@ function UserForm() {
                   <div className="g8checkout-desk">
                     <div className="oagdalc5o7obc9b1npcheckout-desk">
                       <div className="ale7c5k8hbocheckout-desk">
-                        <svg
-                          width="20"
-                          height="20"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                        >
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                           <title>Calendar</title>
-                          <path
-                            fillRule="evenodd"
-                            clipRule="evenodd"
-                            d="M23 8V4h-3V1h-3v3H7V1H4v3H1v4h22Zm0 15H1V10h22v13ZM8 14H5v3h3v-3Z"
-                            fill="currentColor"
-                          ></path>
+                          <path fillRule="evenodd" clipRule="evenodd" d="M23 8V4h-3V1h-3v3H7V1H4v3H1v4h22Zm0 15H1V10h22v13ZM8 14H5v3h3v-3Z" fill="currentColor"></path>
                         </svg>
                       </div>
 
@@ -1724,31 +831,19 @@ function UserForm() {
                               Schedule
                             </span>
                           </div>
-                          <select
-                            value={moment(deliverytime, "HH:mm A").format(
-                              "HH:mm A"
-                            )}
-                            className="bubvbwbdbxbybkaubzc0checkout-window-input"
-                            onChange={handleDeliveryTime}
-                          >
-                            {listtime?.map((time, index) => {
-                              return (
-                                moment(time?.time, "HH:mm").format("HH:mm") >=
-                                  moment(openingtime, "HH:mm").format(
-                                    "HH:mm"
-                                  ) &&
-                                moment(closingtime, "HH:mm").format("HH:mm") >=
-                                  moment(time?.time, "HH:mm").format(
-                                    "HH:mm"
-                                  ) && (
-                                  <option key={index} value={time?.time}>
-                                    {moment(time?.time, "HH:mm A").format(
-                                      "HH:mm A"
-                                    )}
-                                  </option>
-                                )
-                              );
-                            })}
+                          <select value={moment(deliverytime).format("HH:mm A")} className="bubvbwbdbxbybkaubzc0checkout-window-input" onChange={handleDeliveryTime}>
+                            {
+                              listtime?.map((time, index) => {
+                                return (
+                                  (moment(time?.time,"HH:mm").format("HH:mm")   >= moment(openingtime,"HH:mm").format("HH:mm") && moment(closingtime,"HH:mm").format("HH:mm")  >= moment(time?.time,"HH:mm").format("HH:mm")) && 
+                                  (
+                                    <option key={index} defaultValue={time?.time}>
+                                      {moment(time?.time, "HH:mm A").format("HH:mm A")}
+                                    </option>
+                                  )
+                                );
+                              })
+                            }
                           </select>
                         </h3>
                       </div>
@@ -1756,50 +851,26 @@ function UserForm() {
                   </div>
                 </div>
 
-                {parseInt(saveMyDetailsError.length) > parseInt(0) && (
-                  <p
-                    style={{
-                      color: "red",
-                      background: "#eda7a7",
-                      textAlign: "center",
-                      padding: "10px",
-                      marginBottom: "10px",
-                    }}
-                  >
-                    {saveMyDetailsError}
-                  </p>
-                )}
-                <div className="mimjepmkmlmmcheckout-desk">
+                {
+                  parseInt(saveMyDetailsError.length) > parseInt(0) && (
+                    <p style={{color: "red",background: "#eda7a7",textAlign: "center",padding: "10px",marginBottom: "10px",}}>{saveMyDetailsError}</p>
+                  )
+                }
+                {/* <div className='mimjepmkmlmmcheckout-desk'>
                   <div className="allzc5checkout-desk">
                     <div className="f2checkout-desk">
-                      <svg
-                        aria-hidden="true"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                        className="c8c7cccdcheckout"
-                      >
+                      <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
                         <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
                       </svg>
-                    </div>
-                    <input
-                      type="checkbox"
-                      className="agaxlqdflacheckout-desk-input"
-                    ></input>
-                    {/* <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isavefasterdetailsclicked ? "mch" : ""}`} onClick={() => setIsavefasterdetailsclicked(!isavefasterdetailsclicked)}> handleSaveMyDetails */}
-                    <label
-                      className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${
-                        isavefasterdetailsclicked ? "mch" : ""
-                      }`}
-                      onClick={handleSaveMyDetails}
-                    >
+                    </div> 
+                    <input type="checkbox" className="agaxlqdflacheckout-desk-input"></input>
+                    <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isavefasterdetailsclicked ? "mch" : ""}`} onClick={handleSaveMyDetails}>
                       <div className="spacer _16"></div>
                       <div className="d1alfwllcheckout-desk">
                         <div className="ald1ame7lmlncheckout-desk">
                           <div className="alaqcheckout-desk">
                             <div className="alamjiencheckout-desk">
-                              <div className="chcicjckh6checkout-desk">
-                                Save my details for faster checkout next time
-                              </div>
+                              <div className="chcicjckh6checkout-desk">Save my details for faster checkout next time</div>
                               <div className="spacer _8"></div>
                             </div>
                           </div>
@@ -1807,62 +878,36 @@ function UserForm() {
                       </div>
                     </label>
                   </div>
-                </div>
-
-                {isavefasterdetailsclicked && (
-                  <div className="chcicwd3undersavefastercheckout">
-                    <div className="toundersavefastercheckout">
-                      <div className="eik4ekk5g8undersavefastercheckout">
-                        <span className="h3euh4eimfekfdundersavefastercheckout-span">
-                          {Message}
-                        </span>
-                      </div>
-
-                      {iscustomerhaspassword === false && (
-                        <div className="btaundersavefastercheckout">
-                          <label className="password-label">
-                            <span style={{ color: "red" }}>*</span>Password:{" "}
-                          </label>
-                          <input
-                            type="password"
-                            placeholder="Enter password"
-                            value={password}
-                            className="undersavecheckoutinput"
-                            onChange={handlePassword}
-                          />
-                        </div>
-                      )}
-
-                      <div className="alh2amenc9jdundersavefastercheckout">
-                        {iscustomerhaspassword ? (
-                          <button
-                            className="agloundersavefastercheckout"
-                            onClick={handleLogin}
-                          >
-                            Login
-                          </button>
-                        ) : (
-                          <button
-                            className="agloundersavefastercheckout"
-                            onClick={handleRegisteration}
-                          >
-                            Register
-                          </button>
-                        )}
-                        <button
-                          className="coasgundersavefastercheckout"
-                          onClick={() =>
-                            setIsavefasterdetailsclicked(
-                              !isavefasterdetailsclicked
-                            )
+                  {
+                    isavefasterdetailsclicked &&
+                    <>
+                      <div className='chcicwd3undersavefastercheckout'>
+                        <div className='toundersavefastercheckout'>
+                          <div className="eik4ekk5g8undersavefastercheckout">
+                            <span className="h3euh4eimfekfdundersavefastercheckout-span">{Message}</span>
+                          </div>
+                          {
+                            iscustomerhaspassword === false &&
+                            <div className="btaundersavefastercheckout">
+                              <label className='password-label'><span style={{color: "red"}}>*</span>Password: </label>
+                              <input type="password" placeholder="Enter password" value={password} className="undersavecheckoutinput" onChange={handlePassword}/>
+                            </div>
                           }
-                        >
-                          Continue as guest user
-                        </button>
+                          <div className='alh2amenc9jdundersavefastercheckout'>
+                            {
+                              iscustomerhaspassword ?
+                                <button className='agloundersavefastercheckout' onClick={handleLogin}>Login</button>
+                              :
+                                <button className='agloundersavefastercheckout' onClick={handleRegisteration}>Register</button>
+                            }
+                            <button className='coasgundersavefastercheckout' onClick={() => setIsavefasterdetailsclicked(!isavefasterdetailsclicked)}>Continue as guest user</button>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  </div>
-                )}
+                    
+                    </>
+                  }
+                </div> */}
 
                 <hr className="edfhmthtcheckout-desk"></hr>
                 <div className="mimjepmkmlmmcheckout-desk">
@@ -1871,33 +916,23 @@ function UserForm() {
                       <div className="alamd1g1checkout-desk">
                         <span className="chd2cjd3b1checkout-desk">
                           When you place your order, we will send you occasional
-                          marketing offers and promotions. Please select below
-                          if you do not want to receive this marketing.
+                          marketing offers and promotions. Please select below if
+                          you do not want to receive this marketing.
                         </span>
                       </div>
                     </div>
 
                     <div className="almycheckout-desk">
-                      <div
-                        className="allzc5checkout-desk"
-                        onClick={() => setIsbyemailclicked(!isbyemailclicked)}
-                      >
-                        <input
-                          type="checkbox"
-                          className="agaxlqdflacheckout-desk-input"
-                        ></input>
-                        <label
-                          className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${
-                            isbyemailclicked ? "mch" : ""
-                          }`}
-                        >
+                      <div className="allzc5checkout-desk" onClick={() => setIsbyemailclicked(!isbyemailclicked)}>
+                        <input type="checkbox" className="agaxlqdflacheckout-desk-input"/>
+                        <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isbyemailclicked ? "mch" : ""}`}>
                           <div className="spacer _16"></div>
                           <div className="d1alfwllcheckout-desk">
                             <div className="ald1ame7lmlncheckout-desk">
                               <div className="alaqcheckout-desk">
                                 <div className="alamjiencheckout-desk">
                                   <div className="chcicjckh6checkout-desk">
-                                    By Email &nbsp;
+                                    By Email
                                   </div>
                                   <div className="spacer _8"></div>
                                 </div>
@@ -1908,26 +943,16 @@ function UserForm() {
                       </div>
 
                       <div className="spacer _48"></div>
-                      <div
-                        className="allzc5checkout-desk"
-                        onClick={() => setIsbysmsclicked(!isbysmsclicked)}
-                      >
-                        <input
-                          type="checkbox"
-                          className="agaxlqdflacheckout-desk-input"
-                        ></input>
-                        <label
-                          className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${
-                            isbysmsclicked ? "mch" : ""
-                          }`}
-                        >
+                      <div className="allzc5checkout-desk" onClick={() => setIsbysmsclicked(!isbysmsclicked)}>
+                        <input type="checkbox" className="agaxlqdflacheckout-desk-input"/>
+                        <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isbysmsclicked ? "mch" : ""}`}>
                           <div className="spacer _16"></div>
                           <div className="d1alfwllcheckout-desk">
                             <div className="ald1ame7lmlncheckout-desk">
                               <div className="alaqcheckout-desk">
                                 <div className="alamjiencheckout-desk">
                                   <div className="chcicjckh6checkout-desk">
-                                    By SMS &nbsp;
+                                    By SMS
                                   </div>
                                   <div className="spacer _8"></div>
                                 </div>
@@ -1942,78 +967,644 @@ function UserForm() {
               </div>
               <div></div>
             </div>
-          </div>
-        </div>
 
-        <div className="dtcxcybgd0d1checkout">
-          <div className="bocubqcve9checkout">
-            <div className="bocubqcvb1checkout">
-              <span className="bocubqcvgycheckout">
-                <span className="bocudfdhgy">ALLERGIES:&nbsp; &nbsp;</span>
-                If you or someone you’re ordering for has an allergy, please
-                contact the merchant directly to let them know.
-              </span>
+            <div className="d1g1checkout-desk">
+              <div className="gmgngoalamgpcheckout-desk">
+                <div className="gqcheckout-desk">
+                  {
+                    parseInt(PayNowBottomError.length) > parseInt(0) && 
+                    <p style={{color: "red",background: "#eda7a7",textAlign: "center",padding: "10px",marginBottom: "10px",}}>
+                      {PayNowBottomError}
+                    </p>
+                  }
+                  <div className="boh7bqh8checkout-desk">
+                    <button type="submit" className="h7brboe1checkout-btn">
+                      Pay Now
+                    </button>
+                  </div>
+                </div>
+                <div className="eeb0checkout-desk">
+                  <div className="b5grekcheckout-desk">
+                    {/* <hr className='f7bsh1f8checkout-hr'></hr> */}
+                    <div className="bkhybmh8aldfcheckout-desk">
+                      <div className="albcaqcheckout">Total</div>
+                      &pound;{getAmountConvertToFloatWithFixed(totalOrderAmountValue, 2)}
+                    </div>
+
+                    <div className="itcheckout-desk">
+                      <div className="bodgbqdhfncheckout-desk">
+                        <div className="bodgbqdhb1checkout-desK">
+                          <span className="bodgbqdhiucheckout-desk">
+                            <span className="bodge1exiucheckout-desk-span">
+                              ALLERGIES:
+                            </span>
+                            If you or someone you’re ordering for has an allergy,
+                            please contact the merchant directly to let them know.
+                          </span>
+                        </div>
+                      </div>
+                      <div className="e6h3checkout-desk"></div>
+
+                      <div className="bodgbqdhfncheckout-desk">
+                        <div className="bodgbqdhb1checkout-desK">
+                          <span className="bodgbqdhiucheckout-desk">
+                            If you’re not around when the delivery person arrives,
+                            they’ll leave your order at the door. By placing your
+                            order, you agree to take full responsibility for it
+                            once it’s delivered. Orders containing alcohol or
+                            other restricted items may not be eligible for leave
+                            at door and will be returned to the store if you are
+                            not available.
+                          </span>
+                        </div>
+                      </div>
+                      <div className="e6h3checkout-desk"></div>
+
+                      <div className="bodgbqdhfncheckout-desk">
+                        <div className="bodgbqdhb1checkout-desK">
+                          <span className="bodgbqdhiucheckout-desk">
+                            Whilst we, and our restaurant partners, have safety
+                            measures to mitigate food safety risk, couriers may be
+                            delivering more than one order so we cannot eliminate
+                            the risk of cross-contamination from allergens.
+                          </span>
+                        </div>
+                      </div>
+                      <div className="e6h3checkout-desk"></div>
+                    </div>
+                  </div>
+                </div>
+                <div className="gqcheckout-desk"></div>
+              </div>
             </div>
-          </div>
+        </form>
+      </div>
+      
+      {/* Mobile View */}
+      <div className="afcheckout">
+        <form  onSubmit={handlePayNow}>
+          <div className="">
+            <div className="cwcxcyczd0d1checkout">
+              <div className="hmg1checkout-desk">
+                <div className="hmg1mhb0checkout-desk">
+                  <div className="mimjepmkmlmmcheckout-desk">
+                    <h3 className="eik5ekk6checkout-desk">
+                      <span className="d1chekcout-desk-span">
+                        Delivery Details
+                      </span>
+                    </h3>
+                    <span style={{ color: "red", fontSize: "300" }}>
+                      *Fields marked with an asterisk must be filled in to
+                      proceed.
+                    </span>
+                    <div>
+                      <div className="d1g1checkout-desk">
+                        <a className="allzc5checkout-desk">
+                          <div className="kgcheckout-desk">
+                            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout" >
+                              <g clipPath="url(#clip0)">
+                                <path d="M17.583 5.166a7.896 7.896 0 00-11.166 0c-3.084 3.083-3.084 8.167 0 11.25L12 21.999l5.583-5.666c3.084-3 3.084-8.084 0-11.167zM12 12.416c-.917 0-1.667-.75-1.667-1.667 0-.916.75-1.666 1.667-1.666s1.667.75 1.667 1.666c0 .917-.75 1.667-1.667 1.667z"></path>
+                              </g>
+                              <defs>
+                                <clipPath id="clip0">
+                                  <path transform="translate(2 2)" d="M0 0h20v20H0z" ></path>
+                                </clipPath>
+                              </defs>
+                            </svg>
+                          </div>
 
-          <div className="dxgvcheck"></div>
+                          <div className="alamd1g1checkout-desk">
+                            <span className="chd2cjd3b1checkout-desk">
+                              {postcode}
+                            </span>
+                            <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                              <span style={{ fontFamily: "UberMoveText", color: "#545454", }}>
+                                {street1} {street2}
+                              </span>
+                            </p>
+                          </div>
 
-          <div className="bocubqcve9checkout">
-            <div className="bocubqcvb1checkout">
-              <span className="bocubqcvgycheckout">
-                If you’re not around when the delivery person arrives, they’ll
-                leave your order at the door. By placing your order, you agree
-                to take full responsibility for it once it’s delivered. Orders
-                containing alcohol or other restricted items may not be eligible
-                for leave at door and will be returned to the store if you are
-                not available.
-              </span>
-            </div>
-          </div>
-          <div className="dxgvcheck"></div>
+                          <button className="chcicjckhacheckout-desk-btn" onClick={handlePostcodeEdit}>
+                            {deliverydetailtext}
+                          </button>
+                        </a>
+                        {ispostcodeeditclicked && (
+                          <div className="btautrackorder-postcode-edit">
+                            <input
+                              type="text"
+                              className="strtpostcode"
+                              defaultValue={street1}
+                            />
 
-          <div className="bocubqcve9checkout">
-            <div className="bocubqcvb1checkout">
-              <span className="bocubqcvgycheckout">
-                Whilst we, and our restaurant partners, have safety measures to
-                mitigate food safety risk, couriers may be delivering more than
-                one order so we cannot eliminate the risk of cross-contamination
-                from allergens.
-              </span>
-            </div>
-          </div>
+                            <input
+                              type="text"
+                              className="strtpostcode"
+                              defaultValue={street2}
+                            />
 
-          <div className="dxgvcheck"></div>
-        </div>
+                            <div className="strtpostcode-btn">
+                              <input
+                                type="text"
+                                className="strtpostcode"
+                                defaultValue={postcode}
+                              />
 
-        <div className="">
-          <div className="akgzcheckout">
-            <div className="atbaagcheckout">
-              <div className="">
-                {parseInt(PayNowBottomError.length) > parseInt(0) && (
-                  <p
-                    style={{
-                      color: "red",
-                      background: "#eda7a7",
-                      textAlign: "center",
-                      padding: "10px",
-                      marginBottom: "10px",
-                    }}
-                  >
-                    {PayNowBottomError}
-                  </p>
-                )}
-                <button
-                  className="fwbrbocheckout-place-order"
-                  onClick={handlePayNow}
-                >
-                  Pay Now
-                </button>
-                <div style={{ height: "10px" }}></div>
+                              <button className="change_postcode_btn" onClick={() =>setIschangepostcodeclicked(!ischangepostcodeclicked)}>
+                                Change postcode
+                              </button>
+
+                            </div>
+                          </div>
+                        )}
+                        <div className="alcheckout-desk">
+                          <div className="spacer _40"></div>
+                          <div className="edhtb9d1checkout-desk"></div>
+                        </div>
+                      </div>
+
+                      <div className="d1g1checkout-desk">
+                        <div className="allzc5checkout-desk">
+                          <div className="kgcheckout-desk">
+                            <svg aria-hidden="true" focusable="false" viewBox="0 0 26 26" className="cxcwd0d1checkout-svg" >
+                              <path fillRule="evenodd" clipRule="evenodd" d="M18.958 7.042a5.958 5.958 0 11-11.916 0 5.958 5.958 0 0111.916 0zM3.25 21.667c0-3.575 2.925-6.5 6.5-6.5h6.5c3.575 0 6.5 2.925 6.5 6.5v3.25H3.25v-3.25z" ></path>
+                            </svg>
+                          </div>
+
+                          <div className="alamd1g1checkout-desk">
+                            <span className="chd2cjd3b1checkout-desk">
+                              Add door number <span style={{ color: "red" }}>*</span>
+                            </span>
+                            {!isdoorinputdisplayclicked && (
+                              <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                                <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
+                                  {doorhousename}
+                                </span>
+                              </p>
+                            )}
+                          </div>
+
+                          <button className="chcicjckhacheckout-desk-btn" onClick={handleDoorHouseClicked}>
+                            {doornumbertext}
+                          </button>
+                        </div>
+
+                        {
+                          isdoorinputdisplayclicked &&
+                          <div className="btaucheckout-window">
+                            <input
+                              type="text"
+                              ref={addDoorNumberRef}
+                              value={doorhousename}
+                              onChange={handleDoorOrHouse}
+                              placeholder="Enter door number or name"
+                              className={`door_number ${parseInt(doorhousename.length) > parseInt(0) ? "parse-success" : "parse-erorr"}`}
+                            />
+                          </div>
+                        }
+
+                        <div className="alcheckout-desk">
+                          <div className="spacer _40"></div>
+                          <div className="edhtb9d1checkout-desk"></div>
+                        </div>
+                      </div>
+
+                      <div className="d1g1checkout-desk">
+                        <div className="allzc5checkout-desk">
+                          <div className="kgcheckout-desk">
+                            <svg aria-hidden="true" focusable="false" viewBox="0 0 26 26" className="cxcwd0d1checkout-svg">
+                              <path fillRule="evenodd" clipRule="evenodd" d="M18.958 7.042a5.958 5.958 0 11-11.916 0 5.958 5.958 0 0111.916 0zM3.25 21.667c0-3.575 2.925-6.5 6.5-6.5h6.5c3.575 0 6.5 2.925 6.5 6.5v3.25H3.25v-3.25z" ></path>
+                            </svg>
+                          </div>
+
+                          <div className="alamd1g1checkout-desk">
+                            <span className="chd2cjd3b1checkout-desk">
+                              Add driver instructions
+                            </span>
+                            {
+                              !isadddriverdisplayclicked && 
+                              <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk" >
+                                <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
+                                  {driverinstruction}
+                                </span>
+                              </p>
+                            }
+                          </div>
+                          <button className="chcicjckhacheckout-desk-btn" onClick={handleDriverInstruction}>
+                            {isadddoortext}
+                          </button>
+                        </div>
+
+                        {isadddriverdisplayclicked && (
+                          <div className="btaucheckout-window">
+                            <textarea
+                              rows="2"
+                              spellCheck="false"
+                              className="door_number"
+                              value={driverinstruction}
+                              placeholder="Add delivery instructions"
+                              aria-label="Add delivery instructions"
+                              onChange={handleDriverInstructionEvent}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+
+                  <hr className="edfhmthtcheckout-desk"></hr>
+                  <div className="mimjepmkmlmmcheckout-desk">
+                    <h3 className="eik5ekk6checkout-desk">
+                      <span className="d1chekcout-desk-span">
+                        Contact Details
+                      </span>
+                    </h3>
+                    <div className="d1g1checkout-desk">
+                      <div className="allzc5checkout-desk">
+                        <div className="f2checkout-desk">
+                          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
+                            <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
+                          </svg>
+                        </div>
+
+                        <div className="alamd1g1checkout-desk">
+                          <span className="chd2cjd3b1checkout-desk">
+                            Add email address
+                            <span style={{ color: "red" }}>*</span>
+                          </span>
+                          {!isemailinputtoggle && (
+                            <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                              <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
+                                {email}
+                              </span>
+                            </p>
+                          )}
+                        </div>
+
+                        <button className="chcicjckhacheckout-desk-btn" onClick={handleEmailToggle}>
+                          {emailaddbtntext}
+                        </button>
+                      </div>
+
+                      {isemailinputtoggle && (
+                        <div className="btaucheckout-window">
+                          <input
+                            required
+                            type="email"
+                            value={email}
+                            placeholder="Enter email"
+                            onChange={handleUserEmail}
+                            className={`email-checkout ${parseInt(email.length) > parseInt(0) ? "parse-success" : "parse-erorr"}`}
+                          />
+                        </div>
+                      )}
+                      <div className="alcheckout-desk">
+                        <div className="spacer _40"></div>
+                        <div className="edhtb9d1checkout-desk"></div>
+                      </div>
+                    </div>
+
+                    <div className="d1g1checkout-desk">
+                      <div className="allzc5checkout-desk">
+                        <div className="f2checkout-desk">
+                          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
+                            <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
+                          </svg>
+                        </div>
+
+                        <div className="alamd1g1checkout-desk">
+                          <span className="chd2cjd3b1checkout-desk">
+                            Add phone number{" "}
+                            <span style={{ color: "red" }}>*</span>
+                          </span>
+                          {
+                            !isphoneinputtoggle && 
+                            <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                              <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
+                                {phone}
+                              </span>
+                            </p>
+                          }
+                        </div>
+                        <button className="chcicjckhacheckout-desk-btn" onClick={handlePhoneToggle}>
+                          {phoneaddbtntext}
+                        </button>
+                      </div>
+
+                      {isphoneinputtoggle && (
+                        <div className="btaucheckout-window">
+                          <input
+                            type="number"
+                            value={phone}
+                            placeholder="Enter phone number"
+                            className={`email-checkout ${parseInt(phone.length) > parseInt(0)? "parse-success": "parse-erorr"}`}
+                            onChange={handleUserPhone}
+                          />
+                        </div>
+                      )}
+                      <div className="alcheckout-desk">
+                        <div className="spacer _40"></div>
+                        <div className="edhtb9d1checkout-desk"></div>
+                      </div>
+                    </div>
+
+                    <div className="d1g1checkout-desk">
+                      <a className="allzc5checkout-desk">
+                        <div className="f2checkout-desk">
+                          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
+                            <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
+                          </svg>
+                        </div>
+
+                        <div className="alamd1g1checkout-desk">
+                          <span className="chd2cjd3b1checkout-desk">
+                            Add name <span style={{ color: "red" }}>*</span>
+                          </span>
+                          {
+                            !isfirstnametoggle && 
+                            <p  data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
+                              <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
+                                {firstname} {lastname}
+                              </span>
+                            </p>
+                          }
+                        </div>
+                        <button className="chcicjckhacheckout-desk-btn" onClick={handleFirstNameToggle}>
+                          {firstnameaddbtntext}
+                        </button>
+                      </a>
+
+                      {isfirstnametoggle && (
+                        <>
+                          <div className="btaucheckout-window">
+                            <input
+                              type="text"
+                              value={firstname}
+                              placeholder="Enter first name"
+                              onChange={handleUserFirstName}
+                              style={{ marginBottom: "4px" }}
+                              className={`email-checkout ${parseInt(firstname.length) > parseInt(0)? "parse-success" : "parse-erorr"}`}
+                            />
+                          </div>
+
+                          <div className="btaucheckout-window">
+                            <input
+                              type="text"
+                              value={lastname}
+                              placeholder="Enter last name"
+                              onChange={handleUserLastName}
+                              className={`email-checkout ${parseInt(lastname.length) > parseInt(0)? "parse-success": "parse-erorr"}`}
+                            />
+                          </div>
+                        </>
+                      )}
+                      <div className="alcheckout-desk">
+                        <div className="spacer _40"></div>
+                        <div className="edhtb9d1checkout-desk"></div>
+                      </div>
+                    </div>
+                  </div>
+
+                  <hr className="edfhmthtcheckout-desk"></hr>
+                  <div className="mimjepmkmlmmcheckout-desk">
+                    <h3 className="eik5ekk6checkout-desk">
+                      <span className="d1chekcout-desk-span">
+                        Delivery Estimate
+                      </span>
+                    </h3>
+                    <div className="g8checkout-desk">
+                      <div className="oagdalc5o7obc9b1npcheckout-desk">
+                        <div className="ale7c5k8hbocheckout-desk">
+                          <svg width="20"height="20"viewBox="0 0 24 24"fill="none">
+                            <title>Calendar</title>
+                            <path fillRule="evenodd" clipRule="evenodd" d="M23 8V4h-3V1h-3v3H7V1H4v3H1v4h22Zm0 15H1V10h22v13ZM8 14H5v3h3v-3Z"fill="currentColor"></path>
+                          </svg>
+                        </div>
+
+                        <div className="ald0fwc5checkout-desk">
+                          <h3 className="alamk3checkout-desk-h3">
+                            <div className="alc5checkout-desk">
+                              <span className="chd2cjd3checkout-desk-span">
+                                Schedule
+                              </span>
+                            </div>
+                            <select value={moment(deliverytime, "HH:mm A").format("HH:mm A")} className="bubvbwbdbxbybkaubzc0checkout-window-input" onChange={handleDeliveryTime}>
+                              {
+                                listtime?.map((time, index) => {
+                                  return (
+                                    moment(time?.time, "HH:mm").format("HH:mm") >= moment(openingtime, "HH:mm").format("HH:mm") && moment(closingtime, "HH:mm").format("HH:mm") >= moment(time?.time, "HH:mm").format("HH:mm") &&
+                                      <option key={index} defaultValue={time?.time}>
+                                        {moment(time?.time, "HH:mm A").format("HH:mm A")}
+                                      </option>
+                                  );
+                                })
+                              }
+                            </select>
+                          </h3>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {
+                    parseInt(saveMyDetailsError.length) > parseInt(0) && 
+                    <p style={{color: "red",background: "#eda7a7",textAlign: "center",padding: "10px",marginBottom: "10px",}}>
+                      {saveMyDetailsError}
+                    </p>
+                  }
+
+                  <div className="mimjepmkmlmmcheckout-desk">
+                    <div className="allzc5checkout-desk">
+                      <div className="f2checkout-desk">
+                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
+                          <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
+                        </svg>
+                      </div>
+                      <input type="checkbox" className="agaxlqdflacheckout-desk-input"/>
+                      <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isavefasterdetailsclicked ? "mch" : ""}`} onClick={handleSaveMyDetails}>
+                        <div className="spacer _16"></div>
+                        <div className="d1alfwllcheckout-desk">
+                          <div className="ald1ame7lmlncheckout-desk">
+                            <div className="alaqcheckout-desk">
+                              <div className="alamjiencheckout-desk">
+                                <div className="chcicjckh6checkout-desk">
+                                  Save my details for faster checkout next time
+                                </div>
+                                <div className="spacer _8"></div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  {
+                    isavefasterdetailsclicked && 
+                    <div className="chcicwd3undersavefastercheckout">
+                      <div className="toundersavefastercheckout">
+                        <div className="eik4ekk5g8undersavefastercheckout">
+                          <span className="h3euh4eimfekfdundersavefastercheckout-span">
+                            {Message}
+                          </span>
+                        </div>
+
+                        {
+                          iscustomerhaspassword === false && 
+                          <div className="btaundersavefastercheckout">
+                            <label className="password-label">
+                              <span style={{ color: "red" }}>*</span>Password:{" "}
+                            </label>
+                            <input
+                              type="password"
+                              value={password}
+                              onChange={handlePassword}
+                              placeholder="Enter password"
+                              className="undersavecheckoutinput"
+                            />
+                          </div>
+                        }
+
+                        <div className="alh2amenc9jdundersavefastercheckout">
+                          {
+                            iscustomerhaspassword ? 
+                            <button className="agloundersavefastercheckout" onClick={handleLogin}>
+                              Login
+                            </button>
+                          : 
+                            <button className="agloundersavefastercheckout" onClick={handleRegisteration}>
+                              Register
+                            </button>
+                          }
+                          <button className="coasgundersavefastercheckout" onClick={() => setIsavefasterdetailsclicked(!isavefasterdetailsclicked)}>
+                            Continue as guest user
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  }
+
+                  <hr className="edfhmthtcheckout-desk"></hr>
+                  <div className="mimjepmkmlmmcheckout-desk">
+                    <div className="d1g1checkout-desk">
+                      <div className="allzc5checkout-desk">
+                        <div className="alamd1g1checkout-desk">
+                          <span className="chd2cjd3b1checkout-desk">
+                            When you place your order, we will send you occasional
+                            marketing offers and promotions. Please select below
+                            if you do not want to receive this marketing.
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="almycheckout-desk">
+                        <div className="allzc5checkout-desk" onClick={() => setIsbyemailclicked(!isbyemailclicked)}>
+                          <input type="checkbox" className="agaxlqdflacheckout-desk-input"/>
+                          <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isbyemailclicked ? "mch" : ""}`}>
+                            <div className="spacer _16"></div>
+                            <div className="d1alfwllcheckout-desk">
+                              <div className="ald1ame7lmlncheckout-desk">
+                                <div className="alaqcheckout-desk">
+                                  <div className="alamjiencheckout-desk">
+                                    <div className="chcicjckh6checkout-desk">
+                                      By Email &nbsp;
+                                    </div>
+                                    <div className="spacer _8"></div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </label>
+                        </div>
+
+                        <div className="spacer _48"></div>
+                        <div className="allzc5checkout-desk" onClick={() => setIsbysmsclicked(!isbysmsclicked)}>
+                          <input type="checkbox" className="agaxlqdflacheckout-desk-input"/>
+                          <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isbysmsclicked ? "mch" : ""}`}>
+                            <div className="spacer _16"></div>
+                            <div className="d1alfwllcheckout-desk">
+                              <div className="ald1ame7lmlncheckout-desk">
+                                <div className="alaqcheckout-desk">
+                                  <div className="alamjiencheckout-desk">
+                                    <div className="chcicjckh6checkout-desk">
+                                      By SMS &nbsp;
+                                    </div>
+                                    <div className="spacer _8"></div>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div></div>
               </div>
             </div>
           </div>
-        </div>
+
+          <div className="dtcxcybgd0d1checkout">
+            <div className="bocubqcve9checkout">
+              <div className="bocubqcvb1checkout">
+                <span className="bocubqcvgycheckout">
+                  <span className="bocudfdhgy">ALLERGIES:&nbsp; &nbsp;</span>
+                  If you or someone you’re ordering for has an allergy, please
+                  contact the merchant directly to let them know.
+                </span>
+              </div>
+            </div>
+
+            <div className="dxgvcheck"></div>
+
+            <div className="bocubqcve9checkout">
+              <div className="bocubqcvb1checkout">
+                <span className="bocubqcvgycheckout">
+                  If you’re not around when the delivery person arrives, they’ll
+                  leave your order at the door. By placing your order, you agree
+                  to take full responsibility for it once it’s delivered. Orders
+                  containing alcohol or other restricted items may not be eligible
+                  for leave at door and will be returned to the store if you are
+                  not available.
+                </span>
+              </div>
+            </div>
+            <div className="dxgvcheck"></div>
+
+            <div className="bocubqcve9checkout">
+              <div className="bocubqcvb1checkout">
+                <span className="bocubqcvgycheckout">
+                  Whilst we, and our restaurant partners, have safety measures to
+                  mitigate food safety risk, couriers may be delivering more than
+                  one order so we cannot eliminate the risk of cross-contamination
+                  from allergens.
+                </span>
+              </div>
+            </div>
+
+            <div className="dxgvcheck"></div>
+          </div>
+
+          <div className="">
+            <div className="akgzcheckout">
+              <div className="atbaagcheckout">
+                <div className="">
+                  {
+                    parseInt(PayNowBottomError.length) > parseInt(0) && 
+                    <p style={{color: "red",background: "#eda7a7",textAlign: "center",padding: "10px",marginBottom: "10px",}}>
+                      {PayNowBottomError}
+                    </p>
+                  }
+
+                  <button type="submit" className="fwbrbocheckout-place-order">
+                    Pay Now
+                  </button>
+                  <div style={{ height: "10px" }}></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </form>
       </div>
       {/* Modal Testing */}
 
@@ -2026,25 +1617,9 @@ function UserForm() {
               <div className="modal-delivery-details-level-one-div-dialog-header">
                 <div className="delivery-empty-div"></div>
                 <button className="delivery-modal-close-button">
-                  <div
-                    className="delivery-modal-close-button-svg-div"
-                    onClick={() =>
-                      setIschangepostcodeclicked(!ischangepostcodeclicked)
-                    }
-                  >
-                    <svg
-                      width="24px"
-                      height="24px"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                      aria-hidden="true"
-                      focusable="false"
-                    >
-                      <path
-                        d="m19.5831 6.24931-1.8333-1.83329-5.75 5.83328-5.75-5.83328-1.8333 1.83329 5.8333 5.74999-5.8333 5.75 1.8333 1.8333 5.75-5.8333 5.75 5.8333 1.8333-1.8333-5.8333-5.75z"
-                        fill="#000000"
-                      ></path>
+                  <div className="delivery-modal-close-button-svg-div" onClick={() =>setIschangepostcodeclicked(!ischangepostcodeclicked)}>
+                    <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" >
+                      <path d="m19.5831 6.24931-1.8333-1.83329-5.75 5.83328-5.75-5.83328-1.8333 1.83329 5.8333 5.74999-5.8333 5.75 1.8333 1.8333 5.75-5.8333 5.75 5.8333 1.8333-1.8333-5.8333-5.75z" fill="#000000" ></path>
                     </svg>
                   </div>
                 </button>

@@ -55,15 +55,23 @@ function SubAtLoadLoadShow({ setLoader }) {
   const [isstoreavailable, setIsstoreavailable] = useState(true);
 
   function handlePostCode(event) {
-    const countPostcodeLength = event.target.value.toUpperCase().trim();
+
+    event.preventDefault()
+
+    const { value } = event.target
+
+    const countPostcodeLength = value.toUpperCase().trim();
     setValidpostcode(countPostcodeLength);
     setPostcodeerror("");
 
-    if (parseInt(countPostcodeLength.length) > parseInt(3)) {
-      setIsgobtnclickable(true);
-      setAtFirstLoadModalShow(true);
-    } else {
-      setIsgobtnclickable(false);
+    if (parseInt(countPostcodeLength.length) > parseInt(3)) 
+    {
+      setIsgobtnclickable(true)
+      setAtFirstLoadModalShow(true)
+    } 
+    else 
+    {
+      setIsgobtnclickable(false)
     }
   }
 
@@ -72,11 +80,16 @@ function SubAtLoadLoadShow({ setLoader }) {
       let filterPostcode = validpostcode.replace(/\s/g, "");
 
       let grabPostcodeOutWard = "";
-      if (parseInt(filterPostcode.length) === parseInt(7)) {
+      if (parseInt(filterPostcode.length) === parseInt(7)) 
+      {
         grabPostcodeOutWard = filterPostcode.substring(0, 4);
-      } else if (parseInt(filterPostcode.length) === parseInt(6)) {
+      } 
+      else if (parseInt(filterPostcode.length) === parseInt(6)) 
+      {
         grabPostcodeOutWard = filterPostcode.substring(0, 3);
-      } else {
+      } 
+      else 
+      {
         grabPostcodeOutWard = filterPostcode.substring(0, 2);
       }
 
@@ -101,7 +114,9 @@ function SubAtLoadLoadShow({ setLoader }) {
       setTimeout(() => {
         setLoader(false);
       }, 1000);
-    } catch (error) {
+    } 
+    catch (error) 
+    {
       setIsstoreavailable(true);
       setPostcodeerror(error?.response?.data?.postcode);
       setIsgobtnclickable(false);
@@ -112,18 +127,24 @@ function SubAtLoadLoadShow({ setLoader }) {
   }
 
   useEffect(() => {
-    if (deliverymatrix !== null) {
+    if (deliverymatrix !== null) 
+    {
       setPostcodefororderamount(deliverymatrix?.postcode);
-      window.localStorage.setItem(
-        `${BRANDSIMPLEGUID}delivery_matrix`,
-        JSON.stringify(deliverymatrix)
-      );
+      window.localStorage.setItem(`${BRANDSIMPLEGUID}delivery_matrix`,JSON.stringify(deliverymatrix));
     }
   }, [deliverymatrix]);
 
-  function handleGoBtn() {
-    setLoader(true);
-    fetchPostcodeData();
+  const handleGoBtn = (e) => 
+  {
+    e.preventDefault()
+    if (parseInt(validpostcode?.length) > parseInt(3)) 
+    {
+      setLoader(true);
+      fetchPostcodeData();
+      return 
+    } 
+    
+    setPostcodeerror("Invalid postcode.")
   }
 
   async function fetchMenu(storeGUID) {
@@ -146,17 +167,16 @@ function SubAtLoadLoadShow({ setLoader }) {
 
       const convertToJSobj = response.data?.data?.menu.menu_json_log;
 
-      const currentDay = convertToJSobj?.menus?.[0]?.service_availability?.find(
-        (day) => day?.day_of_week?.toLowerCase().includes(dayName.toLowerCase())
-      );
+      const currentDay = convertToJSobj?.menus?.[0]?.service_availability?.find((day) => day?.day_of_week?.toLowerCase().includes(dayName.toLowerCase()));
       setDayOpeningClosingTime(currentDay);
-      if (currentDay) {
+
+      if (currentDay) 
+      {
         const timePeriods = currentDay?.time_periods;
-        if (timePeriods) {
-          if (
-            timePeriods?.[0]?.start_time >= dateTime &&
-            dateTime <= timePeriods?.[0]?.end_time
-          ) {
+        if (timePeriods) 
+        {
+          if (timePeriods?.[0]?.start_time >= dateTime && dateTime <= timePeriods?.[0]?.end_time) 
+          {
             setIsTimeToClosed(true);
             setAtfirstload(false);
           }
@@ -164,31 +184,24 @@ function SubAtLoadLoadShow({ setLoader }) {
       }
       setMenu(convertToJSobj);
 
-      const getFilterDataFromObj = JSON.parse(
-        window.localStorage.getItem(`${BRANDSIMPLEGUID}filter`)
-      );
+      const getFilterDataFromObj = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}filter`));
 
-      if (getFilterDataFromObj === null) {
+      if (getFilterDataFromObj === null) 
+      {
         setLocalStorage(`${BRANDSIMPLEGUID}filter`, convertToJSobj.filters[0]);
       }
-      setSelectedFilter(
-        getFilterDataFromObj === null
-          ? convertToJSobj.filters[0]
-          : getFilterDataFromObj
-      );
+      setSelectedFilter(getFilterDataFromObj === null? convertToJSobj.filters[0] : getFilterDataFromObj);
       setFilters(convertToJSobj.filters);
       setNavigationcategories(convertToJSobj.categories);
       setNavmobileindex(convertToJSobj.categories[0].id);
 
-      const getDayInformation =
-        convertToJSobj.menus[0].service_availability?.find(
-          (dayinformation) =>
-            dayinformation.day_of_week === moment().format("dddd").toLowerCase()
-        );
+      const getDayInformation = convertToJSobj.menus[0].service_availability?.find((dayinformation) =>dayinformation.day_of_week === moment().format("dddd").toLowerCase());
       setStoretodaydayname(moment().format("dddd"));
       setStoretodayopeningtime(getDayInformation.time_periods[0].start_time);
       setStoretodayclosingtime(getDayInformation.time_periods[0].end_time);
-    } catch (error) {
+    } 
+    catch (error) 
+    {
       setIsmenuavailable(false);
     }
   }
@@ -236,79 +249,55 @@ function SubAtLoadLoadShow({ setLoader }) {
         <div className="modal-delivery-details-level-one-div-height"></div>
 
         <div className="modal-delivery-details-level-one-div-dialog">
-          {/* <div className="modal-delivery-details-level-one-div-dialog-header">
-                        <div className="delivery-empty-div"></div>
-                        <button className="delivery-modal-close-button">
-                            
-                            <div className="delivery-modal-close-button-svg-div" onClick={() => setAtfirstload(false)}>
-                                <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                    <path d="m19.5831 6.24931-1.8333-1.83329-5.75 5.83328-5.75-5.83328-1.8333 1.83329 5.8333 5.74999-5.8333 5.75 1.8333 1.8333 5.75-5.8333 5.75 5.8333 1.8333-1.8333-5.8333-5.75z" fill="#000000"></path>
-                                </svg>
-                            </div>
-
-                        </button>
-                    </div> */}
-
           <div className="deliver-to-body-content">
             <h1 className="deliver-to-body-content-h1">Order Food Now</h1>
             <div className="deliver-to-body-content-nested-div-level-one">
-              <label
-                id="location-typeahead-location-manager-label"
-                htmlFor="location-typeahead-location-manager-input"
-                className="deliver-to-body-content-nested-div-level-one-label"
-              >
-                When autocomplete results are available, use up and down arrows
-                to review and enter to select. Touch device users, explore by
-                touch or with swipe gestures.
-              </label>
 
-              <div className="deliver-to-body-content-nested-div-level-one-nested">
-                <div className="deliver-to-body-content-nested-div-level-one-nested-svg-div-one">
-                  <div className="deliver-to-body-content-nested-div-level-one-nested-svg-div-two">
-                    <svg
-                      width="24px"
-                      height="24px"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      xmlns="http://www.w3.org/2000/svg"
-                      aria-hidden="true"
-                      focusable="false"
-                    >
-                      <path
-                        d="M17.5834 5.16602C14.5001 2.08268 9.50008 2.08268 6.41675 5.16602C3.33341 8.24935 3.33341 13.3327 6.41675 16.416L12.0001 21.9993L17.5834 16.3327C20.6667 13.3327 20.6667 8.24935 17.5834 5.16602ZM12.0001 12.416C11.0834 12.416 10.3334 11.666 10.3334 10.7493C10.3334 9.83268 11.0834 9.08268 12.0001 9.08268C12.9167 9.08268 13.6667 9.83268 13.6667 10.7493C13.6667 11.666 12.9167 12.416 12.0001 12.416Z"
-                        fill="currentColor"
-                      ></path>
-                    </svg>
+              <form onSubmit={handleGoBtn}>
+                <label id="location-typeahead-location-manager-label" htmlFor="location-typeahead-location-manager-input" className="deliver-to-body-content-nested-div-level-one-label" >
+                  When autocomplete results are available, use up and down arrows
+                  to review and enter to select. Touch device users, explore by
+                  touch or with swipe gestures.
+                </label>
+
+                <div className="deliver-to-body-content-nested-div-level-one-nested">
+                  <div className="deliver-to-body-content-nested-div-level-one-nested-svg-div-one">
+                    <div className="deliver-to-body-content-nested-div-level-one-nested-svg-div-two">
+                      <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                        <path d="M17.5834 5.16602C14.5001 2.08268 9.50008 2.08268 6.41675 5.16602C3.33341 8.24935 3.33341 13.3327 6.41675 16.416L12.0001 21.9993L17.5834 16.3327C20.6667 13.3327 20.6667 8.24935 17.5834 5.16602ZM12.0001 12.416C11.0834 12.416 10.3334 11.666 10.3334 10.7493C10.3334 9.83268 11.0834 9.08268 12.0001 9.08268C12.9167 9.08268 13.6667 9.83268 13.6667 10.7493C13.6667 11.666 12.9167 12.416 12.0001 12.416Z" fill="currentColor"></path>
+                      </svg>
+                    </div>
                   </div>
+
+                  <div className="spacer _16"></div>
+
+                  <input
+                    type="text"
+                    autoComplete="off"
+                    value={validpostcode}
+                    onChange={handlePostCode}
+                    className="deliver-to-input"
+                    placeholder="Enter postcode"
+                  />
+                  <div className="spacer _8"></div>
                 </div>
 
-                <div className="spacer _16"></div>
+                <div className="availabe_stores"></div>
+                {
+                  postcodeerror !== "" && 
+                  <p style={{color: "red",background: "#eda7a7",textAlign: "center",marginTop: "10px", padding: "10px",}}>
+                    {postcodeerror}
+                  </p>
+                }
 
-                <input
-                  type="text"
-                  autoComplete="off"
-                  className="deliver-to-input"
-                  placeholder="Enter postcode"
-                  value={validpostcode}
-                  onChange={handlePostCode}
-                ></input>
-                <div className="spacer _8"></div>
-              </div>
+                {
+                  isgobtnclickable && 
+                  <button type="submit" className="deliver-to-done-button">
+                    Go
+                  </button>
+                }
+              </form>
 
-              <div className="availabe_stores"></div>
-              {postcodeerror !== "" && (
-                <p
-                  style={{
-                    color: "red",
-                    background: "#eda7a7",
-                    textAlign: "center",
-                    marginTop: "10px",
-                    padding: "10px",
-                  }}
-                >
-                  {postcodeerror}
-                </p>
-              )}
             </div>
 
             {/* All the Available Stores */}
@@ -328,18 +317,7 @@ function SubAtLoadLoadShow({ setLoader }) {
 
                   {availablestores?.map((stores, index) => {
                     return (
-                      <div
-                        className="available-stores-show"
-                        style={{ cursor: "pointer" }}
-                        key={index}
-                        onClick={() =>
-                          handleLocationSelect(
-                            stores.location_guid,
-                            stores.location_name,
-                            stores.telephone
-                          )
-                        }
-                      >
+                      <div className="available-stores-show" style={{ cursor: "pointer" }} key={index} onClick={() => handleLocationSelect(stores.location_guid,stores.location_name,stores.telephone)}>
                         <div className="deliver-to-body-content-nested-div-level-one-nested-svg-div-one">
                           <div className="deliver-to-body-content-nested-div-level-one-nested-svg-div-two">
                             <svg
@@ -382,27 +360,12 @@ function SubAtLoadLoadShow({ setLoader }) {
             )}
 
             {isstoreavailable === false && (
-              <>
-                <div
-                  className="available-stores-show"
-                  style={{
-                    cursor: "pointer",
-                    textAlign: "center",
-                    marginTop: "10px",
-                    fontWeight: "bold",
-                  }}
-                >
-                  <div className="available-stores">
-                    Your are out of radius.
-                  </div>
-                  <div className="spacer _8"></div>
+              <div className="available-stores-show" style={{cursor: "pointer",textAlign: "center",marginTop: "10px",fontWeight: "bold",}}>
+                <div className="available-stores">
+                  Your are out of radius.
                 </div>
-              </>
-            )}
-            {isgobtnclickable && (
-              <button className="deliver-to-done-button" onClick={handleGoBtn}>
-                Go
-              </button>
+                <div className="spacer _8"></div>
+              </div>
             )}
           </div>
         </div>

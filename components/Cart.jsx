@@ -900,10 +900,10 @@ export default function Cart() {
                 <div className="akgzcheckout">
                   <div className="atbaagcheckout">
                     <div className="">
-                      {isordersubtotallessthanordervalue && <Link className="fwbrbocheckout-place-order" href="/place-order">Checkout</Link>}
+                      {isordersubtotallessthanordervalue && <a className="fwbrbocheckout-place-order" href="/place-order">Checkout</a>}
                       <div style={{ height: "10px" }}></div>
 
-                      <button className="fwbrbocheckout-add" onClick={handleAddItems}>
+                      <button type="submit" className="fwbrbocheckout-add" onClick={handleAddItems}>
                         <div className="c7c6crcheckout">
                           <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
                             <path d="m16.6666 11.0007h-3.6667v-3.66672h-2v3.66672h-3.66665v2h3.66665v3.6666h2v-3.6666h3.6667z" fill="currentColor"></path>
@@ -921,12 +921,7 @@ export default function Cart() {
             </div>
           : 
             <div className="cart-content">
-              <img
-                alt=""
-                role="presentation"
-                src="https://d3i4yxtzktqr9n.cloudfront.net/web-eats-v2/a023a017672c2488.svg"
-                className="cart-icon"
-              />
+              <img alt="Start Shopping" role="presentation" src="https://d3i4yxtzktqr9n.cloudfront.net/web-eats-v2/a023a017672c2488.svg" className="cart-icon" />
               <span className="cart-span-title-one">
                 Add items to start a cart
               </span>
@@ -935,10 +930,7 @@ export default function Cart() {
                 Once you add items from a restaurant or store, your cart will
                 appear here.
               </span>
-              <button
-                className="cart-shopping-start-button"
-                onClick={() => setIscartbtnclicked(false)}
-              >
+              <button type="submit" className="cart-shopping-start-button" onClick={() => setIscartbtnclicked(false)}>
                 Start shopping
               </button>
             </div>
