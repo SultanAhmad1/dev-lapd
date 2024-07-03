@@ -242,6 +242,7 @@ function SubAtLoadLoadShow({ setLoader }) {
       }
     }, 2000);
   }, [availablestores]);
+  // code is working
 
   return (
     <div className="modal-delivery-details">
