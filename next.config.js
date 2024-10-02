@@ -4,7 +4,7 @@ const nextConfig = {
         ignoreDuringBuilds: true,
     },
     images: {
-        domains: ['laravel-jouleskitchen.cleartwo.uk'],
+        domains: ['api.jouleskitchen.co.uk'],
     },
 }
 

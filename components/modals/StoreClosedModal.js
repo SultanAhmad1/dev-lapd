@@ -14,32 +14,17 @@ function StoreClosedModal() {
           <div className="deliver-to-body-content">
             <h1 className="deliver-to-body-content-h1">We are closed now!</h1>
             <div className="deliver-to-body-content-nested-div-level-one">
-              <label
-                id="location-typeahead-location-manager-label"
-                htmlFor="location-typeahead-location-manager-input"
-                className="deliver-to-body-content-nested-div-level-one-label"
-              >
+              <label id="location-typeahead-location-manager-label" htmlFor="location-typeahead-location-manager-input" className="deliver-to-body-content-nested-div-level-one-label">
                 When autocomplete results are available, use up and down arrows
                 to review and enter to select. Touch device users, explore by
                 touch or with swipe gestures.
               </label>
 
               <div className="deliver-to-body-content-nested-div-level-one-nested">
-                <p
-                  className="store-closed-to-body-content-p"
-                  style={{ padding: "10px", marginLeft: "50px" }}
-                >
-                  Opening time is{" "}
-                  {moment(
-                    dayOpeningClosingTime?.time_periods?.[0]?.start_time,
-                    "hh:mm A"
-                  ).format("hh:mm A")}{" "}
+                <p className="store-closed-to-body-content-p" style={{ padding: "10px", marginLeft: "50px" }}>
+                  Opening time is {moment(dayOpeningClosingTime?.time_periods?.[0]?.start_time,"hh:mm A").format("hh:mm A")}
                   <br />
-                  Closing time is{" "}
-                  {moment(
-                    dayOpeningClosingTime?.time_periods?.[0]?.end_time,
-                    "hh:mm A"
-                  ).format("hh:mm A")}
+                  Closing time is {moment(dayOpeningClosingTime?.time_periods?.[0]?.end_time,"hh:mm A").format("hh:mm A")}
                 </p>
               </div>
             </div>

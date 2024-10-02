@@ -1,7 +1,6 @@
 import React, { Fragment, useContext, useEffect, useState } from "react";
 import HomeContext from "../contexts/HomeContext";
 import moment from "moment";
-import Link from "next/link";
 import { BrandLogoPath, IMAGE_URL_Without_Storage } from "../global/Axios";
 import Image from "next/image";
 
@@ -20,17 +19,18 @@ function Footer() {
         <div className="footer-div">
           <div className="footer-brand-logo-partner-logo">
             <div className="footer-brand-logo">
+              <a href="/">
               {
-                  brandlogo !== null ?
-                    <Image  src={IMAGE_URL_Without_Storage+''+brandlogo} width={146} height={24} className="brand-logo" alt='Brand Name'/>
-                  :
-                    <Image  src={BrandLogoPath} width={146} height={24} className="brand-logo" alt='Brand Name'/>
+                brandlogo !== null ?
+                  <Image  src={IMAGE_URL_Without_Storage+''+brandlogo} width={146} height={24} className="brand-logo" alt='Brand Name'/>
+                :
+                  <Image  src={BrandLogoPath} width={146} height={24} className="brand-logo" alt='Brand Name'/>
               }
-
+              </a>
               <div className="footer-partners-log">
                 <div className="footer-partners-div">
-                  {websiteModificationData?.brand?.brand_social_links?.map(
-                    (links, index) => {
+                  {
+                    websiteModificationData?.brand?.brand_social_links?.map((links, index) => {
                       return (
                         links?.social_links !== null && (
                           <Fragment key={index}>
@@ -46,8 +46,8 @@ function Footer() {
                           </Fragment>
                         )
                       );
-                    }
-                  )}
+                    })
+                  }
                 </div>
               </div>
             </div>
@@ -55,10 +55,10 @@ function Footer() {
             <div className="footer-brand-conditions">
               <ul>
                 <li>
-                  <a className="footer-brand-conditions-btn">About Us</a>
+                  <a className="footer-brand-conditions-btn" href="/about-us">About Us</a>
                 </li>
                 <li>
-                  <a className="footer-brand-conditions-btn">Contact Us</a>
+                  <a className="footer-brand-conditions-btn" href="/contact-us">Contact Us</a>
                 </li>
               </ul>
             </div>
@@ -66,12 +66,9 @@ function Footer() {
             <div className="footer-brand-conditions">
               <ul>
                 <li>
-                  <Link
-                    href={`${websiteOrigin}/track-order`}
-                    className="footer-brand-conditions-btn"
-                  >
+                  <a href="/track-order" className="footer-brand-conditions-btn">
                     Track Order
-                  </Link>
+                  </a>
                 </li>
                 <li>
                   <a className="footer-brand-conditions-btn">Allergens</a>
@@ -82,10 +79,10 @@ function Footer() {
             <div className="footer-brand-conditions">
               <ul>
                 <li>
-                  <a className="footer-brand-conditions-btn">Terms</a>
+                  <a className="footer-brand-conditions-btn" href="/terms-conditions">Terms</a>
                 </li>
                 <li>
-                  <a className="footer-brand-conditions-btn">Privacy Policy</a>
+                  <a className="footer-brand-conditions-btn" href="/privacy-policy">Privacy Policy</a>
                 </li>
               </ul>
             </div>
@@ -93,27 +90,21 @@ function Footer() {
             <div className="footer-brand-conditions">
               <ul>
                 <li>
-                  <a className="footer-brand-conditions-btn">
-                    {websiteModificationData?.brand?.telephone.replace(
-                      /^\d/,
-                      "+44"
-                    )}
+                  <button type="button" className="footer-brand-conditions-btn">
+                    {websiteModificationData?.brand?.telephone.replace(/^\d/,"+44")}
+                  </button>
+                  <a className="footer-brand-conditions-btn" href={websiteModificationData?.brand?.brand_social_links?.[0]?.social_links} target="_blank" style={{ wordSpacing: " -0.1em" }}>
+                    @{websiteModificationData?.brand?.name.split(" ").join("").toLowerCase()}
                   </a>
-                  <a
-                    className="footer-brand-conditions-btn"
-                    href={
-                      websiteModificationData?.brand?.brand_social_links?.[0]
-                        ?.social_links
-                    }
-                    target="_blank"
-                    style={{ wordSpacing: " -0.1em" }}
-                  >
-                    @
-                    {websiteModificationData?.brand?.name
-                      .split(" ")
-                      .join("")
-                      .toLowerCase()}
-                  </a>
+                </li>
+              </ul>
+            </div>
+
+            
+            <div className="footer-brand-conditions">
+              <ul>
+                <li>
+                  <a className="footer-brand-conditions-btn" href="/subscription">Subscription</a>
                 </li>
               </ul>
             </div>

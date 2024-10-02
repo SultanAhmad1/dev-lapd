@@ -1,4 +1,4 @@
-import React, { Fragment, useContext, useEffect, useState } from "react";
+import React, { Fragment, useContext, useEffect, useRef, useState } from "react";
 import HomeContext from "../contexts/HomeContext";
 import Link from "next/link";
 import {
@@ -63,6 +63,25 @@ export default function Cart() {
   const [isappliedbtnactive, setIsappliedbtnactive] = useState(true);
 
   const [couponCodeError, setCouponCodeError] = useState("")
+
+  const asideRef = useRef(null);
+
+  // Function to close the canvas if clicked outside the aside
+  const handleClickOutside = (event) => {
+    if (asideRef.current && !asideRef.current.contains(event.target)) {
+      setIscartbtnclicked(false)
+    }
+  };
+
+  // Adding event listener when the component mounts
+  useEffect(() => {
+    document.addEventListener("mousedown", handleClickOutside);
+
+    return () => {
+      // Cleanup the event listener on unmount
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   async function getOrderAmount(subTotalArgument)
   {
@@ -456,7 +475,7 @@ export default function Cart() {
     setLoader(true)
     setLocalStorage(`${BRANDSIMPLEGUID}set_index`, findByIndex);
     setIscartbtnclicked(false);
-    route.push(`${storeName}/${categorySlug}/${itemSlug}/edit`);
+    route.push(`/${storeName}/${categorySlug}/${itemSlug}/edit`);
   }
 
   function handleCouponRemoveToggleBtn(indexNumber)
@@ -537,7 +556,7 @@ export default function Cart() {
   return (
     <div className="cart-level-one-div">
       <div className="cart-level-one-div-screen-one"></div>
-      <div className="cart-level-one-div-screen-two">
+      <div className="cart-level-one-div-screen-two" ref={asideRef}>
         <div className="cart jp">
           <div className="cart-close-btn-div-level-one">
             <button className="cart-close-btn" onClick={() => setIscartbtnclicked(false)}>

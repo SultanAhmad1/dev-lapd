@@ -2,6 +2,7 @@ import { IMAGE_URL_Without_Storage } from "@/global/Axios";
 import {
   getAmountConvertToFloatWithFixed,
 } from "@/global/Store";
+import moment from "moment";
 import Link from "next/link";
 import React, { memo } from "react";
 
@@ -28,7 +29,7 @@ export const WebsiteSingleItem = memo((props) => {
     <div className="e5 e6">
       <div className="single-product-level-one-div">
         <div className="level-one-div-nested-one">
-          <a className="back-btn" href="/">
+          <a className="back-btn-product" href="/">
             <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="back-svg">
               <path d="M22 13.5H6.3l5.5 7.5H8.3l-6.5-9 6.5-9h3.5l-5.5 7.5H22v3z"></path>
             </svg>
@@ -44,7 +45,8 @@ export const WebsiteSingleItem = memo((props) => {
             <span>{singleitem?.title}</span>
           </button>
 
-          {(singleitem?.image_url && singleitem?.image_url !== null) && (
+          {
+            (singleitem?.image_url && singleitem?.image_url !== null) && 
             <div className="product-img">
               <div className="bz">
                 <div className="product-img-div-one-div">
@@ -76,7 +78,8 @@ export const WebsiteSingleItem = memo((props) => {
                 </div>
               </div>
             </div>
-          )}
+            
+          }
         </div>
 
         <div className="level-one-div-nested-two">
@@ -116,70 +119,43 @@ export const WebsiteSingleItem = memo((props) => {
                             </div>
                           </div>
                           <div className="product-required">
-                            <div
-                              className={`product-required-div ${modifier?.valid_class}`}
-                            >
-                              {" "}
-                              {parseInt(modifier?.min_permitted) > parseInt(0)
-                                ? "Required"
-                                : "Optional"}
+                            <div className={`product-required-div ${modifier?.valid_class}`}>
+                              {parseInt(modifier?.min_permitted) > parseInt(0) ? "Required" : "Optional"}
                             </div>
                           </div>
                         </div>
                       </div>
                       <div className="hg">
-                        {modifier?.modifier_secondary_items?.map(
-                          (seconditems, indexSecondItem) => {
+                        {
+                          modifier?.modifier_secondary_items?.map((seconditems, indexSecondItem) => {
+
+                            let isItemSuspend = false;
+                            if(seconditems?.suspension_info !== null)
+                            {
+                              if(moment().format('YYYY-MM-DD') <= moment.unix(seconditems?.suspension_info?.suspend_untill).format('YYYY-MM-DD'))
+                              {
+                                isItemSuspend = true
+                              }
+                            }
+
                             return (
+                              isItemSuspend === false && 
                               <div key={`${index}.${indexSecondItem}`}>
                                 <hr className="product-modifier-items-hr"></hr>
-                                <div
-                                  className="product-modifier-item-detail"
-                                  onClick={() =>
-                                    handleRadioInput(
-                                      modifier?.id,
-                                      seconditems?.id,
-                                      seconditems?.title,
-                                      parseInt(
-                                        seconditems?.secondary_item_modifiers
-                                          .length
-                                      )
-                                    )
-                                  }
-                                >
-                                  {parseInt(
-                                    seconditems?.secondary_item_modifiers
-                                      ?.length
-                                  ) > parseInt(0) && (
+                                <div className="product-modifier-item-detail" onClick={() =>handleRadioInput(modifier?.id,seconditems?.id,seconditems?.title, parseInt(seconditems?.secondary_item_modifiers.length))}>
+                                  {
+                                    parseInt(seconditems?.secondary_item_modifiers?.length) > parseInt(0) && 
                                     <div className="poquickreview-modal">
                                       <div className="c8c7cuquickreview-modal">
-                                        <svg
-                                          style={{ cursor: "pointer" }}
-                                          width="24px"
-                                          height="24px"
-                                          fill="none"
-                                          viewBox="0 0 24 24"
-                                          xmlns="http://www.w3.org/2000/svg"
-                                          aria-hidden="true"
-                                          focusable="false"
-                                        >
-                                          <path
-                                            d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
-                                            fill="#AFAFAF"
-                                            transform="rotate(90, 12, 12)"
-                                          ></path>
+                                        <svg style={{ cursor: "pointer" }} width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                          <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="#AFAFAF" transform="rotate(90, 12, 12)"></path>
                                         </svg>
                                       </div>
                                     </div>
-                                  )}
-                                  <input
-                                    type="radio"
-                                    className="radio-input"
-                                  ></input>
+                                  }
+                                  <input type="radio" className="radio-input"></input>
                                   {/* <label className="modifier-product-item-name nv"> select radio */}
-                                  <label
-                                    className={`modifier-product-item-name ${seconditems?.activeClass}`}
-                                  >
+                                  <label className={`modifier-product-item-name ${seconditems?.activeClass}`}>
                                     <div className="spacer _16"></div>
                                     <div className="modifier-product-item-name-one-div">
                                       <div className="modifier-product-item-name-one-nested-div">
@@ -189,18 +165,13 @@ export const WebsiteSingleItem = memo((props) => {
                                               {seconditems?.title}
                                             </div>
                                             <div className="spacer _8"></div>
-                                            {parseInt(seconditems?.price) >
-                                              parseInt(0) && (
+                                            {
+                                              parseInt(seconditems?.price) > parseInt(0) && 
                                               <div className="modifier-group-price">
-                                                {
-                                                  seconditems?.country_price_symbol
-                                                }
-                                                {getAmountConvertToFloatWithFixed(
-                                                  seconditems?.price,
-                                                  2
-                                                )}
+                                                {seconditems?.country_price_symbol}
+                                                {getAmountConvertToFloatWithFixed(seconditems?.price,2)}
                                               </div>
-                                            )}
+                                            }
                                           </div>
                                         </div>
                                       </div>
@@ -244,7 +215,18 @@ export const WebsiteSingleItem = memo((props) => {
                       <div className="hg">
                         {
                           modifier?.modifier_secondary_items?.map((seconditems, indexSecondItem) => {
+
+                            let isItemSuspend = false;
+                            if(seconditems?.suspension_info !== null)
+                            {
+                              if(moment().format('YYYY-MM-DD') <= moment.unix(seconditems?.suspension_info?.suspend_untill).format('YYYY-MM-DD'))
+                              {
+                                isItemSuspend = true
+                              }
+                            }
+
                             return (
+                              isItemSuspend === false &&
                               <div key={`${index}.${indexSecondItem}`}>
                                 <hr className="product-modifier-items-hr"></hr>
                                 {seconditems.activeClass !== "mchw" ? (

@@ -6,6 +6,24 @@ let countryCurrencySymbol = "£"
 export const country = "GB"
 export const currency = "gbp"
 
+export const passwordMessageData = "Password length must be 8 character and contain capital and small case letters,$,% etc."
+
+export const validatePassword = (password) => {
+    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
+    return passwordRegex.test(password);
+};
+
+export const formatPhoneNumber = (number) => {
+    // Ensure the number is treated as a string
+    const numStr = number.toString();
+
+    // Check if the first character is '0', if not, prepend '0'
+    if (numStr[0] !== '0') {
+      return '0' + numStr;
+    }
+    return numStr;
+  };
+
 export function setStoreName(useEnterStore)
 {
     return storeName = useEnterStore

@@ -5,51 +5,46 @@
   padding: 0px;
 }
 
+:root{
+  --primaryBtnColor: #e8e8e8;
+  --primaryFontColor: #000000;
+  --primaryBtnHover: #d3d3d3;
+  --secondaryBtnColor: #000000;
+  --secondaryFontColor: #fff;
+  --cartBtnColor: #45b70c;
+  --cartBtnHover: #5def13;
+}
 .body-tag {
   background: #ffffff;
   color: #000000;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   height: 100%;
   width: 100%;
 }
 
-.location-openclose-filter {
+.open-close-time {
   padding: 0 40px;
-  max-width: 1200px;
+  max-width: 100vw;
   margin: 0 auto;
-  margin-top: 30px;
-  margin-bottom: 30px;
-
-
-  /* padding: 24px 0px 0px; */
-  -webkit-box-align: end;
-  align-items: flex-end;
+  margin-top: 3vh;
+  margin-bottom: 3vh;
+  align-items: center;
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
-  display: -webkit-box;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,sans-serif;
   display: flex;
-  justify-content: space-between;
+  justify-content: space-around;
 }
 
 .gfj0ggge-store-head {
   line-height: 36px;
   font-weight: 700;
   font-size: 36px;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   text-align: center;
-  -webkit-box-pack: center;
   justify-content: center;
-  display: -webkit-box;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
   display: flex;
 }
 
@@ -66,21 +61,23 @@
   display: flex;
 }
 
+.display-time{
+  line-height: 20px;
+  color: #545454;
+  font-weight: normal;
+  font-size: 14px;
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
+    sans-serif;
+}
+
 .chcicwd3cz-time {
-  text-align: center;
-  -webkit-box-pack: center;
-  justify-content: center;
-  display: -webkit-box;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
   display: flex;
 
   line-height: 20px;
   color: #545454;
   font-weight: normal;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -153,7 +150,7 @@
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   width: 100%;
@@ -184,27 +181,24 @@
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
 .header {
-  width: 95%;
+  max-width: 100vw;
   margin: 0 auto;
   background: #ffffff;
+  box-shadow: 0px 3px 6px #00000029;
+  
 }
 
 .header-div {
-  height: 96px;
-  -webkit-box-align: center;
+  height: 15vh;
   padding: 0 40px;
-  /* min-width: 1024px; */
-  max-width: 1920px;
-  color: #000000;
-  position: relative;
   display: flex;
-  box-sizing: border-box;
   align-items: center;
+  justify-content: space-between;
 }
 
 .hamburger-button {
@@ -223,6 +217,10 @@
   height: 20px;
   flex: none;
   fill: currentColor;
+}
+
+.vertical{
+  height: 1.4815vh;
 }
 
 .spacer {
@@ -297,7 +295,7 @@ button {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -319,7 +317,7 @@ button {
   line-height: 24px;
   font-weight: normal;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   -webkit-box-align: center;
   align-items: center;
@@ -360,7 +358,7 @@ button {
   height: 48px;
   border-radius: 500px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   -webkit-box-align: center;
   align-items: center;
@@ -452,7 +450,7 @@ input {
   height: 48px;
   border-radius: 500px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   white-space: nowrap;
@@ -591,7 +589,7 @@ input {
   font-size: 32px;
   margin-bottom: 16px;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
 }
 
 h1,
@@ -687,7 +685,7 @@ p {
   -webkit-box-flex: 1;
   flex-grow: 1;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   overflow: hidden;
   -webkit-box-orient: vertical;
@@ -705,7 +703,7 @@ p {
   font-size: 16px;
   text-overflow: ellipsis;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   white-space: nowrap;
   overflow: hidden;
@@ -717,7 +715,7 @@ p {
   font-weight: normal;
   text-overflow: ellipsis;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   white-space: nowrap;
   overflow: hidden;
@@ -734,7 +732,7 @@ p {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -760,7 +758,7 @@ p {
   justify-content: center;
   line-height: 24px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -785,7 +783,7 @@ p {
   font-size: 20px;
   margin-bottom: 16px;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
 }
 
 .available-store-h2 {
@@ -794,7 +792,7 @@ p {
   font-size: 20px;
   margin-bottom: 16px;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
 }
 
 .deliver-to-body-content-nested-div-level-one {
@@ -824,7 +822,7 @@ p {
   font-size: 16px;
   line-height: 24px;
   font-weight: normal;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
   display: -webkit-box;
@@ -846,7 +844,7 @@ p {
   font-size: 16px;
   line-height: 24px;
   font-weight: normal;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
   display: -webkit-box;
@@ -907,7 +905,7 @@ p {
   justify-content: center;
   line-height: 24px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -978,7 +976,7 @@ p {
   line-height: 20px;
   font-size: 14px;
   font-weight: normal;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   width: 100%;
   color: #000000;
@@ -1048,7 +1046,7 @@ p {
   margin-bottom: 12px;
   display: block;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   color: #000000;
 }
 
@@ -1058,7 +1056,7 @@ p {
   display: block;
   font-weight: normal;
   font-size: 16px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   text-align: center;
   max-width: 80%;
@@ -1075,7 +1073,7 @@ p {
   font-weight: 500;
   font-size: 14px;
   cursor: pointer;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   -webkit-box-align: center;
   align-items: center;
@@ -1116,7 +1114,7 @@ p {
   line-height: 40px;
   font-size: 32px;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   color: #545454;
 }
 
@@ -1125,7 +1123,7 @@ p {
   color: #545454;
   line-height: 24px;
   font-weight: normal;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -1150,7 +1148,7 @@ p {
   line-height: 24px;
   background: #eeeeee;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -1215,7 +1213,7 @@ p {
   font-size: 16px;
   flex: 1;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   -webkit-box-align: center;
   align-items: center;
@@ -1270,7 +1268,7 @@ p {
   font-size: 16px;
   flex: 1;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   -webkit-box-align: center;
   align-items: center;
@@ -1299,7 +1297,7 @@ p {
   -webkit-box-flex: 1;
   flex-grow: 1;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -1309,7 +1307,7 @@ p {
   color: #545454;
   line-height: 24px;
   font-weight: normal;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -1317,7 +1315,7 @@ p {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -1362,7 +1360,7 @@ ul {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #545454;
 }
@@ -1387,7 +1385,7 @@ ul {
   line-height: 20px;
   font-weight: 500;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -1395,7 +1393,7 @@ ul {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   display: -webkit-box;
   display: -moz-box;
@@ -1443,7 +1441,7 @@ ul {
   font-size: 16px;
   line-height: 24px;
   font-weight: normal;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -1474,7 +1472,7 @@ ul {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   white-space: nowrap;
@@ -1503,7 +1501,7 @@ ul {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
   -webkit-box-orient: vertical;
@@ -1539,7 +1537,7 @@ ul {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
   -webkit-box-orient: vertical;
@@ -1560,7 +1558,7 @@ ul {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -1591,7 +1589,7 @@ ul {
   line-height: 28px;
   font-weight: 700;
   font-size: 20px;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
@@ -1631,7 +1629,7 @@ ul {
   justify-content: center;
   line-height: 24px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -1656,17 +1654,13 @@ ul {
   line-height: 24px;
   background: #eeeeee;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
-  width: 100%;
+  width: 100vw;
   color: #000000;
-  display: -webkit-box;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
   display: flex;
   box-sizing: border-box;
 }
@@ -1675,35 +1669,8 @@ ul {
 
 /* Banner Image CSS Styling */
 .banner {
-  /* width: 100%;
-  height: 160px;
-  background: rgb(246, 246, 246);
-  -webkit-box-pack: center;
-  justify-content: center;
-  margin: 0;
-  -webkit-box-align: center;
-  align-items: center;
-  display: -webkit-box;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: -webkit-flex; */
-  /* display: flex; */
-  /* position: relative; */
-
-  /* position: absolute;
-  left: 0;
-  right: 0;
-  width: 100%;
-  height: 160px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-around;
-  align-items: center; */
-  /*   border:4px solid rgb(83, 110, 143); */
-  /* opacity:0; */
-
-  max-width: 1200px;
-  height: 250px;
+  max-width: 100vw;
+  height: 20vh;
   margin: 0 auto;
 }
 
@@ -1713,8 +1680,8 @@ ul {
   border: none;
   opacity: 1;
   display: block;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 20vh;
 }
 
 /* Bannger Image CSS Styling End */
@@ -1726,9 +1693,7 @@ ul {
 /* Content CSS Styling */
 .content {
   padding: 0 40px;
-  /* min-width: 1024px; */
-  /* max-width: 1920px; */
-  max-width: 1300px;
+  max-width: 72vw;
   margin: 0 auto;
   box-sizing: border-box;
 }
@@ -1825,7 +1790,7 @@ ul {
   font-size: 16px;
   text-overflow: ellipsis;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   white-space: nowrap;
   overflow: hidden;
@@ -1840,7 +1805,7 @@ ul {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -1877,7 +1842,7 @@ ul {
   line-height: 32px;
   font-size: 24px;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   color: #000000;
 }
 
@@ -1974,7 +1939,7 @@ ul {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -2000,7 +1965,7 @@ ul {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -2019,7 +1984,7 @@ ul {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -2113,7 +2078,7 @@ ul {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -2208,7 +2173,7 @@ ul {
   display: -webkit-inline-flex;
   display: inline-flex;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   -webkit-box-align: center;
   align-items: center;
@@ -2233,7 +2198,7 @@ ul {
   display: -webkit-inline-flex;
   display: none;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   -webkit-box-align: center;
   align-items: center;
@@ -2342,14 +2307,14 @@ ul {
   line-height: 28px;
   font-weight: 700;
   font-size: 20px;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
 }
 
 .product-h1 {
   line-height: 40px;
   font-size: 32px;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   -webkit-box-align: center;
   align-items: center;
   display: -webkit-box;
@@ -2366,7 +2331,7 @@ ul {
   line-height: 28px;
   font-weight: 700;
   font-size: 20px;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   color: #000000;
 }
 
@@ -2384,7 +2349,7 @@ ul {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   overflow: hidden;
 }
@@ -2435,7 +2400,7 @@ ul {
   line-height: 28px;
   font-weight: 700;
   font-size: 20px;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
 }
 
 .product-modifier-option {
@@ -2443,7 +2408,7 @@ ul {
   color: #545454;
   font-weight: normal;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   display: flex;
   justify-content: space-between;
@@ -2466,7 +2431,7 @@ ul {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   height: 20px;
   -webkit-box-align: center;
@@ -2562,7 +2527,7 @@ input {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -2611,7 +2576,7 @@ input {
   font-size: 16px;
   font-weight: 500;
 
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -2667,7 +2632,7 @@ input {
   font-size: 16px;
   font-weight: 500;
 
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -2741,7 +2706,7 @@ input {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -2805,7 +2770,7 @@ input {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -2813,7 +2778,7 @@ input {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   white-space: nowrap;
   color: #000000;
@@ -2846,7 +2811,7 @@ input {
   font-size: 16px;
   line-height: 24px;
   font-weight: normal;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -2876,7 +2841,7 @@ input {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   white-space: nowrap;
@@ -2931,7 +2896,7 @@ input {
   justify-content: center;
   line-height: 24px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -2955,7 +2920,7 @@ input {
   display: inline-flex;
   line-height: 24px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   -webkit-box-align: center;
   align-items: center;
@@ -2979,7 +2944,7 @@ input {
   justify-content: center;
   line-height: 24px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -3156,7 +3121,7 @@ input {
   display: inline-flex;
   height: 48px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -3180,7 +3145,7 @@ input {
   line-height: 24px;
   text-overflow: ellipsis;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   white-space: nowrap;
   overflow: hidden;
@@ -3231,7 +3196,7 @@ input {
   display: inline-flex;
   height: 48px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -3456,7 +3421,7 @@ input {
 .chd2cwcxquickreview-modal {
   font-size: 16px;
   line-height: 24px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -3486,7 +3451,7 @@ input {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   white-space: nowrap;
@@ -3522,7 +3487,7 @@ input {
   justify-content: center;
   line-height: 24px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -3583,7 +3548,7 @@ input {
   display: inline-flex;
   line-height: 24px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -3671,7 +3636,7 @@ input {
   font-size: 16px;
   line-height: 24px;
   font-weight: normal;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
   display: -webkit-box;
@@ -3745,7 +3710,7 @@ input {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -3872,7 +3837,7 @@ input {
   line-height: 28px;
   font-size: 20px;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
 }
 
 .g0s6modifier-modal {
@@ -3921,7 +3886,7 @@ input {
   line-height: 30px;
   font-weight: 500;
   font-size: 16px;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
 }
 
 .chcicwd3czmodifier-choose {
@@ -3929,7 +3894,7 @@ input {
   color: #545454;
   font-weight: normal;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   display: flex;
   justify-content: space-between;
@@ -3953,7 +3918,7 @@ input {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   height: 20px;
   -webkit-box-align: center;
@@ -3999,7 +3964,7 @@ input {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -4085,7 +4050,7 @@ input {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -4125,7 +4090,7 @@ input {
   justify-content: center;
   line-height: 24px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -4148,7 +4113,7 @@ input {
   display: inline-flex;
   line-height: 24px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   -webkit-box-align: center;
   align-items: center;
@@ -4215,7 +4180,7 @@ input {
   line-height: 40px;
   font-size: 32px;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   flex-direction: column;
@@ -4290,7 +4255,7 @@ input {
   font-weight: 500;
   line-height: 20px;
   font-size: 16px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -4299,7 +4264,7 @@ input {
   font-size: 14px;
   line-height: 20px;
   font-weight: normal;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -4314,7 +4279,7 @@ input {
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   -webkit-box-align: center;
   align-items: center;
@@ -4353,7 +4318,7 @@ input {
   margin-bottom: 8px;
   flex: 1;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   -webkit-box-align: center;
   align-items: center;
   display: -webkit-box;
@@ -4439,7 +4404,7 @@ input {
   justify-content: center;
   width: 24px;
   height: 24px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   -webkit-box-align: center;
   align-items: center;
@@ -4458,7 +4423,7 @@ input {
   justify-content: center;
   width: 24px;
   height: 24px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   -webkit-box-align: center;
   align-items: center;
@@ -4485,7 +4450,7 @@ input {
   font-weight: 500;
   line-height: 20px;
   font-size: 16px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -4497,7 +4462,7 @@ input {
   font-weight: 500;
   line-height: 20px;
   font-size: 16px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
   -webkit-box-orient: vertical;
@@ -4517,7 +4482,7 @@ input {
   font-weight: 500;
   line-height: 20px;
   font-size: 16px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -4547,7 +4512,7 @@ input {
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   /* width: 100%; */
   max-width: 220px;
@@ -4557,7 +4522,7 @@ input {
   font-size: 14px;
   line-height: 20px;
   font-weight: normal;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   display: -webkit-box;
   display: -moz-box;
@@ -4613,7 +4578,7 @@ input {
   font-weight: 500;
   line-height: 20px;
   font-size: 16px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -4630,7 +4595,7 @@ input {
   line-height: 24px;
   font-weight: normal;
   font-size: 16px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   display: -webkit-box;
   display: -moz-box;
@@ -4656,7 +4621,7 @@ input {
   line-height: 24px;
   font-weight: normal;
   font-size: 16px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -4673,7 +4638,7 @@ input {
   -webkit-box-pack: justify;
   justify-content: space-between;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
@@ -4707,7 +4672,7 @@ input {
   line-height: 20px;
   font-size: 12px;
   font-weight: normal;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -4715,7 +4680,7 @@ input {
   line-height: 20px;
   font-size: 12px;
   font-weight: normal;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -4725,7 +4690,7 @@ input {
   line-height: 20px;
   font-size: 12px;
   font-weight: normal;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -4734,7 +4699,7 @@ input {
   line-height: 16px;
   font-weight: 500;
   font-size: 12px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -4776,7 +4741,7 @@ input {
   color: #ffffff;
   cursor: pointer;
   line-height: 24px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   width: 100%;
   -webkit-box-align: center;
@@ -4805,7 +4770,7 @@ input {
   color: #ffffff;
   cursor: pointer;
   line-height: 24px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   width: 100%;
   -webkit-box-align: center;
@@ -4831,7 +4796,7 @@ input {
   font-weight: 500;
   cursor: pointer;
   line-height: 24px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -4849,7 +4814,7 @@ input {
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   align-items: center;
   color: #000000;
@@ -4875,6 +4840,24 @@ input {
 /* New Cart CSS End */
 
 .e5ald0m1m2amc5checkout-desk {
+  /* padding-bottom: 40px;
+  flex-basis: 1920px;
+  background: #f6f6f6;
+  -webkit-box-flex: 1;
+  flex-grow: 1;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  flex-direction: column;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex; */
+}
+
+.place-order-container{
   padding-bottom: 40px;
   flex-basis: 1920px;
   background: #f6f6f6;
@@ -4911,48 +4894,14 @@ input {
 
 /* Payment CSS */
 
-.e5ald0m1m2amc5payment-desk {
-  padding-bottom: 40px;
-  flex-basis: 1920px;
+.payment-container {
   background: #f6f6f6;
-  -webkit-box-flex: 1;
-  flex-grow: 1;
-  -webkit-box-align: center;
-  align-items: center;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  flex-direction: row-reverse;
-  display: -webkit-box;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  /* -webkit-box-align: center;
-  align-items: center;
-  -webkit-box-orient: vertical;
-  -webkit-box-direction: normal;
-  flex-direction: column;
-  display: -webkit-box;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex; */
 }
 
-.m3m4m5gim6payment-desk {
-  grid-template-columns: 480px;
-  /* grid-template-columns: 670px 440px; */
-  /* grid-template-columns: 630px 415px; */
-  /* grid-template-columns: 590px 380px; */
-  row-gap: 7px;
-  /* grid-template-columns: 400px 360px; */
-  margin-top: 30px;
-  max-width: 1200px;
-  width: 80%;
-  display: -ms-grid;
-  display: grid;
-  -webkit-column-gap: 24px;
-  column-gap: 24px;
+.payment-div {
+  max-width: 50vw;
+  margin: 0 auto;
+  padding: 10vh;
 }
 
 .hmg1payment-desk {
@@ -4983,14 +4932,14 @@ input {
   line-height: 32px;
   font-weight: 700;
   font-size: 24px;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   line-height: 40px;
   font-size: 32px;
   margin-bottom: 0;
   -webkit-box-align: start;
   align-items: flex-start;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   flex-direction: column;
@@ -5049,7 +4998,7 @@ input {
   line-height: 28px;
   font-size: 18px;
   font-weight: normal;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -5068,7 +5017,7 @@ input {
   color: #ffffff;
   cursor: pointer;
   line-height: 24px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   width: 100%;
   -webkit-box-align: center;
@@ -5121,7 +5070,7 @@ input {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -5212,14 +5161,14 @@ input {
   line-height: 32px;
   font-weight: 700;
   font-size: 24px;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   line-height: 40px;
   font-size: 32px;
   margin-bottom: 0;
   -webkit-box-align: start;
   align-items: flex-start;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   flex-direction: column;
@@ -5282,7 +5231,7 @@ input {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -5387,7 +5336,7 @@ input {
   line-height: 16px;
   font-weight: 500;
   font-size: 12px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -5473,14 +5422,14 @@ ul.track-steps {
   line-height: 32px;
   font-weight: 700;
   font-size: 24px;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   line-height: 40px;
   font-size: 32px;
   margin-bottom: 0;
   -webkit-box-align: start;
   align-items: flex-start;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   flex-direction: column;
@@ -5520,7 +5469,7 @@ ul.track-steps {
   font-weight: 500;
   cursor: pointer;
   line-height: 24px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -5654,107 +5603,599 @@ ul.track-steps {
   transform: translateX(100%);
 }
 
-@media screen and (max-width: 1280px) {
-  .m3m4m5gim6checkout-desk {
-    /* grid-template-columns: 670px; */
-    /* grid-template-columns: 630px 415px; */
-    /* grid-template-columns: 590px 380px; */
-    row-gap: 32px;
-    /* grid-template-columns: 400px 360px; */
+/**
+  Account Designid="wrapper"
+*/
+/* #wrapper{
+  height: 100%;
+} */
 
-    margin-top: 104px;
-    max-width: 1200px;
-    width: 80%;
-    display: -ms-grid;
-    display: unset;
-    -webkit-column-gap: 24px;
-    column-gap: 24px;
-  }
+.div-left-canva{
+  position: relative;
+  min-width: 100%;
+  
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  flex-direction: column;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
 
-  .e5ald0m1m2amc5payment-desk {
-    padding-bottom: 40px;
-    flex-basis: 1920px;
-    background: #f6f6f6;
-    -webkit-box-flex: 1;
-    flex-grow: 1;
-    /* -webkit-box-align: center;
-    align-items: center;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    flex-direction: row-reverse;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex; */
-    -webkit-box-align: center;
-    align-items: center;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    flex-direction: column;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
+.left-canv-level-one-div{
+  transition: 1 0.4s ease-in-out;
+  opacity: 1;
+  width: 100%;
+  -webkit-overflow-scrolling: touch;
+  overflow-y: hidden;
+  z-index: 6;
+  position: fixed;
+  left: 0;
+  top: 0;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  flex-direction: row;
+  background: rgba(38, 38, 38, 0.8);
 
-  .m3m4m5gim6payment-desk {
-    /* grid-template-columns: 480px; */
-    grid-template-columns: 670px 440px;
-    /* grid-template-columns: 630px 415px; */
-    /* grid-template-columns: 590px 380px; */
-    row-gap: 7px;
-    /* grid-template-columns: 400px 360px; */
-    margin-top: 26px;
-    max-width: 1200px;
-    width: 80%;
-    /* display: grid; */
-    display: unset;
-    column-gap: 24px;
-  }
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  height: 100%;
+}
+.left-canv-aside{
+  transform: translateX(0px);
+  opacity: 1;
+  -webkit-transition: all 0.40s ease-in-out;
+  -moz-transition: all 0.40s ease-in-out;
+  transition: all 0.40s ease-in-out;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 24px;
+  box-shadow: 0px 0px 25px rgba(0, 0, 0, 0.1);
+  width: 300px;
+  max-width: 80%;
+  color: #000000;
+  background-color: #FFFFFF;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  flex-direction: column;
+  box-sizing: border-box;
+}
 
-  .m3m4m5gim6trackorder-desk {
-    row-gap: 32px;
-    margin-top: 30px;
-    display: -ms-grid;
-    display: grid;
-    -webkit-column-gap: 24px;
-    column-gap: 24px;
-  }
+.aside-div-one{
+  -webkit-box-align: center;
+  align-items: center;
 
-  /* My Track Order */
-  .m3m4m5gim6mytrackorder-desk {
-    /* grid-template-columns: 750px 490px; */
-    /* grid-template-columns: 700px 479px; */
-    /* grid-template-columns: 670px 440px; */
-    /* grid-template-columns: 630px 415px; */
-    /* grid-template-columns: 590px 380px; */
-    row-gap: 32px;
-    /* grid-template-columns: 400px 360px; */
-    grid-template-columns: unset;
-    margin-top: 14px;
-    max-width: 1200px;
-    width: 80%;
-    display: -ms-grid;
-    display: grid;
-    -webkit-column-gap: 24px;
-    column-gap: 24px;
-  }
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
 
-  /* Track Order For Mobile Icons 1280*/
+.canv-anchor-image-tags{
+  border-radius: 50%;
+  object-fit: cover;
+  width: 48px;
+  height: 48px;
+}
 
-  /* .stagonelineheight::after {
-    width: 39px;
-    height: 4px;
-    right: -28px;
-  }
+.canva-user{
+  line-height: 24px;
+  font-weight: 500;
+  font-size: 16px;
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
 
-  .stagthirdlineheight::after {
-    width: 52px;
-    height: 4px;
-    right: -37px;
-  } */
+.canva-user-anchor{
+  color: #0E8345;
+  line-height: 16px;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.canva-anchor-btn{
+  padding-top: 24px;
+  -webkit-box-align: start;
+  align-items: flex-start;
+  flex-shrink: 0;
+
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+  flex-direction: row;
+
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+
+.canva-anchor-btn-div{
+  width: 24px;
+  height: 24px;
+  flex: none;
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+
+}
+
+.canva-anchor-svg{
+  border-radius: 50%;
+  object-fit: cover;
+  width: 48px;
+  height: 48px;
+}
+
+.canva-anchor-text{
+  line-height: 24px;
+  font-weight: 500;
+  font-size: 16px;
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+}
+
+.canva-auth-buttons{
+  min-height: calc(-72px + 100vh);
+
+  -webkit-box-pack: justify;
+  justify-content: space-between;
+
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+  flex-direction: column;
+
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+
+}
+
+.auth-sign{
+  background: rgb(0, 0, 0);
+  padding: 12px 16px;
+  min-height: 56px;
+  font-size: 18px;
+
+  border-radius: 8px;
+  color: #FFFFFF;
+  line-height: 24px;
+  width: 15rem;
+  font-weight: 500;
+
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  cursor: pointer;
+
+  -webkit-box-pack: center;
+  justify-content: center;
+
+  -webkit-box-align: center;
+  align-items: center;
+
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+
+  box-sizing: border-box;
+  margin-bottom: 8px;
+}
+
+.auth-in{
+  padding: 12px 16px;
+  min-height: 56px;
+  font-size: 18px;
+
+  border-radius: 8px;
+  background: #F3F3F3;
+
+  flex-shrink: 0;
+  line-height: 24px;
+  width: 15rem;
+  font-weight: 500;
+
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  cursor: pointer;
+
+  -webkit-box-pack: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  align-items: center;
+  color: #000000;
+
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+
+  box-sizing: border-box;
+
+}
+
+/**
+ Auth Pages Design
+*/
+
+.form-container{
+  /* max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px; */
+  height: 100vh;
+}
+
+.login-header{
+  /* background: #000000; */
+  width: 100vw;
+  padding: 20px;
+  height: 10vh;
+  box-shadow: 0px 3px 6px #00000029;
+}
+
+.login-brand-header{
+  height: 10vh;
+  width: 8vw;
+}
+
+.login-form{
+  margin: 0 auto;
+  max-width: 25vw;
+  position: relative;
+  top: 12vh;
+}
+
+.customer-address-list{
+  display: grid;
+  grid-template-columns: 2vw 50vw;
+  padding: 10px;
+  border: 1px solid #000;
+  background-color: #9191913b;
+  border-radius: 10px;
+  margin: 3vh;
+}
+
+.address-title{
+  margin: 1vh;
+}
+
+.active-customer-address{
+  border: 1px solid orange;
+  background-color: #dbc7a1;
+}
+
+.customer-title{}
+
+.customer-detail{}
+
+.form-group{
+  display: grid;
+  padding: 8px;
+}
+
+.form-group-address{
+  display: grid;
+  padding: 8px;
+}
+
+.form-input-address{
+  max-width: 100%;
+  padding: 20px;
+  border: none;
+  background-color:#ebebeb;
+}
+
+.account-address-input-button{
+  display: flex;
+}
+
+.form-input-postcode{
+  width: 65vw;
+  padding: 20px;
+  border: 1px solid #000;
+  border-radius: 10px;
+}
+
+/* .form-input-postcode, .form-input-address:focus-visible{
+  border: none;
+  outline: none;
+} */
+
+.account-change-address
+{
+  width: 10vw;
+  color: #fff;
+  background-color:#457eff;
+  border-radius: 10px;
+}
+
+.form-label{
+  font-size: medium;
+  font-weight: bolder;
+  margin-bottom: 10px;
+}
+
+.form-input{
+  max-width: 100%;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #000;
+}
+
+.login-button{
+  background-color: #000;
+  color: #fff;
+  max-width: 25vw;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 1vh;
+}
+
+.login-button:hover{
+  background-color: #6a6a6a;
+}
+
+.forget-password{
+  background-color: rgb(243, 243, 243);
+  color: #000;
+  border-radius: 50px;
+  padding: 10px;
+  margin: 1vh;
+}
+
+.forget-password:hover{
+  background-color:rgb(213 209 209);
+}
+
+.optional-button{
+  background-color: rgb(243, 243, 243);
+  color: #000;
+  border-radius: 50px;
+  padding: 10px;
+  margin: 1vh;
+}
+
+.optional-button:hover{
+  background-color: rgb(213 209 209);
+}
+
+.register-account{
+  text-decoration: underline;
+  color: #4d62d8;
+}
+
+.register-account:hover{
+  color: #2341e9;
+}
+
+.register-account:active{
+  color: #a423e9;
+}
+
+.already-have-account{
+  display: flex;
+}
+
+.sign-in-account{
+  text-decoration: underline !important;
+  color: #4d62d8;
+}
+
+.sign-in-account:hover{
+  color: #2341e9;
+}
+
+.sign-in-account:active{
+  color: #a423e9;
+}
+/**
+  Register Form design
+*/
+.register-header{
+  /* background: #000000; */
+  max-width: 100vw;
+  padding: 20px;
+  height: 10vh;
+  box-shadow: 0px 3px 6px #00000029;
+}
+
+.register-brand-header{
+  height: 10vh;
+  width: 8vw;
+}
+
+.register-form{
+  margin: 0 auto;
+  max-width: 35vw;
+  position: relative;
+  top: 3vh;
+}
+
+.register-button{
+  background-color: #6a6a6a;
+  color: #fff;
+  max-width: 35vw;
+  padding: 20px;
+  border-radius: 10px;
+  margin-bottom: 13px;
+}
+
+.register-button:hover{
+  background-color: #5c5c5c61;
+}
+
+/* OTP input design */
+.digitGroup {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.digitGroup input {
+  outline: 0 !important;
+  user-select: none !important;
+  width: 50px;
+  height: 50px;
+  background-color: #C5DBF5;
+  font-weight: bold !important;
+  border-radius: 5px;
+  border: none;
+  line-height: 50px;
+  text-align: center;
+  font-size: 24px;
+  color: #001E9A;
+  margin: 0;
+}
+
+.digitGroup input:focus {
+  border: 2px solid #001E9A !important;
+}
+
+.digitGroup input:active {
+  border: 2px solid #001E9A !important;
+}
+
+.digitGroup .splitter {
+  padding: 5px 0;
+  color: rgb(0, 0, 0);
+  font-size: 25px;
+  margin: 0;
+}
+
+.prompt {
+  margin-bottom: 20px;
+  font-size: 20px;
+  color: white;
+}
+
+.formSection {
+  max-width: 500px;
+  margin: auto;
+  border-radius: 10px;
+  box-shadow: 0px 0px 8px #ddd;
+  padding: 20px;
+}
+
+.w-100 {
+  width: 100%;
+}  
+
+.otp-title{
+  text-align: center;
+  margin: 0 0 1.4rem 0;
+  font-size: 1.3rem;
+  font-weight: bolder;
+}
+
+.otp-notification {
+  text-align: center;
+  margin: 20px 0;
+  padding: 20px;
+  background-color: #eff5fb;
+  color: #296fa8;
+  font-weight: 500;
+}
+
+.resend-btn-com{
+  background: var(--secondaryBtnColor);
+  color: var(--secondaryFontColor);
+  padding: 20px;
+  border-radius: 50px;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.resend-btn-com:hover{
+  background: #afafaf;
+}
+
+.resend-btn{
+  color: #6478ebf3;
+  text-decoration: underline;
+}
+
+.resend-btn:active{
+  color: #b902f1;
+}
+
+.resend-btn:hover{
+  color: #8502f1;
+}
+
+.back-next-button{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  position: relative;
+  top: 5vh;
+}
+
+.back-btn-product{
+  color: var(--primaryFontColor);
+  border-radius: 50px;
+  margin: 0;
+}
+
+.back-btn{
+  padding: 20px;
+  background: var(--primaryBtnColor);
+  color: var(--primaryFontColor);
+  border-radius: 50px;
+  margin: 0;
+}
+
+.back-btn:hover{
+  background: var(--primaryBtnHover);
+}
+
+.next-btn{
+  padding: 20px;
+  background: var(--secondaryBtnColor);
+  color: var(--secondaryFontColor);
+  display: flex;
+  border-radius: 50px;
+}
+
+.next-btn > div{
+  font-size: 20px;
+  font-weight: 700;
+}
+
+.alert-message{
+  color: #ff0000;
+  background: #da9c9c;
+  padding: 1vh;
+  border-radius: 8px;
+  text-align: center;
+}
+
+.otp-div{
+  /* margin: 0 auto; */
+  max-width: 100vw;
+  position: relative;
+  top: 3vh;
+  margin-bottom: 50vh;
+}
+
+.otp-container{
+  padding: 10px;
+  max-width: 35vw;
+  margin: 0 auto;
 }
 
 .eeb0checkout-desk {
@@ -5773,7 +6214,7 @@ ul.track-steps {
   line-height: 32px;
   font-size: 24px;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   -webkit-box-align: center;
   align-items: center;
   display: -webkit-box;
@@ -5789,7 +6230,7 @@ ul.track-steps {
   line-height: 24px;
   font-weight: normal;
   font-size: 16px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   -webkit-box-align: center;
   align-items: center;
@@ -5817,7 +6258,7 @@ ul.track-steps {
   line-height: 24px;
   font-weight: normal;
   font-size: 16px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -5826,7 +6267,7 @@ ul.track-steps {
   line-height: 24px;
   font-weight: normal;
   font-size: 16px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -5849,7 +6290,7 @@ ul.track-steps {
   -webkit-box-pack: justify;
   justify-content: space-between;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
@@ -5879,7 +6320,7 @@ ul.track-steps {
   line-height: 20px;
   font-size: 12px;
   font-weight: normal;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -5887,7 +6328,7 @@ ul.track-steps {
   line-height: 20px;
   font-size: 12px;
   font-weight: normal;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -5897,7 +6338,7 @@ ul.track-steps {
   line-height: 20px;
   font-size: 12px;
   font-weight: normal;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -5906,7 +6347,7 @@ ul.track-steps {
   line-height: 16px;
   font-weight: 500;
   font-size: 12px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -5947,14 +6388,14 @@ ul.track-steps {
   line-height: 32px;
   font-weight: 700;
   font-size: 24px;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   line-height: 40px;
   font-size: 32px;
   margin-bottom: 0;
   -webkit-box-align: start;
   align-items: flex-start;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   flex-direction: column;
@@ -5997,7 +6438,7 @@ ul.track-steps {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -6006,7 +6447,7 @@ ul.track-steps {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -6022,7 +6463,7 @@ ul.track-steps {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -6058,7 +6499,7 @@ ul.track-steps {
   line-height: 32px;
   font-size: 24px;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   flex: 1;
   -webkit-box-align: center;
   align-items: center;
@@ -6084,7 +6525,7 @@ ul.track-steps {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -6107,7 +6548,7 @@ ul.track-steps {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -6213,7 +6654,7 @@ ul.track-steps {
   line-height: 28px;
   font-size: 18px;
   font-weight: normal;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -6232,7 +6673,7 @@ ul.track-steps {
   color: #ffffff;
   cursor: pointer;
   line-height: 24px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   width: 100%;
   -webkit-box-align: center;
@@ -6339,7 +6780,7 @@ ul.track-steps {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -6348,7 +6789,7 @@ ul.track-steps {
   color: #545454;
   font-weight: normal;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -6557,7 +6998,7 @@ ul.track-steps {
   display: inline-flex;
   height: 48px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -6580,7 +7021,7 @@ ul.track-steps {
   line-height: 24px;
   text-overflow: ellipsis;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   white-space: nowrap;
   overflow: hidden;
@@ -6600,7 +7041,7 @@ ul.track-steps {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -6614,7 +7055,7 @@ ul.track-steps {
   font-size: 32px;
   margin-bottom: 16px;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
 }
 
 .h3euh4eimfekfdschedule-span {
@@ -6625,7 +7066,7 @@ ul.track-steps {
   line-height: 36px;
   padding: 0;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
 }
 
 .alh2amenc9jdschedule {
@@ -6675,7 +7116,7 @@ ul.track-steps {
   -webkit-box-flex: 1;
   flex-grow: 1;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -6711,7 +7152,7 @@ ul.track-steps {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -6875,7 +7316,7 @@ ul.track-steps {
   display: inline-flex;
   line-height: 24px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -6932,7 +7373,7 @@ ul.track-steps {
   display: inline-flex;
   line-height: 24px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -6956,7 +7397,7 @@ ul.track-steps {
   padding: 0;
   line-height: 24px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   white-space: nowrap;
 }
@@ -7014,7 +7455,7 @@ ul.track-steps {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -7088,7 +7529,7 @@ ul.track-steps {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -7101,7 +7542,7 @@ ul.track-steps {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -7115,7 +7556,7 @@ ul.track-steps {
   font-size: 32px;
   margin-bottom: 16px;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
 }
 
 .h3euh4eimfekfdundersavefastercheckout-span {
@@ -7144,7 +7585,7 @@ ul.track-steps {
 }
 
 .agloundersavefastercheckout {
-  background: rgb(194, 194, 194);
+  background: #6e6e6e;
   padding: 12px 16px;
   border-radius: 8px;
   min-height: 56px;
@@ -7154,7 +7595,7 @@ ul.track-steps {
   color: #ffffff;
   cursor: pointer;
   line-height: 24px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   width: 45%;
   align-items: center;
@@ -7163,7 +7604,7 @@ ul.track-steps {
 }
 
 .agloundersavefastercheckout:hover {
-  background: #6e6e6e;
+  background: rgb(194, 194, 194);
 }
 
 .coasgundersavefastercheckout {
@@ -7177,7 +7618,7 @@ ul.track-steps {
   color: #ffffff;
   cursor: pointer;
   line-height: 24px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   width: 45%;
   align-items: center;
@@ -7399,7 +7840,7 @@ ul.track-steps {
   display: inline-flex;
   height: 48px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -7422,7 +7863,7 @@ ul.track-steps {
   line-height: 24px;
   text-overflow: ellipsis;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   white-space: nowrap;
   overflow: hidden;
@@ -7442,7 +7883,7 @@ ul.track-steps {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -7456,7 +7897,7 @@ ul.track-steps {
   font-size: 32px;
   margin-bottom: 16px;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
 }
 
 .h3euh4eimfekfdsavefastercheckout-span {
@@ -7494,7 +7935,7 @@ ul.track-steps {
   color: #ffffff;
   cursor: pointer;
   line-height: 24px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   width: 45%;
   align-items: center;
@@ -7517,7 +7958,7 @@ ul.track-steps {
   color: #ffffff;
   cursor: pointer;
   line-height: 24px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   width: 45%;
   align-items: center;
@@ -8052,7 +8493,7 @@ ul.track-steps {
   line-height: 40px;
   font-size: 32px;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
 }
 
 .bobpbqbre8e9eadoor {
@@ -8067,7 +8508,7 @@ ul.track-steps {
   line-height: 24px;
   font-weight: normal;
   font-size: 16px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
   min-width: 100%;
@@ -8081,7 +8522,7 @@ ul.track-steps {
   line-height: 24px;
   font-weight: normal;
   font-size: 16px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   display: -webkit-box;
   display: -moz-box;
@@ -8101,7 +8542,7 @@ ul.track-steps {
   font-weight: 500;
   line-height: 20px;
   font-size: 16px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
 } */
 
 .eidoor {
@@ -8120,7 +8561,7 @@ ul.track-steps {
   line-height: 24px;
   font-weight: normal;
   font-size: 16px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
   min-width: 100%;
@@ -8140,7 +8581,7 @@ ul.track-steps {
   line-height: 24px;
   font-weight: normal;
   font-size: 16px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
   min-width: 100%;
@@ -8160,7 +8601,7 @@ ul.track-steps {
   color: #ffffff;
   cursor: pointer;
   line-height: 24px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   width: 100%;
   -webkit-box-align: center;
@@ -8194,7 +8635,7 @@ ul.track-steps {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -8236,7 +8677,7 @@ ul.track-steps {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   cursor: pointer;
   -webkit-box-align: center;
@@ -8281,7 +8722,7 @@ ul.track-steps {
   -webkit-box-pack: justify;
   justify-content: space-between;
   font-weight: 700;
-  font-family: UberMove, sans-serif;
+  font-family: sans-serif;
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
@@ -8306,7 +8747,7 @@ ul.track-steps {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
 }
@@ -8411,7 +8852,7 @@ ul.track-steps {
   line-height: 20px;
   font-weight: 500;
   font-size: 16px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -8421,7 +8862,7 @@ ul.track-steps {
   line-height: 24px;
   font-weight: normal;
   font-size: 16px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -8429,7 +8870,7 @@ ul.track-steps {
   line-height: 20px;
   font-weight: 500;
   font-size: 16px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -8480,7 +8921,7 @@ ul.track-steps {
   font-size: 16px;
   line-height: 20px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -8499,7 +8940,7 @@ ul.track-steps {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -8574,7 +9015,7 @@ ul.track-steps {
   font-weight: 500;
   cursor: pointer;
   line-height: 24px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   -webkit-box-align: center;
   align-items: center;
@@ -8603,7 +9044,7 @@ ul.track-steps {
   font-weight: 500;
   cursor: pointer;
   line-height: 24px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   -webkit-box-align: center;
   align-items: center;
@@ -8644,7 +9085,7 @@ ul.track-steps {
   line-height: 24px;
   white-space: nowrap;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   -webkit-box-pack: center;
   justify-content: center;
@@ -8680,7 +9121,7 @@ ul.track-steps {
   font-size: 16px;
   line-height: 20px;
   font-weight: 500;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
   color: #000000;
   -webkit-box-orient: vertical;
@@ -8701,7 +9142,7 @@ ul.track-steps {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
     sans-serif;
 }
 
@@ -8950,13 +9391,297 @@ ul.track-steps {
   background-color: #e75f5f;
 }
 
+.klkmknkokpkqkr-not-found{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.brand-contact-flex{
+  display: flex;
+  justify-content: center;
+  column-gap: 100px;
+  margin-top: 50px;
+  font-size: 20px;
+  text-align: center;
+}
+
+.brand-contact-details{
+  border: 5px dashed rgb(0, 0, 0);
+  padding: 24px;
+}
+
+/**
+  Terms and condition data to display the information.
+*/
+
+.company-pages{
+  max-width: 75rem;
+  margin: 0 auto;
+  margin-top: 20px;
+}
+
+.company-pages > h1,h2,h3,h4,h5,h6{
+  margin-bottom: 10px;
+  font-weight: bold;
+  font-size: larger;
+}
+
+.company-pages > p{
+  margin-bottom: 20px;
+}
+
+.company-pages > p > a{
+  color: #0226f1;
+}
+
+.company-pages > p > active:a{
+  color: #9902f1;
+}
+
+.company-pages > ol > li{
+  margin-bottom: 20px;
+}
+
+.company-pages > ol > li > ul > li{
+  list-style: disc;
+  margin: 20px 0px 20px 30px;
+}
+
+.company-pages > ul > li{
+  margin-bottom: 20px;
+}
+
+.company-pages > ul > li > ol > li{
+  list-style-type: decimal;
+  margin: 20px 0px 20px 30px;
+}
+
+.order-history-container{
+  max-width: 100vw;
+  display: grid;
+  grid-template-columns: 7vw 80vw;
+  margin: 0 auto;
+  padding: 30px;
+  border-bottom: 1px solid #00000029;
+}
+
+
+.order-item-anchor{
+  flex: 0 0 302px;
+  position: relative;
+  height: 100%;
+  text-decoration: none;
+  color: inherit;
+}
+
+.order-item-figure{
+  height: 140px;
+  margin: 0px;
+  background: rgb(243, 243, 243);
+  overflow: hidden;
+  position: relative;
+}
+
+.order-item-div{
+  left: 0px;
+  top: 0px;
+  width: 100%;
+  position: absolute;
+  height: 100%;
+}
+
+.order-create-status {
+  background-color: #18e018;
+  color: #000;
+  padding: 2px 10px 2px 10px;;
+  border-radius: 50px;
+}
+
+.order-canceled-status {
+  background-color: #e71313;
+  color: #000;
+  padding: 2px 10px 2px 10px;;
+  border-radius: 50px;
+}
+
+.order-awaiting-status {
+  background-color: #13a0e7;
+  color: #000;
+  padding: 2px 10px 2px 10px;;
+  border-radius: 50px;
+}
+
+.order-item-img{
+  object-fit: contain;
+  border: none;
+  width: 100%;
+  height: 100%;
+}
+
+.order-texts{
+  margin: 0px 0px 0px 20px;
+}
+
+.order-information{
+  margin-bottom: 4px;
+}
+
+.order-qty{
+  display: flex;
+}
+
+.place-qty{
+  background-color: #f6f6f6;
+  padding: 4px;
+  height: fit-content;
+  max-width: 3vw;
+  align-items: center;
+  margin: 10px 10px 10px 0px;
+  border: 1px solid gray;
+}
+
+.order-item{
+  margin: 0px 0px 0px 15px;
+}
+
+.order-item > h5{
+  font-size: 20px;
+  font-weight: 400;
+  margin: 0px;
+}
+
+.order-modifiers{
+  display: flex;
+  align-items: center;
+  max-width: 15vw;
+  flex-wrap: wrap;
+}
+
+.modifier-items{
+  display: inline;
+  line-height: 20px;
+  color: rgb(75, 75, 75);
+  font-size: 14px;
+  font-weight: normal;
+}
+
+.dot-separator{
+  color: rgb(75, 75, 75);
+  display: inline-flex;
+  font-size: 14px;
+  line-height: 24px;
+  font-weight: normal;
+  align-items: center;
+}
+
+/**
+  account page.
+*/
+
+.account-header{
+  background-color: #fff;
+  max-width: 100vw;
+  height: 10vh;
+  box-shadow: 0px 2px 10px #00000029;
+}
+
+.account-logo{
+  height: 10vh;
+}
+
+.account-content{
+  display: grid;
+  grid-template-columns: 10vw 80vw;
+}
+
+.account-left-bar{
+  /* border-right: 2px solid #000; */
+  box-shadow: 0px 2px 6px #00000029;
+  height: 100vh;
+}
+
+.update-img{
+  padding: 8px;
+}
+
+.account-left-bar ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.account-left-bar li {
+  /* margin-bottom: 15px; */
+}
+
+/* .account-left-bar li:last-child{
+  margin-bottom: 0;
+} */
+
+.account-left-bar a {
+  cursor: pointer;
+  display: block;
+  text-decoration: none;
+  color: #333;
+  font-size: 16px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+  padding-left: calc(24px * 1);
+  padding-right: 12px;
+  transition: background-color 0.3s ease, color 0.3s ease; /* Smooth hover effects */
+}
+
+.account-left-bar a:hover {
+  background-color: #d0d0d0; /* Blue background on hover */
+  color: #000000; /* White text on hover */
+}
+
+.account-active {
+  background-color: #d0d0d0; /* Blue background on hover */
+  color: #000000; /* White text on hover */
+}
+
+.account-component{
+  margin: 20px;
+}
+
+.confirm-back-button{
+  padding: 10vh;
+  cursor: pointer;
+}
+
+.title-with-button{
+  display: flex;
+  justify-content: space-between;
+}
+
+.account-component > h1, h2{
+  padding: 8px;
+}
+
+.account-component > h1{
+  font-size: 30px;
+  font-weight: 700;
+  font-family: "Gill Sans", Impact, sans-serif;
+}
+
+.security-detail {
+  box-shadow: 0px 2px 6px #00000029;
+  padding: 20px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  max-width: 50vw;
+}
+
+.security-detail > .svg {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
 @media only screen and (max-width: 768px)
 {
-  .banner {
-    max-width: 800px;
-    margin: 0px 0px 30px 0px;
-  }
-
   .show {
     display: block;
     transition: all ease-in-out 0.4s;
@@ -8969,42 +9694,15 @@ ul.track-steps {
 
   .deliver-to-body-content {
     width: unset;
-    /*width: 100%;*/
-    /* padding: 24px; */
   }
 
-  .m3m4m5gim6payment-desk {
-    /* grid-template-columns: 200px; */
-    /* grid-template-columns: 670px 440px; */
-    /* grid-template-columns: 630px 415px; */
-    /* grid-template-columns: 590px 380px; */
-    row-gap: 0px;
-    /* grid-template-columns: 400px 360px; */
-    margin-top: 26px;
-    max-width: 1200px;
-    width: 100%;
-    /* display: grid; */
-    display: unset;
-    column-gap: 24px;
+  .payment-div {
+    max-width: 100vw;
+    padding: 3vh;
   }
 
   .header-div {
-    height: 72px;
-    -webkit-box-pack: start;
-    justify-content: flex-start;
-    -webkit-box-align: center;
-    align-items: center;
-    padding: 0 16px;
-    background: #fffbfb;
-    color: #000000;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    flex-direction: row;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
+    height: 15vh;
     justify-content: space-between;
   }
 
@@ -9099,23 +9797,29 @@ ul.track-steps {
     display: flex;
   }
 
-  .location-openclose-filter {
-    max-width: 1200px;
-    margin: 0 auto;
-    margin-top: 30px;
-    margin-bottom: 30px;
-    padding: 24px 0px 0px 0px;
-    align-items: flex-end;
-    line-height: 16px;
-    font-weight: 500;
-    font-size: 14px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    display: flex;
-
+  .open-close-time {
+    display: inline;
   }
 
   .chcicwd3cz-time {
     padding-left: 80px;
+  }
+
+  .gfj0ggge-store-head {
+    line-height: 36px;
+    font-weight: 700;
+    font-size: 36px;
+    font-family: sans-serif;
+    text-align: center;
+    justify-content: center;
+    display: flex;
+  }
+
+  .display-time {
+    line-height: 40px;
+    font-size: 15px;
+    display: flex;
+    justify-content: center;
   }
 
   .openclosetime-type {
@@ -9133,7 +9837,7 @@ ul.track-steps {
     line-height: 20px;
     font-weight: 500;
     font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
   }
 
@@ -9162,7 +9866,7 @@ ul.track-steps {
     font-size: 14px;
     line-height: 20px;
     font-weight: 500;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
   }
 
@@ -9170,7 +9874,7 @@ ul.track-steps {
     font-size: 14px;
     line-height: 20px;
     font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     display: -webkit-box;
     display: -moz-box;
@@ -9289,7 +9993,7 @@ ul.track-steps {
     padding: 0px 16px;
     white-space: nowrap;
     font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     -webkit-box-align: center;
     align-items: center;
@@ -9309,7 +10013,7 @@ ul.track-steps {
     line-height: 16px;
     font-weight: 500;
     font-size: 14px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
   }
 
@@ -9482,7 +10186,7 @@ ul.track-steps {
     -webkit-box-pack: center;
     justify-content: center;
     font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     -webkit-box-align: center;
     align-items: center;
@@ -9508,7 +10212,7 @@ ul.track-steps {
     text-align: center;
     overflow: hidden;
     line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
   }
 
@@ -9529,7 +10233,7 @@ ul.track-steps {
     line-height: 32px;
     font-size: 24px;
     font-weight: 700;
-    font-family: UberMove, sans-serif;
+    font-family: sans-serif;
     -webkit-box-align: center;
     align-items: center;
     display: -webkit-box;
@@ -9546,7 +10250,7 @@ ul.track-steps {
     padding: 0px;
     white-space: pre-wrap;
     font-weight: 700;
-    font-family: UberMove, sans-serif;
+    font-family: sans-serif;
     color: #000000;
   }
 
@@ -9564,7 +10268,7 @@ ul.track-steps {
     line-height: 20px;
     overflow: hidden;
     font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
   }
 
@@ -9666,7 +10370,7 @@ ul.track-steps {
     display: inline-flex;
     padding-right: 8px;
     padding-left: 8px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     -webkit-box-align: center;
     align-items: center;
@@ -9680,7 +10384,7 @@ ul.track-steps {
     line-height: 20px;
     font-size: 16px;
     font-weight: 500;
-    font-family: UberMove, sans-serif;
+    font-family: sans-serif;
   }
 
   .bresbtdqfysingle-product {
@@ -9688,7 +10392,7 @@ ul.track-steps {
     font-size: 14px;
     line-height: 20px;
     font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     display: flex;
     justify-content: space-between;
@@ -9733,7 +10437,7 @@ ul.track-steps {
     -webkit-box-pack: justify;
     justify-content: space-between;
     font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     width: 100%;
     -webkit-box-align: center;
@@ -9820,7 +10524,7 @@ ul.track-steps {
     line-height: 16px;
     font-size: 14px;
     font-weight: 500;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
   }
 
@@ -9834,7 +10538,7 @@ ul.track-steps {
     -webkit-box-pack: justify;
     justify-content: space-between;
     font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     width: 100%;
     -webkit-box-align: center;
@@ -9917,7 +10621,7 @@ ul.track-steps {
     font-size: 14px;
     line-height: 20px;
     font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
   }
 
@@ -9981,7 +10685,7 @@ ul.track-steps {
     line-height: 16px;
     font-size: 14px;
     font-weight: 500;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
   }
 
@@ -9990,7 +10694,7 @@ ul.track-steps {
     line-height: 20px;
     white-space: nowrap;
     font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     color: #000000;
   }
@@ -10072,7 +10776,7 @@ ul.track-steps {
     -webkit-box-pack: center;
     justify-content: center;
     line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     -webkit-box-align: center;
     align-items: center;
@@ -10099,7 +10803,7 @@ ul.track-steps {
     -webkit-box-pack: center;
     justify-content: center;
     line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     -webkit-box-align: center;
     align-items: center;
@@ -10122,7 +10826,7 @@ ul.track-steps {
     justify-content: center;
     white-space: nowrap;
     line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     text-align: center;
     -webkit-box-align: center;
@@ -10183,7 +10887,7 @@ ul.track-steps {
     -webkit-box-pack: center;
     justify-content: center;
     line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     width: 100%;
     -webkit-box-align: center;
@@ -10203,7 +10907,7 @@ ul.track-steps {
     font-weight: 500;
     display: inline-flex;
     line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     -webkit-box-align: center;
     align-items: center;
@@ -10254,7 +10958,7 @@ ul.track-steps {
     line-height: 20px;
     font-weight: 500;
     font-size: 16px;
-    font-family: UberMove, sans-serif;
+    font-family: sans-serif;
   }
 
   .product-list-div {
@@ -10397,7 +11101,7 @@ ul.track-steps {
     line-height: 24px;
     color: #ffffff;
     font-weight: 500;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     -webkit-box-pack: center;
     justify-content: space-around;
@@ -10435,7 +11139,7 @@ ul.track-steps {
     line-height: 40px;
     font-size: 32px;
     font-weight: 700;
-    font-family: UberMove, sans-serif;
+    font-family: sans-serif;
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;
     flex-direction: column;
@@ -10510,7 +11214,7 @@ ul.track-steps {
     font-weight: 500;
     line-height: 20px;
     font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     color: #000000;
   }
@@ -10519,7 +11223,7 @@ ul.track-steps {
     font-size: 14px;
     line-height: 20px;
     font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     color: #000000;
   }
@@ -10534,7 +11238,7 @@ ul.track-steps {
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     -webkit-box-align: center;
     align-items: center;
@@ -10573,7 +11277,7 @@ ul.track-steps {
     margin-bottom: 8px;
     flex: 1;
     font-weight: 700;
-    font-family: UberMove, sans-serif;
+    font-family: sans-serif;
     -webkit-box-align: center;
     align-items: center;
     display: -webkit-box;
@@ -10659,7 +11363,7 @@ ul.track-steps {
     justify-content: center;
     width: 24px;
     height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     -webkit-box-align: center;
     align-items: center;
@@ -10678,7 +11382,7 @@ ul.track-steps {
     justify-content: center;
     width: 24px;
     height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     -webkit-box-align: center;
     align-items: center;
@@ -10705,7 +11409,7 @@ ul.track-steps {
     font-weight: 500;
     line-height: 20px;
     font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
   }
 
@@ -10717,7 +11421,7 @@ ul.track-steps {
     font-weight: 500;
     line-height: 20px;
     font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     color: #000000;
     -webkit-box-orient: vertical;
@@ -10737,7 +11441,7 @@ ul.track-steps {
     font-weight: 500;
     line-height: 20px;
     font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     color: #000000;
   }
@@ -10767,7 +11471,7 @@ ul.track-steps {
     font-size: 14px;
     font-weight: 500;
     line-height: 20px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
   }
 
@@ -10775,7 +11479,7 @@ ul.track-steps {
     font-size: 14px;
     line-height: 20px;
     font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     display: -webkit-box;
     display: -moz-box;
@@ -10831,7 +11535,7 @@ ul.track-steps {
     font-weight: 500;
     line-height: 20px;
     font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     color: #000000;
   }
@@ -10848,7 +11552,7 @@ ul.track-steps {
     line-height: 24px;
     font-weight: normal;
     font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     display: -webkit-box;
     display: -moz-box;
@@ -10874,7 +11578,7 @@ ul.track-steps {
     line-height: 24px;
     font-weight: normal;
     font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     color: #000000;
   }
@@ -10891,7 +11595,7 @@ ul.track-steps {
     -webkit-box-pack: justify;
     justify-content: space-between;
     font-weight: 700;
-    font-family: UberMove, sans-serif;
+    font-family: sans-serif;
     display: -webkit-box;
     display: -moz-box;
     display: -ms-flexbox;
@@ -10925,7 +11629,7 @@ ul.track-steps {
     line-height: 20px;
     font-size: 12px;
     font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
   }
 
@@ -10933,7 +11637,7 @@ ul.track-steps {
     line-height: 20px;
     font-size: 12px;
     font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     color: #000000;
   }
@@ -10943,7 +11647,7 @@ ul.track-steps {
     line-height: 20px;
     font-size: 12px;
     font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
   }
 
@@ -10952,7 +11656,7 @@ ul.track-steps {
     line-height: 16px;
     font-weight: 500;
     font-size: 12px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
   }
 
@@ -10998,7 +11702,7 @@ ul.track-steps {
     color: #ffffff;
     cursor: pointer;
     line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     width: 100%;
     -webkit-box-align: center;
@@ -11029,7 +11733,7 @@ ul.track-steps {
     color: #ffffff;
     cursor: pointer;
     line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     width: 100%;
     -webkit-box-align: center;
@@ -11072,7 +11776,7 @@ ul.track-steps {
     line-height: 28px;
     font-size: 18px;
     font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
   }
 
@@ -11088,7 +11792,7 @@ ul.track-steps {
     color: #ffffff;
     cursor: pointer;
     line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     width: 100%;
     -webkit-box-align: center;
@@ -11114,7 +11818,7 @@ ul.track-steps {
     font-weight: 500;
     cursor: pointer;
     line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     color: #000000;
   }
@@ -11132,7 +11836,7 @@ ul.track-steps {
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     align-items: center;
     color: #000000;
@@ -11201,7 +11905,7 @@ ul.track-steps {
     line-height: 20px;
     font-size: 12px;
     font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
   }
 
@@ -11209,7 +11913,7 @@ ul.track-steps {
     line-height: 20px;
     font-size: 12px;
     font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     color: #000000;
   }
@@ -11219,7 +11923,7 @@ ul.track-steps {
     line-height: 20px;
     font-size: 12px;
     font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
   }
 
@@ -11252,7 +11956,7 @@ ul.track-steps {
     line-height: 20px;
     font-size: 16px;
     font-weight: 500;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     cursor: pointer;
     -webkit-box-align: center;
@@ -11365,7 +12069,7 @@ ul.track-steps {
     font-weight: 500;
     cursor: pointer;
     line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
+    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
     color: #000000;
   }
@@ -11414,7 +12118,7 @@ ul.track-steps {
     font-size: 20px;
     margin-bottom: 20px;
     font-weight: unset;
-    font-family: UberMove, sans-serif;
+    font-family: sans-serif;
   }
 
   /* Review system */
@@ -11469,2505 +12173,241 @@ ul.track-steps {
   .review-mobile-btn{
     display: block;
   }
-}
 
-@media only screen and (max-width: 480px) and (max-width: 768px) 
-{
-  .banner {
-    max-width: 400px;
-    margin: 0px 0px 30px 0px;
-  }
-
-  .show {
-    display: block;
-    transition: all ease-in-out 0.4s;
-  }
-
-  .fade {
-    display: none;
-    transition: all ease-in-out 0.4s;
-  }
-
-  .deliver-to-body-content {
-    width: unset;
-    /*width: 100%;*/
-    /* padding: 24px; */
-  }
-
-  .m3m4m5gim6payment-desk {
-    /* grid-template-columns: 200px; */
-    /* grid-template-columns: 670px 440px; */
-    /* grid-template-columns: 630px 415px; */
-    /* grid-template-columns: 590px 380px; */
-    row-gap: 0px;
-    /* grid-template-columns: 400px 360px; */
-    margin-top: 26px;
-    max-width: 1200px;
-    width: 100%;
-    /* display: grid; */
-    display: unset;
-    column-gap: 24px;
-  }
-
-  .header-div {
-    height: 72px;
-    -webkit-box-pack: start;
-    justify-content: flex-start;
-    -webkit-box-align: center;
-    align-items: center;
-    padding: 0 16px;
-    background: #fffbfb;
-    color: #000000;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    flex-direction: row;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .hamburger-button {
-    width: 24px;
-    height: 24px;
-    -webkit-box-align: center;
-    align-items: center;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .brand-logo {
-    display: flex;
-    justify-content: center;
-  }
-
-  .edit-delivery-location-button {
-    display: none;
-  }
-
-  .search-outer-level-one-div {
-    display: none;
-  }
-
-  .cart-outer-level-one-div {
-    -webkit-box-align: center;
-    align-items: center;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .spacer,
-  ._32,
-  ._40,
-  ._48,
-  ._24 {
-    display: none;
-  }
-
-  .cart-btn-spacer-24 {
-    display: none;
-  }
-
-  .cart-btn-level-two-div {
-    -webkit-box-align: center;
-    align-items: center;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .add-to-cart-btn {
-    padding: 10px 12px;
-    box-sizing: border-box;
-  }
-
-  .cart-svg {
-    height: 16px;
-    width: 16px;
-  }
-
-  .cart-text {
-    display: none;
-  }
-
-  .cart-items {
-    pointer-events: auto;
-    width: 100%;
-  }
-
-  .cart-items-list {
-    padding-top: 16px;
-    width: 100%;
-  }
-
-  .cart-item-list-heading {
-    max-width: 100%;
-    width: 100%;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .location-openclose-filter {
-    padding: unset;
-    min-width: unset;
-    max-width: 600px;
-    margin: 30px 0px 30px 0px;
-    display: inline;
-  }
-
-  .chcicwd3cz-time {
-    padding-left: 80px;
-  }
-
-  .openclosetime-type {
-    width: 374px;
-    margin: 0 auto;
-  }
-
-  .item-details {
-    -webkit-box-flex: 1;
-    flex-grow: 1;
-  }
-
-  .item-header {
-    padding: 0px;
-    line-height: 20px;
-    font-weight: 500;
-    font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-  }
-
-  .item-details {
-    -webkit-box-flex: 1;
-    flex-grow: 1;
-  }
-
-  .item-modifier-list {
-    flex-wrap: wrap;
-    color: rgb(84, 84, 84);
-    padding-top: 8px;
-    width: 100%;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .kd:first-child {
-    padding-top: 4px;
-  }
-
-  .item-modifier-type {
-    font-size: 14px;
-    line-height: 20px;
-    font-weight: 500;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-  }
-
-  .item-modifier-details {
-    font-size: 14px;
-    line-height: 20px;
-    font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .cart-item-img {
-    width: auto;
-    height: unset;
-    padding-left: 0px;
-  }
-
-  .content {
-    padding: 0 8px;
-    min-width: 0px;
-    max-width: 768px;
-  }
-
-  .left-bar {
-    display: none;
-  }
-
-  .spacer._40 {
-    display: none;
-  }
-
-  html {
-    scroll-behavior: smooth;
-    /* scroll-padding: 4rem; */
-  }
-
-  .top-bar {
-    /* height: 0px; */
-    z-index: 2;
-    position: fixed;
-    top: 0px;
-    left: 0px;
-    width: 100%;
-    scroll-behavior: smooth;
-  }
-
-  .scrolled {
-    display: unset;
-  }
-
-  .top-bar-div-level-one {
-    z-index: 1;
-  }
-
-  .akaptopbar-div {
-    height: 0;
-    position: relative;
-  }
-
-  .b0albctopbar-div {
-    -webkit-box-align: center;
-    align-items: center;
-    background-color: #ffffff;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .nlalh2bcbdnmnntopbar-div {
-    border-bottom: 5px solid rgb(226, 226, 226);
-    height: 52px;
-    width: 52px;
-    flex-shrink: 0;
-    -webkit-box-pack: center;
-    justify-content: center;
-    -webkit-box-align: center;
-    align-items: center;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .alaqbbbcnocqavlcakawtopbar-div {
-    box-shadow: rgb(226, 226, 226) 0px -5px 0px inset;
-    overflow-x: scroll;
-    z-index: 1;
-    -webkit-box-align: center;
-    align-items: center;
-    flex: 1;
-    -webkit-overflow-scrolling: touch;
-    overflow-y: hidden;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    flex-direction: row;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    position: relative;
-  }
-
-  .np {
-    border-bottom: 5px solid rgb(0, 0, 0);
-  }
-
-  .nn {
-    border-bottom: 5px solid rgb(255, 255, 255);
-  }
-
-  .bycsc0ctnmalc8bcc6nptopbar-div {
-    height: 52px;
-    line-height: 20px;
-    font-size: 14px;
-    padding: 0px 16px;
-    white-space: nowrap;
-    font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    -webkit-box-align: center;
-    align-items: center;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    color: rgb(0, 0, 0);
-  }
-
-  .bycsc0ctnmalc8bcc6nptopbar-div:active {
-    border-bottom: #000000;
-  }
-
-  .bycsd3d4topbar-div {
-    line-height: 16px;
-    font-weight: 500;
-    font-size: 14px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-  }
-
-  .item-lists {
-    margin-top: 20px;
-    background-color: #f2f2f2;
-    padding: 12px;
-  }
-
-  .items-list-nested-ul {
-    grid-template-columns: repeat(1, 1fr);
-    display: flex;
-    flex-direction: column;
-  }
-
-  .single-product {
-    display: none;
-  }
-
-  .mobile-view {
-    z-index: 7;
-    right: 0;
-    left: 0;
-    top: 0;
-    position: absolute;
-    display: block;
-  }
-
-  .arc2single-product {
-    pointer-events: auto;
-    overflow: auto;
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    top: 0;
-  }
-
-  .albfsingle-product {
-    opacity: 1;
-    transition-timing-function: cubic-bezier(0.2, 0.8, 0.4, 1);
-    transition-duration: 400ms;
-    transition-property: opacity;
-    -webkit-tap-highlight-color: transparent;
-    background-color: rgba(0, 0, 0, 0.5);
-    user-select: none;
-    min-height: 100%;
-    -webkit-box-pack: center;
-    justify-content: center;
-    pointer-events: auto;
-    width: 100%;
-    -webkit-box-align: center;
-    align-items: center;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .akb0cccdsingle-product {
-    transform: translateY(0px);
-    opacity: 1;
-    background: rgb(255, 255, 255);
-    -webkit-box-align: stretch;
-    align-items: stretch;
-    pointer-events: all;
-    user-select: text;
-    transition-property: opacity, transform;
-    align-self: stretch;
-    max-width: 100%;
-    margin-bottom: 0px;
-    margin-right: 0px;
-    margin-top: 0px;
-    margin-left: 0px;
-    border-bottom-left-radius: 0px;
-    border-bottom-right-radius: 0px;
-    border-top-right-radius: 0px;
-    border-top-left-radius: 0px;
-    transition-timing-function: cubic-bezier(0.2, 0.8, 0.4, 1);
-    transition-duration: 400ms;
-    width: 100%;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    flex-direction: column;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    position: relative;
-  }
-
-  .ctascusingle-product {
-    z-index: 1;
-    position: sticky;
-    top: 0;
-  }
-
-  .agaksingle-product {
-    width: 0%;
-    position: absolute;
-  }
-
-  .agasbcbksingle-product {
-    transform: scale(1, 1);
-    box-shadow: rgb(226, 226, 226) 0px -2px 0px inset;
-    opacity: 1;
-    transform-origin: center top;
-    transition: transform 300ms ease 0s, opacity 300ms ease 0s;
-    width: 100%;
-    -webkit-box-align: center;
-    align-items: center;
-    bottom: 0;
-    background-color: #ffffff;
-    top: 0;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    position: absolute;
-  }
-
-  .akcyczbfsingle-product {
-    padding: 8px;
-    -webkit-box-pack: justify;
-    justify-content: space-between;
-    grid-template-columns: 1fr auto 1fr;
+  .brand-contact-flex{
     display: grid;
-    width: 100%;
-    -webkit-box-align: center;
-    align-items: center;
-    position: relative;
-    box-sizing: border-box;
+    row-gap: 50px;
   }
 
-  .d5single-product {
-    justify-self: left;
-    z-index: 99;
+  .company-pages{
+    margin: 5px;
   }
 
-  .d6aqbfc4single-product-cross-btn {
-    width: 48px;
-    height: 48px;
-    padding: 0px;
-    border-radius: 50%;
-    line-height: 20px;
-    font-weight: 500;
-    transition-timing-function: cubic-bezier(0, 0, 1, 1);
-    transition-duration: 200ms;
-    transition-property: background;
-    appearance: none;
-    text-decoration: none;
-    box-shadow: none;
-    outline: none;
-    border-bottom-style: none;
-    border-right-style: none;
-    border-top-style: none;
-    border-left-style: none;
-    border-bottom-width: 0px;
-    border-right-width: 0px;
-    border-top-width: 0px;
-    border-left-width: 0px;
-    display: inline-flex;
-    margin-bottom: 0px;
-    margin-right: 0px;
-    margin-top: 0px;
-    margin-left: 0px;
-    -webkit-box-pack: center;
-    justify-content: center;
-    font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    -webkit-box-align: center;
-    align-items: center;
-    cursor: pointer;
-    color: #000000;
-    background-color: #ffffff;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    flex-direction: row;
+  .login-header{
+    max-width: 100vw;
   }
 
-  .bre3dpsingle-product {
-    transform: translateY(0px);
-    opacity: 1;
-    text-overflow: ellipsis;
-    margin-right: 6px;
-    margin-left: 6px;
-    flex: 1 1 0%;
-    font-size: 18px;
-    font-weight: 500;
-    transition: transform 300ms ease 0s, opacity 300ms ease 0s;
-    white-space: nowrap;
-    text-align: center;
-    overflow: hidden;
-    line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+  .login-brand-header {
+    height: 10vh;
+    width: 100vw;
   }
 
-  .akbkbxc3single-product {
-    pointer-events: auto;
-    overflow: hidden;
-    width: 100%;
-    position: relative;
+  .login-form{
+    max-width: 100vw;
+    top: 6vh;
   }
 
-  .eksingle-product {
-    padding: 16px 16px 0px;
+  .login-button{
+    max-width: 100vw;
   }
 
-  .bnelbpemeneoalbfsingle-product {
-    margin: 0px;
-    margin-bottom: 16px;
-    line-height: 32px;
-    font-size: 24px;
-    font-weight: 700;
-    font-family: UberMove, sans-serif;
-    -webkit-box-align: center;
-    align-items: center;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
+  .register-header{
+    max-width: 100vw;
   }
 
-  .fnfofpbnfqbpfrb1single-product-price {
-    line-height: 28px;
-    font-size: 20px;
-    text-decoration-line: none;
-    padding: 0px;
-    white-space: pre-wrap;
-    font-weight: 700;
-    font-family: UberMove, sans-serif;
-    color: #000000;
+  .register-brand-header{
+    height: 10vh;
+    width: 100vw;
   }
 
-  .epeqsingle-product-div {
-    height: 8px;
-    flex-shrink: 0;
+  .register-form{
+    max-width: 100vw;
   }
 
-  .er {
-    margin-bottom: 10px;
+  .register-button{
+    max-width: 100vw;
   }
 
-  .bresbtdqetbxsingle-product {
-    font-size: 14px;
-    line-height: 20px;
-    overflow: hidden;
-    font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+  .otp-container{
+    max-width: none;
   }
 
-  .bkeaebalsingle-product {
-    flex: 0 0 auto;
-    margin: 0px;
-    width: 100%;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    /* margin-top: 64px; */
-  }
-
-  .ecsingle-product {
-    width: inherit;
-  }
-
-  .akedeebkefsingle-product {
-    border: none;
-    /* height: 25vh; */
-    line-height: 0;
-    width: 100%;
-    position: relative;
-  }
-
-  .egbkaeeheisingle-productimg {
-    transition: transform 0.5s ease-in-out 0s;
-    transform: scale(1);
-    object-fit: cover;
-    width: 100%;
-    height: 100%;
-  }
-
-  .agasatbdbcajsingle-product {
-    background: rgba(0, 0, 0, 0.02);
-  }
-
-  .ftsingle-productul {
-    list-style: none;
-  }
-
-  .fusingle-productlidiv {
-    scroll-margin-top: 64px;
-  }
-
-  .modifier-hr {
-    background-color: rgb(246, 246, 246);
-    height: 8px;
-    margin: 0px;
-    border: none;
-  }
-
-  .modifier-header {
-    padding: 0px 16px;
-  }
-
-  .modifier-div {
-    padding-top: 12px;
-    -webkit-box-pack: justify;
-    justify-content: space-between;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    flex-direction: row;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    background: #cbcbcb75;
-    padding: 4px;
-    border-radius: 8px;
-  }
-
-  .alamsingle-product {
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    flex-direction: column;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    width: 100%;
-  }
-
-  .fzsingle-product {
-    margin-top: 4px;
-  }
-
-  .g0afg1single-product {
-    line-height: 16px;
-    border-radius: 16px;
-    height: 20px;
-    visibility: inherit;
-    font-size: 14px;
-    font-weight: 500;
-    display: inline-flex;
-    padding-right: 8px;
-    padding-left: 8px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    -webkit-box-align: center;
-    align-items: center;
-    box-sizing: border-box;
-  }
-
-  .bnfrbpfsingle-product {
-    /* line-height: 28px;
-    font-size: 20px;
-    font-weight: 700; */
-    line-height: 20px;
-    font-size: 16px;
-    font-weight: 500;
-    font-family: UberMove, sans-serif;
-  }
-
-  .bresbtdqfysingle-product {
-    color: rgb(84, 84, 84);
-    font-size: 14px;
-    line-height: 20px;
-    font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .g5single-product {
-    padding: 16px 16px 24px;
-    /* display: none; */
-  }
-
-  .show {
-    display: block;
-    transition: all ease-in-out 0.4s;
-  }
-
-  .fade {
-    display: none;
-    transition: all ease-in-out 0.4s;
-  }
-
-  .alakg6bfsingle-product {
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: reverse;
-    flex-direction: row-reverse;
-    -webkit-box-align: center;
-    align-items: center;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    position: relative;
-  }
-
-  .brbsdpdqbkalbfafg6single-productlable {
-    transition: background-color 100ms ease 0s;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: reverse;
-    flex-direction: row-reverse;
-    line-height: 20px;
-    font-weight: 500;
-    -webkit-box-pack: justify;
-    justify-content: space-between;
-    font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    width: 100%;
-    -webkit-box-align: center;
-    align-items: center;
-    cursor: pointer;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    box-sizing: border-box;
-  }
-
-  .brbsdpdqbkalbfafg6single-productlable::before {
-    vertical-align: top;
-    width: 22px;
-    height: 22px;
-    cursor: pointer;
-    content: "";
-    border-radius: 50%;
-    border: 3px solid rgb(107, 107, 107);
-    box-sizing: border-box;
-    display: flex;
-  }
-
-  .modifier-product{
-    margin-top: calc(30px);
-    margin-bottom: 25px;
-    flex: 1 1 0%;
-    -webkit-box-pack: justify;
-    justify-content: space-between;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .ale4amc4gjgkglsingle-product {
-    margin: -8px;
-    padding: 8px;
-    align-self: flex-start;
-    flex: 1 1 0%;
-    -webkit-box-pack: center;
-    justify-content: center;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    flex-direction: column;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .alaqsingle-product {
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    flex-direction: row;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .alamgmgnsingle-product {
-    -webkit-box-align: start;
-    align-items: flex-start;
-    -webkit-box-pack: start;
-    justify-content: flex-start;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    flex-direction: column;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .bresdpg4gosingle-product {
-    word-break: break-word;
-    line-height: 16px;
-    font-size: 14px;
-    font-weight: 500;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-  }
-
-  .brbsdpdqbkalbfafg6single-productlablecheck {
-    transition: background-color 100ms ease 0s;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: reverse;
-    flex-direction: row-reverse;
-    line-height: 20px;
-    font-weight: 500;
-    -webkit-box-pack: justify;
-    justify-content: space-between;
-    font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    width: 100%;
-    -webkit-box-align: center;
-    align-items: center;
-    cursor: pointer;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    box-sizing: border-box;
-  }
-
-  .brbsdpdqbkalbfafg6single-productlablecheck::before {
-    vertical-align: middle;
-    flex: 0 0 auto;
-    width: 22px;
-    height: 22px;
-    cursor: pointer;
-    content: "";
-    border: 3px solid rgb(107, 107, 107);
-    box-sizing: border-box;
-    display: flex;
-  }
-
-  .g4single-product {
-    padding: 16px 16px 24px;
-  }
-
-  .alg5bfsingle-product {
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: reverse;
-    flex-direction: row-reverse;
-    -webkit-box-align: center;
-    align-items: center;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .alaqbfsingle-product {
-    -webkit-box-align: center;
-    align-items: center;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    flex-direction: row;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .b9bmalambfc4b1gtgugvgwgxgygzh0single-product-incdec-btn {
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: rgb(238, 238, 238);
-    -webkit-box-pack: center;
-    justify-content: center;
-    text-align: center;
-    -webkit-box-align: center;
-    align-items: center;
-    cursor: pointer;
-    color: #000000;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    flex-direction: column;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .bresbtdqiqsingle-product {
-    margin: 0px 12px;
-    font-size: 14px;
-    line-height: 20px;
-    font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-  }
-
-  .e4ald0ghsingle-productincdec {
-    margin-top: calc(3px);
-    flex: 1 1 0%;
-    -webkit-box-pack: justify;
-    justify-content: space-between;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .ale4amc4gigjgksingle-productincdec {
-    margin: -8px;
-    padding: 8px;
-    align-self: flex-start;
-    flex: 1 1 0%;
-    -webkit-box-pack: center;
-    justify-content: center;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    flex-direction: column;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .alaqsingle-product {
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    flex-direction: row;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .alamglgmsingle-productincdec {
-    -webkit-box-align: start;
-    align-items: flex-start;
-    -webkit-box-pack: start;
-    justify-content: flex-start;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    flex-direction: column;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .bresdpg3gnsingle-productincdecheading {
-    word-break: break-word;
-    line-height: 16px;
-    font-size: 14px;
-    font-weight: 500;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-  }
-
-  .bresbtdqb1bzsingle-productincdecprice {
-    font-size: 14px;
-    line-height: 20px;
-    white-space: nowrap;
-    font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    color: #000000;
-  }
-
-  .efbvgogpsingle-producthr {
-    background-color: rgb(68, 66, 66);
-    margin: 16px 0px;
-    border: none;
-    height: 1px;
-  }
-
-  .e9single-product {
-    justify-self: right;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    top: 0;
-    position: absolute;
-  }
-
-  .h2single-product {
-    padding: 12px 16px;
-  }
-
-  .qty-div {
-    display: none;
-  }
-
-  .albfglh3single-product {
-    padding: 24px 16px 2px;
-    -webkit-box-pack: start;
-    justify-content: flex-start;
-    -webkit-box-align: center;
-    align-items: center;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .akh4gzh5h6bxgtb1h7single-product {
-    cursor: auto;
-    border-radius: 500px;
-    transition: width 100ms linear 0s;
-    width: 120px;
-    height: 36px;
-    background: rgb(238, 238, 238);
-    overflow: hidden;
-    color: #000000;
-    position: relative;
-  }
-
-  .agbdh8h4albfsingle-product {
-    transition: right 100ms linear 0s;
-    width: 120px;
-    -webkit-box-align: center;
-    align-items: center;
-    right: 0;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    position: absolute;
-  }
-
-  .e3bubrdpb9h9h0albfc4affoh6hagzf1hbhcdohdhesingle-dec-product {
-    background: rgb(226, 226, 226);
-    min-width: 36px;
-    min-height: 36px;
-    border-radius: 500px;
-    width: 36px;
-    height: 36px;
-    padding: 0px;
-    background: transparent;
-    font-size: 18px;
-    font-weight: 500;
-    -webkit-box-pack: center;
-    justify-content: center;
-    line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    -webkit-box-align: center;
-    align-items: center;
-    cursor: pointer;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    box-sizing: border-box;
-  }
-
-  .e3bubrdpb9h9h0albfc4affoh6hagzf1hbhcdohdhesingle-inc-product {
-    background: rgb(226, 226, 226);
-    min-width: 36px;
-    min-height: 36px;
-    border-radius: 500px;
-    width: 36px;
-    height: 36px;
-    padding: 0px;
-    background: transparent;
-    font-size: 18px;
-    font-weight: 500;
-    -webkit-box-pack: center;
-    justify-content: center;
-    line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    -webkit-box-align: center;
-    align-items: center;
-    cursor: pointer;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    box-sizing: border-box;
-  }
-
-  .aghhhibre3dpbualc4bfbzbmsingle-product {
-    transform: translateX(-50%);
-    left: 50%;
-    top: 13%;
-    font-size: 18px;
-    font-weight: 500;
-    -webkit-box-pack: center;
-    justify-content: center;
-    white-space: nowrap;
-    line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    text-align: center;
-    -webkit-box-align: center;
-    align-items: center;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    position: absolute;
-  }
-
-  .hfg0ebhgsingle-product-svg {
-    fill: currentcolor;
-    width: 20px;
-    height: 20px;
-    flex: 0 0 auto;
-  }
-
-  .epezsingle-product {
-    height: 24px;
-    flex-shrink: 0;
-  }
-
-  .efeqhjg2single-producthr {
-    margin: 0px;
-    background-color: rgb(238, 238, 238);
-    height: 8px;
-    border: none;
-  }
-
-  .iosignle-product {
-    -webkit-box-flex: 1;
-    flex-grow: 1;
-  }
-
-  .i7single-product {
-    height: 0px;
-  }
-
-  .iaibicblidieifigcsctbcsingle-product {
-    padding-top: 16px;
-    padding-right: 16px;
-    padding-left: 16px;
-    position: sticky;
-    background: rgb(255, 255, 255);
-    padding-bottom: 16px;
-    bottom: 0;
-  }
-
-  .e3bubrdpb9ihbkalbfc4afh2iibbijikilgwgxsingle-product {
-    background: rgb(0, 0, 0);
-    border-radius: 8px;
-    min-height: 56px;
-    padding: 12px 16px;
-    font-size: 18px;
-    font-weight: 500;
-    -webkit-box-pack: center;
-    justify-content: center;
-    line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    width: 100%;
-    -webkit-box-align: center;
-    align-items: center;
-    color: #ffffff;
-    cursor: pointer;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    box-sizing: border-box;
-  }
-
-  .bre3dpbud6imbfsingle-product-span {
-    font-size: 18px;
-    font-weight: 500;
-    display: inline-flex;
-    line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    -webkit-box-align: center;
-    align-items: center;
-  }
-
-  .single-product-svg-div {
-    /* top: calc(38% - 20px); */
-    /* right: 20px; */
-    /* position: absolute; */
-  }
-
-  /* .single-product-svg-div.active .g5single-product{
-    display: block;
-  } */
-
-  .single-product-svg-div-one {
-    line-height: 1;
-    width: 24px;
-    height: 24px;
-  }
-
-  .fzsingle-product {
-    margin-top: unset;
-  }
-
-  .agasatdsjbmodifier-modal {
-    z-index: 88;
-  }
-
-  .akb0jjjkjljmmodifier-modal {
-    margin-top: unset;
-    margin-bottom: unset;
-  }
-
-  .s2akc0modifier-modal {
-    /* width: 391px; */
-    max-width: 100%;
-    /* width: 100%; */
-  }
-
-  .alaqg5fxmodifier-modal-div {
-    padding: 5px;
-    background: #cbcbcb75;
-    border-radius: 8px;
-  }
-
-  .product-modifier-name {
-    line-height: 20px;
-    font-weight: 500;
-    font-size: 16px;
-    font-family: UberMove, sans-serif;
-  }
-
-  .product-list-div {
-    background: #cbcbcb75;
-    padding: 4px;
-    border-radius: 8px;
-  }
-
-  .chcicwd3czmodifier-choose {
-    display: flex;
-    justify-content: space-between;
-  }
-
-  .irmodifier-modal {
-    margin-top: 0px;
-  }
-
-  /* .iwmodifier-data {
-    display: block;
-  } */
-
-  .hg {
-    display: none;
-  }
-
-  .single-product-svg-div {
-    display: unset;
-  }
-
-  .footer-div {
-    /* padding: 0 40px; */
-    min-width: 0px;
-    max-width: 800px;
-  }
-
-  .footer-brand-logo-partner-logo {
-    display: block;
-  }
-
-  .footer-partners-log {
-    margin-top: 19px;
-  }
-
-  .partner-svg {
-    margin: 6px;
-  }
-
-  .footer-brand-conditions {
-    display: block;
-  }
-
-  .footer-brand-conditions-btn {
-    margin-top: 14px;
-  }
-
-  .show {
-    display: block;
-  }
-
-  .arcgatchl4h2view-cart {
-    padding: 0px 16px 32px;
-    z-index: 1;
-    position: fixed;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    display: unset;
-  }
-
-  .coagatchascgl5cnl6view-cart {
-    background: linear-gradient(
-      rgba(255, 255, 255, 0) 2.5%,
-      rgba(255, 255, 255, 0.92) 55.35%
-    );
-    z-index: -1;
-    -webkit-transition: all 400ms ease;
-    -moz-transition: all 400ms ease;
-    transition: all 400ms ease;
-    opacity: 1;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    top: 0;
-    position: absolute;
-  }
-
-  .coagatchascgl5axl6view-cart {
-    background: linear-gradient(
-      rgba(255, 255, 255, 0) 2.5%,
-      rgba(255, 255, 255, 0.92) 55.35%
-    );
-    z-index: -1;
-    -webkit-transition: all 400ms ease;
-    -moz-transition: all 400ms ease;
-    transition: all 400ms ease;
-    right: 0;
-    bottom: 0;
-    opacity: 0;
-    left: 0;
-    top: 0;
-    position: absolute;
-  }
-
-  .bllview-cart-btn {
-    padding-right: 20px;
-    padding-left: 20px;
-    border-bottom-left-radius: 8px;
-    border-top-left-radius: 8px;
-    border-bottom-right-radius: 8px;
-    border-top-right-radius: 8px;
-    box-shadow: rgba(0, 0, 0, 0.22) 0px 16px 48px;
-    padding-top: 16px;
-    font-size: 18px;
-    margin-right: 0px;
-    margin-top: 0px;
-    margin-left: 0px;
-    transition-timing-function: cubic-bezier(0, 0, 1, 1);
-    transition-duration: 200ms;
-    transition-property: background;
-    appearance: none;
-    box-shadow: none;
-    outline: none;
-    border-bottom-style: none;
-    border-right-style: none;
-    border-top-style: none;
-    border-left-style: none;
-    border-bottom-width: 0px;
-    border-right-width: 0px;
-    border-top-width: 0px;
-    border-left-width: 0px;
-    background-color: rgb(0, 0, 0);
-    padding-bottom: 16px;
-    margin-bottom: 0;
-    display: -webkit-inline-box;
-    display: -moz-inline-box;
-    display: -ms-inline-flexbox;
-    display: -webkit-inline-flex;
-    display: inline-flex;
-    text-decoration: none;
-    line-height: 24px;
-    color: #ffffff;
-    font-weight: 500;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    -webkit-box-pack: center;
+  .back-next-button{
     justify-content: space-around;
-    width: 100%;
-    cursor: pointer;
-    -webkit-box-align: center;
-    align-items: center;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    flex-direction: row;
   }
 
-  /* Mobile Checkout */
-  .e5ald0m1m2amc5checkout-desk {
-    display: none;
+  .back-btn{
+
   }
 
-  .afcheckout {
-    box-sizing: border-box;
-    display: unset;
+  .next-btn{
+
   }
 
-  .cwcxcyczd0d1checkout {
-    border-bottom: 8px solid rgb(238, 238, 238);
-    padding-bottom: 8px;
-    padding-right: 16px;
-    padding-left: 16px;
-    padding-top: 0px;
-  }
-
-  .bkd2checkout-h3 {
-    -webkit-box-align: start;
-    align-items: flex-start;
-    margin-bottom: 0px;
-    line-height: 40px;
-    font-size: 32px;
-    font-weight: 700;
-    font-family: UberMove, sans-serif;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    flex-direction: column;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .cjcheckout {
-    flex: 1;
-  }
-
-  .cjdchkout {
-    min-width: 0px;
-    flex: 1;
-  }
-
-  .alcheckout {
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .drdsbscjcheckout {
-    background-color: rgb(226, 226, 226);
-    border: none;
-    flex: 1;
-    height: 1px;
-  }
-
-  .alddbccheckout {
-    padding: 16px 0px;
-    -webkit-box-align: center;
-    /* align-items: center;  */
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .decheckout-svg {
-    width: 40px;
-  }
-
-  .c7c6cacbcheckout-pin {
-    fill: currentColor;
-    flex: none;
-    width: 24px;
-    height: 24px;
-    color: rgb(0, 0, 0);
-  }
-
-  .alamcjdcheckout {
-    min-width: 0px;
-    flex: 1;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    flex-direction: column;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .bobpdfcvb1checkout {
-    font-weight: 500;
-    line-height: 20px;
-    font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    color: #000000;
-  }
-
-  .b1bobqdgcvcheckout {
-    font-size: 14px;
-    line-height: 20px;
-    font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    color: #000000;
-  }
-
-  .bodgdfdhcheckout-btn {
-    border-radius: 500px;
-    background: rgb(238, 238, 238);
-    padding: 0px 12px;
-    height: 36px;
-    width: fit-content;
-    line-height: 16px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    -webkit-box-align: center;
-    align-items: center;
-    color: #000000;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .dtcxcyczd0d1checkout {
-    padding-top: 24px;
-    border-bottom: 8px solid rgb(238, 238, 238);
-    padding-bottom: 8px;
-    padding-right: 0px;
-    padding-left: 0px;
-    padding-top: 0px;
-  }
-
-  .alaqcheckout {
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    flex-direction: row;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-inline-box;
+  .order-history-container{
     display: block;
-    margin-top: 6px;
-  }
-
-  .dualbcheckout-order-summary {
-    line-height: 47px;
-    font-size: 24px;
-    margin-bottom: 8px;
-    flex: 1;
-    font-weight: 700;
-    font-family: UberMove, sans-serif;
-    -webkit-box-align: center;
-    align-items: center;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .c7c6crcheckout {
-    line-height: 1;
-    width: 24px;
-    height: 24px;
-  }
-
-  .bodgdfdhcheckout-add-div {
-  }
-
-  .dze0checkout {
-    height: 16px;
-    flex-shrink: 0;
-  }
-
-  .alame1e2checkout {
-    padding: 0px;
-    margin: 0px;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    flex-direction: column;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .b7avfpfqcheckout-details {
-    animation-duration: 0.6s;
-    animation-name: ag;
-    transition: max-height 0.4s ease-in-out 0s;
-    max-height: 100000px;
-    padding-right: 6px;
-    animation-fill-mode: forwards;
-    /* overflow-x: hidden; */
-    opacity: 1;
-    /* overflow-y: hidden; */
-    height: 100%;
-  }
-
-  .esetcheckout {
-    border-bottom: 1px solid rgb(226, 226, 226);
-    border-top: 1px solid rgb(226, 226, 226);
-    display: flex;
-    width: 100%;
-  }
-
-  .ald5egbhddeteud1checkout-edit-item {
-    pointer-events: auto;
-    border-bottom: 1px solid rgb(226, 226, 226);
-    gap: 20px;
-    padding: 16px 0px;
-    -webkit-box-align: start;
-    align-items: flex-start;
-    width: 100%;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    color: rgb(0, 0, 0);
-  }
-
-  .d1:last-child {
-    border-bottom: 0px;
-  }
-
-  .bodgdfcheckout-qty {
-    background-color: rgb(238, 238, 238);
-    line-height: 16px;
-    font-size: 14px;
-    font-weight: 500;
-    -webkit-box-pack: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    -webkit-box-align: center;
-    align-items: center;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-  }
-
-  .bodgdfcheckout-amountdiscount {
-    /* background-color: rgb(238, 238, 238); */
-    line-height: 16px;
-    font-size: 14px;
-    font-weight: 500;
-    -webkit-box-pack: center;
-    justify-content: center;
-    width: 24px;
-    height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    -webkit-box-align: center;
-    align-items: center;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-  }
-
-  .alamcjewcheckout {
-    align-self: center;
-    flex: 1;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    flex-direction: column;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .bobpdfcvcheckout-item-header {
-    font-weight: 500;
-    line-height: 20px;
-    font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-  }
-
-  .f1alamcheckout-item-qty {
-    -webkit-box-align: end;
-    align-items: flex-end;
-    -webkit-box-flex: 0;
-    flex-grow: 0;
-    font-weight: 500;
-    line-height: 20px;
-    font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    color: #000000;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    flex-direction: column;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .gye2gzcheckout-item-qty-span {
-    text-decoration-line: none;
-    white-space: pre-wrap;
-    padding: 0px;
-    font-weight: 500;
-    line-height: 20px;
-    font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    color: #000000;
-  }
-
-  .excheckout {
-    -webkit-box-flex: 1;
-    flex-grow: 1;
-  }
-
-  .ez:first-child {
-    padding-top: 4px;
-  }
-
-  .bheyezebalf0checkout-item-li {
-    flex-wrap: wrap;
-    padding-top: 8px;
-    color: rgb(84, 84, 84);
-    width: 100%;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .bodgdfcvcheckout-li-modi-title {
-    font-size: 14px;
-    font-weight: 500;
-    line-height: 20px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-  }
-
-  .albodgbqcvcheckout-li-modi-detail {
-    font-size: 14px;
-    line-height: 20px;
-    font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .alcheckout {
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .drdsbscjcheckout {
-    background-color: rgb(226, 226, 226);
-    border: none;
-    flex: 1;
-    height: 1px;
-  }
-
-  .alddbccheckout {
-    padding: 16px 0px;
-    -webkit-box-align: center;
-    /* align-items: center; */
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .f9checkout {
-    width: 48px;
-  }
-
-  .alamcjdcheckout {
-    min-width: 0px;
-    flex: 1;
-    -webkit-box-orient: vertical;
-    -webkit-box-direction: normal;
-    flex-direction: column;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .bobpdfcvb1checkout {
-    font-weight: 500;
-    line-height: 20px;
-    font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    color: #000000;
-  }
-
-  .dxc6checkout {
-    flex-shrink: 0;
-    height: 24px;
-  }
-
-  .bobpcheckout-sutotals {
-    color: rgb(84, 84, 84);
-    -webkit-box-pack: justify;
-    justify-content: space-between;
-    line-height: 24px;
-    font-weight: normal;
-    font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .albcaqcheckout {
-    -webkit-box-align: center;
-    align-items: center;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    flex-direction: row;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .bobpbqbrb1checkout {
-    line-height: 24px;
-    font-weight: normal;
-    font-size: 16px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    color: #000000;
-  }
-
-  .dxgvcheck {
-    height: 8px;
-    flex-shrink: 0;
-  }
-
-  .bkgfbmggalcheckout {
-    margin-top: 12px;
-    line-height: 28px;
-    font-size: 20px;
-    -webkit-box-pack: justify;
-    justify-content: space-between;
-    font-weight: 700;
-    font-family: UberMove, sans-serif;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .albcaqcheckout-total {
-    -webkit-box-align: center;
-    align-items: center;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    flex-direction: row;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
-  .dtcxcybgd0d1checkout {
-    padding-top: 24px;
-    border-bottom: 8px solid rgb(238, 238, 238);
-    padding-right: 16px;
-    padding-left: 16px;
-    padding-bottom: 24px;
-  }
-
-  .bocubqcve9checkout {
-    color: rgb(84, 84, 84);
-    line-height: 20px;
-    font-size: 12px;
-    font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-  }
-
-  .bocubqcvb1checkout {
-    line-height: 20px;
-    font-size: 12px;
-    font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    color: #000000;
-  }
-
-  .bocubqcvgycheckout {
-    color: rgb(117, 117, 117);
-    line-height: 20px;
-    font-size: 12px;
-    font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-  }
-
-  .bocudfdhgy {
-    color: rgb(117, 117, 117);
-    line-height: 16px;
-    font-weight: 500;
-    font-size: 12px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-  }
-
-  .dxc9checkout {
-    flex-shrink: 0;
-    height: 20px;
-  }
-
-  .akgzcheckout {
-    /* height: 80px; */
-    position: relative;
-  }
-
-  .sbpayment {
-    display: unset;
-  }
-
-  .subpayment-desk {
-    display: none;
-  }
-
-  .atbaagcheckout {
-    background: linear-gradient(
-      rgba(255, 255, 255, 0) 2.5%,
-      rgba(255, 255, 255, 0.92) 55.35%
-    );
-    padding: 16px 16px 24px;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    position: fixed;
-  }
-
-  .fwbrbocheckout-place-order {
-    background: rgb(2, 117, 37);
-    padding: 12px 16px;
-    border-radius: 8px;
-    min-height: 56px;
-    font-size: 18px;
-    font-weight: 500;
-    -webkit-box-pack: center;
-    justify-content: center;
-    color: #ffffff;
-    cursor: pointer;
-    line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    width: 100%;
-    -webkit-box-align: center;
-    align-items: center;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    box-sizing: border-box;
-  }
-
-  /* Payment Mobile */
-
-  .fwbrbocheckout-place-order:hover {
-    background: rgb(4, 165, 17);
-  }
-
-  .fwbrbocheckout-add {
-    background: rgb(194, 194, 194);
-    padding: 12px 16px;
-    border-radius: 8px;
-    min-height: 56px;
-    font-size: 18px;
-    font-weight: 500;
-    -webkit-box-pack: center;
-    justify-content: center;
-    color: #ffffff;
-    cursor: pointer;
-    line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    width: 100%;
-    -webkit-box-align: center;
-    align-items: center;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    box-sizing: border-box;
-  }
-
-  .fwbrbocheckout-add:hover {
-    background: #6e6e6e;
-  }
-
-  .d1g1payment-desk {
-    /* height: 80px; */
-    position: relative;
-  }
-
-  .gmgngoalamgppayment-desk {
-    background: linear-gradient(
-      rgba(255, 255, 255, 0) 2.5%,
-      rgba(255, 255, 255, 0.92) 55.35%
-    );
-    padding: 16px 16px 24px;
-    top: unset;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    position: fixed;
-  }
-
-  .gqpayment-desk {
-    min-height: 56px;
-  }
-
-  .boh7bqh8payment-desk {
-    line-height: 28px;
-    font-size: 18px;
-    font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-  }
-
-  .h7brboe1payment-btn {
-    background: rgb(2, 117, 37);
-    padding: 12px 16px;
-    border-radius: 8px;
-    min-height: 56px;
-    font-size: 18px;
-    font-weight: 500;
-    -webkit-box-pack: center;
-    justify-content: center;
-    color: #ffffff;
-    cursor: pointer;
-    line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    width: 100%;
-    -webkit-box-align: center;
-    align-items: center;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    box-sizing: border-box;
-  }
-
-  .h7brboe1payment-btn:hover {
-    background: rgb(4, 165, 17);
-  }
-
-  .acdvcheckout {
-    width: 20px;
-  }
-
-  .c8c7cccdcheckout {
-    font-size: 18px;
-    font-weight: 500;
-    cursor: pointer;
-    line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    color: #000000;
-  }
-
-  .bodgdfdhcheckout-item-remove-btn {
-    margin-top: 10px;
-    border-radius: 500px;
-    /* background: rgb(238, 238, 238); */
-    /* padding: 0px 12px; */
-    padding-left: 10px;
-    height: 36px;
-    width: -moz-fit-content;
-    width: fit-content;
-    line-height: 16px;
-    font-size: 14px;
-    font-weight: 500;
-    cursor: pointer;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    align-items: center;
-    color: #000000;
-    display: flex;
-  }
-
-  .agasatd5jgvalid-modal {
-    display: block;
-    z-index: 1000000;
-    background: #6d6d6d;
-    position: absolute;
-    right: 0;
-    left: 0;
-    top: 0;
-  }
-
-  .checkout-item-edit-delete {
-    position: relative;
-    top: 8px;
-    left: 5px;
-  }
-
-  .btaucheckout-window {
-    padding-left: 4px;
-    width: 100%;
-    display: flex;
-  }
-
-  .bubvbwbdbxbybkaubzc0checkout-window-input {
-    padding-right: unset;
-    text-align: left;
-    margin: 0;
-    padding: 0;
-    font-size: 16px;
-    border: none;
-    outline: none;
-    background: #eee;
-    line-height: 24px;
-    width: 100%;
     padding: 10px;
-  }
-
-  .bubvbwbdbxbybkaubzc0checkout-window-textarea {
-    padding-right: unset;
-    text-align: left;
-    margin: 0;
-    padding: 0;
-    font-size: 16px;
-    border: none;
-    outline: none;
-    background: #eee;
-    line-height: 24px;
-    width: 100%;
-    height: 82px;
-  }
-
-  .dtcxcybgd0d1checkout-window {
-    padding-top: 24px;
-    padding-right: 16px;
-    padding-left: 16px;
-    padding-bottom: 24px;
-  }
-
-  .bocubqcve9checkout-window {
-    color: rgb(84, 84, 84);
-    line-height: 20px;
-    font-size: 12px;
-    font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-  }
-
-  .bocubqcvb1checkout-window {
-    line-height: 20px;
-    font-size: 12px;
-    font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    color: #000000;
-  }
-
-  .bocubqcvgycheckout-window {
-    color: rgb(117, 117, 117);
-    line-height: 20px;
-    font-size: 12px;
-    font-weight: normal;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-  }
-
-  .alaklhcheckout-window {
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: reverse;
-    flex-direction: row-reverse;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    position: relative;
-  }
-
-  .agaxlydflicheckout-window-input {
-    pointer-events: none;
-    outline: none;
-    opacity: 0;
-    position: absolute;
-  }
-
-  .chd2cjd3checkout-window-lable {
-    transition: background-color 100ms ease 0s;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: reverse;
-    flex-direction: row-reverse;
-    -webkit-box-pack: justify;
-    justify-content: space-between;
-    line-height: 20px;
-    font-size: 16px;
-    font-weight: 500;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    cursor: pointer;
-    -webkit-box-align: center;
-    align-items: center;
-    width: 100%;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    box-sizing: border-box;
-  }
-
-  .mimjepmkmlmmcheckout-desk {
-    border-bottom: 2px solid rgb(238, 238, 238);
-    padding-left: 0px;
-    padding-right: 0px;
-    padding-top: 0px;
-    padding-top: 0px;
-    padding-bottom: 1px;
-  }
-
-  .edhtb9d1checkout-desk {
-    background-color: #ffffff;
-    border: none;
-    flex: 1 1;
-    height: 0px;
-  }
-
-  .almycheckout-desk {
-    display: flex;
-    justify-content: space-evenly;
-  }
-
-  .alh2amenc9jdundersavefastercheckout {
-    flex-direction: column;
-    row-gap: 12px;
-  }
-
-  .agloundersavefastercheckout {
-    width: 100%;
-  }
-
-  .coasgundersavefastercheckout {
-    width: 100%;
-  }
-
-  .btaundersavefastercheckout {
-    margin-bottom: 10px;
-  }
-
-  .dragging {
-    scroll-behavior: auto;
-  }
-
-  /* Deliver to */
-  .modal-delivery-details-level-one-div-dialog {
-    width: 100%;
+    border-bottom: 1px solid #00000029;
   }
   
-  .modal-store-closed-level-one-div-dialog {
+  .order-item-anchor{
+    flex: 0 0 302px;
+    position: relative;
+    height: 100%;
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .order-item-figure{
+    height: 140px;
+    margin: 0px;
+    background: rgb(243, 243, 243);
+    overflow: hidden;
+    position: relative;
+  }
+
+  .order-item-div{
+    left: 0px;
+    top: 0px;
     width: 100%;
-    padding: 1px;
+    position: absolute;
+    height: 100%;
   }
 
-  /* Door number */
-  .e4b5door {
-    width: unset;
-  }
-
-  /* New Track Order */
-  .m3m4m5gim6mytrackorder-desk {
-    /* grid-template-columns: 750px 490px; */
-    /* grid-template-columns: 700px 479px; */
-    /* grid-template-columns: 670px 440px; */
-    /* grid-template-columns: 630px 415px; */
-    /* grid-template-columns: 590px 380px; */
-    row-gap: 32px;
-    /* grid-template-columns: 400px 360px; */
-    grid-template-columns: unset;
-    margin-top: 14px;
-    max-width: 1200px;
-    width: 80%;
-    display: -ms-grid;
-    display: grid;
-    -webkit-column-gap: 24px;
-    column-gap: 24px;
-  }
-
-  .mimjepmkmlmmchemytrackorder-desk {
-    border-bottom: 2px solid rgb(238, 238, 238);
-    padding-left: 0px;
-    padding-right: 0px;
-    padding-top: 0px;
-    padding-top: 0px;
-    padding-bottom: 1px;
-  }
-
-  .mimjepmkmlmmchemytrackorderdetail-desk {
-    border-bottom: 2px solid rgb(238, 238, 238);
-    padding-left: 0px;
-    padding-right: 0px;
-    padding-top: 0px;
-    padding-top: 0px;
-    padding-bottom: 1px;
-  }
-
-  .c8c7cccdtrackorder {
-    font-size: 18px;
-    font-weight: 500;
-    cursor: pointer;
-    line-height: 24px;
-    font-family: UberMoveText, system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    color: #000000;
-  }
-
-  .edhtb9d1trackorder-desk {
-    background-color: #ffffff;
+  .order-item-img{
+    object-fit: cover;
     border: none;
-    flex: 1 1;
-    height: 0px;
+    width: 100%;
+    height: 100%;
   }
 
-  .albcaqtrackorder {
-    -webkit-box-align: center;
-    align-items: center;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    flex-direction: row;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
+  .order-texts{
+    margin: 10px 0px 0px 0px;
+  }
+
+  .order-information{
+    margin-bottom: 4px;
+  }
+  
+  .order-qty{
     display: flex;
   }
-
-  .albcaqmytrackorder {
-    -webkit-box-align: center;
+  
+  .place-qty{
+    background-color: #f6f6f6;
+    padding: 4px;
+    height: fit-content;
+    max-width: 5vw;
     align-items: center;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    flex-direction: row;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
+    margin: 10px 10px 10px 0px;
+    border: 1px solid gray;
   }
-
-  /* Change password */
-  .change_postcode_btn {
-    width: 60%;
+  
+  .order-item{
+    margin: 0px 0px 0px 5px;
   }
-
-  /* save my details */
-  .eik4ekk5g8undersavefastercheckout {
-    line-height: 25px;
+  
+  .order-item > h5{
     font-size: 20px;
-    margin-bottom: 20px;
-    font-weight: unset;
-    font-family: UberMove, sans-serif;
+    font-weight: 400;
+    margin: 0px;
+  }
+  
+  .order-modifiers{
+    max-width: 100vw;
+  }
+  
+  .modifier-items{
+    display: inline;
+    line-height: 20px;
+    color: rgb(75, 75, 75);
+    font-size: 14px;
+    font-weight: normal;
+  }
+  
+  .dot-separator{
+    color: rgb(75, 75, 75);
+    display: inline-flex;
+    font-size: 14px;
+    line-height: 24px;
+    font-weight: normal;
+    align-items: center;
+  }
+  
+  .account-header{
+    height: 10vh;
+    box-shadow: unset;
   }
 
-  /* Review system */
-  .review-system{
-    padding: 10px;
+  .account-logo{
+    height: 10vh;
   }
 
-  .review-data{
-    display: contents;
-    padding: 17px 0px 0px 0px;
-  }
-
-  .review-data-heading{
-    font-size: 20px;
-    padding: 10px 0px;
-  }
-
-  .review-product-data-heading {
-    font-size: 20px;
-  }
-
-  .review-product-ul li i {
-    font-size: 30px;
-  }
-
-  .review-textarea{
-    padding: 2px;
-  }
-
-  .review-div{
-    display: none;
-  }
-
-  .review-mobile-btn{
+  .account-content{
     display: block;
   }
 
-  .alertMessage {
-    padding: 10px;
-    margin: 10px;
+  .account-left-bar{
+    /* border-right: 2px solid #000; */
+    box-shadow: 0px 6px 6px #00000029;
+    height: auto;
+  }
+
+  .account-left-bar ul {
+    display: flex;
+  }
+
+  /* .account-left-bar li {
+    margin-bottom: 15px;
+  } */
+
+  /* .account-left-bar li:last-child{
+    margin-bottom: 0;
+  } */
+
+  .account-left-bar a {
+    display: block;
+    text-decoration: none;
+    color: #333;
+    font-size: 16px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+    padding-left: calc(24px * 1);
+    padding-right: 12px;
+    transition: background-color 0.3s ease, color 0.3s ease; /* Smooth hover effects */
+  }
+
+  .account-left-bar a:hover {
+    background-color: unset;
+    border-bottom: 2px solid #000000;
+  }
+
+  .account-active {
+    background-color: unset;
+    border-bottom: 2px solid #000000;
+  }
+
+  .account-component{
+    margin: 20px;
+  }
+
+  .title-with-button{
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .account-component > h1, h2{
+    padding: 8px;
+  }
+
+  .account-component > h1{
+    font-size: 30px;
+    font-weight: 700;
+    font-family: "Gill Sans", Impact, sans-serif;
+  }
+
+  .security-detail {
+    max-width: 100vw;
+  }
+
+  .security-detail > .svg {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .confirm-back-button{
+    padding: 1vh;
+    margin-top: 10vh;
   }
 }
