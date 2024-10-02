@@ -26,17 +26,13 @@ function FilterLocationTime()
     }
 
     return (
-        <div className='location-openclose-filter'>
+        <div className='open-close-time'>
             <div>
                 <h1 className='gfj0ggge-store-head'>{storeName}</h1>
 
                 <div className='daem-d-store'></div>
-                <div className="al">
-                <div>
-                    <div className="chcicwd3cz-time">
+                <div className="display-time">
                     <span className="">{storetodaydayname}: <span>{moment(storetodayopeningtime,'HH:mm A').format('HH:mm A')} - {moment(storetodayclosingtime,'HH:mm A').format('HH:mm A')}</span></span>
-                    </div>
-                </div>
                 </div>
 
             </div>

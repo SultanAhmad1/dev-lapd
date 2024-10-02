@@ -3,6 +3,7 @@ import {
   getAmountConvertToFloatWithFixed,
   getCountryCurrencySymbol,
 } from "@/global/Store";
+import moment from "moment";
 import Link from "next/link";
 import React, { memo } from "react";
 
@@ -94,17 +95,13 @@ export const MobileSingleItem = memo((props) => {
                     return(
                       parseInt(modifier?.modifier_secondary_items?.length) > parseInt(0) &&
                       // {/* minimum option = '1' and maximum option = 1 and single item select = 1 */}
-                      modifier?.select_single_option === 1 && modifier?.min_permitted === 1 && modifier?.max_permitted === 1 ? 
+                      modifier?.select_single_option === 1 && modifier?.min_permitted === 1 && modifier?.max_permitted === 1 
+                    ? 
                       <li key={index} className={`msection${index}`}>
                         <div className="fusingle-productlidiv">
                           <hr className="modifier-hr"></hr>
 
-                          <div
-                            className="modifier-header"
-                            onClick={() =>
-                              handleMobileModifierToggle(modifier?.id)
-                            }
-                          >
+                          <div className="modifier-header" onClick={() => handleMobileModifierToggle(modifier?.id)}>
                             <div className="modifier-div">
                               <div className="alamsingle-product">
                                 <div className="bnfrbpfsingle-product">
@@ -113,68 +110,35 @@ export const MobileSingleItem = memo((props) => {
                                 <div className="bresbtdqfysingle-product">
                                   <span>Choose {modifier?.max_permitted}</span>
                                   <div className="fzsingle-product">
-                                    <div
-                                      className={`g0afg1single-product ${modifier?.valid_class}`}
-                                    >
-                                      {parseInt(modifier?.min_permitted) >
-                                      parseInt(0)
-                                        ? "Required"
-                                        : "Optional"}
+                                    <div className={`g0afg1single-product ${modifier?.valid_class}`}>
+                                      {parseInt(modifier?.min_permitted) > parseInt(0) ? "Required" : "Optional"}
                                     </div>
                                   </div>
                                 </div>
-                                {!modifier?.is_toggle_active && (
+                                { 
+                                  !modifier?.is_toggle_active && 
                                   <div>
-                                    {parseInt(
-                                      modifier?.selected_item_name?.length
-                                    ) > parseInt(20)
-                                      ? modifier?.selected_item_name?.substring(
-                                          0,
-                                          20
-                                        ) + "..."
-                                      : modifier?.selected_item_name}
+                                    {
+                                      parseInt(modifier?.selected_item_name?.length) > parseInt(20)
+                                      ? modifier?.selected_item_name?.substring(0,20) + "..."
+                                      : modifier?.selected_item_name
+                                    }
                                   </div>
-                                )}
+                                }
                               </div>
 
                               <div className="single-product-svg-div accordion">
                                 <div className="single-product-svg-div-one">
-                                  {modifier?.is_toggle_active ? (
-                                    <svg
-                                      className="bottom-arrow-head-svg"
-                                      width="30px"
-                                      height="30px"
-                                      fill="none"
-                                      viewBox="0 0 24 24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      aria-hidden="true"
-                                      focusable="false"
-                                    >
-                                      <path
-                                        d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
-                                        fill="currentColor"
-                                        transform="rotate(180, 12, 12)"
-                                      ></path>
+                                  {
+                                    modifier?.is_toggle_active ? 
+                                    <svg className="bottom-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                      <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(180, 12, 12)"></path>
                                     </svg>
-                                  ) : (
-                                    <svg
-                                      className="rigth-arrow-head-svg"
-                                      width="30px"
-                                      height="30px"
-                                      fill="none"
-                                      viewBox="0 0 24 24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      aria-hidden="true"
-                                      focusable="false"
-                                      style={{ cursor: "pointer" }}
-                                    >
-                                      <path
-                                        d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
-                                        fill="currentColor"
-                                        transform="rotate(90, 12, 12)"
-                                      ></path>
+                                  : 
+                                    <svg className="rigth-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{ cursor: "pointer" }}>
+                                      <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(90, 12, 12)"></path>
                                     </svg>
-                                  )}
+                                  }
                                 </div>
                               </div>
                             </div>
@@ -183,61 +147,35 @@ export const MobileSingleItem = memo((props) => {
                           {/* Listed Data */}
                           {
                             <div
-                              className={`g5single-product ${
-                                modifier?.is_toggle_active ? "show" : "fade"
-                              }`}
-                            >
-                              {modifier?.modifier_secondary_items?.map(
-                                (mobileSecondItems, mobileSecondIndex) => {
+                              className={`g5single-product ${modifier?.is_toggle_active ? "show" : "fade"}`}>
+                              {
+                                modifier?.modifier_secondary_items?.map((mobileSecondItems, mobileSecondIndex) => 
+                                {
+                                  let isItemSuspend = false;
+                                  if(mobileSecondItems?.suspension_info !== null)
+                                  {
+                                    if(moment().format('YYYY-MM-DD') <= moment.unix(mobileSecondItems?.suspension_info?.suspend_untill).format('YYYY-MM-DD'))
+                                    {
+                                      isItemSuspend = true
+                                    }
+                                  }
                                   return (
+                                    isItemSuspend === false &&
                                     <>
-                                      <div
-                                        className="alakg6bfsingle-product"
-                                        key={`${index}.${mobileSecondIndex}`}
-                                        onClick={() =>
-                                          handleRadioInput(
-                                            modifier?.id,
-                                            mobileSecondItems?.id,
-                                            mobileSecondItems?.title,
-                                            parseInt(mobileSecondItems ?.secondary_item_modifiers.length)
-                                          )
-                                        }
-                                      >
-                                        {parseInt(
-                                          mobileSecondItems
-                                            ?.secondary_item_modifiers?.length
-                                        ) > parseInt(0) && (
+                                      <div className="alakg6bfsingle-product" key={`${index}.${mobileSecondIndex}`} onClick={() => handleRadioInput(modifier?.id,mobileSecondItems?.id,mobileSecondItems?.title,parseInt(mobileSecondItems ?.secondary_item_modifiers.length))}>
+                                        {
+                                          parseInt(mobileSecondItems?.secondary_item_modifiers?.length) > parseInt(0) && (
                                           <div className="poquickreview-modal">
                                             <div className="c8c7cuquickreview-modal">
-                                              <svg
-                                                style={{
-                                                  cursor: "pointer",
-                                                }}
-                                                width="30px"
-                                                height="30px"
-                                                fill="none"
-                                                viewBox="0 0 24 24"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                aria-hidden="true"
-                                                focusable="false"
-                                              >
-                                                <path
-                                                  d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
-                                                  fill="#AFAFAF"
-                                                  transform="rotate(90, 12, 12)"
-                                                ></path>
+                                              <svg style={{cursor: "pointer",}} width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                                <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="#AFAFAF" transform="rotate(90, 12, 12)"></path>
                                               </svg>
                                             </div>
                                           </div>
                                         )}
-                                        <input
-                                          type="radio"
-                                          className="radio-input"
-                                        ></input>
+                                        <input type="radio" className="radio-input"></input>
 
-                                        <label
-                                          className={`brbsdpdqbkalbfafg6single-productlable ${mobileSecondItems?.activeClass}`}
-                                        >
+                                        <label className={`brbsdpdqbkalbfafg6single-productlable ${mobileSecondItems?.activeClass}`}>
                                           <div className="spacer _16"></div>
                                           <div className="modifier-product">
                                             <div className="ale4amc4gjgkglsingle-product">
@@ -247,22 +185,12 @@ export const MobileSingleItem = memo((props) => {
                                                     {mobileSecondItems?.title}
                                                   </div>
                                                   <div className="spacer _8"></div>
-                                                  {getAmountConvertToFloatWithFixed(
-                                                    mobileSecondItems?.price,
-                                                    2
-                                                  ) >
-                                                    getAmountConvertToFloatWithFixed(
-                                                      0,
-                                                      2
-                                                    ) && (
+                                                  {
+                                                    getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && 
                                                     <div className="bresbtdqb1bzsingle-productincdecprice">
-                                                      {getCountryCurrencySymbol()}
-                                                      {getAmountConvertToFloatWithFixed(
-                                                        mobileSecondItems?.price,
-                                                        2
-                                                      )}
+                                                      &pound; {getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}
                                                     </div>
-                                                  )}
+                                                  }
                                                 </div>
                                               </div>
                                             </div>
@@ -293,79 +221,40 @@ export const MobileSingleItem = memo((props) => {
                                 <div className="bresbtdqfysingle-product">
                                   <span>Choose {modifier?.max_permitted}</span>
                                   <div className="fzsingle-product">
-                                    <div
-                                      className={`g0afg1single-product ${modifier?.valid_class}`}
-                                    >
-                                      {parseInt(modifier?.min_permitted) >
-                                      parseInt(0)
-                                        ? "Required"
-                                        : "Optional"}
+                                    <div className={`g0afg1single-product ${modifier?.valid_class}`}>
+                                      {parseInt(modifier?.min_permitted) > parseInt(0) ? "Required" : "Optional"}
                                     </div>
                                   </div>
                                 </div>
-                                {!modifier?.is_toggle_active &&
-                                  modifier?.modifier_secondary_items?.map(
-                                    (displaySelectedItems, mobileSecondIndex) => {
-                                      return (
-                                        displaySelectedItems?.is_item_select && (
-                                          <div
-                                            key={`${index}.${mobileSecondIndex}`}
-                                          >
-                                            {parseInt(
-                                              displaySelectedItems?.title?.length
-                                            ) > parseInt(20)
-                                              ? displaySelectedItems?.title?.substring(
-                                                  0,
-                                                  20
-                                                ) + "..."
-                                              : displaySelectedItems?.title}
-                                          </div>
-                                        )
-                                      );
-                                    }
-                                  )}
+                                {
+                                  !modifier?.is_toggle_active &&
+                                  modifier?.modifier_secondary_items?.map((displaySelectedItems, mobileSecondIndex) => 
+                                  {
+                                    return (
+                                      displaySelectedItems?.is_item_select && 
+                                      <div key={`${index}.${mobileSecondIndex}`}>
+                                        {
+                                          parseInt(displaySelectedItems?.title?.length) > parseInt(20)
+                                          ? displaySelectedItems?.title?.substring(0,20) + "..."
+                                          : displaySelectedItems?.title
+                                        }
+                                      </div>
+                                    );
+                                  })
+                                }
                               </div>
-                              <div
-                                className="single-product-svg-div accordion"
-                                onClick={() => setIsaccordianclicked(true)}
-                              >
+                              <div className="single-product-svg-div accordion" onClick={() => setIsaccordianclicked(true)}>
                                 <div className="single-product-svg-div-one">
-                                  {modifier?.is_toggle_active ? (
-                                    <svg
-                                      className="bottom-arrow-head-svg"
-                                      width="30px"
-                                      height="30px"
-                                      fill="none"
-                                      viewBox="0 0 24 24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      aria-hidden="true"
-                                      focusable="false"
-                                    >
-                                      <path
-                                        d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
-                                        fill="currentColor"
-                                        transform="rotate(180, 12, 12)"
-                                      ></path>
+                                  {
+                                    modifier?.is_toggle_active ? 
+                                    <svg className="bottom-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                      <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(180, 12, 12)"></path>
                                     </svg>
-                                  ) : (
-                                    <svg
-                                      className="rigth-arrow-head-svg"
-                                      width="30px"
-                                      height="30px"
-                                      fill="none"
-                                      viewBox="0 0 24 24"
-                                      xmlns="http://www.w3.org/2000/svg"
-                                      aria-hidden="true"
-                                      focusable="false"
-                                      style={{ cursor: "pointer" }}
-                                    >
-                                      <path
-                                        d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
-                                        fill="currentColor"
-                                        transform="rotate(90, 12, 12)"
-                                      ></path>
+                                   : 
+                                    <svg className="rigth-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{ cursor: "pointer" }}>
+                                      <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(90, 12, 12)"></path>
                                     </svg>
-                                  )}
+                                  }
                                 </div>
                               </div>
                             </div>
@@ -373,37 +262,27 @@ export const MobileSingleItem = memo((props) => {
 
                           {/* Listed Data */}
                           {
-                            <div
-                              className={`g5single-product ${
-                                modifier?.is_toggle_active ? "show" : "fade"
-                              }`}
-                            >
-                              {modifier?.modifier_secondary_items?.map(
-                                (mobileSecondItems, mobileSecondItemsIndex) => {
-                                  return mobileSecondItems.activeClass !==
-                                    "mchw" ? (
-                                    <div
-                                      key={`${index}.${mobileSecondItemsIndex}`}
-                                      onClick={() =>
-                                        handleCheckInput(
-                                          modifier?.id,
-                                          mobileSecondItems?.id,
-                                          parseInt(
-                                            mobileSecondItems
-                                              ?.secondary_item_modifiers.length
-                                          )
-                                        )
-                                      }
-                                    >
-                                      <div className="alakg6bfsingle-product">
-                                        <input
-                                          type="checkbox"
-                                          className="checkbox-input"
-                                        />
+                            <div className={`g5single-product ${modifier?.is_toggle_active ? "show" : "fade"}`}>
+                              {
+                                modifier?.modifier_secondary_items?.map((mobileSecondItems, mobileSecondItemsIndex) => 
+                                {
+                                  let isItemSuspend = false;
+                                  if(mobileSecondItems?.suspension_info !== null)
+                                  {
+                                    if(moment().format('YYYY-MM-DD') <= moment.unix(mobileSecondItems?.suspension_info?.suspend_untill).format('YYYY-MM-DD'))
+                                    {
+                                      isItemSuspend = true
+                                    }
+                                  }
 
-                                        <label
-                                          className={`brbsdpdqbkalbfafg6single-productlablecheck ${mobileSecondItems?.activeClass}`}
-                                        >
+                                  return( 
+                                    isItemSuspend === false &&
+                                    mobileSecondItems.activeClass !== "mchw" ? 
+                                    <div key={`${index}.${mobileSecondItemsIndex}`} onClick={() => handleCheckInput(modifier?.id,mobileSecondItems?.id, parseInt(mobileSecondItems?.secondary_item_modifiers.length))}>
+                                      <div className="alakg6bfsingle-product">
+                                        <input type="checkbox" className="checkbox-input"/>
+
+                                        <label className={`brbsdpdqbkalbfafg6single-productlablecheck ${mobileSecondItems?.activeClass}`}>
                                           <div className="spacer _16"></div>
                                           <div className="modifier-product">
                                             <div className="ale4amc4gjgkglsingle-product">
@@ -413,24 +292,15 @@ export const MobileSingleItem = memo((props) => {
                                                     {mobileSecondItems?.title}
                                                   </div>
                                                   <div className="spacer _8"></div>
-                                                  {getAmountConvertToFloatWithFixed(
-                                                    mobileSecondItems?.price,
-                                                    2
-                                                  ) >
-                                                    getAmountConvertToFloatWithFixed(
-                                                      0,
-                                                      2
-                                                    ) && (
+                                                  {
+                                                    getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && 
                                                     <div className="bresbtdqb1bzsingle-productincdecprice">
                                                       {
                                                         mobileSecondItems?.country_price_symbol
                                                       }
-                                                      {getAmountConvertToFloatWithFixed(
-                                                        mobileSecondItems?.price,
-                                                        2
-                                                      )}
+                                                      {getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}
                                                     </div>
-                                                  )}
+                                                  }
                                                 </div>
                                               </div>
                                             </div>
@@ -439,19 +309,12 @@ export const MobileSingleItem = memo((props) => {
                                       </div>
                                       <hr className="efbvgpgq"></hr>
                                     </div>
-                                  ) : (
-                                    <div
-                                      key={`${index}.${mobileSecondItemsIndex}`}
-                                    >
+                                  : 
+                                    <div key={`${index}.${mobileSecondItemsIndex}`}>
                                       <div className="alakg6bfsingle-product">
-                                        <input
-                                          type="checkbox"
-                                          className="checkbox-input"
-                                        />
+                                        <input type="checkbox" className="checkbox-input" />
 
-                                        <label
-                                          className={`brbsdpdqbkalbfafg6single-productlablecheck ${mobileSecondItems?.activeClass}`}
-                                        >
+                                        <label className={`brbsdpdqbkalbfafg6single-productlablecheck ${mobileSecondItems?.activeClass}`}>
                                           <div className="spacer _16"></div>
                                           <div className="modifier-product">
                                             <div className="ale4amc4gjgkglsingle-product">
@@ -461,24 +324,12 @@ export const MobileSingleItem = memo((props) => {
                                                     {mobileSecondItems?.title}
                                                   </div>
                                                   <div className="spacer _8"></div>
-                                                  {getAmountConvertToFloatWithFixed(
-                                                    mobileSecondItems?.price,
-                                                    2
-                                                  ) >
-                                                    getAmountConvertToFloatWithFixed(
-                                                      0,
-                                                      2
-                                                    ) && (
+                                                  {
+                                                    getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && 
                                                     <div className="bresbtdqb1bzsingle-productincdecprice">
-                                                      {
-                                                        mobileSecondItems?.country_price_symbol
-                                                      }
-                                                      {getAmountConvertToFloatWithFixed(
-                                                        mobileSecondItems?.price,
-                                                        2
-                                                      )}
+                                                      &pound; {getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}
                                                     </div>
-                                                  )}
+                                                  }
                                                 </div>
                                               </div>
                                             </div>
@@ -487,9 +338,9 @@ export const MobileSingleItem = memo((props) => {
                                       </div>
                                       <hr className="efbvgpgq"></hr>
                                     </div>
-                                  );
-                                }
-                              )}
+                                  )
+                                })
+                              }
                             </div>
                           }
                         </div>

@@ -1,5 +1,6 @@
 "use client";
 
+import Header from "@/components/Header";
 import { MobileSingleItem } from "@/components/MobileSingleItem";
 import { NestedModifiers } from "@/components/NestedModifiers";
 import { WebsiteSingleItem } from "@/components/WebsiteSingleItem";
@@ -12,7 +13,6 @@ import {
 } from "@/global/Axios";
 
 import moment from "moment";
-import Link from "next/link";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 
@@ -29,6 +29,7 @@ function productDetails({ params }) {
     cartdata,
     dayOpeningClosingTime,
     setIsTimeToClosed,
+    booleanObj,
   } = useContext(HomeContext);
   // const {setIsitemclicked, handleInput} = useContext(HomeContext)
   const [isitemclicked, setIsitemclicked] = useState(false);
@@ -442,17 +443,12 @@ function productDetails({ params }) {
     const dateTime = moment().format("HH:mm");
     const dayName = moment().format("dddd");
 
-    if (
-      dayOpeningClosingTime?.day_of_week
-        ?.toLowerCase()
-        .includes(dayName.toLowerCase())
-    ) {
+    if (dayOpeningClosingTime?.day_of_week?.toLowerCase().includes(dayName.toLowerCase())) 
+    {
       const timePeriods = dayOpeningClosingTime?.time_periods;
       if (timePeriods) {
-        if (
-          timePeriods?.[0]?.start_time >= dateTime &&
-          dateTime <= timePeriods?.[0]?.end_time
-        ) {
+        if (timePeriods?.[0]?.start_time >= dateTime && dateTime <= timePeriods?.[0]?.end_time) 
+        {
           setIsTimeToClosed(true);
           return;
         }
@@ -1777,19 +1773,22 @@ function productDetails({ params }) {
   }, [ishandlemodalcheckiputclicked]);
 
   useEffect(() => {
-    // Set a timeout to clear localStorage after 20 minutes (20 * 60 * 1000 milliseconds)
-    const timeoutId = setTimeout(() => {
-      // Clear all items in localStorage
-      localStorage.clear();
-      window.location.reload(true);
-      window.location.href = "/"
-      setTimeout(() => {
-        setLoader(false);
-      }, 3000);
-    }, 30 * 60 * 1000); 
-
-    // Clear the timeout if the component is unmounted before 20 minutes
-    return () => clearTimeout(timeoutId);
+    if(booleanObj?.isCustomerVerified === false)
+    {
+      // Set a timeout to clear localStorage after 20 minutes (20 * 60 * 1000 milliseconds)
+      const timeoutId = setTimeout(() => {
+        // Clear all items in localStorage
+        localStorage.clear();
+        window.location.reload(true);
+        window.location.href = "/"
+        setTimeout(() => {
+          setLoader(false);
+        }, 3000);
+      }, 30 * 60 * 1000); 
+  
+      // Clear the timeout if the component is unmounted before 20 minutes
+      return () => clearTimeout(timeoutId);
+    }
   });
 
   // Website Cart Button
@@ -1854,9 +1853,7 @@ function productDetails({ params }) {
           indexArr++
         ) {
           if (indexArr === 0) {
-            let element = document.querySelector(
-              `.section${indexArrForScroll[indexArr]}`
-            );
+            let element = document.querySelector(`.section${indexArrForScroll[indexArr]}`);
             element.scrollIntoView({ behavior: "smooth" });
             return;
           }
@@ -2124,6 +2121,7 @@ function productDetails({ params }) {
 
   return (
     <>
+      <Header />
       <div className="single-product">
         <WebsiteSingleItem
           {

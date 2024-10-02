@@ -4,9 +4,11 @@ import Banner from "./Banner";
 import FilterLocationTime from "./FilterLocationTime";
 import Navigation from "./Navigation";
 import ViewCartMobileBtn from "./ViewCartMobileBtn";
-import MobileTopBar from "./MobileTopBar";
+import { IMAGE_URL_Without_Storage } from "../global/Axios";
+import moment from "moment";
 import Link from "next/link";
-import { IMAGE_URL, IMAGE_URL_Without_Storage } from "../global/Axios";
+import Header from "./Header";
+import Footer from "./Footer";
 
 export default function Products() {
   const {
@@ -18,6 +20,7 @@ export default function Products() {
     setSelectedcategoryid,
     setSelecteditemid,
     setNavmobileindex,
+    dayOpeningClosingTime,
   } = useContext(HomeContext);
 
   const [isscrolled, setIsScrolled] = useState(false);
@@ -31,10 +34,7 @@ export default function Products() {
   };
 
   const scrollTo = (target, behavior) => {
-    const element =
-      target === "top"
-        ? document.body
-        : document.querySelector(`.section${target}`);
+    const element = target === "top" ? document.body : document.querySelector(`.section${target}`);
     if (element) {
       element.scrollIntoView({ behavior: behavior });
     }
@@ -77,9 +77,9 @@ export default function Products() {
 
   return (
     <>
+      <Header />
+
       <Banner websiteModificationData={websiteModificationData} />
-      {/* <div className="main-empt-div"></div> */}
-      <div></div>
       <FilterLocationTime />
       <div className="content">
         <div className="content-div-level-one">
@@ -98,15 +98,11 @@ export default function Products() {
           /> */}
           <div className="cat-items-content">
             <ul className="items-ul">
-              {navigationcategories?.map((category, index) => {
-                return (
-                  category?.items?.length > 0 && (
-                    <li
-                      key={category.id}
-                      className={`item-lists section${index}`}
-                      data-index={index}
-                      id={`${category?.title?.replace(/\s+/g, "")}`}
-                    >
+              {
+                navigationcategories?.map((category, index) => {
+                  return (
+                    category?.items?.length > 0 && 
+                    <li key={category.id} className={`item-lists section${index}`} data-index={index} id={`${category?.title?.replace(/\s+/g, "")}`}>
                       <div className="item-title">
                         <h3 className="item-title-h3" style={{color: websiteModificationData?.websiteModificationLive !== null && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor !== null && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor,}}>
                           {category.title}
@@ -115,87 +111,81 @@ export default function Products() {
                       <div className="item-list-empty-div"></div>
 
                       <ul className="items-list-nested-ul">
-                        {category.items?.map((item, itemIndex) => {
-                          const { title, price, description, image_url } = item;
-                          return (
-                            <li ref={scrollContainerRef} key={itemIndex} className="items-list-nested-list" onClick={() => handleProductSelect(category?.id, item?.id)}>
-                              <Link href={`${storeName}/${category?.slug}/${item?.slug}`}>
-                                <div className="items-nested-div">
-                                  <div className="items-nested-div-one">
-                                    <div className="item-detail-style">
-                                      <div className="item-detail">
-                                        <div
-                                          className="item-title"
-                                          style={{
-                                            color:
-                                              websiteModificationData?.websiteModificationLive &&
-                                              websiteModificationData
-                                                ?.websiteModificationLive
-                                                ?.json_log[0]?.itemFontColor &&
-                                              websiteModificationData
-                                                ?.websiteModificationLive
-                                                ?.json_log[0]?.itemFontColor,
-                                          }}
-                                        >
-                                          <span>{title}</span>
-                                        </div>
+                        {
+                          category?.items?.map((item, itemIndex) => {
+                            
+                            let isItemSuspend = false;
 
-                                        <div className="item-price">
-                                          <span className="item-price-span">
-                                            {/* {item?.country_price_symbol} */}
-                                            &pound;
-                                            {parseFloat(price).toFixed(2)}
-                                          </span>
-                                        </div>
 
-                                        <div className="item-description-style">
-                                          <div className="item-description">
-                                            <span className="item-description-span">
-                                              {description}
+                            if(item?.suspension_info !== null)
+                            {
+                              if(moment().format('YYYY-MM-DD') <= moment.unix(item?.suspension_info?.suspend_untill).format('YYYY-MM-DD'))
+                              {
+                                isItemSuspend = true
+                              }
+                            }
+
+                            const { title, price, description, image_url } = item;
+                            return (
+                              isItemSuspend === false &&
+                              <li ref={scrollContainerRef} key={itemIndex} className="items-list-nested-list" onClick={() => handleProductSelect(category?.id, item?.id)}>
+                                <Link href={`${storeName.toLowerCase()}/${category?.slug}/${item?.slug}`}>
+                                  <div className="items-nested-div">
+                                    <div className="items-nested-div-one">
+                                      <div className="item-detail-style">
+                                        <div className="item-detail">
+                                          <div className="item-title" style={{color: websiteModificationData?.websiteModificationLive && websiteModificationData?.websiteModificationLive?.json_log[0]?.itemFontColor && websiteModificationData?.websiteModificationLive?.json_log[0]?.itemFontColor,}}>
+                                            <span>{title}</span>
+                                          </div>
+
+                                          <div className="item-price">
+                                            <span className="item-price-span">
+                                              &pound; {parseFloat(price).toFixed(2)}
                                             </span>
                                           </div>
-                                        </div>
-                                      </div>
-                                      {image_url && (
-                                        <div className="item-img-style">
-                                          <div className="lazyload-wrapper">
-                                            {
-                                              isValidHttpsUrl(image_url) ?
-                                                <img
-                                                  className="item-img"
-                                                  src={image_url}
-                                                  alt={title}
-                                                />
-                                              :
-                                                <img
-                                                  className="item-img"
-                                                  src={IMAGE_URL_Without_Storage+""+image_url}
-                                                  alt={title}
-                                                />
-                                            }
+
+                                          <div className="item-description-style">
+                                            <div className="item-description">
+                                              <span className="item-description-span">
+                                                {description}
+                                              </span>
+                                            </div>
                                           </div>
                                         </div>
-                                      )}
+                                        {
+                                          image_url && 
+                                          <div className="item-img-style">
+                                            <div className="lazyload-wrapper">
+                                              {
+                                                isValidHttpsUrl(image_url) 
+                                                ?<img className="item-img" src={image_url} alt={title}/>
+                                                :<img className="item-img" src={IMAGE_URL_Without_Storage+""+image_url} alt={title}/>
+                                              }
+                                            </div>
+                                          </div>
+                                        }
+                                      </div>
+                                      {/* <div className="item-review">
+                                      <a className="quick-review-btn" onClick={handleQuickViewClicked}>Quick view</a>
+                                    </div> */}
                                     </div>
-                                    {/* <div className="item-review">
-                                    <a className="quick-review-btn" onClick={handleQuickViewClicked}>Quick view</a>
-                                  </div> */}
                                   </div>
-                                </div>
-                              </Link>
-                            </li>
-                          );
-                        })}
+                                </Link>
+                              </li>
+                            );
+                          })
+                        }
                       </ul>
                     </li>
-                  )
-                );
-              })}
+                  );
+                })
+              }
             </ul>
           </div>
         </div>
       </div>
       <ViewCartMobileBtn />
+      <Footer />
     </>
   );
 }
