@@ -164,6 +164,7 @@ export default function Cart() {
   };
 
   useEffect(() => {
+
     if (parseInt(cartdata?.length) > parseInt(0)) {
       // Calculate Items Total Order Value.
       let totalValue = 0;
@@ -219,26 +220,22 @@ export default function Cart() {
               else 
               {
                 const getDifference = parseFloat(deliveryMatrixRowValues?.min_order_value) - parseFloat(totalValue);
-                const textMessage = (
-                  <span>
-                    Spend <strong>&pound;{parseFloat(getDifference).toFixed(2)}</strong>
-                    more to get <strong>Free Delivery</strong>
-                  </span>
-                );
+                const textMessage = (<span> Spend &nbsp; <strong>&pound;{parseFloat(getDifference).toFixed(2)}</strong> &nbsp; more to get &nbsp;  <strong>Free Delivery</strong></span>);
                 setDeliverymessage(textMessage);
+
+                const fee = getAmountConvertToFloatWithFixed(deliveryMatrixRowValues?.below_minimum_order_value === null ? deliveryfee : deliveryMatrixRowValues?.below_minimum_order_value,2);
+                setDeliveryfee(fee);
               }
             }
           }
         } else {
           const textMessage = (
             <span style={{color: "red",background: "#eda7a7",textAlign: "center",padding: "10px",}}>
-              Minimum order is 
-              <strong>&pound;{getAmountConvertToFloatWithFixed(deliverymatrix?.order_value,2)}</strong>
-              to your postcode
+              Minimum order is &nbsp; <strong>&pound;{getAmountConvertToFloatWithFixed(deliverymatrix?.order_value,2)}</strong> &nbsp; to your postcode
             </span>
           );
           setDeliverymessage(textMessage);
-          const fee = getAmountConvertToFloatWithFixed(deliverymatrix?.above_order_value,2);
+          const fee = getAmountConvertToFloatWithFixed(deliverymatrix?.below_order_value === null ? deliverymatrix?.above_order_value : deliverymatrix?.below_order_value,2);
           setDeliveryfee(fee);
           setIsordersubtotallessthanordervalue(false);
         }
@@ -470,13 +467,14 @@ export default function Cart() {
     }
   }, [couponDiscountapplied])
   
-  function handleEditItem(findByIndex, storeName, categorySlug, itemSlug) 
-  {
-    setLoader(true)
-    setLocalStorage(`${BRANDSIMPLEGUID}set_index`, findByIndex);
-    setIscartbtnclicked(false);
-    route.push(`/${storeName}/${categorySlug}/${itemSlug}/edit`);
-  }
+  // function handleEditItem(findByIndex, storeName, categorySlug, itemSlug) 
+  // {
+  //   setLoader(true)
+  //   setLocalStorage(`${BRANDSIMPLEGUID}set_index`, findByIndex);
+  //   setIscartbtnclicked(false);
+  //   route.push(`/${storeName}/${categorySlug}/${itemSlug}/edit`);
+  //   return
+  // }
 
   function handleCouponRemoveToggleBtn(indexNumber)
   {
@@ -552,7 +550,6 @@ export default function Cart() {
   const isValidHttpsUrl = (url) => {
     return url.startsWith('https://');
   };
-
   return (
     <div className="cart-level-one-div">
       <div className="cart-level-one-div-screen-one"></div>
@@ -574,15 +571,20 @@ export default function Cart() {
                 <div className="dtcxcyczd0d1checkout">
                   <div className="alaqcheckout">
                     <h3 className="dualbcheckout-order-summary">
-                      <span className="cjcheckout">Cart summary</span>
+                      <span className="cjcheckout">My Order</span>
                     </h3>
                   </div>
-                  <div className="alc6cart">
-                    <div className="cid3ckd4d1">{cartdata.length} item</div>
-                    <div className="c3hmeljuhoq6">Subtotal:</div>
-                    <div className="c3hmc5em"><span aria-label="Subtotal"> &pound;{getAmountConvertToFloatWithFixed(subtotalOrderAmount,2)}</span></div>
+                  {/* <div className="alc6cart cart-header"> */}
+                  <div className="cart-header">
+                    {/* <div className="cid3ckd4d1">{cartdata.length} item</div> */}
+                    <div className="cid3ckd4d1">items</div>
+                    <div className=""></div>
+                    <div className="cart-price-header">Price</div>
+                    <div className=""></div>
+                    {/* <div className="c3hmeljuhoq6">Subtotal:</div> */}
+                    {/* <div className="c3hmc5em"><span aria-label="Subtotal"> &pound;{getAmountConvertToFloatWithFixed(subtotalOrderAmount,2)}</span></div> */}
                   </div>  
-                  <div className="dze0checkout"></div>
+                  {/* <div className="dze0checkout"></div> */}
 
                   {/* Cart item display with new style */}
                   <div className="ex-cart-width"></div>
@@ -592,173 +594,147 @@ export default function Cart() {
                       {
                         return(
                           <Fragment  key={indexItem}>
-                            <a className="blhv-cart-item-display">
-                              <li className="blmc-cart-item-display">
-                                <div className="blf7al-cart-item-display" onClick={() => handleEditItem(indexItem,storeName,cartitem?.category_slug,cartitem?.slug)}>
-                                  <div className="cv-cart-item-display">
-                                    <div className="c3cic5chfe-cart-item-display">{cartitem?.title}</div>
-                                    <ul className="ibcv-cart-item-display">
-                                      {
-                                        cartitem?.modifier_group?.map((modifier,indexItemModifier) =>
-                                        {
-                                          return modifier?.modifier_secondary_items?.map((secondItem,indexSecondItem) =>
-                                          {
-                                            return(
-                                              secondItem?.item_select_to_sale &&
-                                              <Fragment key={indexItem + indexItemModifier + indexSecondItem}>
-                                                <div >
-                                                  <span className="fdfeffc3c4cgchj9-cart-item-display">{modifier?.title}: </span>
-                                                  <span className="fdfeffc3c4cgchj9-cart-item-display">{secondItem?.title} {parseInt(secondItem?.price) > parseInt(0) && `(${secondItem?.country_price_symbol} ${parseFloat(secondItem?.price).toFixed(2)})`}</span>
-                                                </div>
-                                                {
-                                                  secondItem?.secondary_item_modifiers?.map((secondModifer,indexSecondModifier) =>
-                                                  {
-                                                    return secondModifer?.secondary_items_modifier_items?.map((secondNestItems, indexSecondNestItem) =>
-                                                    {
-                                                      return(
-                                                        secondNestItems?.item_select_to_sale &&
-                                                        <div key={indexItem + indexItemModifier + indexSecondItem + indexSecondModifier + indexSecondNestItem}>
-                                                          <span className="fdfeffc3c4cgchj9-cart-item-display">{secondModifer?.title}: </span>
-                                                          <span className="fdfeffc3c4cgchj9-cart-item-display">{secondNestItems?.title} {parseInt(secondNestItems?.price) > parseInt(0) && `(${secondNestItems?.country_price_symbol} ${parseFloat(secondNestItems?.price).toFixed(2)})`}</span>
-                                                        </div>
-                                                      )
-                                                    })
-                                                  })
-                                                }
-                                              </Fragment>
-                                            )
-                                          })
+                            <li className="blmc-cart-item-display">
+                              <div className="cart-qty-item">
+                                {/* <div className="c3cic5chfe-cart-item-display" style={{cursor: "pointer"}} onClick={() => handleEditItem(indexItem,storeName,cartitem?.category_slug,cartitem?.slug)}>{cartitem?.quantity} x {cartitem?.category_name}</div> */}
+                                <a className="c3cic5chfe-cart-item-display" href={`/${storeName}/${cartitem?.category_slug}/${cartitem?.slug}/edit`}>{cartitem?.quantity} x {cartitem?.category_name}</a>
 
-                                        })
-                                      }
-                                    </ul>
-                                  </div>
-                                  
-                                  {
-                                    cartitem?.image_url &&
-                                    <div className="md-cart-item-display">
+                                <a className="cart-item-with-modifiers" href={`/${storeName}/${cartitem?.category_slug}/${cartitem?.slug}/edit`}>
+                                  <div className="cart-item-title">{cartitem?.title}</div>
+                                  <ul className="ibcv-cart-item-display">
+                                    {
+                                      cartitem?.modifier_group?.map((modifier,indexItemModifier) =>
                                       {
-                                        isValidHttpsUrl(cartitem?.image_url) ? 
-                                          <img alt={cartitem?.title} src={cartitem?.image_url} className="d1llf9memf-cart-item-display" />
-                                        :
-                                          <img alt={cartitem?.title} src={IMAGE_URL_Without_Storage+""+cartitem?.image_url} className="d1llf9memf-cart-item-display" />
-                                      }
-                                    </div>
-                                  }
+                                        return modifier?.modifier_secondary_items?.map((secondItem,indexSecondItem) =>
+                                        {
+                                          return(
+                                            secondItem?.item_select_to_sale &&
+                                            <Fragment key={indexItem + indexItemModifier + indexSecondItem}>
+                                              <div >
+                                                <span className="fdfeffc3c4cgchj9-cart-item-display">{modifier?.title}: </span>
+                                                <span className="fdfeffc3c4cgchj9-cart-item-display">{secondItem?.title} {parseInt(secondItem?.price) > parseInt(0) && `(${secondItem?.country_price_symbol} ${parseFloat(secondItem?.price).toFixed(2)})`}</span>
+                                              </div>
+                                              {
+                                                secondItem?.secondary_item_modifiers?.map((secondModifer,indexSecondModifier) =>
+                                                {
+                                                  return secondModifer?.secondary_items_modifier_items?.map((secondNestItems, indexSecondNestItem) =>
+                                                  {
+                                                    return(
+                                                      secondNestItems?.item_select_to_sale &&
+                                                      <div key={indexItem + indexItemModifier + indexSecondItem + indexSecondModifier + indexSecondNestItem}>
+                                                        <span className="fdfeffc3c4cgchj9-cart-item-display">{secondModifer?.title}: </span>
+                                                        <span className="fdfeffc3c4cgchj9-cart-item-display">{secondNestItems?.title} {parseInt(secondNestItems?.price) > parseInt(0) && `(${secondNestItems?.country_price_symbol} ${parseFloat(secondNestItems?.price).toFixed(2)})`}</span>
+                                                      </div>
+                                                    )
+                                                  })
+                                                })
+                                              }
+                                            </Fragment>
+                                          )
+                                        })
+
+                                      })
+                                    }
+                                  </ul>
+                                </a>
+                                
+                                {/* Cart Item Price */}
+
+                                <div className="md-cart-item-display">
+                                  &pound;{parseFloat(cartitem?.total_order_amount)?.toFixed(2)}
                                 </div>
                                 
-                                <div className="mgalbb-cart-inc">
-                                  <div className="al-cart">
-                                    <div className="akm2c1mhc2cmcpb1mi-cart-inc-div">
-                                      <div className="agbafbe3albc-cart-inc-div">
-                                      
-                                        <button disabled={parseInt(cartitem?.quantity) === parseInt(1) ? true : false} className="ecbrboc1byfcenalbccmafeodffddefefffgfhfifj" onClick={() => decrementQuantity(indexItem)}>
-                                          <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" className="hfg0ebhgsingle-product-svg"><path d="M15.833 8.75H4.167v2.5h11.666v-2.5z"></path></svg>
-                                        </button>
-                                        <div className="cart-spacer _width48"></div>
-                                        
-                                        <button className="ecbrboc1byfcenalbccmafeodffddefefffgfhfifj" onClick={() => incrementQuantity(indexItem)}>
-                                          <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" className="bhbibjbk-inc"><path d="M15.833 8.75H11.25V4.167h-2.5V8.75H4.167v2.5H8.75v4.583h2.5V11.25h4.583v-2.5z"></path></svg>
-                                        </button>
-                                      
-                                        <div className="agezmrc3jgc5d2albmbbcoei">
-                                          <div>{parseInt(cartitem?.quantity)}</div>
-                                        </div>
-                                      </div>
-                                    </div>
-                                      
-                                    <button className="ecbrboc1byfcenalbccmafeodffddefefffgfhfifj-del" onClick={() => removeItem(indexItem)}>
-                                        <svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" className="cwcxbjbk-del"><path fillRule="evenodd" clipRule="evenodd" d="M10.667.667V2H14v2H2V2h3.333V.667h5.334zM3.333 5.333h9.334v10H3.333v-10z"></path></svg>
-                                    </button>
-
-                                    <div className="spacer _8"></div>
-                                  </div>
-                                    
-                                  <div className="cvalk1bb-cart-amount">
-                                    <div className="dialamgsb1c3c5cich">
-                                      <span className="fdfeffc3c4c5c6j9">&pound;{parseFloat(cartitem?.total_order_amount).toFixed(2)}</span>
-                                    </div>
-                                  </div>
-                                  
+                                {/* Cart Delete button */}
+                                <div className="cart-delete-btn">
+                                  <button className="ecbrboc1byfcenalbccmafeodffddefefffgfhfifj-del" onClick={() => removeItem(indexItem)}>
+                                    <svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" className="cwcxbjbk-del"><path fillRule="evenodd" clipRule="evenodd" d="M10.667.667V2H14v2H2V2h3.333V.667h5.334zM3.333 5.333h9.334v10H3.333v-10z"></path></svg>
+                                  </button>
                                 </div>
 
-                              </li>
-                            </a>
+                              </div>
+                            </li>
                             <div className="ex-cart-width"></div>
                           </Fragment>
                         )
                       })
                     }
-                  </ul>
-                  {/* <div className="ex-cart-width"></div> */}
-                  {/* Cart item new design */}
-                  {/* Amount Discount */}
-                  {
-                    amountDiscountapplied !== null &&
-                    <div className="esetcheckout">
-                      <div className="ald5egbhddeteud1checkout-edit-item d1">
-                        <div className="bodgdfcheckout-amountdiscount">
-                          Amount Discount:
-                        </div>
-                        <div className="alamcjewcheckout">
-                          <span className="bobpdfcvcheckout-item-header">{amountDiscountapplied?.name}</span>
-                        </div>
-                        <div className="f1alamcheckout-item-qty">
-                          <span className="gye2gzcheckout-item-qty-span">
-                            -(&pound;{getAmountConvertToFloatWithFixed(subtotalOrderAmount * (amountDiscountapplied.value / 100),2)})
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                  }
-                  {/* Coupon Code Discount */}
-                  {
-                    // parseInt(couponDiscountapplied.length) > parseInt(0) &&
-                    couponDiscountapplied?.map((coupon, index) => {
-                      return(
-                        <div className="esetcheckout" key={index}>
-                          <a className="ald5egbhddeteud1checkout-edit-item d1">
-                            <div className="bodgdfcheckout-amountdiscount">
-                              Discount:
+                    {/* Amount Discount */}
+                    {
+                      amountDiscountapplied !== null &&
+                      <>
+                        <li className="blmc-cart-item-display">
+                          <div className="cart-qty-item">
+                            <div className="c3cic5chfe-cart-item-display">Amount Discount:</div>
+                            
+                            <div className="cart-item-with-modifiers">
+                              <div className="cart-item-title">{amountDiscountapplied?.name}</div>
+                              <ul></ul>
                             </div>
-                            <div className="alamcjewcheckout">
-                              <span className="bobpdfcvcheckout-item-header">{coupon?.name}</span>
-                            </div>
-                            <div className="f1alamcheckout-item-qty">
-                              <span className="gye2gzcheckout-item-qty-span">-(&pound;{getAmountConvertToFloatWithFixed(coupon.discount,2)})</span>
-                            </div>
-                          </a>
+                            
+                            {/* Cart Item Price */}
 
-                          <div className="checkout-item-edit-delete">
-                            {/* Remove Discount */}
-                            <button className="cart-header-dotted-btn cp" onClick={() => handleCouponRemoveToggleBtn(index)}>
-                              <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" style={{ transform: "rotate(90deg)" }} className="c8c7cccdcheckout">
-                                <g>
-                                  <path d="M17 12a1.667 1.667 0 103.333 0A1.667 1.667 0 0017 12zM10.333 12a1.667 1.667 0 103.334 0 1.667 1.667 0 00-3.334 0zM5.333 13.667a1.667 1.667 0 110-3.333 1.667 1.667 0 010 3.333z"></path>
-                                </g>
-                              </svg>
-                            </button>
-                            {
-                              coupon?.is_coupon_remove &&
-                              <div className="cart-item-clear-or-add-modal">
-                                <li className="cart-remove-item-list" onClick={() => handleDeleteCouponCode(coupon?.id)}>
-                                  <div className="cart-remove-item-svg-div">
-                                    <svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" className="cart-remove-item-svg">
-                                      <path fillRule="evenodd" clipRule="evenodd" d="M10.667.667V2H14v2H2V2h3.333V.667h5.334zM3.333 5.333h9.334v10H3.333v-10z"></path>
-                                    </svg>
-                                  </div>
-
-                                  <div className="cart-remove-item-btn-text">
-                                    Remove item
-                                  </div>
-                                </li>
-                              </div>
-                            }
+                            <div className="md-cart-item-display">
+                              -&pound;{getAmountConvertToFloatWithFixed(subtotalOrderAmount * (amountDiscountapplied.value / 100),2)}
+                            </div>
+                            <div className="cart-delete-btn">
+                              {/* <button className="ecbrboc1byfcenalbccmafeodffddefefffgfhfifj-del" onClick={() => removeItem(indexItem)}>
+                                <svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" className="cwcxbjbk-del"><path fillRule="evenodd" clipRule="evenodd" d="M10.667.667V2H14v2H2V2h3.333V.667h5.334zM3.333 5.333h9.334v10H3.333v-10z"></path></svg>
+                              </button> */}
+                            </div>
                           </div>
-                        </div>
-                      )
-                    })
-                  }
+                        </li>
+                        <div className="ex-cart-width"></div>
+                      </>
+                    }
+                    {/* Coupon Code Discount */}
+                    {
+                      couponDiscountapplied?.map((coupon, index) => {
+                        return(
+                          <div className="esetcheckout" key={index}>
+                            <a className="ald5egbhddeteud1checkout-edit-item d1">
+                              <div className="bodgdfcheckout-amountdiscount">
+                                Discount:
+                              </div>
+                              <div className="alamcjewcheckout">
+                                <span className="bobpdfcvcheckout-item-header">{coupon?.name}</span>
+                              </div>
+                              <div className="f1alamcheckout-item-qty">
+                                <span className="gye2gzcheckout-item-qty-span">-(&pound;{getAmountConvertToFloatWithFixed(coupon.discount,2)})</span>
+                              </div>
+                            </a>
+
+                            <div className="checkout-item-edit-delete">
+                              {/* Remove Discount */}
+                              <button className="cart-header-dotted-btn cp" onClick={() => handleCouponRemoveToggleBtn(index)}>
+                                <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" style={{ transform: "rotate(90deg)" }} className="c8c7cccdcheckout">
+                                  <g>
+                                    <path d="M17 12a1.667 1.667 0 103.333 0A1.667 1.667 0 0017 12zM10.333 12a1.667 1.667 0 103.334 0 1.667 1.667 0 00-3.334 0zM5.333 13.667a1.667 1.667 0 110-3.333 1.667 1.667 0 010 3.333z"></path>
+                                  </g>
+                                </svg>
+                              </button>
+                              {
+                                coupon?.is_coupon_remove &&
+                                <div className="cart-item-clear-or-add-modal">
+                                  <li className="cart-remove-item-list" onClick={() => handleDeleteCouponCode(coupon?.id)}>
+                                    <div className="cart-remove-item-svg-div">
+                                      <svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" className="cart-remove-item-svg">
+                                        <path fillRule="evenodd" clipRule="evenodd" d="M10.667.667V2H14v2H2V2h3.333V.667h5.334zM3.333 5.333h9.334v10H3.333v-10z"></path>
+                                      </svg>
+                                    </div>
+
+                                    <div className="cart-remove-item-btn-text">
+                                      Remove item
+                                    </div>
+                                  </li>
+                                </div>
+                              }
+                            </div>
+                          </div>
+                        )
+                      })
+                    }
+                  </ul>
+                  
                 
                   <div className="cjdchkout">
                     <div className="alddbccheckout">

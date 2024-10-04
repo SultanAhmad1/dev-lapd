@@ -46,10 +46,10 @@ export default function Header()
                     <div className={`spacer _48`}></div>
                     <a href="/">
                         {
-                            brandlogo !== null ?
-                                <Image  src={IMAGE_URL_Without_Storage+''+brandlogo} width={146} height={24} className="brand-logo" alt='Brand Name'/>
-                            :
-                                <Image  src={BrandLogoPath} width={146} height={24} className="brand-logo" alt='Brand Name'/>
+                            // brandlogo !== null ?
+                            //     <Image  src={IMAGE_URL_Without_Storage+''+brandlogo} width={200} height={200} className="brand-logo" alt='Brand Name'/>
+                            // :
+                                <Image  src={BrandLogoPath} width={200} height={200} className="brand-logo" alt='Brand Name'/>
                         }
                     </a>
                     <div className="spacer _40"></div>

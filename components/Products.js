@@ -9,6 +9,7 @@ import moment from "moment";
 import Link from "next/link";
 import Header from "./Header";
 import Footer from "./Footer";
+import MobileTopBar from "./MobileTopBar";
 
 export default function Products() {
   const {
@@ -23,54 +24,14 @@ export default function Products() {
     dayOpeningClosingTime,
   } = useContext(HomeContext);
 
-  const [isscrolled, setIsScrolled] = useState(false);
-  const [scrollPosition, setScrollPosition] = useState(0);
-
   const scrollContainerRef = useRef(null);
-
-  const handleCategoryClick = (navmobileindex) => {
-    setNavmobileindex(navmobileindex);
-    scrollTo(navmobileindex, "smooth");
-  };
-
-  const scrollTo = (target, behavior) => {
-    const element = target === "top" ? document.body : document.querySelector(`.section${target}`);
-    if (element) {
-      element.scrollIntoView({ behavior: behavior });
-    }
-  };
 
   const handleProductSelect = (categoryId, itemId) => {
     setLoader(true);
     setSelectedcategoryid(categoryId);
     setSelecteditemid(itemId);
   };
-
-  useEffect(() => {
-    let listElements = document.querySelectorAll(".item-lists");
-
-    window.addEventListener("scroll", function () {
-      if (window.scrollY > 300) {
-        listElements.forEach((list) => {
-          let top = window.scrollY;
-          let offset = list.offsetTop;
-          let height = list.offsetHeight;
-
-          if (top >= offset && top < offset + height) {
-            setIsScrolled(true);
-            let scrollData =
-              scrollPosition + parseInt(list.getAttribute("data-index"));
-            setScrollPosition(scrollData);
-            setNavmobileindex(parseInt(list.getAttribute("data-index")));
-          }
-        });
-      } else {
-        setScrollPosition(0);
-        setIsScrolled(false);
-      }
-    });
-  });
-
+  
   const isValidHttpsUrl = (url) => {
     return url.startsWith('https://');
   };
@@ -79,35 +40,37 @@ export default function Products() {
     <>
       <Header />
 
-      <Banner websiteModificationData={websiteModificationData} />
+      <div className="header-display">
+        <Banner websiteModificationData={websiteModificationData} />
+      </div>
+      
       <FilterLocationTime />
+
       <div className="content">
         <div className="content-div-level-one">
-          <Navigation
-            websiteModificationData={websiteModificationData}
-            handleCategoryClick={handleCategoryClick}
-          />
+          <div className="left-bar">
+            <Navigation
+              websiteModificationData={websiteModificationData}
+            />
+          </div>
           <div></div>
           <div className="spacer _40"></div>
           {/* Navigation bar for 900 or lesser width device */}
-          {/* <MobileTopBar
-            websiteModificationData={websiteModificationData}
-            handleCategoryClick={handleCategoryClick}
-            isscrolled={isscrolled}
-            scrollPosition={scrollPosition}
-          /> */}
+          <div className="top-bar">
+            <MobileTopBar/>
+          </div>
           <div className="cat-items-content">
             <ul className="items-ul">
               {
                 navigationcategories?.map((category, index) => {
                   return (
                     category?.items?.length > 0 && 
-                    <li key={category.id} className={`item-lists section${index}`} data-index={index} id={`${category?.title?.replace(/\s+/g, "")}`}>
-                      <div className="item-title">
+                    <li key={category.id}  className={`item-lists`}>
+                      <section id={`section_${index}`} className="item-title">
                         <h3 className="item-title-h3" style={{color: websiteModificationData?.websiteModificationLive !== null && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor !== null && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor,}}>
                           {category.title}
                         </h3>
-                      </div>
+                      </section>
                       <div className="item-list-empty-div"></div>
 
                       <ul className="items-list-nested-ul">
@@ -129,7 +92,7 @@ export default function Products() {
                             return (
                               isItemSuspend === false &&
                               <li ref={scrollContainerRef} key={itemIndex} className="items-list-nested-list" onClick={() => handleProductSelect(category?.id, item?.id)}>
-                                <Link href={`${storeName.toLowerCase()}/${category?.slug}/${item?.slug}`}>
+                                <a href={`${storeName.toLowerCase()}/${category?.slug}/${item?.slug}`}>
                                   <div className="items-nested-div">
                                     <div className="items-nested-div-one">
                                       <div className="item-detail-style">
@@ -170,7 +133,7 @@ export default function Products() {
                                     </div> */}
                                     </div>
                                   </div>
-                                </Link>
+                                </a>
                               </li>
                             );
                           })
@@ -184,6 +147,7 @@ export default function Products() {
           </div>
         </div>
       </div>
+
       <ViewCartMobileBtn />
       <Footer />
     </>

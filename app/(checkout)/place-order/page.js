@@ -898,7 +898,7 @@ function UserForm() {
                           name="email"
                           placeholder="Enter email"
                           onChange={handleInputs}
-                          className={`email-checkout ${parseInt(customerDetailObj?.email.length) > parseInt(0) ? "parse-success": "parse-erorr"}`}
+                          className={`email-checkout ${customerDetailObj?.email ? "parse-success": "parse-erorr"}`}
                         />
                       </div>
                     }
@@ -1394,7 +1394,7 @@ function UserForm() {
                               name="doorhousename"
                               onChange={handleInputs}
                               placeholder="Enter door number or name"
-                              className={`door_number ${parseInt(customerDetailObj?.doorhousename.length) > parseInt(0) ? "parse-success" : "parse-erorr"}`}
+                              className={`door_number ${customerDetailObj?.doorhousename ? "parse-success" : "parse-erorr"}`}
                             />
                           </div>
                         }
@@ -1493,7 +1493,7 @@ function UserForm() {
                             value={customerDetailObj?.email}
                             placeholder="Enter email"
                             onChange={handleInputs}
-                            className={`email-checkout ${parseInt(customerDetailObj?.email.length) > parseInt(0) ? "parse-success" : "parse-erorr"}`}
+                            className={`email-checkout ${customerDetailObj?.email ? "parse-success" : "parse-erorr"}`}
                           />
                       
                         </div>

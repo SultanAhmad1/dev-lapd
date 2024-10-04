@@ -39,7 +39,7 @@ function FilterLocationTime()
 
             <div className='openclosetime-type'>
 
-                <div className="filter-type">
+                {/* <div className="filter-type">
                     {
                         filters?.map((fitler,index) =>
                         {
@@ -68,20 +68,7 @@ function FilterLocationTime()
                         })
                     }
             
-
-                    {/* <div className={`akd0afbz-delivery-type ${ordertypeselect === 2 && "delivery-type-active"}`} onClick={() => handleOrderType(2)}>
-                        <div className="algid0amc5-delvery-type">
-                            <div role="radio" aria-checked="false" tabIndex="0" aria-label="[object Object]" className="chcicjckeeafgmc9gnehclbz b1">
-                                <div className="algid0amc5-delvery-type p8">
-                                <div className="algid0amc5-delvery-type p8">
-                                <div className="chcicjck p9">Pickup</div>
-                                <div className="chcicjck p9">Pickup</div>
-                                <div className="chobcjck p9"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div> */}
-                </div>
+                </div> */}
 
             </div>
         </div>

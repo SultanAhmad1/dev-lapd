@@ -1,13 +1,12 @@
 import { IMAGE_URL_Without_Storage } from "@/global/Axios";
 import {
   getAmountConvertToFloatWithFixed,
-  getCountryCurrencySymbol,
 } from "@/global/Store";
 import moment from "moment";
-import Link from "next/link";
+import Image from "next/image";
 import React, { memo } from "react";
 
-export const MobileSingleItem = memo((props) => {
+export const MobileSingleItem = (props) => {
   const {
     itemprice,
     singleitem,
@@ -62,9 +61,9 @@ export const MobileSingleItem = memo((props) => {
                         {
                           (singleitem?.image_url && singleitem?.image_url !== null) &&
                           isValidHttpsUrl(singleitem?.image_url) ?
-                            <img role="presentation" src={singleitem?.image_url} alt={singleitem?.title} className="egbkaeeheisingle-productimg" />
+                            <img width={100} height={100} role="presentation" src={singleitem?.image_url} alt={singleitem?.title} className="egbkaeeheisingle-productimg" />
                           :
-                            <img role="presentation" src={`${IMAGE_URL_Without_Storage}${singleitem?.image_url}`} alt={singleitem?.title} className="egbkaeeheisingle-productimg"/>
+                            <img width={100} height={100} role="presentation" src={`${IMAGE_URL_Without_Storage}${singleitem?.image_url}`} alt={singleitem?.title} className="egbkaeeheisingle-productimg"/>
                         }
                         <div className="agasatbdbcajsingle-product"></div>
                       </div>
@@ -95,8 +94,7 @@ export const MobileSingleItem = memo((props) => {
                     return(
                       parseInt(modifier?.modifier_secondary_items?.length) > parseInt(0) &&
                       // {/* minimum option = '1' and maximum option = 1 and single item select = 1 */}
-                      modifier?.select_single_option === 1 && modifier?.min_permitted === 1 && modifier?.max_permitted === 1 
-                    ? 
+                      modifier?.select_single_option === 1 && modifier?.min_permitted === 1 && modifier?.max_permitted === 1 ? 
                       <li key={index} className={`msection${index}`}>
                         <div className="fusingle-productlidiv">
                           <hr className="modifier-hr"></hr>
@@ -104,9 +102,9 @@ export const MobileSingleItem = memo((props) => {
                           <div className="modifier-header" onClick={() => handleMobileModifierToggle(modifier?.id)}>
                             <div className="modifier-div">
                               <div className="alamsingle-product">
-                                <div className="bnfrbpfsingle-product">
-                                  {modifier?.title}
-                                </div>
+                                
+                                <div className="bnfrbpfsingle-product">{modifier?.title}</div>
+
                                 <div className="bresbtdqfysingle-product">
                                   <span>Choose {modifier?.max_permitted}</span>
                                   <div className="fzsingle-product">
@@ -630,4 +628,4 @@ export const MobileSingleItem = memo((props) => {
       <div style={{width: "1px",height: "0px",padding: "0px",overflow: "hidden",position: "fixed",top: "1px",left: "1px",}}></div>
     </div>
   );
-});
+}
