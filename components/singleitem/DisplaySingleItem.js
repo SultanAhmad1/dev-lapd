@@ -427,6 +427,8 @@ export default function DisplaySingleItem({params})
         }
     };
     
+    console.log("Git testing");
+    
     useEffect(() => {
         const dayNumber = moment().day();
         const dateTime = moment().format("HH:mm");
