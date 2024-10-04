@@ -6,7 +6,7 @@ import moment from "moment";
 import Link from "next/link";
 import React, { memo } from "react";
 
-export const WebsiteSingleItem = memo((props) => {
+export const WebsiteSingleItem = (props) => {
   const {
     singleitem,
     quantity,
@@ -782,4 +782,4 @@ export const WebsiteSingleItem = memo((props) => {
       </div>
     </div>
   );
-});
+}

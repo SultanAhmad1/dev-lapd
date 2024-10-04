@@ -178,9 +178,6 @@ export default function CustomLayout({ children })
     
   const onMenuSuccess = (data) => 
   {
-
-    console.log("Villa pizza menu success:", data);
-    
     setLoader(false)
     const { menu } = data?.data
 
