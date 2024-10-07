@@ -156,6 +156,7 @@ export default function TrackOrderDetail()
         return
     }
 
+    
     return(
         <div className='e5ald0m1m2amc5trackorder-desk'>
             <div className="m3m4m5gim6trackorder-desk">
@@ -169,7 +170,7 @@ export default function TrackOrderDetail()
 
                         <hr className='edfhmthttrackorder-desk'></hr>
 
-                        {/* <div className='mimjepmkmlmmtrackorder-desk'>
+                        <div className='mimjepmkmlmmtrackorder-desk'>
                             <div className='d1g1trackorder-desk'>
                                 <div className="allzc5trackorder-desk">
                                     <div className="alamd1g1trackorder-desk">
@@ -187,7 +188,7 @@ export default function TrackOrderDetail()
                                     <div className="edhtb9d1trackorder-desk"></div>
                                 </div>
                             </div>
-                        </div> */}
+                        </div>
                     </div>
 
                 </div>
@@ -221,10 +222,10 @@ export default function TrackOrderDetail()
                             <div className="eeb0trackordericon-desk">
                                 <div className='b5grektrackorder-desk'>
                                     
-                                    <OrderStatusImage imageSrc={(getTrackOrderData?.data?.trackOrder?.status === 'created') ? orderRecieved.src : notOrderRecieved.src} />
-                                    <OrderStatusImage imageSrc={(getTrackOrderData?.data?.trackOrder?.status === 'live') ? inTheKitchen.src : notInTheKitchen.src} />
-                                    <OrderStatusImage imageSrc={(getTrackOrderData?.data?.trackOrder?.status === 'out_for_delivery') ? outForDelivery.src : notOutForDelivery.src} />
-                                    <OrderStatusImage imageSrc={(getTrackOrderData?.data?.trackOrder?.status === 'completed') ? Completed.src : notCompleted.src} />
+                                    <OrderStatusImage status={false} imageSrc={(getTrackOrderData?.data?.trackOrder?.status === 'created') ? orderRecieved.src : notOrderRecieved.src} />
+                                    <OrderStatusImage status={false} imageSrc={(getTrackOrderData?.data?.trackOrder?.status === 'live') ? inTheKitchen.src : notInTheKitchen.src} />
+                                    <OrderStatusImage status={false} imageSrc={(getTrackOrderData?.data?.trackOrder?.status === 'out_for_delivery') ? outForDelivery.src : notOutForDelivery.src} />
+                                    <OrderStatusImage status={true} imageSrc={(getTrackOrderData?.data?.trackOrder?.status === 'completed') ? Completed.src : notCompleted.src} />
 
                                 </div>
                             </div>

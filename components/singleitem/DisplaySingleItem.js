@@ -7,6 +7,7 @@ import moment from "moment";
 import { WebsiteSingleItem } from "../WebsiteSingleItem";
 import { MobileSingleItem } from "../MobileSingleItem";
 import { axiosPrivate, BRAND_GUID, BRANDSIMPLEGUID, PARTNER_ID } from "@/global/Axios";
+import { setLocalStorage } from "@/global/Store";
 
 export default function DisplaySingleItem({params}) 
 {
@@ -427,8 +428,6 @@ export default function DisplaySingleItem({params})
         }
     };
     
-    console.log("Git testing");
-    
     useEffect(() => {
         const dayNumber = moment().day();
         const dateTime = moment().format("HH:mm");
@@ -458,6 +457,8 @@ export default function DisplaySingleItem({params})
             const parseCart = JSON.parse(getCart);
             // const getFilterItem = parseCart?.find((cart, index) => index === JSON.parse(getIndex));
             const getFilterItem = parseCart?.find(cartItem => cartItem?.slug?.includes(params?.product))
+            
+            console.log("Get the filter item:", getFilterItem);
             
             setIscartbtnclicked(false)
             setSingleitem(getFilterItem)
@@ -585,7 +586,8 @@ export default function DisplaySingleItem({params})
         }
     
         setItemprice(parseFloat(totalAmount).toFixed(2));
-    },[itemprice,singleitem,ismodifierclicked,selectedModifierId,selectedModifierItemId,selectedModifierItemPrice,ismodifierclicked,]);
+    },[itemprice,singleitem,ismodifierclicked,selectedModifierId,selectedModifierItemId,selectedModifierItemPrice,ismodifierclicked]);
+    
     
     const handleCheckInput = useCallback((modifierId, itemId, secondaryItemModifierCounter) => {
         setHandleCheckModifierId(modifierId);
@@ -1529,6 +1531,8 @@ export default function DisplaySingleItem({params})
     });
     
     // Website Cart Button
+    console.log("Cart data total:", cartdata);
+    
     const handleAddtoCart = useCallback(() => {
         if (singleitem) {
             // Count the number of modifier is min_permit is greater than zero.
@@ -1565,10 +1569,8 @@ export default function DisplaySingleItem({params})
             {
                 if(params?.edit)
                 {
-                    const removeIndex = window.localStorage.getItem(`${BRANDSIMPLEGUID}set_index`);
-      
-                    const filterCartFirst = cartdata?.filter((cart, index) => index !== JSON.parse(removeIndex));
-                    
+                    // const filterCartFirst = cartdata?.filter((cart, index) => index !== JSON.parse(removeIndex));
+                    const filterCartFirst = cartdata?.filter((cart) => !cart?.slug?.includes(params?.product));
                     setCartdata(filterCartFirst);
                 }
 
@@ -1595,8 +1597,7 @@ export default function DisplaySingleItem({params})
                 }
             }
         }
-    }, [singleitem, cartdata, iscartbtnclicked,quantity]);
-    
+    }, [singleitem, cartdata, iscartbtnclicked,quantity]);    
 
     const handleMobileAddtoCart = useCallback(() => {
         if (singleitem) {
@@ -1631,7 +1632,15 @@ export default function DisplaySingleItem({params})
 
                 setSingleitem(addErrorClassinModifier);
             } else {
+
                 setLoader(true);
+
+                if(params?.edit)
+                {
+                    const filterCartFirst = cartdata?.filter((cart) => !cart?.slug?.includes(params?.product));
+                    setCartdata(filterCartFirst);
+                }
+
                 const addTotalAmount = {
                     ...singleitem,
                     total_order_amount: parseFloat(quantity * itemprice).toFixed(2),
@@ -1825,6 +1834,8 @@ export default function DisplaySingleItem({params})
         setIsmodifierclicked(false);
     },[singleitem, ismodifierclicked, itemprice, ismodifierclicked]);
 
+    console.log("Single item to update:", singleitem);
+    
     return(
     <>
         <Header />
