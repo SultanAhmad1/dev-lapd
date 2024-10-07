@@ -145,7 +145,7 @@ export default function Cart() {
         {
           const getAmountDiscountDifference = parseInt(subTotalArgument) >= parseInt(amountDiscounts[workingIndex].need_to_spend) ? parseFloat(subTotalArgument) - parseFloat(amountDiscounts[workingIndex].need_to_spend) : parseFloat(amountDiscounts[workingIndex].need_to_spend) - parseFloat(subTotalArgument);
           const amountText = (
-            <span>Spend<strong>&pound;{parseFloat(getAmountDiscountDifference).toFixed(2)}</strong>more to get
+            <span>Spend &nbsp; <strong>&pound;{parseFloat(getAmountDiscountDifference).toFixed(2)}</strong> &nbsp; more to get &nbsp;
               <strong>
                 {amountDiscounts[workingIndex].discount_type === "M" &&
                   getCountryCurrencySymbol()}
@@ -252,8 +252,11 @@ export default function Cart() {
       {
         getOrderAmount(getAmountConvertToFloatWithFixed(totalValue, 2));
       }
+      setLocalStorage(`${BRANDSIMPLEGUID}cart`, cartdata);
+
+      console.log("Here in cart component make the localStorage update:");
+      
     }
-    setLocalStorage(`${BRANDSIMPLEGUID}cart`, cartdata);
     setItemindividuallyupdate(false)
     setLoader(false)
   }, [cartdata]);

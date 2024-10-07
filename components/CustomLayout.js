@@ -171,6 +171,9 @@ export default function CustomLayout({ children })
       const cartDataFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}cart`));
 
       setCartdata(cartDataFromLocalStorage === null ? [] : cartDataFromLocalStorage);
+
+      console.log("Custom layout cart item:", cartdata);
+      
       menuRefetch()
       colorRefetch()
     }
@@ -269,6 +272,9 @@ export default function CustomLayout({ children })
       return () => clearTimeout(timeoutId);
     }
   });
+  
+
+  console.log("Custom layout cart data:", cartdata);
   
   // Context Data
   const contextData = {

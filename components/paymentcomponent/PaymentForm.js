@@ -40,7 +40,10 @@ const PaymentForm = ({orderId}) =>
     const response = await axiosPrivate.get(`/location-brand-status/${orderId}`)
     
     const { brandExists, isExpired } = response?.data?.data
-    setIsgeterrorfromdatabase(isExpired)
+
+    // console.log("Check the invalid url or not:", response?.data?.data);
+    
+    // setIsgeterrorfromdatabase(isExpired)
     setIsLocationBrandOnline(brandExists)
   }
 
@@ -51,6 +54,8 @@ const PaymentForm = ({orderId}) =>
     {
       const data = {guid: orderId,}  
       const response = await axiosPrivate.post(`/order-price-to-payable-get`, data)
+      console.log("Forcefully call:", response);
+      
       setIsgeterrorfromdatabase(response.data.data?.orderAmountDetails === null ? true : false)
 
       settotalOrderAmountValue(response.data.data?.orderAmountDetails === null ? 0 : response.data.data?.orderAmountDetails?.order_total)
