@@ -1,7 +1,7 @@
 'use client';
 
 import Image from "next/image";
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useCheckAuthMutationHook, useLogoutMutationHook } from "../reactquery/useQueryHook";
 import HomeContext from "@/contexts/HomeContext";
 import { BRANDSIMPLEGUID } from "@/global/Axios";
@@ -9,7 +9,7 @@ import { BRANDSIMPLEGUID } from "@/global/Axios";
 export default function CustomerPersonCom() 
 {
     
-    const {booleanObj,handleBoolean,} = useContext(HomeContext)
+    const {booleanObj,handleBoolean,websiteModificationData} = useContext(HomeContext)
     
     const asideRef = useRef(null);
 
@@ -104,7 +104,18 @@ export default function CustomerPersonCom()
                                 loginToken === null || loginToken === undefined ?
                                 <div className="canva-auth-buttons">
                                     <div>
-                                    <a href='/registeration' className="auth-sign">
+                                    <a 
+                                        href='/registeration' 
+                                        className="auth-sign" 
+                                      
+                                        style={{
+                                            '--auth-border-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, 
+                                            '--auth-background-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                                            '--auth-font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                                            '--auth-hover-background': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor,
+                                            '--auth-hover-color':  websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                                        }}
+                                    >
                                         Sign up
                                     </a>
                                     <a href='/login' className="auth-in">

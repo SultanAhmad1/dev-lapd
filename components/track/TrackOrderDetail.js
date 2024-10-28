@@ -1,7 +1,8 @@
-import { axiosPrivate, BRAND_GUID } from "@/global/Axios";
+"use client";
+import { axiosPrivate, BRAND_GUID, IMAGE_URL_Without_Storage } from "@/global/Axios";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import React, { useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 
 import notOrderRecieved from "/public/gallery/trackorder/track-icon-1.svg"
 import orderRecieved from "/public/gallery/trackorder/track-icon-hover-1.svg"
@@ -21,26 +22,40 @@ import MyOrders from "./children/MyOrders";
 import Total from "./children/Total";
 import Image from "next/image";
 import OrderStatusImage from "./children/OrderStatusImage";
+import HomeContext from "@/contexts/HomeContext";
+import { ContextCheckApi } from "@/app/layout";
 
 export default function TrackOrderDetail() 
 {
+    const { websiteModificationData } = useContext(HomeContext)
+    const { setmetaDataToDipslay} = useContext(ContextCheckApi)
+
+    useEffect(() => {
+    if(websiteModificationData)
+        {
+            const metaHeadingData = {
+                title: websiteModificationData?.brand?.name,
+                contentData: websiteModificationData?.brand?.name,
+                iconImage: IMAGE_URL_Without_Storage+"/"+websiteModificationData?.websiteModificationLive?.json_log?.[0]?.websiteFavicon,
+                singleItemsDetails: {
+                    title: "",
+                    description: "",
+                    itemImage: "",
+                    keywords: "",
+                    url: ""
+                }
+            }
+            setmetaDataToDipslay(metaHeadingData)
+        }
+    }, [websiteModificationData]);
+
     const router = usePathname()
     const stringToArray = router?.split('/').filter(segment => segment)
-
-    console.log("track order detail:", stringToArray);
     
     const [getTrackOrderData, setGetTrackOrderData] = useState(null);
     
     const [orderhash, setOrderhash] = useState("")
-    const [brand, setBrand] = useState(null)
-    const [location, setLocation] = useState(null)
-    const [address, setAddress] = useState(null)
-    const [trackorders, setTrackorders] = useState([])
-
-    const [discountamount, setDiscountamount] = useState(0)
-
-    const [issearchdisable, setIssearchdisable] = useState(true)
-
+   
     // useEffect(() => 
     // {
     //     const getTrackOrderDetails = async () =>
@@ -52,7 +67,6 @@ export default function TrackOrderDetail()
     //             }   
     //             const response = await axiosPrivate.post(`/website-track-order`,data)
                 
-    //             console.log("track order:", response);
                 
     //             setBrand(response?.data?.data?.trackOrder?.brand)
     //             setLocation(response?.data?.data?.trackOrder?.location)
@@ -76,20 +90,16 @@ export default function TrackOrderDetail()
     // }, [])
     
     const onGetError = (error) => {
-        console.error("Error get data:", error);
         // window.alert("There is something went wrong!. Please refresh and try again.")
     }
 
     const onGetSuccess = (data) => {
         setGetTrackOrderData(data)
         setOrderhash(data?.data?.trackOrder?.order_hash)
-        console.log("Get data", data);
     }
 
     const {isLoading: getTrackLoading, isError: getTrackError} = useGetQueryAutoUpdate("track-order", `/website-track-order/${stringToArray?.[1]}`, onGetSuccess, onGetError, stringToArray?.[1] ? true : false)
 
-    console.log("Get the track order detail:", getTrackOrderData);
-    
     const handleOrderHashTypeByUser = (event) =>
     {
         const {value, name} = event.target
@@ -129,18 +139,13 @@ export default function TrackOrderDetail()
             brandGUID: BRAND_GUID
         } 
 
-        console.log("Hash data:", hashData);
-        
-
         hashMutate(hashData)
     }
 
     const onHashError = (error) => {
-        console.error("Hash error:", error);
     }
 
     const onHashSuccess = (data) => {
-        console.log("hash success:", data);
         setGetTrackOrderData(data?.data)
         setOrderhash(data?.data?.data?.trackOrder?.order_hash)
 
@@ -155,7 +160,6 @@ export default function TrackOrderDetail()
         reset()
         return
     }
-
     
     return(
         <div className='e5ald0m1m2amc5trackorder-desk'>
@@ -179,8 +183,34 @@ export default function TrackOrderDetail()
                                 </div>
 
                                 <form className="btautrackorder-window" onSubmit={handleSearchOrderCode}>
-                                    <input type="text" placeholder="Enter your order code" name="orderhash" value={orderhash} className="track_order" onChange={handleOrderHashTypeByUser}/>
-                                    <button type="submit" className='trackorder_btn' disabled={isLoading}>Search</button>
+                                    <input 
+                                        type="text"     
+                                        style={{
+                                            border: `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,
+                                        }}
+                                        placeholder="Enter your order code" 
+                                        name="orderhash" 
+                                        value={orderhash} 
+                                        className="track_order" 
+                                        onChange={handleOrderHashTypeByUser}
+                                    />
+                                    <button 
+                                        type="submit" 
+                                        className='trackorder_btn' 
+                                        disabled={isLoading}
+
+                                        style={{
+                                            '--track-btn-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                                            '--track-btn-background': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                                            '--track-btn-hover-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor,
+                                            '--track-btn-hover-background': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor,
+                                            '--track-btn-border-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                                            '--track-btn-hover-border-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                                        }} 
+
+                                    >
+                                        Search
+                                    </button>
                                 </form>
 
                                 <div className="altrackorder-desk">
@@ -225,7 +255,7 @@ export default function TrackOrderDetail()
                                     <OrderStatusImage status={false} imageSrc={(getTrackOrderData?.data?.trackOrder?.status === 'created') ? orderRecieved.src : notOrderRecieved.src} />
                                     <OrderStatusImage status={false} imageSrc={(getTrackOrderData?.data?.trackOrder?.status === 'live') ? inTheKitchen.src : notInTheKitchen.src} />
                                     <OrderStatusImage status={false} imageSrc={(getTrackOrderData?.data?.trackOrder?.status === 'out_for_delivery') ? outForDelivery.src : notOutForDelivery.src} />
-                                    <OrderStatusImage status={true} imageSrc={(getTrackOrderData?.data?.trackOrder?.status === 'completed') ? Completed.src : notCompleted.src} />
+                                    <OrderStatusImage status={true} imageSrc={(getTrackOrderData?.data?.trackOrder?.status === 'complete') ? Completed.src : notCompleted.src} />
 
                                 </div>
                             </div>

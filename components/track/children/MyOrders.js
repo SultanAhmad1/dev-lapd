@@ -1,3 +1,4 @@
+"use client";
 import { getAmountConvertToFloatWithFixed } from "@/global/Store";
 import React from "react";
 import Modifiers from "./Modifiers";
@@ -17,7 +18,10 @@ export default function MyOrders({orderLine})
                         {
                             orderLine?.order_line_modifier_group_products?.map((modifier, index) =>
                             {
-                                return(<Modifiers key={index?.modifier?.id} {...{modifier}} />)
+                                return(
+                                    (modifier?.default_option !== 1) &&
+                                    <Modifiers key={index?.modifier?.id} {...{modifier}} />
+                                )
                             })
                         }
                     </ul>

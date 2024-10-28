@@ -1,3 +1,4 @@
+"use client";
 import { BRAND_GUID, BRANDSIMPLEGUID } from "@/global/Axios";
 import React, { Fragment, useEffect, useState } from "react";
 import { useCheckAuthMutationHook, usePostAfterAuthMutationHook } from "../reactquery/useQueryHook";

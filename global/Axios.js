@@ -1,7 +1,7 @@
 import axios from "axios";
 import { setLocalStorage } from "./Store";
-export const BASE_URL = "https://laravel-jouleskitchen.cleartwo.uk/api";
-export const IMAGE_URL = "https://laravel-jouleskitchen.cleartwo.uk/storage/";
+// export const BASE_URL = "https://laravel-jouleskitchen.cleartwo.uk/api";
+export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 export const IMAGE_URL_Without_Storage = "https://laravel-jouleskitchen.cleartwo.uk/";
 
 // export const BASE_URL = "https://api.jouleskitchen.co.uk/api";

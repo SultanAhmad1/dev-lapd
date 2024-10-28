@@ -20,19 +20,19 @@ export default function page()
       {/* Display Brand Contact details */}
       <div className="brand-contact-flex">
         <div className="brand-contact-details">
-          <img src="/gallery/stars.png" alt="Display stars"/>
+          <img loading="lazy" src="/gallery/stars.png" alt="Display stars"/>
           <h2>Order Now</h2>
           <a href={`tel:${websiteModificationData?.brand?.telephone}`}>{websiteModificationData?.brand?.telephone}</a>
         </div>
 
         <div className="brand-contact-details">
-          <img src="/gallery/stars.png" alt="Display stars"/>
+          <img loading="lazy" src="/gallery/stars.png" alt="Display stars"/>
           <h2>Careers</h2>
           <a href="/">Apply Now</a>
         </div>
 
         <div className="brand-contact-details">
-          <img src="/gallery/stars.png" alt="Display stars"/>
+          <img loading="lazy" src="/gallery/stars.png" alt="Display stars"/>
           <h2>Email Us</h2>
           {/* <a href="mailto:info@lapdfood.co.uk">info@lapdfood.co.uk</a> */}
           <a href={`mailto:${websiteModificationData?.brand?.email}`}>{websiteModificationData?.brand?.email}</a>

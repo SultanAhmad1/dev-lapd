@@ -1,3 +1,4 @@
+"use client";
 import HomeContext from "@/contexts/HomeContext";
 import { axiosPrivate, BRAND_GUID, BRANDSIMPLEGUID, PARTNER_ID } from "@/global/Axios";
 import { setLocalStorage } from "@/global/Store";

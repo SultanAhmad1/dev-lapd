@@ -1,3 +1,4 @@
+"use client";
 let storeName = "LAPD"
 let isUserEnteredPostcode = false
 let categoryUUID = 0

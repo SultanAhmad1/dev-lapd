@@ -1,14 +1,17 @@
 // PaymentForm.js
+'use client';
+
 import React, { useContext, useEffect, useState } from 'react';
 
 import moment from 'moment';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { BRANDSIMPLEGUID, axiosPrivate } from '@/global/Axios';
+import { BRANDSIMPLEGUID, IMAGE_URL_Without_Storage, axiosPrivate } from '@/global/Axios';
 import HomeContext from '@/contexts/HomeContext';
 import { useRouter } from "next/navigation";
 import { WalletMemo } from './Wallet';
 import Loader from '../modals/Loader';
 import { getAmountConvertToFloatWithFixed, setLocalStorage } from '@/global/Store';
+import { ContextCheckApi } from '@/app/layout';
 // import stripePromise from './stripe';
 
 const PaymentForm = ({orderId}) => 
@@ -23,8 +26,32 @@ const PaymentForm = ({orderId}) =>
     settotalOrderAmountValue,
     isLocationBrandOnline,
     setIsLocationBrandOnline,
+    websiteModificationData,
   } = useContext(HomeContext)
 
+  const { setmetaDataToDipslay} = useContext(ContextCheckApi)
+
+  useEffect(() => {
+    if(websiteModificationData)
+    {
+      const metaHeadingData = {
+        title: websiteModificationData?.brand?.name,
+        contentData: websiteModificationData?.brand?.name,
+        iconImage: IMAGE_URL_Without_Storage+"/"+websiteModificationData?.websiteModificationLive?.json_log?.[0]?.websiteFavicon,
+        singleItemsDetails: {
+          title: "",
+          description: "",
+          itemImage: "",
+          keywords: "",
+          url: ""
+        }
+      }
+      setmetaDataToDipslay(metaHeadingData)
+    }
+  }, [websiteModificationData]);
+
+  const [isHover, setIsHover] = useState(false);
+  
   const [loader, setLoader] = useState(true)   
   const stripe = useStripe();
   const elements = useElements();
@@ -40,10 +67,8 @@ const PaymentForm = ({orderId}) =>
     const response = await axiosPrivate.get(`/location-brand-status/${orderId}`)
     
     const { brandExists, isExpired } = response?.data?.data
-
-    // console.log("Check the invalid url or not:", response?.data?.data);
     
-    // setIsgeterrorfromdatabase(isExpired)
+    setIsgeterrorfromdatabase(isExpired)
     setIsLocationBrandOnline(brandExists)
   }
 
@@ -54,7 +79,6 @@ const PaymentForm = ({orderId}) =>
     {
       const data = {guid: orderId,}  
       const response = await axiosPrivate.post(`/order-price-to-payable-get`, data)
-      console.log("Forcefully call:", response);
       
       setIsgeterrorfromdatabase(response.data.data?.orderAmountDetails === null ? true : false)
 
@@ -178,7 +202,6 @@ const PaymentForm = ({orderId}) =>
     } 
     catch (error) 
     {
-      // console.log("Update Order After successfully payment save:", error);
     }
   }
 
@@ -186,6 +209,8 @@ const PaymentForm = ({orderId}) =>
   const handleSubmit = async (event) => 
   {
     event.preventDefault();
+
+    setLoader(true)
 
     if(isLocationBrandOnline === null)
     {
@@ -248,13 +273,113 @@ const PaymentForm = ({orderId}) =>
   };
 
   return(
-    <div className='payment-container'>
-      <div className="payment-div">
-        {
-          !isgeterrorfromdatabase ?
-            <form onSubmit={handleSubmit}>
-              <div className="hmg1payment-desk">
-                <div className="hmg1mhb0payment-desk">
+    <>
+      <div className='payment-container'>
+        <div className="payment-div">
+          {
+            !isgeterrorfromdatabase ?
+              <form onSubmit={handleSubmit}>
+                <div className="hmg1payment-desk">
+                  <div className="hmg1mhb0payment-desk">
+                      <div className='mimjepmkmlmmpayment-desk'>
+                        <h3 className="eik5ekk6payment-desk">
+                          <span className="d1payment-desk-span">Payment Window</span>
+                        </h3>
+                      </div>
+
+                      <hr className='edfhmthtpayment-desk'></hr>
+                      <div className='mimjepmkmlmmpayment-desk'>
+                        <h3 className="eik5ekk6payment-desk">
+                          <span className="d1payment-desk-span">Payment</span>
+                        </h3>
+                        <div className='d1g1payment-desk'>
+                        
+                          
+                          {
+                            isLocationBrandOnline !== null &&
+                            <>
+                              <a className="allzc5payment-desk">
+                                <div className="f2payment-desk">
+                                  <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdpayment">
+                                    <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
+                                  </svg>
+                                </div>
+                                  
+                                <div className="alamd1g1payment-desk">
+                                  <span className="chd2cjd3b1payment-desk">Credit or debit card</span>
+                                </div>
+                              </a>
+                              <div className="btaupayment-window">
+                                <CardElement options={{hidePostalCode: true, style: { base: { fontSize: '16px', color: '#424770', '::placeholder': { color: '#aab7c4' } } } }} />
+                                {paymentError && <div style={{background: "#ed5858", color: "white", padding: "12px", borderRadius: "1px", marginTop: "10px"}}>{paymentError}</div>}
+                              </div>
+                            </>
+                          }
+                        </div>
+                      </div>
+                  </div>
+                  <div></div>
+                </div>
+                
+                <div className="d1g1payment-desk">
+                  <div className='gmgngoalamgppayment-desk'>
+                    <div className="gqpayment-desk">
+                      <div className='boh7bqh8payment-desk'>
+                        {
+                          isLocationBrandOnline !== null ?
+                            <>
+                              <button 
+                                type='submit' 
+                                className="h7brboe1payment-btn" 
+                                style={{
+                                  background: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                                  color: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                                  border: isHover ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}` : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
+                                  marginBottom: "10px"
+                                }}
+        
+                                onMouseEnter={() => setIsHover(true)}
+                                onMouseLeave={() => setIsHover(false)}
+                                disabled={!stripe}
+                              >Submit Payment</button>
+                              <WalletMemo 
+                                {
+                                  ...{
+                                    setLoader,
+                                    afterPaymentSavedOrderUpdate,
+                                  }
+                                }
+                                orderTotal={totalOrderAmountValue}
+                              />
+                            </>
+                          :
+                          <button 
+                            type='submit' 
+                            className="h7brboe1payment-btn" 
+                            // style={{background: "rgb(125,125,125)",marginBottom: "10px"}} 
+                            style={{
+                              background: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                              color: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                              border: isHover ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}` : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
+                              marginBottom: "10px"
+                            }}
+    
+                            onMouseEnter={() => setIsHover(true)}
+                            onMouseLeave={() => setIsHover(false)}
+                            disabled={!stripe}
+                          >
+                            Submit Payment
+                          </button>
+                        }
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </form>
+            :
+              <>
+                <div className="hmg1payment-desk">
+                  <div className="hmg1mhb0payment-desk">
                     <div className='mimjepmkmlmmpayment-desk'>
                       <h3 className="eik5ekk6payment-desk">
                         <span className="d1payment-desk-span">Payment Window</span>
@@ -267,117 +392,81 @@ const PaymentForm = ({orderId}) =>
                         <span className="d1payment-desk-span">Payment</span>
                       </h3>
                       <div className='d1g1payment-desk'>
-                      
-                        
-                        {
-                          isLocationBrandOnline !== null &&
-                          <>
-                            <a className="allzc5payment-desk">
-                              <div className="f2payment-desk">
-                                <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdpayment">
-                                  <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
-                                </svg>
-                              </div>
-                                
-                              <div className="alamd1g1payment-desk">
-                                <span className="chd2cjd3b1payment-desk">Credit or debit card</span>
-                              </div>
-                            </a>
-                            <div className="btaupayment-window">
-                              <CardElement options={{hidePostalCode: true, style: { base: { fontSize: '16px', color: '#424770', '::placeholder': { color: '#aab7c4' } } } }} />
-                              {paymentError && <div style={{background: "#ed5858", color: "white", padding: "12px", borderRadius: "1px", marginTop: "10px"}}>{paymentError}</div>}
-                            </div>
-                          </>
-                        }
+                        <a className="allzc5payment-desk">
+                          <div className="f2payment-desk">
+                            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdpayment">
+                              <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
+                            </svg>
+                          </div>
+                              
+                          <div className="alamd1g1payment-desk">
+                            <span className="chd2cjd3b1payment-desk">Invalid or expired url</span>
+                          </div>
+                        </a>
+                      </div>
+                      </div>
+                  </div>
+                  <div></div>
+                </div>
+
+                <div className="d1g1payment-desk subpayment-desk">
+                  <div className='gmgngoalamgppayment-desk'>
+                    <div className="gqpayment-desk">
+                      <div className='boh7bqh8payment-desk'>
+                        <a 
+                          className="h7brboe1payment-btn" 
+                          href="/"
+                          style={{
+                            background: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                            color: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                            border: isHover ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}` : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
+                          }}
+
+                          onMouseEnter={() => setIsHover(true)}
+                          onMouseLeave={() => setIsHover(false)}
+                        >
+                          Continue Menu
+                        </a>
                       </div>
                     </div>
-                </div>
-                <div></div>
-              </div>
-              
-              <div className="d1g1payment-desk">
-                <div className='gmgngoalamgppayment-desk'>
-                  <div className="gqpayment-desk">
-                    <div className='boh7bqh8payment-desk'>
-                      {
-                        isLocationBrandOnline !== null ?
-                          <>
-                            <button type='submit' className="h7brboe1payment-btn" style={{marginBottom: "10px"}} disabled={!stripe}>Submit Payment</button>
-                            <WalletMemo 
-                              {
-                                ...{
-                                  setLoader,
-                                  afterPaymentSavedOrderUpdate,
-                                }
-                              }
-                              orderTotal={totalOrderAmountValue}
-                            />
-                          </>
-                        :
-                        <button type='submit' className="h7brboe1payment-btn" style={{background: "rgb(125,125,125)",marginBottom: "10px"}} disabled={!stripe}>Submit Payment</button>
-                      }
-                    </div>
                   </div>
                 </div>
-              </div>
-            </form>
-          :
-            <>
-              <div className="hmg1payment-desk">
-                <div className="hmg1mhb0payment-desk">
-                  <div className='mimjepmkmlmmpayment-desk'>
-                    <h3 className="eik5ekk6payment-desk">
-                      <span className="d1payment-desk-span">Payment Window</span>
-                    </h3>
-                  </div>
 
-                  <hr className='edfhmthtpayment-desk'></hr>
-                  <div className='mimjepmkmlmmpayment-desk'>
-                    <h3 className="eik5ekk6payment-desk">
-                      <span className="d1payment-desk-span">Payment</span>
-                    </h3>
-                    <div className='d1g1payment-desk'>
-                      <a className="allzc5payment-desk">
-                        <div className="f2payment-desk">
-                          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdpayment">
-                            <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
-                          </svg>
-                        </div>
-                            
-                        <div className="alamd1g1payment-desk">
-                          <span className="chd2cjd3b1payment-desk">Invalid or expired url</span>
-                        </div>
-                      </a>
-                    </div>
-                    </div>
-                </div>
-                <div></div>
-              </div>
+                <div className="sbpayment">
+                  <div className="akgzcheckout">
+                    <div className="atbaagcheckout">
+                      <div className="">
+                        
+                        <a 
+                          className="h7brboe1payment-btn" 
+                          href="/"
+                          style={{
+                            background: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                            color: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                            border: isHover ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}` : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
+                          }}
 
-              <div className="d1g1payment-desk subpayment-desk">
-                <div className='gmgngoalamgppayment-desk'>
-                  <div className="gqpayment-desk">
-                    <div className='boh7bqh8payment-desk'>
-                      <a className="h7brboe1payment-btn" style={{backgroundColor: "#000"}} href="/">Continue Menu</a>
+                          onMouseEnter={() => setIsHover(true)}
+                          onMouseLeave={() => setIsHover(false)}
+                        >
+                          Continue Menu
+                        </a>
+
+                        <div style={{height: "10px"}}></div>
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-
-              <div className="sbpayment">
-                <div className="akgzcheckout">
-                  <div className="atbaagcheckout">
-                    <div className="">
-                      <a className="h7brboe1payment-btn" style={{backgroundColor: "#000"}} href="/">Continue Menu</a>
-                      <div style={{height: "10px"}}></div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-          </>
-        }
+            </>
+          }
+        </div>
       </div>
-    </div>
+      {
+        loader &&
+        <Loader loader={loader}/>
+      }
+    </>
+
   )
 };
 

@@ -1,11 +1,40 @@
-import React, { useEffect, useState } from "react";
+"use client";
+import React, { useContext, useEffect, useState } from "react";
 import OTP from "../otp/OTP";
 import { useLoginMutationHook } from "../reactquery/useQueryHook";
-import { BRAND_GUID, BRANDSIMPLEGUID } from "@/global/Axios";
+import { BRAND_GUID, BRANDSIMPLEGUID, IMAGE_URL_Without_Storage } from "@/global/Axios";
 import { formatPhoneNumber, passwordMessageData, setLocalStorage, validatePassword } from "@/global/Store";
+import HomeContext from "@/contexts/HomeContext";
+import { ContextCheckApi } from "@/app/layout";
 
 export default function CustomerRegisteration() 
 {
+
+    const {websiteModificationData} = useContext(HomeContext)
+
+       
+    const { setmetaDataToDipslay} = useContext(ContextCheckApi)
+    useEffect(() => {
+        if(websiteModificationData)
+        {
+        const metaHeadingData = {
+            title: websiteModificationData?.brand?.name,
+            contentData: websiteModificationData?.brand?.name,
+            iconImage: IMAGE_URL_Without_Storage+"/"+websiteModificationData?.websiteModificationLive?.json_log?.[0]?.websiteFavicon,
+            singleItemsDetails: {
+            title: "",
+            description: "",
+            itemImage: "",
+            keywords: "",
+            url: ""
+            }
+        }
+        setmetaDataToDipslay(metaHeadingData)
+        }
+    }, [websiteModificationData]);
+
+    const [isHover, setIsHover] = useState(false);
+    
     const [errorsObj, setErrorsObj] = useState({
         errormessage:"",
         passwordMessage: "",
@@ -15,7 +44,6 @@ export default function CustomerRegisteration()
     const [registerationBoolean, setRegisterationBoolean] = useState({
         isOTPReady: false,
     });
-    
 
     const [registerationObj, setRegisterationObj] = useState({
         firstName: "",
@@ -231,7 +259,19 @@ export default function CustomerRegisteration()
                             }
 
                             <div className="form-group">
-                                <button type="submit" className="register-button">Sign Up</button>
+                                <button 
+                                    type="submit" 
+                                    className="register-button"
+                                    style={{
+                                        background: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                                        color: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                                        border: isHover ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}` : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
+                                    }} 
+                                    onMouseEnter={() => setIsHover(true)} 
+                                    onMouseLeave={() => setIsHover(false)} 
+                                >
+                                    Sign Up
+                                </button>
                             </div>
 
                     

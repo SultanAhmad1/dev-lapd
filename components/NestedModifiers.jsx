@@ -1,3 +1,4 @@
+"use client";
 import { getAmountConvertToFloatWithFixed } from "@/global/Store";
 import React, { Fragment } from "react";
 
@@ -14,6 +15,7 @@ export const NestedModifiers = (props) =>
     handleModalCheckInput,
     handleModalRadioInput,
     setIsmodifierclicked,
+    websiteModificationData,
   } = props;
 
   return (
@@ -60,117 +62,7 @@ export const NestedModifiers = (props) =>
                                             secondItemModifier?.select_single_option === 1 && secondItemModifier?.min_permitted === 1 && secondItemModifier?.max_permitted === 1 ?
                                               <li key={`${index}.${secondItemModifierIndex}`} className="mb-10">
                                                 <div className="k5modifier-modal-item">
-                                                  <div>
-                                                    <hr className="edipiqgdmodifier-hr"></hr>
-
-                                                    <div className="alaqg5fxmodifier-modal-div" onClick={() => handleModalModifierToggle(selectedModifierId, selectedModifierItemId, secondItemModifier?.id)}>
-                                                      <div className="alammodifier-modal">
-                                                        <div className="product-modifier-name">
-                                                          {secondItemModifier?.title}
-                                                        </div>
-                                                        <div className="chcicwd3czmodifier-choose">
-                                                          <span>
-                                                            Choose {secondItemModifier?.max_permitted}
-                                                          </span>
-                                                          <div className="irmodifier-modal">
-                                                            <div className={`isafcbitiuivcymodifier-modal ${secondItemModifier?.valid_class}`}>
-                                                              {parseInt(secondItemModifier?.min_permitted) > parseInt(0) ? "Required" : "Optional"}
-                                                            </div>
-                                                          </div>
-                                                        </div>
-                                                        {
-                                                          !secondItemModifier?.is_second_item_modifier_clicked &&
-                                                          secondItemModifier?.secondary_items_modifier_items?.map((displaySelectedItem, displaySelectedItemIndex) => 
-                                                          {
-                                                            return (
-                                                              displaySelectedItem?.is_item_select && 
-                                                                <div key={`${index}.${displaySelectedItemIndex}`}>
-                                                                  {parseInt(displaySelectedItem?.title?.length) > parseInt(20) 
-                                                                  ? displaySelectedItem?.title?.substring(0,20) + "..."
-                                                                  : displaySelectedItem?.title}
-                                                                </div>
-                                                            );
-                                                          })
-                                                        }
-                                                      </div>
-
-                                                      <div className="single-product-svg-div accordion">
-                                                        <div className="single-product-svg-div-one">
-                                                          {
-                                                            secondItemModifier?.is_second_item_modifier_clicked ? 
-                                                            <svg className="bottom-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                                              <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(180, 12, 12)"></path>
-                                                            </svg>
-                                                          : 
-                                                            <svg className="rigth-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{cursor: "pointer",}}>
-                                                              <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(90, 12, 12)"></path>
-                                                            </svg>
-                                                          }
-                                                        </div>
-                                                      </div>
-                                                    </div>
-                                                  </div>
-
-                                                  {
-                                                    <div
-                                                      className={`iwmodifier-data ${secondItemModifier?.is_second_item_modifier_clicked ? "show" : "fade"}`}>
-                                                      {
-                                                        secondItemModifier?.secondary_items_modifier_items?.map((item, itemIndex) => 
-                                                        {
-                                                          let isItemSuspend = false;
-                                                          if(item?.suspension_info !== null)
-                                                          {
-                                                            if(moment().format('YYYY-MM-DD') <= moment.unix(item?.suspension_info?.suspend_untill).format('YYYY-MM-DD'))
-                                                            {
-                                                              isItemSuspend = true
-                                                            }
-                                                          }
-                                                          return (
-                                                            isItemSuspend === false &&
-                                                            <div key={`${index}.${itemIndex}`} onClick={() => handleModalRadioInput(selectedModifierId,selectedModifierItemId,secondItemModifier?.id,item?.id)}>
-                                                              <hr className="edb9jegdmodifier-hr"></hr>
-                                                              <div className="alakixc5modifier-data">
-                                                                <input type="radio" className="agaxgqdfiymodifier-input" defaultValue={item?.id}/>
-
-                                                                <label className={`chd2cjmodifier-modal-label ${item?.activeClass}`}>
-                                                                  <div className="spacer _16"></div>
-                                                                  <div className="d1alg5j9modifier-modal">
-                                                                    <div className="ald1ame6jajbjcmodifier-modal">
-                                                                      <div className="alaqmodifier-modal">
-                                                                        <div className="alamdxdvmodifier-modal">
-                                                                          <div className="chcicjckjdmodifier-modal">
-                                                                            {item?.title}
-                                                                          </div>
-                                                                          <div className="spacer _8"></div>
-                                                                          {
-                                                                            getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) && 
-                                                                            <div className="modifier-group-price">
-                                                                              &pound; {parseFloat(item?.price_info).toFixed(2)}
-                                                                            </div>
-                                                                          }
-                                                                        </div>
-                                                                      </div>
-                                                                    </div>
-                                                                  </div>
-                                                                </label>
-                                                              </div>
-                                                            </div>
-                                                          );
-                                                        }
-                                                      )}
-                                                    </div>
-                                                  }
-                                                </div>
-                                              </li>
-                                            : 
-                                            // secondItemModifier?.select_single_option === 1 && secondItemModifier?.min_permitted === 0 && secondItemModifier?.max_permitted >= 1 &&
-                                            secondItemModifier?.max_permitted >= 1 &&
-                                            <li key={index} className="mb-10">
-                                              <div className="k5modifier-modal-item">
-                                                <div>
-                                                  <hr className="edipiqgdmodifier-hr"></hr>
-
-                                                  <div className="alaqg5fxmodifier-modal-div" onClick={() => handleModalModifierToggle(selectedModifierId,selectedModifierItemId,secondItemModifier?.id)}>
+                                                  <div className="alaqg5fxmodifier-modal-div" onClick={() => handleModalModifierToggle(selectedModifierId, selectedModifierItemId, secondItemModifier?.id)}>
                                                     <div className="alammodifier-modal">
                                                       <div className="product-modifier-name">
                                                         {secondItemModifier?.title}
@@ -181,23 +73,19 @@ export const NestedModifiers = (props) =>
                                                         </span>
                                                         <div className="irmodifier-modal">
                                                           <div className={`isafcbitiuivcymodifier-modal ${secondItemModifier?.valid_class}`}>
-                                                            {parseInt(secondItemModifier?.min_permitted) > parseInt(0) ? "Required": "Optional"}
+                                                            {parseInt(secondItemModifier?.min_permitted) > parseInt(0) ? "Required" : "Optional"}
                                                           </div>
                                                         </div>
                                                       </div>
-                                                      { 
+                                                      {
                                                         !secondItemModifier?.is_second_item_modifier_clicked &&
-                                                        secondItemModifier?.secondary_items_modifier_items?.map((dispayItemCounter,dispayItemCounterindex) => 
+                                                        secondItemModifier?.secondary_items_modifier_items?.map((displaySelectedItem, displaySelectedItemIndex) => 
                                                         {
                                                           return (
-                                                            dispayItemCounter?.is_item_select && 
-                                                              <div key={`${index}.${dispayItemCounterindex}`}>
-                                                                {
-                                                                  parseInt(dispayItemCounter?.title?.length) >
-                                                                  parseInt(20) ? dispayItemCounter?.title?.substring(0,20) + "..."
-                                                                  : dispayItemCounter?.title
-                                                                }
-                                                              </div>
+                                                            displaySelectedItem?.is_item_select && 
+                                                              <Fragment key={`${index}.${displaySelectedItemIndex}`}>
+                                                                {parseInt(displaySelectedItem?.title?.length) > parseInt(20) ? displaySelectedItem?.title?.substring(0,20) + "..." : displaySelectedItem?.title}
+                                                              </Fragment>
                                                           );
                                                         })
                                                       }
@@ -212,10 +100,105 @@ export const NestedModifiers = (props) =>
                                                           </svg>
                                                         : 
                                                           <svg className="rigth-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{cursor: "pointer",}}>
-                                                            <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(90, 12, 12)" ></path>
+                                                            <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(90, 12, 12)"></path>
                                                           </svg>
                                                         }
                                                       </div>
+                                                    </div>
+                                                  </div>
+
+                                                  {
+                                                    <div className={`iwmodifier-data ${secondItemModifier?.is_second_item_modifier_clicked ? "show" : "fade"}`}>
+                                                      {
+                                                        secondItemModifier?.secondary_items_modifier_items?.map((item, itemIndex) => 
+                                                        {
+                                                          let isItemSuspend = false;
+                                                          if(item?.suspension_info !== null)
+                                                          {
+                                                            if(moment().format('YYYY-MM-DD') <= moment.unix(item?.suspension_info?.suspend_untill).format('YYYY-MM-DD'))
+                                                            {
+                                                              isItemSuspend = true
+                                                            }
+                                                          }
+                                                          return (
+                                                            isItemSuspend === false &&
+                                                            <div className="alakixc5modifier-data" style={{background: item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, border: item?.item_select_to_sale && `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`}} key={`${index}.${itemIndex}`} onClick={() => handleModalRadioInput(selectedModifierId,selectedModifierItemId,secondItemModifier?.id,item?.id)}>
+
+                                                              <label className={`chd2cjmodifier-modal-label`} style={{ '--before-color': `${item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,}}>
+                                                                <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                                                  <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}`} stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                                                </svg>
+                                                                <div className="spacer _16"></div>
+                                                                <div className="alamdxdvmodifier-modal">
+                                                                  <div className="chcicjckjdmodifier-modal" style={{color: item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
+                                                                    {item?.title}
+                                                                  </div>
+                                                                  <div className="spacer _8"></div>
+                                                                  {
+                                                                    getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) && 
+                                                                    <div className="modifier-group-price" style={{color: item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
+                                                                      &pound;{parseFloat(item?.price_info).toFixed(2)}
+                                                                    </div>
+                                                                  }
+                                                                </div>
+                                                              </label>
+                                                            </div>
+                                                          );
+                                                        }
+                                                      )}
+                                                    </div>
+                                                  }
+                                                </div>
+                                              </li>
+                                            : 
+                                            secondItemModifier?.max_permitted >= 1 &&
+                                            <li key={index} className="mb-10">
+                                              <div className="k5modifier-modal-item">
+                                                <div className="alaqg5fxmodifier-modal-div" onClick={() => handleModalModifierToggle(selectedModifierId,selectedModifierItemId,secondItemModifier?.id)}>
+                                                  <div className="alammodifier-modal">
+                                                    <div className="product-modifier-name">
+                                                      {secondItemModifier?.title}
+                                                    </div>
+                                                    <div className="chcicwd3czmodifier-choose">
+                                                      <span>
+                                                        Choose {secondItemModifier?.max_permitted}
+                                                      </span>
+                                                      <div className="irmodifier-modal">
+                                                        <div className={`isafcbitiuivcymodifier-modal ${secondItemModifier?.valid_class}`}>
+                                                          {parseInt(secondItemModifier?.min_permitted) > parseInt(0) ? "Required": "Optional"}
+                                                        </div>
+                                                      </div>
+                                                    </div>
+                                                    { 
+                                                      !secondItemModifier?.is_second_item_modifier_clicked &&
+                                                      secondItemModifier?.secondary_items_modifier_items?.map((dispayItemCounter,dispayItemCounterindex) => 
+                                                      {
+                                                        return (
+                                                          dispayItemCounter?.is_item_select && 
+                                                            <div key={`${index}.${dispayItemCounterindex}`}>
+                                                              {
+                                                                parseInt(dispayItemCounter?.title?.length) >
+                                                                parseInt(20) ? dispayItemCounter?.title?.substring(0,20) + "..."
+                                                                : dispayItemCounter?.title
+                                                              }
+                                                            </div>
+                                                        );
+                                                      })
+                                                    }
+                                                  </div>
+
+                                                  <div className="single-product-svg-div accordion">
+                                                    <div className="single-product-svg-div-one">
+                                                      {
+                                                        secondItemModifier?.is_second_item_modifier_clicked ? 
+                                                        <svg className="bottom-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                                          <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(180, 12, 12)"></path>
+                                                        </svg>
+                                                      : 
+                                                        <svg className="rigth-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{cursor: "pointer",}}>
+                                                          <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(90, 12, 12)" ></path>
+                                                        </svg>
+                                                      }
                                                     </div>
                                                   </div>
                                                 </div>
@@ -240,54 +223,38 @@ export const NestedModifiers = (props) =>
                                                             <hr className="edb9jegdmodifier-hr"></hr>
                                                             {
                                                               item?.activeClass !=="mchw" ? (
-                                                              <div className="alakixc5modifier-data" onClick={() =>handleModalCheckInput(selectedModifierId,selectedModifierItemId,secondItemModifier?.id,item?.id)}>
-                                                                <input type="checkbox" className="checkbox-input"/>
-
-                                                                <label className={`modifier-product-item-name-checkbox ${item?.activeClass}`}>
+                                                              <div className="alakixc5modifier-data" style={{background: item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, border: item?.item_select_to_sale && `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`}} onClick={() =>handleModalCheckInput(selectedModifierId,selectedModifierItemId,secondItemModifier?.id,item?.id)}>
+                                                                <label className={`modifier-product-item-name-checkbox ${item?.activeClass}`} style={{ '--before-color': `${item?.activeClass && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,}}>
                                                                   <div className="spacer _16"></div>
-                                                                  <div className="d1alg5j9modifier-modal">
-                                                                    <div className="ald1ame6jajbjcmodifier-modal">
-                                                                      <div className="alaqmodifier-modal">
-                                                                        <div className="alamdxdvmodifier-modal">
-                                                                          <div className="chcicjckjdmodifier-modal">
-                                                                            {item?.title}
-                                                                          </div>
-                                                                          <div className="spacer _8"></div>
-                                                                          {
-                                                                            getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) && 
-                                                                            <div className="modifier-group-price">
-                                                                              &pound; {parseFloat(item?.price_info).toFixed(2)}
-                                                                            </div>
-                                                                          }
-                                                                        </div>
+                                                                      <div className="alamdxdvmodifier-modal">
+                                                                        <span className="chcicjckjdmodifier-modal" style={{color: item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
+                                                                          {item?.title}
+                                                                        </span>
+                                                                        <div className="spacer _8"></div>
+                                                                        {
+                                                                          getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) && 
+                                                                          <span className="modifier-group-price" style={{color: item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
+                                                                            &pound;{parseFloat(item?.price_info).toFixed(2)}
+                                                                          </span>
+                                                                        }
                                                                       </div>
-                                                                    </div>
-                                                                  </div>
                                                                 </label>
                                                               </div>
                                                             ) : (
                                                               <div className="alakixc5modifier-data">
-                                                                <input type="checkbox" className="checkbox-input"/>
-
-                                                                <label className={`modifier-product-item-name-checkbox ${item?.activeClass}`}>
+                                                                <label className={`modifier-product-item-name-checkbox ${item?.activeClass}`} style={{ '--before-color': `${item?.activeClass && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,}}>
                                                                   <div className="spacer _16"></div>
-                                                                  <div className="d1alg5j9modifier-modal">
-                                                                    <div className="ald1ame6jajbjcmodifier-modal">
-                                                                      <div className="alaqmodifier-modal">
-                                                                        <div className="alamdxdvmodifier-modal">
-                                                                          <div className="chcicjckjdmodifier-modal">
-                                                                            {item?.title}
-                                                                          </div>
-                                                                          <div className="spacer _8"></div>
-                                                                          {
-                                                                            getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) && 
-                                                                            <div className="modifier-group-price">
-                                                                              &pound; {parseFloat(item?.price_info).toFixed(2)}
-                                                                            </div>
-                                                                          }
-                                                                        </div>
-                                                                      </div>
+                                                                  <div className="alamdxdvmodifier-modal">
+                                                                    <div className="chcicjckjdmodifier-modal">
+                                                                      {item?.title}
                                                                     </div>
+                                                                    <div className="spacer _8"></div>
+                                                                    {
+                                                                      getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) && 
+                                                                      <div className="modifier-group-price">
+                                                                        &pound;{parseFloat(item?.price_info).toFixed(2)}
+                                                                      </div>
+                                                                    }
                                                                   </div>
                                                                 </label>
                                                               </div>
@@ -428,10 +395,17 @@ export const NestedModifiers = (props) =>
                                     <hr className="e0b9duiomodifier-modal"></hr>
 
                                     <div className="fqdvb5afprmodifier-modal">
-                                      <button className="gacxchcjc9modifier-modal-save-btn" onClick={() => handleSaveBtn(selectedModifierId,selectedModifierItemId)}>
+                                      <button 
+                                        className="gacxchcjc9modifier-modal-save-btn" 
+                                        style={{ 
+                                          '--before-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                                          '--before-font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                                        }} 
+                                        onClick={() => handleSaveBtn(selectedModifierId,selectedModifierItemId)}
+                                      >
                                         Update
                                         <span className="chgacjcxcypwc5modifier-modal-save-span">&nbsp;•&nbsp;</span>
-                                        &pound; {getAmountConvertToFloatWithFixed(selectedModifierItemPrice,2)}
+                                        &pound;{getAmountConvertToFloatWithFixed(selectedModifierItemPrice,2)}
                                       </button>
                                     </div>
                                   </div>

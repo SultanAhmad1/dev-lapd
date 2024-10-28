@@ -1,3 +1,4 @@
+"use client";
 import React, { useContext, useEffect } from "react";
 import PostcodeModal from "./PostcodeModal";
 import HomeContext from "@/contexts/HomeContext";

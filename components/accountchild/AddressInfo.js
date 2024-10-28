@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect, useState } from "react";
 import { usePatchMutationHook } from "../reactquery/useQueryHook";
 import { BRANDSIMPLEGUID, USERIMAGE } from "@/global/Axios";

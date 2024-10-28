@@ -1,3 +1,4 @@
+"use client";
 import AvailableStore from "@/components/AvailableStore";
 import { usePostAfterAuthMutationHook } from "@/components/reactquery/useQueryHook";
 import HomeContext from "@/contexts/HomeContext";

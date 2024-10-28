@@ -1,8 +1,9 @@
+"use client";
 function Layout({ children }) 
 {
   return (
     <>
-        {children}
+      {children}
     </>
   )
 }

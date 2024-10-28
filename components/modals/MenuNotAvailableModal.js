@@ -1,3 +1,4 @@
+"use client";
 import HomeContext from "@/contexts/HomeContext";
 import { BRANDSIMPLEGUID } from "@/global/Axios";
 import React, { useContext } from "react";

@@ -1,5 +1,6 @@
 "use client";
 
+import { ContextCheckApi } from "@/app/layout";
 import Footer from "@/components/Footer";
 import Header from "@/components/Header";
 import Loader from "@/components/modals/Loader";
@@ -7,7 +8,7 @@ import PostcodeModal from "@/components/modals/PostcodeModal";
 import OtpVerifyModal from "@/components/OtpVerifyModal";
 import { useLoginMutationHook, usePatchMutationHook, usePostMutationHook } from "@/components/reactquery/useQueryHook";
 import HomeContext from "@/contexts/HomeContext";
-import { BRANDSIMPLEGUID, BRAND_GUID, PARTNER_ID, axiosPrivate } from "@/global/Axios";
+import { BRANDSIMPLEGUID, BRAND_GUID, IMAGE_URL_Without_Storage, PARTNER_ID, axiosPrivate } from "@/global/Axios";
 import { getAmountConvertToFloatWithFixed, setLocalStorage, validatePhoneNumber } from "@/global/Store";
 import { listtime, round15 } from "@/global/Time";
 import moment from "moment";
@@ -43,8 +44,32 @@ function UserForm() {
     setHeaderCartBtnDisplay,
     setHeaderPostcodeBtnDisplay,
     handleBoolean,
+    websiteModificationData,
   } = useContext(HomeContext);
 
+  
+  const { setmetaDataToDipslay} = useContext(ContextCheckApi)
+
+  useEffect(() => {
+    if(websiteModificationData)
+    {
+      const metaHeadingData = {
+        title: websiteModificationData?.brand?.name,
+        contentData: websiteModificationData?.brand?.name,
+        iconImage: IMAGE_URL_Without_Storage+"/"+websiteModificationData?.websiteModificationLive?.json_log?.[0]?.websiteFavicon,
+        singleItemsDetails: {
+          title: "",
+          description: "",
+          itemImage: "",
+          keywords: "",
+          url: ""
+        }
+      }
+      setmetaDataToDipslay(metaHeadingData)
+    }
+  }, [websiteModificationData]);
+
+  const [isHover, setIsHover] = useState(false);
   const [isOTP, setIsOTP] = useState(false);
   
   const [toggleObjects, settoggleObjects] = useState({
@@ -397,7 +422,6 @@ function UserForm() {
     
     // Check if the cart has not any item then back to home page.
     // Check the brand is active or not.
-
     const useAuthenticate = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}websiteToken`))
 
     if(useAuthenticate !== null)
@@ -574,7 +598,30 @@ function UserForm() {
       return;
     }
 
-    if(parseInt(cartdata.length) === parseInt(0))
+    // if(parseInt(cartdata.length) === parseInt(0))
+    // {
+    //   route.push('/')
+    //   return
+    // }
+    
+    if(parseInt(cartdata.length) > parseInt(0))
+    {
+      const deliveryMatrix = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}delivery_matrix`))
+
+      let totalOrder = 0
+
+      for (const total of cartdata) 
+      {
+        totalOrder = parseFloat(totalOrder) + parseFloat(total?.total_order_amount);
+      }
+
+      if(parseFloat(deliveryMatrix?.order_value)?.toFixed(2) > parseFloat(totalOrder)?.toFixed(2))
+      {
+        route.push('/')
+        return  
+      }
+    }
+    else
     {
       route.push('/')
       return
@@ -1204,7 +1251,19 @@ function UserForm() {
                     isLocationBrandOnline !== null ?
 
                     <div className="boh7bqh8checkout-desk">
-                      <button type="submit" className="h7brboe1checkout-btn">
+                      <button 
+                        type="submit" 
+                        className="h7brboe1checkout-btn"
+
+                        style={{
+                          background: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                          color: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                          border: isHover ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}` : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
+                        }}
+
+                        onMouseEnter={() => setIsHover(true)}
+                        onMouseLeave={() => setIsHover(false)}
+                      >
                         Pay Now
                       </button>
                     </div>
@@ -1830,7 +1889,18 @@ function UserForm() {
                   {
                     isLocationBrandOnline ?
 
-                    <button type="submit" className="fwbrbocheckout-place-order">
+                    <button 
+                      type="submit" 
+                      className="fwbrbocheckout-place-order"
+                      style={{
+                        background: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                        color: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                        border: isHover ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}` : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
+                      }}
+
+                      onMouseEnter={() => setIsHover(true)}
+                      onMouseLeave={() => setIsHover(false)}
+                    >
                       Pay Now
                     </button>
                   :

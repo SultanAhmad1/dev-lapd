@@ -1,3 +1,4 @@
+"use client";
 import React, { useContext, useEffect, useState } from "react";
 
 import HomeContext from "@/contexts/HomeContext";
@@ -12,6 +13,7 @@ import {
   setLocalStorage,
 } from "@/global/Store";
 import AvailableStore from "@/components/AvailableStore";
+import moment from "moment";
 
 function SubAtLoadLoadShow({ setLoader }) {
   
@@ -22,8 +24,11 @@ function SubAtLoadLoadShow({ setLoader }) {
     setPostcodefororderamount,
     deliverymatrix,
     setDeliverymatrix,
+    websiteModificationData,
   } = useContext(HomeContext);
 
+  console.log("Load at first website modification data:", websiteModificationData);
+  
   const [validpostcode, setValidpostcode] = useState("");
   const [postcodeerror, setPostcodeerror] = useState("");
 
@@ -83,6 +88,10 @@ function SubAtLoadLoadShow({ setLoader }) {
       const response = await axiosPrivate.post(`/ukpostcode-website`, data);
       const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows;
       find_matching_postcode(matrix, validpostcode, setDeliverymatrix);
+
+      const currentDateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+
+      setLocalStorage(`${BRANDSIMPLEGUID}user_postcode_time`, currentDateTime)
 
       setLocalStorage(`${BRANDSIMPLEGUID}address`, response?.data?.data);
       setLocalStorage(`${BRANDSIMPLEGUID}user_valid_postcode`, validpostcode);
@@ -155,8 +164,19 @@ function SubAtLoadLoadShow({ setLoader }) {
                 <div className="deliver-to-body-content-nested-div-level-one-nested">
                   <div className="deliver-to-body-content-nested-div-level-one-nested-svg-div-one">
                     <div className="deliver-to-body-content-nested-div-level-one-nested-svg-div-two">
-                      <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                        <path d="M17.5834 5.16602C14.5001 2.08268 9.50008 2.08268 6.41675 5.16602C3.33341 8.24935 3.33341 13.3327 6.41675 16.416L12.0001 21.9993L17.5834 16.3327C20.6667 13.3327 20.6667 8.24935 17.5834 5.16602ZM12.0001 12.416C11.0834 12.416 10.3334 11.666 10.3334 10.7493C10.3334 9.83268 11.0834 9.08268 12.0001 9.08268C12.9167 9.08268 13.6667 9.83268 13.6667 10.7493C13.6667 11.666 12.9167 12.416 12.0001 12.416Z" fill="currentColor"></path>
+                      <svg 
+                        width="24px" 
+                        height="24px" 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        aria-hidden="true" 
+                        focusable="false"
+                      >
+                        <path 
+                          d="M17.5834 5.16602C14.5001 2.08268 9.50008 2.08268 6.41675 5.16602C3.33341 8.24935 3.33341 13.3327 6.41675 16.416L12.0001 21.9993L17.5834 16.3327C20.6667 13.3327 20.6667 8.24935 17.5834 5.16602ZM12.0001 12.416C11.0834 12.416 10.3334 11.666 10.3334 10.7493C10.3334 9.83268 11.0834 9.08268 12.0001 9.08268C12.9167 9.08268 13.6667 9.83268 13.6667 10.7493C13.6667 11.666 12.9167 12.416 12.0001 12.416Z" 
+                          fill="currentColor"
+                        ></path>
                       </svg>
                     </div>
                   </div>
@@ -184,7 +204,13 @@ function SubAtLoadLoadShow({ setLoader }) {
 
                 {
                   isgobtnclickable && 
-                  <button type="submit" className="deliver-to-done-button">
+                  <button type="submit" className="deliver-to-done-button" style={{
+                    '--go-btn-background-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, 
+                    '--go-btn-font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor, 
+                    '--go-hover-btn-background-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor, 
+                    '--go-hover-btn-font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor, 
+                    '--go-hover-border': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, 
+                  }}>
                     Go
                   </button>
                 }

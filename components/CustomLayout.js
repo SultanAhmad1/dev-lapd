@@ -6,14 +6,12 @@ import HomeContext from "@/contexts/HomeContext";
 import AtLoadModalShow from "./modals/AtLoadModalShow";
 import Cart from "./Cart";
 import DeliveryModal from "./modals/DeliveryModal";
-import StoreClosedModal from "./modals/StoreClosedModal";
 import Loader from "./modals/Loader";
 import { BRAND_GUID, BRANDSIMPLEGUID, PARTNER_ID } from "@/global/Axios";
 import moment from "moment";
 import { setLocalStorage } from "@/global/Store";
 import CustomerPersonal from "./CustomerPersonal";
 import MenuNotAvailableModal from "./modals/MenuNotAvailableModal";
-// Initialize queryClient
 
 export default function CustomLayout({ children }) 
 {
@@ -128,7 +126,7 @@ export default function CustomLayout({ children })
 
     if (getSelectStore === null) 
     {
-      if (pathnameArray[0] === "track-order" || pathnameArray[0] === "review-order" || pathnameArray[0] === "payment" || pathnameArray[0] === "place-order") 
+      if (pathnameArray?.[0] === "track-order" || pathnameArray?.[0] === "review-order" || pathnameArray?.[0] === "payment" || pathnameArray?.[0] === "place-order") 
       {
         setAtfirstload(false);
         setHeaderCartBtnDisplay(false);
@@ -171,14 +169,18 @@ export default function CustomLayout({ children })
       const cartDataFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}cart`));
 
       setCartdata(cartDataFromLocalStorage === null ? [] : cartDataFromLocalStorage);
-
-      console.log("Custom layout cart item:", cartdata);
-      
       menuRefetch()
       colorRefetch()
     }
   }, []);
-    
+  
+  useEffect(() => {
+    if(parseInt(cartdata?.length) > parseInt(0))
+    {
+      setLocalStorage(`${BRANDSIMPLEGUID}cart`, cartdata)
+    }
+  }, [cartdata]);
+  
   const onMenuSuccess = (data) => 
   {
     setLoader(false)
@@ -193,23 +195,24 @@ export default function CustomLayout({ children })
     const currentDay = convertToJSobj?.menus?.[0]?.service_availability?.find((day) => day?.day_of_week?.toLowerCase().includes(dayName.toLowerCase()));
 
     setDayOpeningClosingTime(currentDay);
-    if (currentDay) 
-    {
-      const timePeriods = currentDay?.time_periods;
-      if (timePeriods) 
-      {
-        if (timePeriods?.[0]?.start_time >= dateTime && dateTime <= timePeriods?.[0]?.end_time) 
-        {
-          setIsTimeToClosed(true);
-          setAtfirstload(false);
-        }
-        else{
-          setIsTimeToClosed(false)
+    // if (currentDay) 
+    // {
+    //   const timePeriods = currentDay?.time_periods;
+    //   if (timePeriods) 
+    //   {
+    //     if (timePeriods?.[0]?.start_time >= dateTime && dateTime <= timePeriods?.[0]?.end_time) 
+    //     {
+    //       setIsTimeToClosed(true);
+    //       setAtfirstload(false);
+    //     }
+    //     else{
+    //       setIsTimeToClosed(false)
           
-          setAtfirstload((atfirstload === false) ? false : true);
-        }
-      }
-    }
+    //       setAtfirstload((atfirstload === false) ? false : true);
+    //     }
+    //   }
+    // }
+
     setMenu(convertToJSobj);
 
     const getFilterDataFromObj = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}filter`));
@@ -239,7 +242,6 @@ export default function CustomLayout({ children })
 
   const onWebsiteModificationSucccess = (data) => {
     setLoader(false)
-    
     if (data?.data?.websiteModificationLive !== null && data?.data?.websiteModificationLive?.json_log?.[0]?.websiteLogoUrl !== null) 
     {
       setBrandlogo(data?.data?.websiteModificationLive?.json_log?.[0]?.websiteLogoUrl);
@@ -253,29 +255,51 @@ export default function CustomLayout({ children })
 
   const { isLoading, isError, refetch: colorRefetch} = useGetQueryAutoUpdate('website-color', `/website-modification-detail/${BRAND_GUID}/${PARTNER_ID}`, onWebsiteModificationSucccess, onWebsiteModificationError, true)
 
+  // useEffect(() => {
+  //   if(booleanObj?.isCustomerVerfied === false)
+  //   {
+  //     /**
+  //      * all the localStorage clear when 
+  //      */
+      
+  //     // Set a timeout to clear localStorage after 20 minutes (20 * 60 * 1000 milliseconds)
+  //     const timeoutId = setTimeout(() => {
+  //       // Clear all items in localStorage
+  //       localStorage.clear();
+  //       window.location.reload(true);
+  //       setTimeout(() => {setLoader(false);}, 2000);
+  //     }, 30 * 60 * 1000); 
+
+  //     // Clear the timeout if the component is unmounted before 20 minutes
+  //     return () => clearTimeout(timeoutId);
+  //   }
+  // });
+  const [countMinutes, setCountMinutes] = useState(0);
+  
   useEffect(() => {
     if(booleanObj?.isCustomerVerfied === false)
     {
-      /**
-       * all the localStorage clear when 
-       */
-      
-      // Set a timeout to clear localStorage after 20 minutes (20 * 60 * 1000 milliseconds)
-      const timeoutId = setTimeout(() => {
-        // Clear all items in localStorage
-        localStorage.clear();
-        window.location.reload(true);
-        setTimeout(() => {setLoader(false);}, 2000);
-      }, 30 * 60 * 1000); 
+      const userSelectedTime = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}user_postcode_time`))
 
-      // Clear the timeout if the component is unmounted before 20 minutes
-      return () => clearTimeout(timeoutId);
+      if(userSelectedTime)
+      {
+        const firstDateString = moment().format('YYYY-MM-DD HH:mm:ss');
+
+        const firstDate = moment(firstDateString, 'YYYY-MM-DD HH:mm:ss');
+
+        const differenceMinutes = firstDate?.diff(userSelectedTime, 'minutes')
+
+        console.log("Difference dates in minutes:", differenceMinutes);
+        setCountMinutes(differenceMinutes)
+        if(differenceMinutes >= 60)
+        {
+          localStorage.clear();
+          window.location.reload(true);
+        }
+      }
     }
-  });
-  
+  },[countMinutes]);
 
-  console.log("Custom layout cart data:", cartdata);
-  
   // Context Data
   const contextData = {
     Menu,
@@ -382,8 +406,8 @@ export default function CustomLayout({ children })
 
       {atfirstload && <AtLoadModalShow />}
       {iscartbtnclicked && <Cart />}
-      {isdeliverybtnclicked && <DeliveryModal />}
-      {isTimeToClosed && <StoreClosedModal />}
+      {/* {isdeliverybtnclicked && <DeliveryModal />} */}
+      {/* {isTimeToClosed && <StoreClosedModal />} */}
 
       {/* <OtpVerifyModal /> */}
       {

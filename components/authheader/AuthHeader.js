@@ -1,3 +1,4 @@
+"use client";
 import HomeContext from "@/contexts/HomeContext";
 import { BrandLogoPath, IMAGE_URL_Without_Storage } from "@/global/Axios";
 import Image from "next/image";

@@ -1,18 +1,24 @@
+"use client";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import HomeContext from "../contexts/HomeContext";
 import Banner from "./Banner";
 import FilterLocationTime from "./FilterLocationTime";
 import Navigation from "./Navigation";
 import ViewCartMobileBtn from "./ViewCartMobileBtn";
-import { IMAGE_URL_Without_Storage } from "../global/Axios";
+import { BRANDSIMPLEGUID, IMAGE_URL_Without_Storage, itemHoverBackgroundColor, itemHoverColor } from "../global/Axios";
 import moment from "moment";
-import Link from "next/link";
 import Header from "./Header";
 import Footer from "./Footer";
 import MobileTopBar from "./MobileTopBar";
+import { setLocalStorage } from "@/global/Store";
+import { ContextCheckApi } from "@/app/layout";
 
 export default function Products() {
+
+  const { setmetaDataToDipslay } = useContext(ContextCheckApi)
+
   const {
+    loader,
     setLoader,
     websiteModificationData,
     storeName,
@@ -36,9 +42,19 @@ export default function Products() {
     return url.startsWith('https://');
   };
 
+  useEffect(() => {
+   if(loader)
+    {
+      setTimeout(() => {
+        setLoader(false)
+      }, 3000);
+    }
+  }, [loader]);
+  
   return (
     <>
-      <Header />
+      <Header websiteModificationData={websiteModificationData}/>
+      <MobileTopBar/>
 
       <div className="header-display">
         <Banner websiteModificationData={websiteModificationData} />
@@ -48,17 +64,14 @@ export default function Products() {
 
       <div className="content">
         <div className="content-div-level-one">
-          <div className="left-bar">
+          {/* <div className="left-bar">
             <Navigation
               websiteModificationData={websiteModificationData}
             />
-          </div>
+          </div> */}
           <div></div>
           <div className="spacer _40"></div>
           {/* Navigation bar for 900 or lesser width device */}
-          <div className="top-bar">
-            <MobileTopBar/>
-          </div>
           <div className="cat-items-content">
             <ul className="items-ul">
               {
@@ -67,7 +80,7 @@ export default function Products() {
                     category?.items?.length > 0 && 
                     <li key={category.id}  className={`item-lists`}>
                       <section id={`section_${index}`} className="item-title">
-                        <h3 className="item-title-h3" style={{color: websiteModificationData?.websiteModificationLive !== null && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor !== null && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor,}}>
+                        <h3 className="item-title-h3" style={{'--category-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.categoryFontColor,}}>
                           {category.title}
                         </h3>
                       </section>
@@ -88,22 +101,28 @@ export default function Products() {
                               }
                             }
 
-                            const { title, price, description, image_url } = item;
+                            const { id,title, price, description, image_url } = item;
                             return (
                               isItemSuspend === false &&
-                              <li ref={scrollContainerRef} key={itemIndex} className="items-list-nested-list" onClick={() => handleProductSelect(category?.id, item?.id)}>
-                                <a href={`${storeName.toLowerCase()}/${category?.slug}/${item?.slug}`}>
+                              <li 
+                                ref={scrollContainerRef} 
+                                style={{'--item-hover-background': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.itemHoverBackgroundColor, '--item-hover-font-color':websiteModificationData?.websiteModificationLive?.json_log?.[0]?.itemHoverFontColor}}
+                                key={itemIndex} 
+                                className="items-list-nested-list" 
+                                onClick={() => handleProductSelect(category?.id, item?.id)}
+                              >
+                                <a href={`${storeName?.replace(/ /g, '-')?.toLowerCase()}/${category?.slug}/${item?.slug}`}>
                                   <div className="items-nested-div">
                                     <div className="items-nested-div-one">
                                       <div className="item-detail-style">
                                         <div className="item-detail">
-                                          <div className="item-title" style={{color: websiteModificationData?.websiteModificationLive && websiteModificationData?.websiteModificationLive?.json_log[0]?.itemFontColor && websiteModificationData?.websiteModificationLive?.json_log[0]?.itemFontColor,}}>
+                                          <div className="item-title">
                                             <span>{title}</span>
                                           </div>
 
                                           <div className="item-price">
-                                            <span className="item-price-span">
-                                              &pound; {parseFloat(price).toFixed(2)}
+                                            <span className="item-price-span" >
+                                              &pound;{parseFloat(price).toFixed(2)}
                                             </span>
                                           </div>
 
@@ -120,9 +139,10 @@ export default function Products() {
                                           <div className="item-img-style">
                                             <div className="lazyload-wrapper">
                                               {
-                                                isValidHttpsUrl(image_url) 
-                                                ?<img className="item-img" src={image_url} alt={title}/>
-                                                :<img className="item-img" src={IMAGE_URL_Without_Storage+""+image_url} alt={title}/>
+                                                isValidHttpsUrl(image_url) ? 
+                                                  <img className="item-img" src={image_url} alt={title} loading="lazy"/> 
+                                                : 
+                                                  <img className="item-img" src={IMAGE_URL_Without_Storage+""+image_url} alt={title} loading="lazy"/>
                                               }
                                             </div>
                                           </div>
@@ -147,7 +167,7 @@ export default function Products() {
           </div>
         </div>
       </div>
-
+    
       <ViewCartMobileBtn />
       <Footer />
     </>

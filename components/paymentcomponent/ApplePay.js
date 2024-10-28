@@ -1,3 +1,4 @@
+"use client";
 import React, {useEffect, useState} from 'react';
 import {PaymentRequestButtonElement, useStripe, useElements} from '@stripe/react-stripe-js';
 import { axiosPrivate } from '@/app/global/Axios';

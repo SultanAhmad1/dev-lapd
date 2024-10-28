@@ -1,3 +1,4 @@
+"use client";
 import { getAmountConvertToFloatWithFixed } from "@/global/Store";
 import React from "react";
 

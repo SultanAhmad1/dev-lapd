@@ -1,3 +1,4 @@
+"use client";
 import { axiosPrivate, loginAxios, request } from "@/global/Axios"
 import { useMutation, useQuery } from "@tanstack/react-query"
 

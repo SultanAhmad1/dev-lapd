@@ -1,3 +1,4 @@
+"use client";
 import React, { useCallback, useContext, useEffect, useState } from "react";
 import Header from "../Header";
 import { NestedModifiers } from "../NestedModifiers";
@@ -7,12 +8,13 @@ import moment from "moment";
 import { WebsiteSingleItem } from "../WebsiteSingleItem";
 import { MobileSingleItem } from "../MobileSingleItem";
 import { axiosPrivate, BRAND_GUID, BRANDSIMPLEGUID, PARTNER_ID } from "@/global/Axios";
-import { setLocalStorage } from "@/global/Store";
+import { ContextCheckApi } from "@/app/layout";
 
 export default function DisplaySingleItem({params}) 
 {
     const router = useRouter();
 
+    const { setmetaDataToDipslay } = useContext(ContextCheckApi)
     const {
         setLoader,
         loader,
@@ -25,9 +27,10 @@ export default function DisplaySingleItem({params})
         dayOpeningClosingTime,
         setIsTimeToClosed,
         booleanObj,
+        websiteModificationData,
     } = useContext(HomeContext);
-
-      // const {setIsitemclicked, handleInput} = useContext(HomeContext)
+    
+    // const {setIsitemclicked, handleInput} = useContext(HomeContext)
     const [isitemclicked, setIsitemclicked] = useState(false);
     const [ismodifierclicked, setIsmodifierclicked] = useState(false);
 
@@ -50,6 +53,7 @@ export default function DisplaySingleItem({params})
     
     const filterItem = async () => {
         try {
+            setLoader(true)
             const getStoreIDFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}user_selected_store`));
 
             const data = {
@@ -60,14 +64,12 @@ export default function DisplaySingleItem({params})
         
             const response = await axiosPrivate.post(`/menu`, data);
 
-            console.log("Filter Item response:", response);
-            
             const convertToJSobj = response.data?.data?.menu.menu_json_log;
         
             const getSingleCategory = convertToJSobj?.categories?.find((category) => category.slug === params.category);
         
             const getItemFromCategory = getSingleCategory?.items?.find((item) => item.slug === params.product);
-        
+            
             const updateModifier = getItemFromCategory?.modifier_group?.map((modifier) => 
             {
                 // if (modifier?.select_single_option === 1 && modifier?.min_permitted === 1 && modifier?.max_permitted === 1) 
@@ -420,8 +422,6 @@ export default function DisplaySingleItem({params})
                 setLoader(false);
             }, 3000);
         } catch (error) {
-            console.log("Filter response error:", error);
-            
             setTimeout(() => {
                 setLoader(false);
             }, 3000);
@@ -458,8 +458,6 @@ export default function DisplaySingleItem({params})
             // const getFilterItem = parseCart?.find((cart, index) => index === JSON.parse(getIndex));
             const getFilterItem = parseCart?.find(cartItem => cartItem?.slug?.includes(params?.product))
             
-            console.log("Get the filter item:", getFilterItem);
-            
             setIscartbtnclicked(false)
             setSingleitem(getFilterItem)
             setQuantity(getFilterItem?.quantity)
@@ -471,6 +469,27 @@ export default function DisplaySingleItem({params})
             filterItem();
         }
     }, [params]);
+    
+    useEffect(() => {
+        if(websiteModificationData)
+        {
+            const metaHeadingData = {
+                   title: `${singleitem?.seo_title} - ${websiteModificationData?.brand?.name}`,
+                   contentData: `${singleitem?.seo_description} - ${websiteModificationData?.brand?.name}`,
+                   iconImage: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.websiteFavicon,
+                   singleItemsDetails: {
+                     title: singleitem?.seo_title,
+                     description: singleitem?.seo_description,
+                     itemImage: singleitem?.image_url,
+                     keywords: singleitem?.seo_description,
+                     url: window.location.href
+                    //  url: {`${storeName.toLowerCase()}/${category?.slug}/${item?.slug}`}
+                }
+            }
+             
+            setmetaDataToDipslay(metaHeadingData)
+        }
+    }, [singleitem, websiteModificationData]);
     
     const handleMScroll = (event) => {
         let element = document.querySelector(".ctascusingle-product");
@@ -500,7 +519,8 @@ export default function DisplaySingleItem({params})
                 }
             }
         }
-    
+
+        let defaultOption = false
         const updateItem = {
             ...singleitem,
             modifier_group: singleitem?.modifier_group?.map((modifier) => {
@@ -515,6 +535,7 @@ export default function DisplaySingleItem({params})
                         modifier_secondary_items: modifier?.modifier_secondary_items?.map((seconditems) => 
                         {
                             if (itemId === seconditems?.id) {
+                                defaultOption = seconditems?.default_option
                                 return {
                                     ...seconditems,
                                     activeClass: "nv",
@@ -565,10 +586,11 @@ export default function DisplaySingleItem({params})
                                 }),
                             };
                         }),
+                        defaultOption: defaultOption,
                     };
                 }
 
-                return modifier;
+                return modifier
             }),
         };
     
@@ -593,6 +615,8 @@ export default function DisplaySingleItem({params})
         setHandleCheckModifierId(modifierId);
         let totalAmount = itemprice;
 
+        let defaultOption = false
+
         const updateItem = {
             ...singleitem,
             modifier_group: singleitem?.modifier_group?.map((modifier) => {
@@ -601,6 +625,7 @@ export default function DisplaySingleItem({params})
                         ...modifier,
                         modifier_secondary_items: modifier?.modifier_secondary_items?.map((seconditems) => {
                             if (itemId === seconditems?.id) {
+                                defaultOption = seconditems?.default_option
                                 return {
                                     ...seconditems,
                                     activeClass: seconditems.activeClass === "mche" || seconditems.activeClass === "mchw" ? "mch" : "mche",
@@ -616,10 +641,11 @@ export default function DisplaySingleItem({params})
                             };
                         }
                         ),
+                        defaultOption: defaultOption,
                     };
                 }
 
-                return modifier;
+                return modifier
             }),
         };
           // check the max_permit and make related
@@ -820,6 +846,7 @@ export default function DisplaySingleItem({params})
     
     const handleModalRadioInput = useCallback((modifierId, itemId, secondaryModifierId, secondaryItemId) => {
 
+        let defaultOption = false
         let totalAmount = selectedModifierItemPrice;
         for (const updateItemModifier of singleitem.modifier_group) {
         if (modifierId === updateItemModifier?.id) {
@@ -849,55 +876,55 @@ export default function DisplaySingleItem({params})
                 return {
                     ...modifier,
                     is_modifier_selected: true,
-                    modifier_secondary_items: modifier?.modifier_secondary_items?.map(
-                    (item) => {
+                    modifier_secondary_items: modifier?.modifier_secondary_items?.map((item) => {
                         if (itemId === item?.id) {
-                        return {
-                            ...item,
-                            secondary_item_modifiers:
-                            item?.secondary_item_modifiers?.map(
-                                (secondaryModifier) => {
-                                if (secondaryModifierId === secondaryModifier?.id) {
-                                    return {
-                                    ...secondaryModifier,
-                                    valid_class:
-                                        parseInt(secondaryModifier.min_permitted) >
-                                        parseInt(0) &&
-                                        secondaryModifier.valid_class ===
-                                        "error_check"
-                                        ? "success_check"
-                                        : "success_check",
-                                    is_modifier_selected: true,
-                                    secondary_items_modifier_items:
-                                        secondaryModifier?.secondary_items_modifier_items?.map(
-                                        (secondaryItem) => {
-                                            if (
-                                            secondaryItemId === secondaryItem?.id
-                                            ) {
-                                            return {
-                                                ...secondaryItem,
-                                                activeClass: "nv",
-                                                is_item_select: true,
-                                                item_select_to_sale: true,
-                                            };
-                                            }
+                            defaultOption = item?.default_option
+                            return {
+                                ...item,
+                                secondary_item_modifiers:
+                                item?.secondary_item_modifiers?.map(
+                                    (secondaryModifier) => {
+                                    if (secondaryModifierId === secondaryModifier?.id) {
+                                        return {
+                                        ...secondaryModifier,
+                                        valid_class:
+                                            parseInt(secondaryModifier.min_permitted) >
+                                            parseInt(0) &&
+                                            secondaryModifier.valid_class ===
+                                            "error_check"
+                                            ? "success_check"
+                                            : "success_check",
+                                        is_modifier_selected: true,
+                                        secondary_items_modifier_items:
+                                            secondaryModifier?.secondary_items_modifier_items?.map(
+                                            (secondaryItem) => {
+                                                if (
+                                                secondaryItemId === secondaryItem?.id
+                                                ) {
+                                                return {
+                                                    ...secondaryItem,
+                                                    activeClass: "nv",
+                                                    is_item_select: true,
+                                                    item_select_to_sale: true,
+                                                };
+                                                }
 
-                                            return {
-                                            ...secondaryItem,
-                                            activeClass: "ob",
-                                            is_item_select: false,
-                                            item_select_to_sale: false,
-                                            };
-                                        }
-                                        ),
-                                    };
-                                }
-                                return secondaryModifier;
-                                }
-                            ),
-                            // activeClass: "nv",
-                            // is_item_select: true
-                        };
+                                                return {
+                                                ...secondaryItem,
+                                                activeClass: "ob",
+                                                is_item_select: false,
+                                                item_select_to_sale: false,
+                                                };
+                                            }
+                                            ),
+                                        };
+                                    }
+                                    return secondaryModifier;
+                                    }
+                                ),
+                                // activeClass: "nv",
+                                // is_item_select: true
+                            };
                         }
                         return item;
                         // return{
@@ -912,6 +939,7 @@ export default function DisplaySingleItem({params})
 
                 return modifier;
             }),
+            defaultOption: defaultOption
         };
     
         setSingleitem(updateItem);
@@ -1531,8 +1559,6 @@ export default function DisplaySingleItem({params})
     });
     
     // Website Cart Button
-    console.log("Cart data total:", cartdata);
-    
     const handleAddtoCart = useCallback(() => {
         if (singleitem) {
             // Count the number of modifier is min_permit is greater than zero.
@@ -1582,9 +1608,11 @@ export default function DisplaySingleItem({params})
                     quantity: parseInt(quantity),
                     is_cart_modal_clicked: false,
                 };
+
                 setCartdata((prevData) => [...prevData, addTotalAmount]);
                 router.push("/");
-                setIscartbtnclicked(true);
+                // setIscartbtnclicked(true);
+                setIscartbtnclicked(false);
             }
 
             if (indexArrForScroll.length > 0) {
@@ -1650,7 +1678,8 @@ export default function DisplaySingleItem({params})
                 };
                 setCartdata((prevData) => [...prevData, addTotalAmount]);
                 router.push("/");
-                setIscartbtnclicked(true);
+                // setIscartbtnclicked(true);
+                setIscartbtnclicked(false);
             }
 
             if (indexArrForScroll.length > 0) {
@@ -1703,6 +1732,9 @@ export default function DisplaySingleItem({params})
     },[singleitem]);
     
     const handleModalModifierToggle = useCallback((modifierId, itemId, secondModifierId) => {
+
+        let defaultOption = false
+
         const updateSecondaryModifierToggle = {
             ...singleitem,
             modifier_group: singleitem?.modifier_group?.map((modifierToggle) => {
@@ -1712,6 +1744,7 @@ export default function DisplaySingleItem({params})
                         modifier_secondary_items: modifierToggle?.modifier_secondary_items?.map((secondItem) => 
                         {
                             if (itemId === secondItem?.id) {
+                                defaultOption = secondItem?.default_option
                                 return {
                                     ...secondItem,
                                     secondary_item_modifiers: secondItem?.secondary_item_modifiers?.map((secondaryModifier) => 
@@ -1728,9 +1761,13 @@ export default function DisplaySingleItem({params})
                             }
                             return secondItem;
                         }),
+                        defaultOption: defaultOption,
                     };
                 }
-                return modifierToggle;
+                return {
+                    ...modifierToggle,
+                    defaultOption: defaultOption,
+                };
             }),
         };
         setSingleitem(updateSecondaryModifierToggle);
@@ -1834,8 +1871,6 @@ export default function DisplaySingleItem({params})
         setIsmodifierclicked(false);
     },[singleitem, ismodifierclicked, itemprice, ismodifierclicked]);
 
-    console.log("Single item to update:", singleitem);
-    
     return(
     <>
         <Header />
@@ -1844,16 +1879,17 @@ export default function DisplaySingleItem({params})
             <WebsiteSingleItem
                 {
                     ...{
-                    singleitem,
-                    quantity,
-                    itemprice,
-                    setIsitemclicked,
-                    handleRadioInput,
-                    handleCheckInput,
-                    handleDecrement,
-                    handleIncrement,
-                    handleQuantity,
-                    handleAddtoCart,
+                        singleitem,
+                        quantity,
+                        itemprice,
+                        setIsitemclicked,
+                        handleRadioInput,
+                        handleCheckInput,
+                        handleDecrement,
+                        handleIncrement,
+                        handleQuantity,
+                        handleAddtoCart,
+                        websiteModificationData,
                     }
                 }
             />
@@ -1876,6 +1912,7 @@ export default function DisplaySingleItem({params})
                     handleMobileQuantityDecrement,
                     handleMobileQuantityIncrement,
                     handleMobileAddtoCart,
+                    websiteModificationData,
                 }
                 }
             />
@@ -1897,6 +1934,7 @@ export default function DisplaySingleItem({params})
                 handleModalCheckInput={handleModalCheckInput}
                 handleModalRadioInput={handleModalRadioInput}
                 setIsmodifierclicked={setIsmodifierclicked}
+                websiteModificationData={websiteModificationData}
             />
         }
     </>)

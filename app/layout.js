@@ -1,4 +1,4 @@
-"use client";
+"use client"
 import { Inter } from "next/font/google";
 import "./globals.css";
 import "../public/icons/fontawesome.css"
@@ -6,6 +6,7 @@ import HeadMetaData from "@/components/HeadMetaData";
 import CustomLayout from "@/components/CustomLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { createContext, useState } from "react";
 
 const inter = Inter({ subsets: ["latin"] });
 // export const metadata = {
@@ -15,20 +16,41 @@ const inter = Inter({ subsets: ["latin"] });
 
 const queryClient = new QueryClient();
 
+export const ContextCheckApi = createContext()
+
 export default function RootLayout({ children }) 
 {
+  const [metaDataToDipslay, setmetaDataToDipslay] = useState({
+    title: "Your Brand Info",
+    contentData: "Dev lapd food website",
+    iconImage: "favicon.ico",
+    singleItemsDetails: {
+      title: "",
+      description: "",
+      itemImage: "",
+      keywords: "",
+      url: ""
+    }
+  });
+  
   return (
-    <html lang="en">
-      <HeadMetaData />
-      <body className="body-tag">
-        <div>
-          <QueryClientProvider client={queryClient}>
-            <CustomLayout {...{children}}/>
-            
-            <ReactQueryDevtools />
-          </QueryClientProvider>
-        </div>
-      </body>
-    </html>
+    <ContextCheckApi.Provider value={{ setmetaDataToDipslay}}>
+      <html lang="en">
+        <HeadMetaData 
+          title={metaDataToDipslay?.title}
+          content={metaDataToDipslay?.contentData}
+          iconImage={metaDataToDipslay?.iconImage}
+          singleItemsDetails={metaDataToDipslay?.singleItemsDetails}
+        />
+        <body className="body-tag">
+          <div>
+            <QueryClientProvider client={queryClient}>
+              <CustomLayout {...{children}}/>
+              <ReactQueryDevtools />
+            </QueryClientProvider>
+          </div>
+        </body>
+      </html>
+    </ContextCheckApi.Provider>
   );
 }

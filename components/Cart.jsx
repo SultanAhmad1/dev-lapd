@@ -1,3 +1,4 @@
+"use client";
 import React, { Fragment, useContext, useEffect, useRef, useState } from "react";
 import HomeContext from "../contexts/HomeContext";
 import Link from "next/link";
@@ -16,6 +17,7 @@ import {
   axiosPrivate,
 } from "../global/Axios";
 import { useRouter } from "next/navigation";
+import { useGetQueryAutoUpdate } from "./reactquery/useQueryHook";
 
 export default function Cart() {
   const route = useRouter();
@@ -42,6 +44,7 @@ export default function Cart() {
     setAmountDiscountapplied,
     couponDiscountapplied,
     setCouponDiscountapplied,
+    websiteModificationData,
   } = useContext(HomeContext);
 
   const [itemindividuallyupdate, setItemindividuallyupdate] = useState(false)
@@ -75,11 +78,11 @@ export default function Cart() {
 
   // Adding event listener when the component mounts
   useEffect(() => {
-    document.addEventListener("mousedown", handleClickOutside);
+    window.document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
       // Cleanup the event listener on unmount
-      document.removeEventListener("mousedown", handleClickOutside);
+      window.document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
 
@@ -167,99 +170,114 @@ export default function Cart() {
 
     if (parseInt(cartdata?.length) > parseInt(0)) {
       // Calculate Items Total Order Value.
-      let totalValue = 0;
+      deliveryRefetch()
+    }
+    setItemindividuallyupdate(false)
+    // setLoader(false)
+  }, [cartdata]);
 
-      for (const total of cartdata) 
-      {
-        totalValue = parseFloat(totalValue) + parseFloat(total?.total_order_amount);
-      }
-      setLocalStorage(`${BRANDSIMPLEGUID}sub_order_total_local`,JSON.stringify(getAmountConvertToFloatWithFixed(totalValue, 2)));
-      setSubtotalOrderAmount(getAmountConvertToFloatWithFixed(totalValue, 2));
+  const onDeliveryError = (error) => {}
 
-      // Calculate the Delivery Fee
-      // If the User select the delivery, then delivery fee will be charge.
-      
-      if (selectedFilter?.id === DELIVERY_ID) 
+  const onDeliverySuccess = (data) => {
+
+    const {deliveryMatrix} = data?.data
+    
+    const selectedMatrix = deliveryMatrix?.delivery_matrix_rows?.[0]
+    let totalValue = 0;
+
+    for (const total of cartdata) 
+    {
+      totalValue = parseFloat(totalValue) + parseFloat(total?.total_order_amount);
+    }
+    setLocalStorage(`${BRANDSIMPLEGUID}sub_order_total_local`,JSON.stringify(getAmountConvertToFloatWithFixed(totalValue, 2)));
+    setSubtotalOrderAmount(getAmountConvertToFloatWithFixed(totalValue, 2));
+    
+    if (selectedFilter?.id === DELIVERY_ID) 
+    {
+      if (parseFloat(totalValue) >= parseFloat(selectedMatrix?.order_value)) 
       {
-        if (parseFloat(totalValue) >= parseFloat(deliverymatrix?.order_value)) 
+        if (selectedMatrix?.above_order_value === null || selectedMatrix?.above_order_value === 0) 
         {
-          if (deliverymatrix?.above_order_value === null) 
-          {
-            const textMessage = <strong>Free Delivery</strong>;
-            setDeliverymessage(textMessage);
-            const fee = getAmountConvertToFloatWithFixed(0, 2);
-            setDeliveryfee(fee);
-          } 
-          else 
-          {
-            setDeliverymessage("");
-            const fee = getAmountConvertToFloatWithFixed(deliverymatrix?.above_order_value,2);
-            setDeliveryfee(fee);
-            setIsordersubtotallessthanordervalue(true)
-          }
+          const textMessage = <strong>Free Delivery 0</strong>;
+          setDeliverymessage(textMessage);
+          const fee = getAmountConvertToFloatWithFixed(0, 2);
+          setDeliveryfee(fee);
+        } 
+        else 
+        {
+          setDeliverymessage("");
+          const fee = getAmountConvertToFloatWithFixed(selectedMatrix?.above_order_value,2);
+          setDeliveryfee(fee);
+          setIsordersubtotallessthanordervalue(true)
+        }
 
-          if (parseFloat(deliverymatrix?.delivery_matrix_row_values) >parseFloat(0)) 
+        if (parseInt(selectedMatrix?.delivery_matrix_row_values?.length) > parseInt(0)) 
+        {
+          for (const deliveryMatrixRowValues of selectedMatrix?.delivery_matrix_row_values) 
           {
-            for (const deliveryMatrixRowValues of deliverymatrix?.delivery_matrix_row_values) 
+            // Min order value is greater than totalValue then.
+            if (parseFloat(totalValue) >= parseFloat(deliveryMatrixRowValues?.min_order_value)) 
             {
-              if (parseFloat(totalValue) >=parseFloat(deliveryMatrixRowValues?.min_order_value)) 
+              if (deliveryMatrixRowValues?.above_minimum_order_value === null || deliveryMatrixRowValues?.above_minimum_order_value === 0)  
               {
-                if (deliveryMatrixRowValues?.above_minimum_order_value === null) 
-                {
-                  const textMessage = <strong>Free Delivery</strong>;
-                  setDeliverymessage(textMessage);
-                  const fee = getAmountConvertToFloatWithFixed(0, 2);
-                  setDeliveryfee(fee);
-                } 
-                else 
-                {
-                  const fee = parseFloat(deliveryMatrixRowValues?.above_minimum_order_value).toFixed(2);
-                  setDeliveryfee(fee);
-                }
+                const textMessage = <strong>Free Delivery 1</strong>;
+                setDeliverymessage(textMessage);
+                const fee = getAmountConvertToFloatWithFixed(0, 2);
+                setDeliveryfee(fee);
               } 
               else 
               {
-                const getDifference = parseFloat(deliveryMatrixRowValues?.min_order_value) - parseFloat(totalValue);
-                const textMessage = (<span> Spend &nbsp; <strong>&pound;{parseFloat(getDifference).toFixed(2)}</strong> &nbsp; more to get &nbsp;  <strong>Free Delivery</strong></span>);
-                setDeliverymessage(textMessage);
+                const textMessage = <strong>Free Delivery 2</strong>;
+                setDeliverymessage((deliveryMatrixRowValues?.above_minimum_order_value === 0) ? "" : textMessage);
 
-                const fee = getAmountConvertToFloatWithFixed(deliveryMatrixRowValues?.below_minimum_order_value === null ? deliveryfee : deliveryMatrixRowValues?.below_minimum_order_value,2);
+                const fee = parseFloat(deliveryMatrixRowValues?.above_minimum_order_value).toFixed(2);
                 setDeliveryfee(fee);
               }
-            }
+            } 
+            // else 
+            // {
+            //   const getDifference = parseFloat(deliveryMatrixRowValues?.min_order_value) - parseFloat(totalValue);
+            //   const textMessage = (<span> Spend &nbsp; <strong>&pound;{parseFloat(getDifference).toFixed(2)}</strong> &nbsp; more to get &nbsp;  <strong>Free Delivery 3</strong></span>);
+            //   setDeliverymessage(textMessage);
+
+            //   const fee = getAmountConvertToFloatWithFixed(deliveryMatrixRowValues?.below_minimum_order_value === null ? deliveryMatrixRowValues?.above_minimum_order_value : deliveryMatrixRowValues?.below_minimum_order_value,2);
+            //   setDeliveryfee(fee);
+            // }
           }
-        } else {
-          const textMessage = (
-            <span style={{color: "red",background: "#eda7a7",textAlign: "center",padding: "10px",}}>
-              Minimum order is &nbsp; <strong>&pound;{getAmountConvertToFloatWithFixed(deliverymatrix?.order_value,2)}</strong> &nbsp; to your postcode
-            </span>
-          );
-          setDeliverymessage(textMessage);
-          const fee = getAmountConvertToFloatWithFixed(deliverymatrix?.below_order_value === null ? deliverymatrix?.above_order_value : deliverymatrix?.below_order_value,2);
-          setDeliveryfee(fee);
-          setIsordersubtotallessthanordervalue(false);
         }
-      } 
-      else 
-      {
-        setDeliveryfee(0);
-        setIsordersubtotallessthanordervalue(true);
+      } else {
+        const textMessage = (
+          <span style={{color: "red",background: "#eda7a7",textAlign: "center",padding: "10px",}}>
+            Minimum order is &nbsp; <strong>&pound;{getAmountConvertToFloatWithFixed(selectedMatrix?.order_value,2)}</strong> &nbsp; to your postcode
+          </span>
+        );
+        setDeliverymessage(textMessage);
+        const fee = getAmountConvertToFloatWithFixed(selectedMatrix?.below_order_value === null ? selectedMatrix?.above_order_value : selectedMatrix?.below_order_value,2);
+        setDeliveryfee(fee);
+        setIsordersubtotallessthanordervalue(false);
       }
-
-      setTotalOrderAmount(getAmountConvertToFloatWithFixed(totalValue, 2));
-      // Order Amount Calculate
-      if(parseInt(couponDiscountapplied.length) == parseInt(0))
-      {
-        getOrderAmount(getAmountConvertToFloatWithFixed(totalValue, 2));
-      }
-      setLocalStorage(`${BRANDSIMPLEGUID}cart`, cartdata);
-
-      console.log("Here in cart component make the localStorage update:");
-      
+    } 
+    else 
+    {
+      setDeliveryfee(0);
+      setIsordersubtotallessthanordervalue(true);
     }
-    setItemindividuallyupdate(false)
-    setLoader(false)
-  }, [cartdata]);
+
+    setTotalOrderAmount(getAmountConvertToFloatWithFixed(totalValue, 2));
+    if(parseInt(couponDiscountapplied.length) == parseInt(0))
+    {
+      getOrderAmount(getAmountConvertToFloatWithFixed(totalValue, 2));
+    }
+    setLocalStorage(`${BRANDSIMPLEGUID}cart`, cartdata);
+  }
+
+  const districtPostcode = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}delivery_matrix`))
+
+  const selectedPostcode = districtPostcode?.postcode
+
+  const userLocation = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}user_selected_store`))
+  const selectedLocation = userLocation?.display_id
+  const {refetch: deliveryRefetch} = useGetQueryAutoUpdate('district-delivery-matrix-data',`/district-delivery-matrix/${selectedLocation}/${selectedPostcode}`,onDeliverySuccess, onDeliveryError, false)
 
   function handlePromoCodeToggle() 
   {
@@ -302,6 +320,8 @@ export default function Cart() {
       setLocalStorage(`${BRANDSIMPLEGUID}applied_coupon`, [])
       setCouponDiscountapplied([])
     }
+
+    setLocalStorage(`${BRANDSIMPLEGUID}cart`,filterItems)
     setCartdata(filterItems);
   }
 
@@ -562,7 +582,10 @@ export default function Cart() {
             <button className="cart-close-btn" onClick={() => setIscartbtnclicked(false)}>
               <div className="cart-close-btn-div">
                 <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                  <path d="m19.5831 6.24931-1.8333-1.83329-5.75 5.83328-5.75-5.83328-1.8333 1.83329 5.8333 5.74999-5.8333 5.75 1.8333 1.8333 5.75-5.8333 5.75 5.8333 1.8333-1.8333-5.8333-5.75z" fill="currentColor" ></path>
+                  <path 
+                    d="m19.5831 6.24931-1.8333-1.83329-5.75 5.83328-5.75-5.83328-1.8333 1.83329 5.8333 5.74999-5.8333 5.75 1.8333 1.8333 5.75-5.8333 5.75 5.8333 1.8333-1.8333-5.8333-5.75z"
+                    fill={websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}
+                  ></path>
                 </svg>
               </div>
             </button>
@@ -600,9 +623,9 @@ export default function Cart() {
                             <li className="blmc-cart-item-display">
                               <div className="cart-qty-item">
                                 {/* <div className="c3cic5chfe-cart-item-display" style={{cursor: "pointer"}} onClick={() => handleEditItem(indexItem,storeName,cartitem?.category_slug,cartitem?.slug)}>{cartitem?.quantity} x {cartitem?.category_name}</div> */}
-                                <a className="c3cic5chfe-cart-item-display" href={`/${storeName}/${cartitem?.category_slug}/${cartitem?.slug}/edit`}>{cartitem?.quantity} x {cartitem?.category_name}</a>
+                                <a className="c3cic5chfe-cart-item-display" href={`/${storeName?.toLowerCase()}/${cartitem?.category_slug}/${cartitem?.slug}/edit`}>{cartitem?.quantity} x {cartitem?.category_name}</a>
 
-                                <a className="cart-item-with-modifiers" href={`/${storeName}/${cartitem?.category_slug}/${cartitem?.slug}/edit`}>
+                                <a className="cart-item-with-modifiers" href={`/${storeName?.toLowerCase()}/${cartitem?.category_slug}/${cartitem?.slug}/edit`}>
                                   <div className="cart-item-title">{cartitem?.title}</div>
                                   <ul className="ibcv-cart-item-display">
                                     {
@@ -611,11 +634,11 @@ export default function Cart() {
                                         return modifier?.modifier_secondary_items?.map((secondItem,indexSecondItem) =>
                                         {
                                           return(
-                                            secondItem?.item_select_to_sale &&
+                                            (secondItem?.item_select_to_sale && modifier?.defaultOption === false) &&
                                             <Fragment key={indexItem + indexItemModifier + indexSecondItem}>
                                               <div >
                                                 <span className="fdfeffc3c4cgchj9-cart-item-display">{modifier?.title}: </span>
-                                                <span className="fdfeffc3c4cgchj9-cart-item-display">{secondItem?.title} {parseInt(secondItem?.price) > parseInt(0) && `(${secondItem?.country_price_symbol} ${parseFloat(secondItem?.price).toFixed(2)})`}</span>
+                                                <span className="fdfeffc3c4cgchj9-cart-item-display">{secondItem?.title} {parseInt(secondItem?.price) > parseInt(0) && `(${secondItem?.country_price_symbol}${parseFloat(secondItem?.price).toFixed(2)})`}</span>
                                               </div>
                                               {
                                                 secondItem?.secondary_item_modifiers?.map((secondModifer,indexSecondModifier) =>
@@ -626,7 +649,7 @@ export default function Cart() {
                                                       secondNestItems?.item_select_to_sale &&
                                                       <div key={indexItem + indexItemModifier + indexSecondItem + indexSecondModifier + indexSecondNestItem}>
                                                         <span className="fdfeffc3c4cgchj9-cart-item-display">{secondModifer?.title}: </span>
-                                                        <span className="fdfeffc3c4cgchj9-cart-item-display">{secondNestItems?.title} {parseInt(secondNestItems?.price) > parseInt(0) && `(${secondNestItems?.country_price_symbol} ${parseFloat(secondNestItems?.price).toFixed(2)})`}</span>
+                                                        <span className="fdfeffc3c4cgchj9-cart-item-display">{secondNestItems?.title} {parseInt(secondNestItems?.price) > parseInt(0) && `(${secondNestItems?.country_price_symbol}${parseFloat(secondNestItems?.price).toFixed(2)})`}</span>
                                                       </div>
                                                     )
                                                   })
@@ -823,7 +846,7 @@ export default function Cart() {
 
                       <div className="bobpbqbrb1checkout">
                         <span className="">
-                          &pound; {getAmountConvertToFloatWithFixed(discountvalue,2)}
+                          &pound;{getAmountConvertToFloatWithFixed(discountvalue,2)}
                         </span>
                       </div>
                     </li>
@@ -839,7 +862,7 @@ export default function Cart() {
 
                       <div className="bobpbqbrb1checkout">
                         <span className="">
-                          &pound; {getAmountConvertToFloatWithFixed(deliveryfee, 2)}
+                          &pound;{getAmountConvertToFloatWithFixed(deliveryfee, 2)}
                         </span>
                       </div>
                     </li>
@@ -847,9 +870,8 @@ export default function Cart() {
 
                   <div className="bkgfbmggalcheckout">
                     <div className="albcaqcheckout-total">Total</div>
-                    &pound;
+                    &pound;{totalOrderAmountValue}
                     {/* {getAmountConvertToFloatWithFixed(parseFloat(subtotalOrderAmount) + parseFloat(deliveryfee) - parseFloat(discountvalue),2)} */}
-                    {totalOrderAmountValue}
                   </div>
                 </div>
               </div>
@@ -919,7 +941,7 @@ export default function Cart() {
             </div>
           : 
             <div className="cart-content">
-              <img alt="Start Shopping" role="presentation" src="https://d3i4yxtzktqr9n.cloudfront.net/web-eats-v2/a023a017672c2488.svg" className="cart-icon" />
+              <img loading="lazy" alt="Start Shopping" role="presentation" src="https://d3i4yxtzktqr9n.cloudfront.net/web-eats-v2/a023a017672c2488.svg" className="cart-icon" />
               <span className="cart-span-title-one">
                 Add items to start a cart
               </span>
@@ -928,7 +950,18 @@ export default function Cart() {
                 Once you add items from a restaurant or store, your cart will
                 appear here.
               </span>
-              <button type="submit" className="cart-shopping-start-button" onClick={() => setIscartbtnclicked(false)}>
+              <button 
+                type="submit" 
+                className="cart-shopping-start-button"
+                style={{
+                  '--cart-start-shopping-background': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, 
+                  '--cart-start-shopping-font': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                  '--cart-start-shopping-hover-background': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor, 
+                  '--cart-start-shopping-hover-font': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor, 
+                  '--cart-start-shopping-hover-border': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, 
+                }}
+                onClick={() => setIscartbtnclicked(false)}
+              >
                 Start shopping
               </button>
             </div>

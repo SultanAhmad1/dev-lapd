@@ -1,3 +1,4 @@
+"use client";
 import HomeContext from "@/contexts/HomeContext";
 import { BRANDSIMPLEGUID, BRAND_GUID, axiosPrivate } from "@/global/Axios";
 import { find_matching_postcode, setLocalStorage } from "@/global/Store";

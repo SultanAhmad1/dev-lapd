@@ -1,3 +1,4 @@
+"use client";
 const OTPInput = ({ id, previousId, nextId, value, onValueChange, handleSubmit }) => {
     //This callback function only runs when a key is released
     const handleKeyUp = (e) => {
