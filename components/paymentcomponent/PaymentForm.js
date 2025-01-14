@@ -5,7 +5,7 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import moment from 'moment';
 import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { BRANDSIMPLEGUID, IMAGE_URL_Without_Storage, axiosPrivate } from '@/global/Axios';
+import { BRAND_SIMPLE_GUID, BRAND_GUID, IMAGE_URL_Without_Storage, axiosPrivate } from '@/global/Axios';
 import HomeContext from '@/contexts/HomeContext';
 import { useRouter } from "next/navigation";
 import { WalletMemo } from './Wallet';
@@ -19,17 +19,17 @@ const PaymentForm = ({orderId}) =>
   const router = useRouter()
   
   const {
-    setCartdata,
+    setCartData,
     setIsTimeToClosed,
     totalOrderAmountValue,
     dayOpeningClosingTime,
-    settotalOrderAmountValue,
+    setTotalOrderAmountValue,
     isLocationBrandOnline,
     setIsLocationBrandOnline,
     websiteModificationData,
   } = useContext(HomeContext)
 
-  const { setmetaDataToDipslay} = useContext(ContextCheckApi)
+  const { setMetaDataToDisplay} = useContext(ContextCheckApi)
 
   useEffect(() => {
     if(websiteModificationData)
@@ -46,7 +46,7 @@ const PaymentForm = ({orderId}) =>
           url: ""
         }
       }
-      setmetaDataToDipslay(metaHeadingData)
+      setMetaDataToDisplay(metaHeadingData)
     }
   }, [websiteModificationData]);
 
@@ -82,7 +82,7 @@ const PaymentForm = ({orderId}) =>
       
       setIsgeterrorfromdatabase(response.data.data?.orderAmountDetails === null ? true : false)
 
-      settotalOrderAmountValue(response.data.data?.orderAmountDetails === null ? 0 : response.data.data?.orderAmountDetails?.order_total)
+      setTotalOrderAmountValue(response.data.data?.orderAmountDetails === null ? 0 : response.data.data?.orderAmountDetails?.order_total)
 
     } 
     catch (error) 
@@ -95,6 +95,7 @@ const PaymentForm = ({orderId}) =>
     const dayNumber = moment().day();
     const dateTime  = moment().format('HH:mm')
     const dayName = moment().format('dddd');
+    setLoader(false)
 
     if(dayOpeningClosingTime?.day_of_week?.toLowerCase().includes(dayName.toLowerCase()))
     {
@@ -109,19 +110,18 @@ const PaymentForm = ({orderId}) =>
       }
     }
 
-    const orderTotalFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}total_order_value_storage`))
+    const orderTotalFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`))
     foreceFullyCheckBrandLocationTrue()
     if(orderTotalFromLocalStorage !== null || orderTotalFromLocalStorage !== undefined)
     {
-      settotalOrderAmountValue(orderTotalFromLocalStorage === null ? getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) : getAmountConvertToFloatWithFixed(JSON.parse(orderTotalFromLocalStorage),2))
+      setTotalOrderAmountValue(orderTotalFromLocalStorage === null ? getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) : getAmountConvertToFloatWithFixed(JSON.parse(orderTotalFromLocalStorage),2))
     }
     else
     {
       forceFullyGetOrderPriceFromDatabase()
     }
-    setTimeout(() => {
-      setLoader(false)
-    }, 3000);
+    // setTimeout(() => {
+    // }, 3000);
   }, [])
   
   useEffect(() => {
@@ -153,16 +153,17 @@ const PaymentForm = ({orderId}) =>
       } 
 
       const response = await axiosPrivate.post(`/send-sms-and-email`, data)
-      setLocalStorage(`${BRANDSIMPLEGUID}cart`,[])
-      setLocalStorage(`${BRANDSIMPLEGUID}order_amount_number`,null)
-      setLocalStorage(`${BRANDSIMPLEGUID}applied_coupon`,[])
-      setLocalStorage(`${BRANDSIMPLEGUID}customer_information`,null)
-      setLocalStorage(`${BRANDSIMPLEGUID}order_guid`,null)
-      setCartdata([])
+      setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
+      setLocalStorage(`${BRAND_SIMPLE_GUID}order_amount_number`,null)
+      setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`,[])
+      setLocalStorage(`${BRAND_SIMPLE_GUID}customer_information`,null)
+      setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,null)
+      setCartData([])
+      setLoader(false)
       // if(response?.data?.status === "success")
       // {
         router.push(`/track-order/${orderId}`)
-        setLoader(false)
+        
       // }
 
     } 
@@ -170,12 +171,12 @@ const PaymentForm = ({orderId}) =>
     {
       window.alert(error?.response?.data?.error)
       setLoader(false)
-      setLocalStorage(`${BRANDSIMPLEGUID}cart`,[])
-      setLocalStorage(`${BRANDSIMPLEGUID}order_amount_number`,null)
-      setLocalStorage(`${BRANDSIMPLEGUID}applied_coupon`,[])
-      setLocalStorage(`${BRANDSIMPLEGUID}customer_information`,null)
-      setLocalStorage(`${BRANDSIMPLEGUID}order_guid`,null)
-      setCartdata([])
+      setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
+      setLocalStorage(`${BRAND_SIMPLE_GUID}order_amount_number`,null)
+      setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`,[])
+      setLocalStorage(`${BRAND_SIMPLE_GUID}customer_information`,null)
+      setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,null)
+      setCartData([])
       router.push(`/track-order/${orderId}`)
     }
   }
@@ -242,6 +243,8 @@ const PaymentForm = ({orderId}) =>
         {
           order_total: getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) * 100, // replace with your desired amount
           token: token.id,
+          order: orderId,
+          brand: BRAND_GUID,
         }
       );
 
@@ -331,12 +334,12 @@ const PaymentForm = ({orderId}) =>
                               <button 
                                 type='submit' 
                                 className="h7brboe1payment-btn" 
-                                style={{
-                                  background: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
-                                  color: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
-                                  border: isHover ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}` : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
-                                  marginBottom: "10px"
-                                }}
+                                // style={{
+                                //   background: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                                //   color: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                                //   border: isHover ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}` : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
+                                //   marginBottom: "10px"
+                                // }}
         
                                 onMouseEnter={() => setIsHover(true)}
                                 onMouseLeave={() => setIsHover(false)}

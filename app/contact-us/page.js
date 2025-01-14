@@ -5,7 +5,7 @@ import React, { useContext } from "react";
 
 export default function page() 
 {
-  const { websiteModificationData, brandlogo } = useContext(HomeContext);
+  const { websiteModificationData, brandLogo } = useContext(HomeContext);
   return(
     <>
       {/* Display Banner */}

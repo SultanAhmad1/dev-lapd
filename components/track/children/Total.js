@@ -54,7 +54,7 @@ export default function Total({subtotal, deliveryCharge,serviceCharge,discountAm
                 </li>
             </ul>
 
-            <div className="bkgfbmggalcheckout">
+            <div className="bkgfbmggal-checkout">
                 <div className="albcaqcheckout-total">Total</div>&pound;{getAmountConvertToFloatWithFixed((parseFloat(subtotal) + parseFloat(deliveryCharge) + parseFloat(serviceCharge)) - parseFloat(discountAmount),2)}
             </div>
         </>

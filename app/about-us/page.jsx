@@ -9,11 +9,11 @@ export default function page()
     setLoader,
     websiteModificationData,
     storeName,
-    navigationcategories,
-    navmobileindex,
-    setSelectedcategoryid,
-    setSelecteditemid,
-    setNavmobileindex,
+    navigationCategories,
+    navMobileIndex,
+    setSelectedCategoryId,
+    setSelectedItemId,
+    setNavMobileIndex,
     dayOpeningClosingTime,
   } = useContext(HomeContext);
 

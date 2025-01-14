@@ -20,7 +20,7 @@ export const ContextCheckApi = createContext()
 
 export default function RootLayout({ children }) 
 {
-  const [metaDataToDipslay, setmetaDataToDipslay] = useState({
+  const [metaDataToDisplay, setMetaDataToDisplay] = useState({
     title: "Your Brand Info",
     contentData: "Dev lapd food website",
     iconImage: "favicon.ico",
@@ -34,13 +34,13 @@ export default function RootLayout({ children })
   });
   
   return (
-    <ContextCheckApi.Provider value={{ setmetaDataToDipslay}}>
+    <ContextCheckApi.Provider value={{ setMetaDataToDisplay}}>
       <html lang="en">
         <HeadMetaData 
-          title={metaDataToDipslay?.title}
-          content={metaDataToDipslay?.contentData}
-          iconImage={metaDataToDipslay?.iconImage}
-          singleItemsDetails={metaDataToDipslay?.singleItemsDetails}
+          title={metaDataToDisplay?.title}
+          content={metaDataToDisplay?.contentData}
+          iconImage={metaDataToDisplay?.iconImage}
+          singleItemsDetails={metaDataToDisplay?.singleItemsDetails}
         />
         <body className="body-tag">
           <div>

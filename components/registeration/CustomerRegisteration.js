@@ -2,7 +2,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import OTP from "../otp/OTP";
 import { useLoginMutationHook } from "../reactquery/useQueryHook";
-import { BRAND_GUID, BRANDSIMPLEGUID, IMAGE_URL_Without_Storage } from "@/global/Axios";
+import { BRAND_GUID, BRAND_SIMPLE_GUID, IMAGE_URL_Without_Storage } from "@/global/Axios";
 import { formatPhoneNumber, passwordMessageData, setLocalStorage, validatePassword } from "@/global/Store";
 import HomeContext from "@/contexts/HomeContext";
 import { ContextCheckApi } from "@/app/layout";
@@ -13,7 +13,7 @@ export default function CustomerRegisteration()
     const {websiteModificationData} = useContext(HomeContext)
 
        
-    const { setmetaDataToDipslay} = useContext(ContextCheckApi)
+    const { setMetaDataToDisplay} = useContext(ContextCheckApi)
     useEffect(() => {
         if(websiteModificationData)
         {
@@ -29,7 +29,7 @@ export default function CustomerRegisteration()
             url: ""
             }
         }
-        setmetaDataToDipslay(metaHeadingData)
+        setMetaDataToDisplay(metaHeadingData)
         }
     }, [websiteModificationData]);
 
@@ -127,9 +127,9 @@ export default function CustomerRegisteration()
             
         setErrorsObj((prevData) => ({...prevData, passwordMessage: "", confirmMessage: "", errormessage: ""}))
 
-        const selectedRegistered = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}user_selected_store`))
+        const selectedRegistered = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
 
-        const customerAddress = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}address`))
+        const customerAddress = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}address`))
 
         // check the first index is zero or not.
 
@@ -150,8 +150,8 @@ export default function CustomerRegisteration()
     };
 
     const onSuccess = (data) => {
-        setLocalStorage(`${BRANDSIMPLEGUID}tempcustomer`, data?.data?.data?.customer)
-        setLocalStorage(`${BRANDSIMPLEGUID}isOTPHas`, true)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}tempcustomer`, data?.data?.data?.customer)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}isOTPHas`, true)
         setRegisterationBoolean((prevData) => ({...prevData, isOTPReady: !registerationBoolean.isOTPReady}))
     }
     
@@ -169,7 +169,7 @@ export default function CustomerRegisteration()
      */
 
     useEffect(() => {
-        const isReadyOTP = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}isOTPHas`))
+        const isReadyOTP = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}isOTPHas`))
 
         if(isReadyOTP !== null && isReadyOTP !== undefined)
         {

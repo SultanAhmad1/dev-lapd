@@ -5,52 +5,56 @@ import { IMAGE_URL_Without_Storage } from "@/global/Axios";
 import {getAmountConvertToFloatWithFixed} from "@/global/Store";
 import Image from "next/image";
 import { Fragment } from "react";
+import Link from "next/link";
 
 export const WebsiteSingleItem = (props) => {
   const {
-    singleitem,
+    optionNumber,
+    singleItem,
     quantity,
-    itemprice,
-    setIsitemclicked,
+    itemPrice,
+    handleDisplayItemStates,
     handleRadioInput,
     handleCheckInput,
     handleDecrement,
     handleIncrement,
     handleQuantity,
-    handleAddtoCart,
-    websiteModificationData
+    handleAddOrNextClickedToCart,
+    handleNextClicked,
+    websiteModificationData,
+    handleMobileQuantityDecrement,
+    handleMobileQuantityIncrement,
+    isAnyModifierHasExtras,
   } = props;
   
   const isValidHttpsUrl = (url) => {
     return url.startsWith('https://');
   };
-
-  console.log("Single selected item:", singleitem);
-  console.log("Website modification data:", websiteModificationData);
+  
   
   
   return (
     <div className="e5 e6">
       <div className="single-product-level-one-div">
         <div className="level-one-div-nested-one">
-          <a className="back-btn-product" href="/">
+          <Link className="back-btn-product" href="/">
             <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="back-svg">
               <path d="M22 13.5H6.3l5.5 7.5H8.3l-6.5-9 6.5-9h3.5l-5.5 7.5H22v3z"></path>
             </svg>
             <div className="spacer _8"></div>
             Back to list
-          </a>
+          </Link>
 
-          <button className="cross-btn" onClick={() => setIsitemclicked(false)}>
+          <button className="cross-btn" onClick={() => handleDisplayItemStates("isItemClicked",false)}>
             <svg version="1.1" xmlns="http://www.w3.org/2000/svg" className="back-svg">
               <line x1="1" y1="11" x2="11" y2="1" stroke="black" strokeWidth="2"/>
               <line x1="1" y1="1" x2="11" y2="11" stroke="black" strokeWidth="2"/>
             </svg>
-            <span>{singleitem?.title}</span>
+            <span>{singleItem?.title}</span>
           </button>
 
           {
-            (singleitem?.image_url && singleitem?.image_url !== null) && 
+            (singleItem?.image_url && singleItem?.image_url !== null) && 
             <div className="product-img">
               <div className="bz">
                 <div className="product-img-div-one-div">
@@ -58,20 +62,20 @@ export const WebsiteSingleItem = (props) => {
                     <div className="product-img-div-one-div-nested-div">
                       <div className="product-img-zoom">
                         {
-                          isValidHttpsUrl(singleitem?.image_url) ?
+                          isValidHttpsUrl(singleItem?.image_url) ?
                           <img
-                            alt={singleitem?.title}
+                            alt={singleItem?.title}
                             role="presentation"
-                            src={singleitem?.image_url}
+                            src={singleItem?.image_url}
                             className="product-img-display"
                             loading="lazy"
                           />
 
                           :
                           <img
-                            alt={singleitem?.title}
+                            alt={singleItem?.title}
                             role="presentation"
-                            src={"/"+singleitem?.image_url}
+                            src={"/"+singleItem?.image_url}
                             className="product-img-display"
                             loading="lazy"
                           />
@@ -84,19 +88,18 @@ export const WebsiteSingleItem = (props) => {
                 </div>
               </div>
             </div>
-            
           }
         </div>
 
         <div className="level-one-div-nested-two">
           <div className="product-title">
             <h2 className="product-h2"></h2>
-            <h1 className="product-h1">{singleitem?.title}</h1>
-            <span className="product-price-span">&pound;{parseFloat(singleitem?.price).toFixed(2)}</span>
+            <h1 className="product-h1">{singleItem?.title}</h1>
+            <span className="product-price-span">&pound;{parseFloat(singleItem?.price).toFixed(2)}</span>
             <div className="product_h8"></div>
 
             <div className="product-description">
-              <div className="product-description-div">{singleitem?.description}</div>
+              <div className="product-description-div">{singleItem?.description}</div>
             </div>
 
             <div className="product_h8"></div>
@@ -105,517 +108,584 @@ export const WebsiteSingleItem = (props) => {
           <div className="product-height"></div>
 
           <ul className="product-ul">
-            {singleitem?.modifier_group?.map((modifier, index) => {
-              return (
-                // {/* minimum option = '1' and maximum option = 1 and single item select = 1 */}
-                // modifier?.select_single_option === 1 && modifier?.min_permitted === 1 && modifier?.max_permitted === 1 ? 
-                modifier?.select_single_option === 1 && modifier?.min_permitted === 1 && modifier?.max_permitted === 1 ? 
-                (
-                  <li key={index} className={`section${index}`} index={index}>
-                    <div>
-                      <div>
-                        {/* <hr className="product_hr"></hr> */}
-                        <div className="product-list-div">
-                          <div className="product-modifier-groups">
-                            <div className="product-modifier-name">
-                              {modifier?.title}
+            {
+              optionNumber === 1 && 
+              singleItem?.modifier_group?.map((modifier, index) => {
+                if(modifier?.isExtras === false)
+                {
+                  return (
+                    // (parseInt(modifier?.modifier_secondary_items?.length) > 0) &&
+                    (
+                      modifier?.select_single_option === 1 && modifier?.max_permitted === 1 
+                      ? 
+                        <li key={index} className={`section${index}`} index={index}>
+                          {/* <hr className="product_hr"></hr> */}
+                          <div className="product-list-div">
+                            <div className="product-modifier-groups">
+                              <div className="product-modifier-name">
+                                {modifier?.title}
+                              </div>
                             </div>
-                            <div className="product-modifier-option">
-                              <span>Choose {modifier?.max_permitted}</span>
+                            <div className="product-required">
+                              <div className={`product-required-div ${modifier?.valid_class}`}>
+                                {parseInt(modifier?.min_permitted) > parseInt(0) ? "Required" : "Optional"}
+                              </div>
+                              <div className="product-modifier-option">
+                                <span>Choose {parseInt(modifier?.min_permitted) === parseInt(0) && "up to"} {modifier?.max_permitted}</span>
+                              </div>
                             </div>
                           </div>
-                          <div className="product-required">
-                            <div className={`product-required-div ${modifier?.valid_class}`}>
-                              {parseInt(modifier?.min_permitted) > parseInt(0) ? "Required" : "Optional"}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="hg">
-                        {
-                          modifier?.modifier_secondary_items?.map((seconditems, indexSecondItem) => {
-
-                            let isItemSuspend = false;
-                            if(seconditems?.suspension_info !== null)
+                          <div className="hg">
                             {
-                              if(moment().format('YYYY-MM-DD') <= moment.unix(seconditems?.suspension_info?.suspend_untill).format('YYYY-MM-DD'))
-                              {
-                                isItemSuspend = true
-                              }
-                            }
-
-                            return (
-                              isItemSuspend === false && 
-                              <Fragment key={`${index}.${indexSecondItem}`}>
-                                <div className="product-modifier-item-detail"  style={{marginTop: "8px",background: seconditems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, border: seconditems?.item_select_to_sale && `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`}} onClick={() =>handleRadioInput(modifier?.id,seconditems?.id,seconditems?.title, parseInt(seconditems?.secondary_item_modifiers.length))}>
-                                  {
-                                    parseInt(seconditems?.secondary_item_modifiers?.length) > parseInt(0) && 
-                                    // If an item has nested modifiers then left arrow image show.
-                                    <div className="poquickreview-modal">
-                                      <div className="c8c7cuquickreview-modal">
-                                        <svg style={{ cursor: "pointer" }} width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                          <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill={`${seconditems?.item_select_to_sale ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor : "#AFAFAF"}`} transform="rotate(270, 12, 12)"></path>
-                                        </svg>
-                                      </div>
-                                    </div>
-                                  }
-                                  <label className={`modifier-product-item-name`} style={{ '--before-color': `${seconditems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,}}>
-                                    <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                      <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${seconditems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}`} stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-
-                                    <div className="spacer _16"></div>
-                                    <div className="modifier-product-item-name-one-nested-div-one-nested" style={{color: seconditems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
-                                      <span className="modifier-product-item-name-one-nested-div-one-nested-div">
-                                        {seconditems?.title}
-                                      </span>
-                                      {
-                                        parseInt(seconditems?.price) > parseInt(0) && 
-                                        <span className="modifier-group-price" style={{color: seconditems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
-                                          &pound;{getAmountConvertToFloatWithFixed(seconditems?.price,2)}
-                                        </span>
-                                      }
-                                    </div>
-                                  </label>
-                                </div>
-                              </Fragment>
-                            );
-                          }
-                        )}
-                      </div>
-                    </div>
-                  </li>
-                ) : 
-                modifier?.max_permitted >= 1 && (
-                  <li key={index} className={`section${index}`} index={index}>
-                    <div>
-                      <div>
-
-                        <div className="product-list-div">
-                          <div className="product-modifier-groups">
-                            <div className="product-modifier-name">
-                              {modifier?.title}
-                            </div>
-                            <div className="product-modifier-option">
-                              <span>
-                                Choose up to {modifier?.max_permitted}
-                              </span>
-                            </div>
-                          </div>
-                          <div className="product-required">
-                            <div className={`product-required-div ${modifier?.valid_class}`}>
-                              {parseInt(modifier?.min_permitted) > parseInt(0)? "Required" : "Optional"}
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                      {/* List of all modifier group products */}
-                      <div className="hg">
-                        {
-                          modifier?.modifier_secondary_items?.map((seconditems, indexSecondItem) => {
-
-                            let isItemSuspend = false;
-                            if(seconditems?.suspension_info !== null)
-                            {
-                              if(moment().format('YYYY-MM-DD') <= moment.unix(seconditems?.suspension_info?.suspend_untill).format('YYYY-MM-DD'))
-                              {
-                                isItemSuspend = true
-                              }
-                            }
-
-                            return (
-                              isItemSuspend === false &&
-                              <div key={`${index}.${indexSecondItem}`}>
-                                {/* <hr className="product-modifier-items-hr"></hr> */}
+                              modifier?.modifier_secondary_items?.map((secondItems, indexSecondItem) => {
+  
+                                let isItemSuspend = false;
+                                if(secondItems?.suspension_info !== null)
                                 {
-                                  seconditems.activeClass !== "mchw" ? 
-                                  <div className="product-modifier-item-detail"  style={{marginTop: "8px",background: seconditems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, border: seconditems?.item_select_to_sale && `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`}} onClick={() => handleCheckInput(modifier?.id,seconditems?.id,parseInt(seconditems?.secondary_item_modifiers.length))}>
-                                      <label className={`modifier-product-item-name-checkbox`} style={{ '--before-color': `${seconditems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,}}>
+                                  if(moment().format('YYYY-MM-DD') <= moment.unix(secondItems?.suspension_info?.suspend_untill).format('YYYY-MM-DD'))
+                                  {
+                                    isItemSuspend = true
+                                  }
+                                }
+  
+                                return (
+                                  isItemSuspend === false && 
+                                  <Fragment key={`${index}.${indexSecondItem}`}>
+                                    <div className="product-modifier-item-detail"  style={{marginTop: "8px",background: secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, border: secondItems?.item_select_to_sale && `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`}} onClick={() =>handleRadioInput(modifier?.id,secondItems?.id,secondItems?.title, parseInt(secondItems?.secondary_item_modifiers.length))}>
+                                    
+                                      <label className={`modifier-product-item-name`} style={{ '--before-color': `${secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,}}>
                                         <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                          <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${seconditems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}`} stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                                          <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}`} strokeWidth="2.5" strokeLinejoin="round"/>
                                         </svg>
+  
                                         <div className="spacer _16"></div>
-                                        <div className="modifier-product-item-name-one-nested-div-one-nested">
-                                          <div className="modifier-product-item-name-one-nested-div-one-nested-div" style={{color: seconditems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
-                                            {seconditems?.title}
-                                          </div>
-                                          <div className="spacer _8"></div>
+                                        <div className="modifier-product-item-name-one-nested-div-one-nested" style={{color: secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
+                                          <span className="modifier-product-item-name-one-nested-div-one-nested-div">
+                                            {secondItems?.title}
+                                          </span>
                                           {
-                                            getAmountConvertToFloatWithFixed(seconditems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && 
-                                            <div className="modifier-group-price" style={{color: seconditems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>&pound;{getAmountConvertToFloatWithFixed(seconditems?.price,2)}</div>
+                                            parseInt(secondItems?.price) > parseInt(0) && 
+                                            <span className="modifier-group-price" style={{color: secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
+                                              &pound;{getAmountConvertToFloatWithFixed(secondItems?.price,2)}
+                                            </span>
                                           }
                                         </div>
                                       </label>
-                                  </div>
-                                :
-                                  <div style={{marginTop: "8px"}} className="product-modifier-item-detail">
-                                    <label className={`modifier-product-item-name-checkbox`} style={{ '--before-color': `${seconditems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,}}>
-                                      <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${seconditems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`} stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                      </svg>
-                                      <div className="spacer _16"></div>
-                                      <div className="modifier-product-item-name-one-nested-div-one-nested">
-                                        <div className="modifier-product-item-name-one-nested-div-one-nested-div">
-                                          {seconditems?.title}
+
+                                      {
+                                        parseInt(secondItems?.secondary_item_modifiers?.length) > parseInt(0) && 
+                                        // If an item has nested modifiers then left arrow image show.
+                                        <div className="poquickreview-modal">
+                                          <div className="c8c7cuquickreview-modal">
+                                            <svg style={{ cursor: "pointer" }} width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                              <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill={`${secondItems?.item_select_to_sale ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor : "#AFAFAF"}`} transform="rotate(90, 12, 12)"></path>
+                                            </svg>
+                                          </div>
                                         </div>
-                                        <div className="spacer _8"></div>
-                                        {
-                                          getAmountConvertToFloatWithFixed(seconditems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && (
-                                          <div className="modifier-group-price">&pound;{parseFloat(seconditems?.price).toFixed(2)}</div>
-                                        )}
-                                      </div>
-                                    </label>
-                                  </div>
-                                }
+                                      }
+                                    </div>
+                                  </Fragment>
+                                );
+                              }
+                            )}
+                          </div>
+                        </li>
+                      : 
+                        (modifier?.select_single_option === 1 && modifier?.max_permitted > 1) 
+                      ?
+                        <li key={index} className={`section${index}`} index={index}>
+                          <div className="product-list-div">
+                            <div className="product-modifier-groups">
+                              <div className="product-modifier-name">
+                                {modifier?.title}
                               </div>
-                            );
-                          })
-                        }
-                      </div>
-                    </div>
-                  </li>
-                ) 
-              );
-            })}
+                            </div>
+  
+                            <div className="product-required">
+                              
+                              <div className={`product-required-div ${modifier?.valid_class}`}>
+                                {parseInt(modifier?.min_permitted) > parseInt(0)? "Required" : "Optional"}
+                              </div>
+                              
+                              <div className="product-modifier-option">
+                                <span>
+                                  Choose { parseInt(modifier?.min_permitted) === parseInt(0) && "up to"} {modifier?.max_permitted}
+                                </span>
+                              </div>
+  
+                            </div>
+                          </div>
+                          {/* List of all modifier group products */}
+                          <div className="hg">
+                            {
+                              modifier?.modifier_secondary_items?.map((secondItems, indexSecondItem) => {
+  
+                                let isItemSuspend = false;
+                                if(secondItems?.suspension_info !== null)
+                                {
+                                  if(moment().format('YYYY-MM-DD') <= moment.unix(secondItems?.suspension_info?.suspend_untill).format('YYYY-MM-DD'))
+                                  {
+                                    isItemSuspend = true
+                                  }
+                                }
+  
+                                return (
+                                  isItemSuspend === false &&
+                                  <div key={`${index}.${indexSecondItem}`}>
+                                    {
+                                      secondItems.activeClass !== "mchw" ? 
+                                      <div className="product-modifier-item-detail"  style={{marginTop: "8px",background: secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, border: secondItems?.item_select_to_sale && `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`}} onClick={() => handleCheckInput(modifier?.id,secondItems?.id,parseInt(secondItems?.secondary_item_modifiers.length))}>
+                                          <label className={`modifier-product-item-name-checkbox`} style={{ '--before-color': `${secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,}}>
+                                            <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                              <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}`} strokeWidth="2.5" strokeLinejoin="round"/>
+                                            </svg>
+                                            <div className="spacer _16"></div>
+                                            <div className="modifier-product-item-name-one-nested-div-one-nested">
+                                              <div className="modifier-product-item-name-one-nested-div-one-nested-div" style={{color: secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
+                                                {secondItems?.title}
+                                              </div>
+                                              <div className="spacer _8"></div>
+                                              {
+                                                getAmountConvertToFloatWithFixed(secondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && 
+                                                <div className="modifier-group-price" style={{color: secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>&pound;{getAmountConvertToFloatWithFixed(secondItems?.price,2)}</div>
+                                              }
+                                            </div>
+                                          </label>
+                                      </div>
+                                    :
+                                      <div style={{marginTop: "8px"}} className="product-modifier-item-detail">
+                                        <label className={`modifier-product-item-name-checkbox`} style={{ '--before-color': `${secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,}}>
+                                          <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`} strokeWidth="2.5" strokeLinejoin="round"/>
+                                          </svg>
+                                          <div className="spacer _16"></div>
+                                          <div className="modifier-product-item-name-one-nested-div-one-nested">
+                                            <div className="modifier-product-item-name-one-nested-div-one-nested-div">
+                                              {secondItems?.title}
+                                            </div>
+                                            <div className="spacer _8"></div>
+                                            {
+                                              getAmountConvertToFloatWithFixed(secondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && (
+                                              <div className="modifier-group-price">&pound;{parseFloat(secondItems?.price).toFixed(2)}</div>
+                                            )}
+                                          </div>
+                                        </label>
+                                      </div>
+                                    }
+                                  </div>
+                                );
+                              })
+                            }
+                          </div>
+                        </li>
+                      : 
+                        (modifier?.select_single_option > 1 && modifier?.max_permitted >= 1) 
+                      &&
+                        <li key={index} className={`section${index}`} index={index}>
+    
+                          <div className="product-list-div">
+                            <div className="product-modifier-groups">
+                              <div className="product-modifier-name">
+                                {modifier?.title}
+                              </div>
+                            </div>
+    
+                            <div className="product-required">
+                              
+                              <div className={`product-required-div ${modifier?.valid_class}`}>
+                                {parseInt(modifier?.min_permitted) > parseInt(0)? "Required" : "Optional"}
+                              </div>
+                              
+                              <div className="product-modifier-option">
+                                <span>
+                                  Choose {parseInt(modifier?.min_permitted) === parseInt(0) && "up to"} {modifier?.max_permitted}
+                                </span>
+                              </div>
+    
+                            </div>
+                          </div>
+    
+                          {/* List of all modifier group products */}
+                          <div className="hg">
+                            {
+                              modifier?.modifier_secondary_items?.map((secondItems,indexSecondItem) =>
+                              {
+                                return(
+                                  <Fragment key={indexSecondItem}>
+                                    <div className="product-modifier-item-detail" style={{marginTop: "8px"}}>
+    
+                                      <div className="modifier-product-item-name-inc-dec">
+                                      
+                                        <div className="modifier-inc-dec">
+                                          {
+                                            parseInt(secondItems?.counter) > parseInt(0) &&
+                                            <>
+                                              <button className="modifier-btn" disabled={secondItems?.is_item_select} onClick={() => handleDecrement(modifier?.id,secondItems?.id)}>
+    
+                                                <div className="modifier-btn-div">
+                                                  <div className="modifier-btn-svg">
+                                                    <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                                      <path d="m7.33325 13v-2h9.33335v2z" fill="#000000"></path>
+                                                    </svg>
+                                                  </div>
+                                                </div>
+    
+                                              </button>
+    
+                                              <div className="incremented-values">{parseInt(secondItems?.counter)}</div>
+                                            </>
+                                          }
+                                  
+                                            
+                                          <button className="modifier-btn" disabled={(parseInt(modifier?.max_permitted) === parseInt(modifier?.modifier_counter)) ? true : false} onClick={() => handleIncrement(modifier?.id,secondItems?.id)}>
+    
+                                            <div className="modifier-btn-div">
+                                              <div className="modifier-btn-svg">
+                                                <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                                  <path d="m16.6666 11.0007h-3.6667v-3.66672h-2v3.66672h-3.66665v2h3.66665v3.6666h2v-3.6666h3.6667z" fill="#000000"></path>
+                                                </svg>
+                                              </div>
+                                            </div>
+    
+                                          </button>
+                                        </div>
+    
+                                        <div className="spacer _16"></div>
+                                        <div className="modifier-product-item-name-one-div">
+                                          <div className="modifier-product-item-name-one-nested-div">
+                                            <div className="modifier-product-item-name-one-nested-div-one">
+                                              <div className="modifier-product-item-name-one-nested-div-one-nested">
+                                                <div className="modifier-product-item-name-one-nested-div-one-nested-div">Add: {secondItems?.title}</div>
+                                                <div className="spacer _8"></div>
+                                                <div className="modifier-group-price">+{secondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(secondItems?.price,2)}</div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+    
+                                      </div>
+    
+                                    </div>
+                                  </Fragment>
+                                )
+                              })
+                            }
+                          </div>
+                        </li>
+                    ) 
+                  );
+                }
+              })
+            }
+
+            {/* optionNumber is greater than 1 and less than 2, isExtras must be true */}
+            {
+              optionNumber === 2 && 
+              singleItem?.modifier_group?.map((modifier, index) => {
+                if(modifier?.isExtras)
+                {
+                  return (
+                    (parseInt(modifier?.modifier_secondary_items?.length) > 0) &&
+                    (
+                        modifier?.select_single_option === 1 && modifier?.min_permitted > 0 && modifier?.max_permitted === 1 
+                      ? 
+                        <li key={index} className={`section${index}`} index={index}>
+                          {/* <hr className="product_hr"></hr> */}
+                          <div className="product-list-div">
+                            <div className="product-modifier-groups">
+                              <div className="product-modifier-name">
+                                {modifier?.title}
+                              </div>
+                            </div>
+                            <div className="product-required">
+                              <div className={`product-required-div ${modifier?.valid_class}`}>
+                                {parseInt(modifier?.min_permitted) > parseInt(0) ? "Required" : "Optional"}
+                              </div>
+                              <div className="product-modifier-option">
+                                <span>Choose {parseInt(modifier?.min_permitted) === parseInt(0) && "up to"} {modifier?.max_permitted}</span>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="hg">
+                            {
+                              modifier?.modifier_secondary_items?.map((secondItems, indexSecondItem) => {
+  
+                                let isItemSuspend = false;
+                                if(secondItems?.suspension_info !== null)
+                                {
+                                  if(moment().format('YYYY-MM-DD') <= moment.unix(secondItems?.suspension_info?.suspend_untill).format('YYYY-MM-DD'))
+                                  {
+                                    isItemSuspend = true
+                                  }
+                                }
+  
+                                return (
+                                  isItemSuspend === false && 
+                                  <Fragment key={`${index}.${indexSecondItem}`}>
+                                    <div className="product-modifier-item-detail"  style={{marginTop: "8px",background: secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, border: secondItems?.item_select_to_sale && `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`}} onClick={() =>handleRadioInput(modifier?.id,secondItems?.id,secondItems?.title, parseInt(secondItems?.secondary_item_modifiers.length))}>
+                                      
+                                      <label className={`modifier-product-item-name`} style={{ '--before-color': `${secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,}}>
+                                        <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                          <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}`} strokeWidth="2.5" strokeLinejoin="round"/>
+                                        </svg>
+  
+                                        <div className="spacer _16"></div>
+                                        <div className="modifier-product-item-name-one-nested-div-one-nested" style={{color: secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
+                                          <span className="modifier-product-item-name-one-nested-div-one-nested-div">
+                                            {secondItems?.title}
+                                          </span>
+                                          {
+                                            parseInt(secondItems?.price) > parseInt(0) && 
+                                            <span className="modifier-group-price" style={{color: secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
+                                              &pound;{getAmountConvertToFloatWithFixed(secondItems?.price,2)}
+                                            </span>
+                                          }
+                                        </div>
+                                      </label>
+                                      {
+                                        parseInt(secondItems?.secondary_item_modifiers?.length) > parseInt(0) && 
+                                        // If an item has nested modifiers then left arrow image show.
+                                        <div className="poquickreview-modal">
+                                          <div className="c8c7cuquickreview-modal">
+                                            <svg style={{ cursor: "pointer" }} width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                              <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill={`${secondItems?.item_select_to_sale ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor : "#AFAFAF"}`} transform="rotate(90, 12, 12)"></path>
+                                            </svg>
+                                          </div>
+                                        </div>
+                                      }
+                                    </div>
+                                  </Fragment>
+                                );
+                              }
+                            )}
+                          </div>
+                        </li>
+                      : 
+                        (modifier?.select_single_option === 1 && modifier?.max_permitted > 1) ?
+                        <li key={index} className={`section${index}`} index={index}>
+                          <div className="product-list-div">
+                            <div className="product-modifier-groups">
+                              <div className="product-modifier-name">
+                                {modifier?.title}
+                              </div>
+                            </div>
+  
+                            <div className="product-required">
+                              
+                              <div className={`product-required-div ${modifier?.valid_class}`}>
+                                {parseInt(modifier?.min_permitted) > parseInt(0)? "Required" : "Optional"}
+                              </div>
+                              
+                              <div className="product-modifier-option">
+                                <span>
+                                  Choose { parseInt(modifier?.min_permitted) === parseInt(0) && "up to"} {modifier?.max_permitted}
+                                </span>
+                              </div>
+  
+                            </div>
+                          </div>
+                          {/* List of all modifier group products */}
+                          <div className="hg">
+                            {
+                              modifier?.modifier_secondary_items?.map((secondItems, indexSecondItem) => {
+  
+                                let isItemSuspend = false;
+                                if(secondItems?.suspension_info !== null)
+                                {
+                                  if(moment().format('YYYY-MM-DD') <= moment.unix(secondItems?.suspension_info?.suspend_untill).format('YYYY-MM-DD'))
+                                  {
+                                    isItemSuspend = true
+                                  }
+                                }
+  
+                                return (
+                                  isItemSuspend === false &&
+                                  <div key={`${index}.${indexSecondItem}`}>
+                                    {
+                                      secondItems.activeClass !== "mchw" ? 
+                                      <div className="product-modifier-item-detail"  style={{marginTop: "8px",background: secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, border: secondItems?.item_select_to_sale && `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`}} onClick={() => handleCheckInput(modifier?.id,secondItems?.id,parseInt(secondItems?.secondary_item_modifiers.length))}>
+                                          <label className={`modifier-product-item-name-checkbox`} style={{ '--before-color': `${secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,}}>
+                                            <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                              <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}`} strokeWidth="2.5" strokeLinejoin="round"/>
+                                            </svg>
+                                            <div className="spacer _16"></div>
+                                            <div className="modifier-product-item-name-one-nested-div-one-nested">
+                                              <div className="modifier-product-item-name-one-nested-div-one-nested-div" style={{color: secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
+                                                {secondItems?.title}
+                                              </div>
+                                              <div className="spacer _8"></div>
+                                              {
+                                                getAmountConvertToFloatWithFixed(secondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && 
+                                                <div className="modifier-group-price" style={{color: secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>&pound;{getAmountConvertToFloatWithFixed(secondItems?.price,2)}</div>
+                                              }
+                                            </div>
+                                          </label>
+                                      </div>
+                                    :
+                                      <div style={{marginTop: "8px"}} className="product-modifier-item-detail">
+                                        <label className={`modifier-product-item-name-checkbox`} style={{ '--before-color': `${secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,}}>
+                                          <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`} strokeWidth="2.5" strokeLinejoin="round"/>
+                                          </svg>
+                                          <div className="spacer _16"></div>
+                                          <div className="modifier-product-item-name-one-nested-div-one-nested">
+                                            <div className="modifier-product-item-name-one-nested-div-one-nested-div">
+                                              {secondItems?.title}
+                                            </div>
+                                            <div className="spacer _8"></div>
+                                            {
+                                              getAmountConvertToFloatWithFixed(secondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && (
+                                              <div className="modifier-group-price">&pound;{parseFloat(secondItems?.price).toFixed(2)}</div>
+                                            )}
+                                          </div>
+                                        </label>
+                                      </div>
+                                    }
+                                  </div>
+                                );
+                              })
+                            }
+                          </div>
+                        </li>
+                      :
+                        (modifier?.select_single_option > 1 && modifier?.max_permitted >= 1) &&
+                        <li key={index} className={`section${index}`} index={index}>
+    
+                          <div className="product-list-div">
+                            <div className="product-modifier-groups">
+                              <div className="product-modifier-name">
+                                {modifier?.title}
+                              </div>
+                            </div>
+    
+                            <div className="product-required">
+                              
+                              <div className={`product-required-div ${modifier?.valid_class}`}>
+                                {parseInt(modifier?.min_permitted) > parseInt(0)? "Required" : "Optional"}
+                              </div>
+                              
+                              <div className="product-modifier-option">
+                                <span>
+                                  Choose {parseInt(modifier?.min_permitted) === parseInt(0) && "up to"} {modifier?.max_permitted}
+                                </span>
+                              </div>
+    
+                            </div>
+                          </div>
+    
+                          {/* List of all modifier group products */}
+                          <div className="hg">
+                            {
+                              modifier?.modifier_secondary_items?.map((secondItems,indexSecondItem) =>
+                              {
+                                return(
+                                  <Fragment key={indexSecondItem}>
+                                    <div className="product-modifier-item-detail" style={{marginTop: "8px"}}>
+    
+                                      <div className="modifier-product-item-name-inc-dec">
+                                      
+                                        <div className="modifier-inc-dec">
+                                          {
+                                            parseInt(secondItems?.counter) > parseInt(0) &&
+                                            <>
+                                              <button className="modifier-btn" disabled={secondItems?.is_item_select} onClick={() => handleDecrement(modifier?.id,secondItems?.id)}>
+    
+                                                <div className="modifier-btn-div">
+                                                  <div className="modifier-btn-svg">
+                                                    <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                                      <path d="m7.33325 13v-2h9.33335v2z" fill="#000000"></path>
+                                                    </svg>
+                                                  </div>
+                                                </div>
+    
+                                              </button>
+    
+                                              <div className="incremented-values">{parseInt(secondItems?.counter)}</div>
+                                            </>
+                                          }
+                                  
+                                            
+                                          <button className="modifier-btn" disabled={(parseInt(modifier?.max_permitted) === parseInt(modifier?.modifier_counter)) ? true : false} onClick={() => handleIncrement(modifier?.id,secondItems?.id)}>
+    
+                                            <div className="modifier-btn-div">
+                                              <div className="modifier-btn-svg">
+                                                <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                                                  <path d="m16.6666 11.0007h-3.6667v-3.66672h-2v3.66672h-3.66665v2h3.66665v3.6666h2v-3.6666h3.6667z" fill="#000000"></path>
+                                                </svg>
+                                              </div>
+                                            </div>
+    
+                                          </button>
+                                        </div>
+    
+                                        <div className="spacer _16"></div>
+                                        <div className="modifier-product-item-name-one-div">
+                                          <div className="modifier-product-item-name-one-nested-div">
+                                            <div className="modifier-product-item-name-one-nested-div-one">
+                                              <div className="modifier-product-item-name-one-nested-div-one-nested">
+                                                <div className="modifier-product-item-name-one-nested-div-one-nested-div">Add: {secondItems?.title}</div>
+                                                <div className="spacer _8"></div>
+                                                <div className="modifier-group-price">+{secondItems?.country_price_symbol}{getAmountConvertToFloatWithFixed(secondItems?.price,2)}</div>
+                                              </div>
+                                            </div>
+                                          </div>
+                                        </div>
+    
+                                      </div>
+    
+                                    </div>
+                                  </Fragment>
+                                )
+                              })
+                            }
+                          </div>
+                        </li>
+                    ) 
+                  );
+                }
+              })
+            }
           </ul>
 
           <div className="product-top-padding-2"></div>
 
           <div className="of">
-            {/* <hr className="ed b9 og ho"></hr> */}
             <div className="add-to-cart-btn-no-selection">
-              <div className="single-item-qty-div">
-                <div className="qty-selector">
-                  <div className="qty-selector-div">
-                    <select className="qty-select" onClick={handleQuantity}>
-                      <option value="1" className="co">
-                        1
-                      </option>
-                      <option value="2" className="co">
-                        2
-                      </option>
-                      <option value="3" className="co">
-                        3
-                      </option>
-                      <option value="4" className="co">
-                        4
-                      </option>
-                      <option value="5" className="co">
-                        5
-                      </option>
-                      <option value="6" className="co">
-                        6
-                      </option>
-                      <option value="7" className="co">
-                        7
-                      </option>
-                      <option value="8" className="co">
-                        8
-                      </option>
-                      <option value="9" className="co">
-                        9
-                      </option>
-                      <option value="10" className="co">
-                        10
-                      </option>
-                      <option value="11" className="co">
-                        11
-                      </option>
-                      <option value="12" className="co">
-                        12
-                      </option>
-                      <option value="13" className="co">
-                        13
-                      </option>
-                      <option value="14" className="co">
-                        14
-                      </option>
-                      <option value="15" className="co">
-                        15
-                      </option>
-                      <option value="16" className="co">
-                        16
-                      </option>
-                      <option value="17" className="co">
-                        17
-                      </option>
-                      <option value="18" className="co">
-                        18
-                      </option>
-                      <option value="19" className="co">
-                        19
-                      </option>
-                      <option value="20" className="co">
-                        20
-                      </option>
-                      <option value="21" className="co">
-                        21
-                      </option>
-                      <option value="22" className="co">
-                        22
-                      </option>
-                      <option value="23" className="co">
-                        23
-                      </option>
-                      <option value="24" className="co">
-                        24
-                      </option>
-                      <option value="25" className="co">
-                        25
-                      </option>
-                      <option value="26" className="co">
-                        26
-                      </option>
-                      <option value="27" className="co">
-                        27
-                      </option>
-                      <option value="28" className="co">
-                        28
-                      </option>
-                      <option value="29" className="co">
-                        29
-                      </option>
-                      <option value="30" className="co">
-                        30
-                      </option>
-                      <option value="31" className="co">
-                        31
-                      </option>
-                      <option value="32" className="co">
-                        32
-                      </option>
-                      <option value="33" className="co">
-                        33
-                      </option>
-                      <option value="34" className="co">
-                        34
-                      </option>
-                      <option value="35" className="co">
-                        35
-                      </option>
-                      <option value="36" className="co">
-                        36
-                      </option>
-                      <option value="37" className="co">
-                        37
-                      </option>
-                      <option value="38" className="co">
-                        38
-                      </option>
-                      <option value="39" className="co">
-                        39
-                      </option>
-                      <option value="40" className="co">
-                        40
-                      </option>
-                      <option value="41" className="co">
-                        41
-                      </option>
-                      <option value="42" className="co">
-                        42
-                      </option>
-                      <option value="43" className="co">
-                        43
-                      </option>
-                      <option value="44" className="co">
-                        44
-                      </option>
-                      <option value="45" className="co">
-                        45
-                      </option>
-                      <option value="46" className="co">
-                        46
-                      </option>
-                      <option value="47" className="co">
-                        47
-                      </option>
-                      <option value="48" className="co">
-                        48
-                      </option>
-                      <option value="49" className="co">
-                        49
-                      </option>
-                      <option value="50" className="co">
-                        50
-                      </option>
-                      <option value="51" className="co">
-                        51
-                      </option>
-                      <option value="52" className="co">
-                        52
-                      </option>
-                      <option value="53" className="co">
-                        53
-                      </option>
-                      <option value="54" className="co">
-                        54
-                      </option>
-                      <option value="55" className="co">
-                        55
-                      </option>
-                      <option value="56" className="co">
-                        56
-                      </option>
-                      <option value="57" className="co">
-                        57
-                      </option>
-                      <option value="58" className="co">
-                        58
-                      </option>
-                      <option value="59" className="co">
-                        59
-                      </option>
-                      <option value="60" className="co">
-                        60
-                      </option>
-                      <option value="61" className="co">
-                        61
-                      </option>
-                      <option value="62" className="co">
-                        62
-                      </option>
-                      <option value="63" className="co">
-                        63
-                      </option>
-                      <option value="64" className="co">
-                        64
-                      </option>
-                      <option value="65" className="co">
-                        65
-                      </option>
-                      <option value="66" className="co">
-                        66
-                      </option>
-                      <option value="67" className="co">
-                        67
-                      </option>
-                      <option value="68" className="co">
-                        68
-                      </option>
-                      <option value="69" className="co">
-                        69
-                      </option>
-                      <option value="70" className="co">
-                        70
-                      </option>
-                      <option value="71" className="co">
-                        71
-                      </option>
-                      <option value="72" className="co">
-                        72
-                      </option>
-                      <option value="73" className="co">
-                        73
-                      </option>
-                      <option value="74" className="co">
-                        74
-                      </option>
-                      <option value="75" className="co">
-                        75
-                      </option>
-                      <option value="76" className="co">
-                        76
-                      </option>
-                      <option value="77" className="co">
-                        77
-                      </option>
-                      <option value="78" className="co">
-                        78
-                      </option>
-                      <option value="79" className="co">
-                        79
-                      </option>
-                      <option value="80" className="co">
-                        80
-                      </option>
-                      <option value="81" className="co">
-                        81
-                      </option>
-                      <option value="82" className="co">
-                        82
-                      </option>
-                      <option value="83" className="co">
-                        83
-                      </option>
-                      <option value="84" className="co">
-                        84
-                      </option>
-                      <option value="85" className="co">
-                        85
-                      </option>
-                      <option value="86" className="co">
-                        86
-                      </option>
-                      <option value="87" className="co">
-                        87
-                      </option>
-                      <option value="88" className="co">
-                        88
-                      </option>
-                      <option value="89" className="co">
-                        89
-                      </option>
-                      <option value="90" className="co">
-                        90
-                      </option>
-                      <option value="91" className="co">
-                        91
-                      </option>
-                      <option value="92" className="co">
-                        92
-                      </option>
-                      <option value="93" className="co">
-                        93
-                      </option>
-                      <option value="94" className="co">
-                        94
-                      </option>
-                      <option value="95" className="co">
-                        95
-                      </option>
-                      <option value="96" className="co">
-                        96
-                      </option>
-                      <option value="97" className="co">
-                        97
-                      </option>
-                      <option value="98" className="co">
-                        98
-                      </option>
-                      <option value="99" className="co">
-                        99
-                      </option>
-                    </select>
+            
+              <p>&pound;{parseFloat(quantity * itemPrice).toFixed(2)}</p>
+              
+                <div className="albfglh3single-product">
+                  <div className="agbdh8h4albfsingle-product" >
+                    
+                    <button className="e3bubrdpb9h9h0albfc4affoh6hagzf1hbhcdohdhesingle-count-btn" disabled={quantity > 1 ? false : true} onClick={handleMobileQuantityDecrement}>
+                      <svg aria-hidden="true" color="#fff" focusable="false" viewBox="0 0 20 20" className="hfg0ebhgsingle-product-svg" >
+                        <path d="M15.833 8.75H4.167v2.5h11.666v-2.5z"></path>
+                      </svg>
+                    </button>
 
-                    <div className="svg-div">
-                      <div className="svg-div-one">
-                        <svg
-                          width="24px"
-                          height="24px"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          xmlns="http://www.w3.org/2000/svg"
-                          aria-hidden="true"
-                          focusable="false"
-                        >
-                          <path
-                            d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
-                            fill="currentColor"
-                            transform="rotate(180, 12, 12)"
-                          ></path>
-                        </svg>
-                      </div>
+                    <div className="aghhhibre3dpbualc4bfbzbmsingle-product">
+                      {parseInt(quantity)}
                     </div>
+
+                    <button className="e3bubrdpb9h9h0albfc4affoh6hagzf1hbhcdohdhesingle-count-btn" onClick={handleMobileQuantityIncrement}>
+                      <svg aria-hidden="true" color="#fff" focusable="false" viewBox="0 0 20 20" className="hfg0ebhgsingle-product-svg">
+                        <path d="M15.833 8.75H11.25V4.167h-2.5V8.75H4.167v2.5H8.75v4.583h2.5V11.25h4.583v-2.5z"></path>
+                      </svg>
+                    </button>
                   </div>
+
+                  {
+                    isAnyModifierHasExtras ? 
+                      <button type="button" style={{marginLeft: "10px"}} className="add-to-cart-btn-item" onClick={() => handleAddOrNextClickedToCart("next")}>
+                        Next
+                      </button>
+                    :
+                      <button type="button" style={{marginLeft: "10px"}} className="add-to-cart-btn-item" onClick={() => handleAddOrNextClickedToCart("addToCart")}>
+                        ADD TO CART
+                      </button>
+                  }
                 </div>
-              </div>
-              <div className="da c7"></div>
-              <button className="add-to-cart-btn-item" onClick={handleAddtoCart}>
-                Add {quantity} to order cell
-                <span className="add-cart-span">&nbsp;•&nbsp;</span>
-                &pound;
-                {parseFloat(quantity * itemprice).toFixed(2)}
-              </button>
+
             </div>
           </div>
         </div>

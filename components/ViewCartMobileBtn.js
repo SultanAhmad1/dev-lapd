@@ -2,11 +2,11 @@
 import React, { useContext, useEffect, useState } from 'react'
 import HomeContext from '../contexts/HomeContext'
 import { getAmountConvertToFloatWithFixed, getCountryCurrencySymbol } from '../global/Store'
-import { BRANDSIMPLEGUID } from '@/global/Axios'
+import { BRAND_SIMPLE_GUID } from '@/global/Axios'
 
 export default function ViewCartMobileBtn() 
 {
-  const {iscartbtnclicked, setIscartbtnclicked, cartdata, websiteModificationData} = useContext(HomeContext)
+  const {isCartBtnClicked, setIsCartBtnClicked, cartData, websiteModificationData} = useContext(HomeContext)
 
   const [totalordervalue, setTotalordervalue] = useState(0)
 
@@ -15,15 +15,15 @@ export default function ViewCartMobileBtn()
   useEffect(() => {
     
     let totalValue = 0
-    if(parseInt(cartdata?.length) > parseInt(0))
+    if(parseInt(cartData?.length) > parseInt(0))
     {
-      for(const total of cartdata)
+      for(const total of cartData)
       {
         totalValue = parseFloat(totalValue) + parseFloat(total?.total_order_amount)
       }
       setTotalordervalue(totalValue)
     }
-    const deliveryMatrix = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}delivery_matrix`))
+    const deliveryMatrix = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`))
 
     if(totalValue >= deliveryMatrix?.order_value)
     {
@@ -34,16 +34,16 @@ export default function ViewCartMobileBtn()
       setTotalordervalue(0)
       setIsTotalGreatherThanMinimum(false)
     })
-  }, [cartdata])
+  }, [cartData])
     
   return (
     <>
     {
-      !iscartbtnclicked &&
+      !isCartBtnClicked &&
       <div className="arcgatchl4h2view-cart">
         <div className="coagatchascgl5cnl6view-cart"></div>
         <div className="coagatchascgl5axl6view-cart"></div>
-        <button className="bllview-cart-btn" onClick={() => setIscartbtnclicked(true)}>
+        <button className="bllview-cart-btn" onClick={() => setIsCartBtnClicked(true)}>
           <span 
             style={{
               border: "1px solid #fff",
@@ -54,7 +54,7 @@ export default function ViewCartMobileBtn()
               justifyContent: "center",
               borderRadius: "5px",
             }}
-          >{parseInt(cartdata?.length)}</span>
+          >{parseInt(cartData?.length)}</span>
           {/* <span className='mobile-view-cart' style={{backgroundColor: !isTotalGreatherThanMinimum && `${websiteModificationData?.websiteModificationLive?.json_log[0]?.buttonBackgroundColor} !important`}} >Checkout</span> */}
           <span className='mobile-view-cart' style={{backgroundColor: !isTotalGreatherThanMinimum && `${websiteModificationData?.websiteModificationLive?.json_log[0]?.buttonBackgroundColor}`}} >Checkout</span>
           <span>&pound;{getAmountConvertToFloatWithFixed(totalordervalue, 2)}</span>

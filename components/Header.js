@@ -3,47 +3,48 @@ import Image from 'next/image'
 
 import React, { useContext, useState } from 'react'
 import HomeContext from '../contexts/HomeContext'
-import { BrandLogoPath,IMAGE_URL_Without_Storage } from '../global/Axios'
+import { brandLogoPath,IMAGE_URL_Without_Storage } from '../global/Axios'
 import moment from 'moment';
+import FilterLocationTime from './FilterLocationTime';
 
 export default function Header(props) 
 {
     const{
         street1,
         street2,
-        cartdata,
+        cartData,
         postcode,
-        brandlogo,
+        brandLogo,
         isReviewPage,
-        setIscartbtnclicked, 
+        setIsCartBtnClicked, 
         headerUserBtnDisplay, 
         headerCartBtnDisplay, 
         headerSearchBarDisplay, 
-        setIsdeliverybtnclicked,
+        setIsDeliveryBtnClicked,
         headerPostcodeBtnDisplay,
         booleanObj,
         handleBoolean,
         websiteModificationData,
-        deliverymatrix,
+        deliveryMatrix,
         storeName,
-        storetodayopeningtime,
-        storetodayclosingtime,
-        setAtfirstload
+        storeToDayOpeningTime,
+        storeToDayClosingTime,
+        setAtFirstLoad
     } = useContext(HomeContext)
 
     const [isHover, setIsHover] = useState(false);
     const [isHeaderSandwichHover, setIsHeaderSandwichHover] = useState(false);
     
-    const handleIsDeliveryBtnClicked = () =>
+    const handleisDeliveryBtnClicked = () =>
     {
         if(! isReviewPage)
         {
-            // setIsdeliverybtnclicked(true)
-            setAtfirstload(true)
+            // setIsDeliveryBtnClicked(true)
+            setAtFirstLoad(true)
             return
         }
-        setAtfirstload(false)
-        // setIsdeliverybtnclicked(false)
+        setAtFirstLoad(false)
+        // setIsDeliveryBtnClicked(false)
     }
 
     return (
@@ -54,7 +55,7 @@ export default function Header(props)
                     <div className='logo-sandwich'>
                         {
                             headerUserBtnDisplay &&
-                            <button type='button' className="hamburger-button" onClick={() => handleBoolean(! booleanObj?.isCustomerCanvaOpen, "isCustomerCanvaOpen")}>
+                            <button type='button' className="hamburger-button" onClick={() => handleBoolean(! booleanObj?.isCustomerCanvasOpen, "isCustomerCanvasOpen")}>
                                 <svg aria-hidden="true" focusable="false" viewBox="0 0 20 20" className="hamburger-svg" style={{color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,}}>
                                     <path d="M19.167 3.333H.833v2.5h18.334v-2.5zm0 5.834H.833v2.5h18.334v-2.5zM.833 15h18.334v2.5H.833V15z"></path>
                                 </svg>
@@ -62,10 +63,10 @@ export default function Header(props)
                         }
                         <a href="/">
                             {
-                                brandlogo !== null ?
-                                    <img loading="lazy" src={IMAGE_URL_Without_Storage+''+brandlogo} width={200} height={200} className="brand-logo" alt='Brand Name'/>
+                                brandLogo !== null ?
+                                    <img loading="lazy" src={IMAGE_URL_Without_Storage+''+brandLogo} width={200} height={200} className="brand-logo" alt='Brand Name'/>
                                 :
-                                    <img loading="lazy" src={BrandLogoPath} width={200} height={200} className="brand-logo" alt='Brand Name'/>
+                                    <img loading="lazy" src={brandLogoPath} width={200} height={200} className="brand-logo" alt='Brand Name'/>
                             }
                         </a>
                     </div>
@@ -76,10 +77,11 @@ export default function Header(props)
                             headerPostcodeBtnDisplay &&
 
                             <div>
+                                <FilterLocationTime />
                                 <button
                                     type='button' 
                                     className="edit-delivery-location-button" 
-                                    onClick={handleIsDeliveryBtnClicked}
+                                    onClick={handleisDeliveryBtnClicked}
 
                                     style={{
                                         background: isHeaderSandwichHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
@@ -126,7 +128,7 @@ export default function Header(props)
                                             color:websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
                                         }} 
                                     >
-                                        OPENING TIME: <span className='store_opening_closing_time'>{moment(storetodayopeningtime,'HH:mm A').format('HH:mm A')} - {moment(storetodayclosingtime,'HH:mm A').format('HH:mm A')}</span>
+                                        OPENING TIME: <span className='store_opening_closing_time'>{moment(storeToDayOpeningTime,'HH:mm A').format('HH:mm A')} - {moment(storeToDayClosingTime,'HH:mm A').format('HH:mm A')}</span>
                                     </div>
 
                                 </div>
@@ -148,7 +150,7 @@ export default function Header(props)
                                             }} 
                                             onMouseEnter={() => setIsHover(true)} 
                                             onMouseLeave={() => setIsHover(false)} 
-                                            onClick={() => setIscartbtnclicked(true)}
+                                            onClick={() => setIsCartBtnClicked(true)}
                                         >
                                             <svg 
                                                 aria-hidden="true" 
@@ -157,7 +159,7 @@ export default function Header(props)
                                                 className="cart-svg">
                                                 <path fillRule="evenodd" clipRule="evenodd" d="M3.666 11.333h10.333l1.334-8h-11l-.267-2h-3.4v2h1.667l1.333 8zm1.333 3.334A1.333 1.333 0 105 12a1.333 1.333 0 000 2.667zm9.334-1.334a1.333 1.333 0 11-2.667 0 1.333 1.333 0 012.667 0z"></path>
                                             </svg>
-                                            <div className="spacer _8"></div>&nbsp; {parseInt(cartdata?.length)} <span className="cart-text">&nbsp;carts</span>
+                                            <div className="spacer _8"></div>&nbsp; {parseInt(cartData?.length)} <span className="cart-text">&nbsp;carts</span>
                                         </button>
                                     </div>
                                 </div>

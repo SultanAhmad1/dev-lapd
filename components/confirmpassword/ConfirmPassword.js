@@ -2,7 +2,7 @@
 
 import React, { useContext, useEffect, useState } from "react";
 import { useLoginMutationHook } from "../reactquery/useQueryHook";
-import { BRAND_GUID, BRANDSIMPLEGUID } from "@/global/Axios";
+import { BRAND_GUID, BRAND_SIMPLE_GUID } from "@/global/Axios";
 import { passwordMessageData, setLocalStorage, validatePassword } from "@/global/Store";
 import HomeContext from "@/contexts/HomeContext";
 
@@ -56,7 +56,7 @@ export default function ConfirmPassword()
             return;
         }
 
-        const customer = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}tempcustomer`))
+        const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
 
         const confirmData = {
             brand: BRAND_GUID,
@@ -68,7 +68,7 @@ export default function ConfirmPassword()
     }
 
     const onSuccess = (data) => {
-        setLocalStorage(`${BRANDSIMPLEGUID}websiteToken`, data?.data)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}websiteToken`, data?.data)
         handleBoolean(true,'isCustomerVerified')
         window.location.href = "/"
         return

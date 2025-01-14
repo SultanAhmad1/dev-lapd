@@ -1,9 +1,9 @@
 "use client";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
 import HomeContext from "@/contexts/HomeContext";
 import {
-  BRANDSIMPLEGUID,
+  BRAND_SIMPLE_GUID,
   BRAND_GUID,
   axiosPrivate,
 } from "@/global/Axios";
@@ -17,17 +17,24 @@ import moment from "moment";
 
 function SubAtLoadLoadShow({ setLoader }) {
   
+  const postCodeRef = useRef(null)
+
   const {
-    dayname,
-    daynumber,
+    dayName,
+    dayNumber,
     setPostcode,
-    setPostcodefororderamount,
-    deliverymatrix,
-    setDeliverymatrix,
+    setPostCodeForOrderAmount,
+    deliveryMatrix,
+    setDeliveryMatrix,
     websiteModificationData,
   } = useContext(HomeContext);
 
-  console.log("Load at first website modification data:", websiteModificationData);
+  useEffect(() => {
+    if(postCodeRef.current)
+    {
+      postCodeRef.current.focus();
+    }
+  }, []);
   
   const [validpostcode, setValidpostcode] = useState("");
   const [postcodeerror, setPostcodeerror] = useState("");
@@ -59,7 +66,7 @@ function SubAtLoadLoadShow({ setLoader }) {
     }
   }
 
-  async function fetchPostcodeData() {
+  async function fetchpostcodeData() {
     try {
       let filterPostcode = validpostcode.replace(/\s/g, "");
 
@@ -80,21 +87,23 @@ function SubAtLoadLoadShow({ setLoader }) {
       const data = {
         postcode: filterPostcode,
         brand_guid: BRAND_GUID,
-        dayname: dayname,
-        daynumber: daynumber,
+        dayName: dayName,
+        dayNumber: dayNumber,
         outwardString: grabPostcodeOutWard,
       };
 
       const response = await axiosPrivate.post(`/ukpostcode-website`, data);
       const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows;
-      find_matching_postcode(matrix, validpostcode, setDeliverymatrix);
+      find_matching_postcode(matrix, validpostcode, setDeliveryMatrix);
 
       const currentDateTime = moment().format('YYYY-MM-DD HH:mm:ss');
 
-      setLocalStorage(`${BRANDSIMPLEGUID}user_postcode_time`, currentDateTime)
+      // make cart empty.
+      setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[]);
+      setLocalStorage(`${BRAND_SIMPLE_GUID}user_postcode_time`, currentDateTime)
 
-      setLocalStorage(`${BRANDSIMPLEGUID}address`, response?.data?.data);
-      setLocalStorage(`${BRANDSIMPLEGUID}user_valid_postcode`, validpostcode);
+      setLocalStorage(`${BRAND_SIMPLE_GUID}address`, response?.data?.data);
+      setLocalStorage(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validpostcode);
 
       setAvailablestores(response.data?.data?.availableStore);
 
@@ -124,12 +133,12 @@ function SubAtLoadLoadShow({ setLoader }) {
   }
 
   useEffect(() => {
-    if (deliverymatrix !== null) 
+    if (deliveryMatrix !== null) 
     {
-      setPostcodefororderamount(deliverymatrix?.postcode);
-      window.localStorage.setItem(`${BRANDSIMPLEGUID}delivery_matrix`,JSON.stringify(deliverymatrix));
+      setPostCodeForOrderAmount(deliveryMatrix?.postcode);
+      window.localStorage.setItem(`${BRAND_SIMPLE_GUID}delivery_matrix`,JSON.stringify(deliveryMatrix));
     }
-  }, [deliverymatrix]);
+  }, [deliveryMatrix]);
 
   const handleGoBtn = (e) => 
   {
@@ -137,7 +146,7 @@ function SubAtLoadLoadShow({ setLoader }) {
     if (parseInt(validpostcode?.length) > parseInt(3)) 
     {
       setLoader(true);
-      fetchPostcodeData();
+      fetchpostcodeData();
       return 
     } 
     
@@ -186,6 +195,7 @@ function SubAtLoadLoadShow({ setLoader }) {
                   <input
                     type="text"
                     autoComplete="off"
+                    ref={postCodeRef}
                     value={validpostcode}
                     onChange={handlePostCode}
                     className="deliver-to-input"

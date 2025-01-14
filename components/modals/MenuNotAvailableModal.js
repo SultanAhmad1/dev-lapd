@@ -1,19 +1,19 @@
 "use client";
 import HomeContext from "@/contexts/HomeContext";
-import { BRANDSIMPLEGUID } from "@/global/Axios";
+import { BRAND_SIMPLE_GUID } from "@/global/Axios";
 import React, { useContext } from "react";
 
 export default function MenuNotAvailableModal() 
 {
-    const { setAtfirstload, setCommingSoon} = useContext(HomeContext)
+    const { setAtFirstLoad, setComingSoon} = useContext(HomeContext)
 
-    const storeDetail = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}user_selected_store`))
+    const storeDetail = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
 
     const handleClearAll = () => {
 
-        const checkAuth = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}websiteToken`))
-        setAtfirstload(true)
-        setCommingSoon(false)
+        const checkAuth = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}websiteToken`))
+        setAtFirstLoad(true)
+        setComingSoon(false)
         
         if(checkAuth === undefined || checkAuth === null)
         {

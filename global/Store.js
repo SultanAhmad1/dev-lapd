@@ -40,7 +40,7 @@ export function setAtFirstLoadModalShow(isUserEnterValidPostcode)
     return isUserEnteredPostcode = isUserEnterValidPostcode
 }
 
-export function getAtFirstLoadModalShow()
+export function getatFirstLoadModalShow()
 {
     return isUserEnteredPostcode
 }

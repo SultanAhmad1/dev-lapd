@@ -4,7 +4,7 @@
 import { useContext, useEffect, useState } from "react";
 import { useTimer } from "./utils/userTimer";
 import { usePostMutationHook, useVerifyOTP } from "./reactquery/useQueryHook";
-import { BRAND_GUID, BRANDSIMPLEGUID } from "@/global/Axios";
+import { BRAND_GUID, BRAND_SIMPLE_GUID } from "@/global/Axios";
 import { setLocalStorage } from "@/global/Store";
 import HomeContext from "@/contexts/HomeContext";
 
@@ -55,7 +55,7 @@ export default function OtpVerifyModal({setIsOTP})
     setCanResend(false);
     setErrormessage("")
 
-    const customerData = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}tempcustomer`))
+    const customerData = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
 
     const resendData = {
         brand: BRAND_GUID,
@@ -97,7 +97,7 @@ export default function OtpVerifyModal({setIsOTP})
       // {
         if (counter === 0) {
           setCanResend(true);
-          setLocalStorage(`${BRANDSIMPLEGUID}otpexpired`, true)
+          setLocalStorage(`${BRAND_SIMPLE_GUID}otpexpired`, true)
           setErrormessage("OTP code has been expired.")
 
           setInputValues((prevData) => ({...prevData, 
@@ -135,7 +135,7 @@ export default function OtpVerifyModal({setIsOTP})
     // declare
     const otpCode = Object.values(inputValues).join('')
     
-    const customerData = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}tempcustomer`))
+    const customerData = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
 
     const otpData = {
       customerId: customerData?.id,
@@ -152,7 +152,7 @@ export default function OtpVerifyModal({setIsOTP})
   }
 
   const onOTPSuccess = (data) => {
-    setLocalStorage(`${BRANDSIMPLEGUID}websiteToken`, data?.data)
+    setLocalStorage(`${BRAND_SIMPLE_GUID}websiteToken`, data?.data)
     handleBoolean(true,'isCustomerVerified')
     setIsOTP(false)
   }

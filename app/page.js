@@ -8,9 +8,9 @@ import { ContextCheckApi } from "./layout";
 import { IMAGE_URL_Without_Storage } from "@/global/Axios";
 
 export default function Home() {
-  const { setmetaDataToDipslay} = useContext(ContextCheckApi)
+  const { setMetaDataToDisplay} = useContext(ContextCheckApi)
 
-  const { ismenuavailable, websiteModificationData } = useContext(HomeContext);
+  const { isMenuAvailable, websiteModificationData } = useContext(HomeContext);
 
   useEffect(() => {
     if(websiteModificationData)
@@ -27,7 +27,7 @@ export default function Home() {
           url: ""
         }
       }
-      setmetaDataToDipslay(metaHeadingData)
+      setMetaDataToDisplay(metaHeadingData)
     }
   }, [websiteModificationData]);
   
@@ -37,5 +37,5 @@ export default function Home() {
    * There if the nothing is available then i can show Noting found.
    */
 
-  return <Layout>{ismenuavailable ? <Products /> : <NothingFound />}</Layout>;
+  return <Layout>{isMenuAvailable ? <Products /> : <NothingFound />}</Layout>;
 }

@@ -1,12 +1,12 @@
 "use client";
-import { BRANDSIMPLEGUID, IMAGE_URL_Without_Storage } from "@/global/Axios";
+import { BRAND_SIMPLE_GUID, IMAGE_URL_Without_Storage } from "@/global/Axios";
 import moment from "moment";
 import React from "react";
 import Item from "./children/Item";
 
 export default function OrderTab({order}) 
 {
-    const customer = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}tempcustomer`))
+    const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
 
     let statusColor = "order-awaiting-status"
     let urlStart = 'track-order'

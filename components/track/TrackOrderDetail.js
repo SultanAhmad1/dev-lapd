@@ -28,10 +28,10 @@ import { ContextCheckApi } from "@/app/layout";
 export default function TrackOrderDetail() 
 {
     const { websiteModificationData } = useContext(HomeContext)
-    const { setmetaDataToDipslay} = useContext(ContextCheckApi)
+    const { setMetaDataToDisplay} = useContext(ContextCheckApi)
 
     useEffect(() => {
-    if(websiteModificationData)
+        if(websiteModificationData)
         {
             const metaHeadingData = {
                 title: websiteModificationData?.brand?.name,
@@ -45,7 +45,7 @@ export default function TrackOrderDetail()
                     url: ""
                 }
             }
-            setmetaDataToDipslay(metaHeadingData)
+            setMetaDataToDisplay(metaHeadingData)
         }
     }, [websiteModificationData]);
 
@@ -185,9 +185,7 @@ export default function TrackOrderDetail()
                                 <form className="btautrackorder-window" onSubmit={handleSearchOrderCode}>
                                     <input 
                                         type="text"     
-                                        style={{
-                                            border: `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,
-                                        }}
+                                        style={{border: `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,}}
                                         placeholder="Enter your order code" 
                                         name="orderhash" 
                                         value={orderhash} 
@@ -271,9 +269,9 @@ export default function TrackOrderDetail()
                                         <span className="d1mytrackorder-desk-span">My Order</span>
                                     </h3>
 
-                                    <div className="afcart">
+                                    <div className="afCart">
                                         <div className="">
-                                            <div className="dtcxcyczd0d1checkout">
+                                            <div className="dtCx-Cy-Cz-D-0-d1-Checkout">
 
                                                 <div className="dze0checkout"></div>
 
@@ -284,7 +282,7 @@ export default function TrackOrderDetail()
                                                             getTrackOrderData?.data?.trackOrder?.order_lines?.map((orderLine, index) => 
                                                             {
                                                                 return(
-                                                                    <MyOrders key={index} {...{orderLine}} />
+                                                                    <MyOrders key={orderLine?.id} {...{orderLine}} />
                                                                 )
                                                             })
                                                         }

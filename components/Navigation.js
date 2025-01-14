@@ -4,7 +4,7 @@ import HomeContext from '../contexts/HomeContext'
 
 function Navigation() 
 {
-    const {websiteModificationData,navigationcategories} = useContext(HomeContext)
+    const {websiteModificationData,navigationCategories} = useContext(HomeContext)
 
     useEffect(() => {
         const navbarCategories = window.document.getElementById("navbar-categories");
@@ -59,7 +59,7 @@ function Navigation()
                         <div className="left-bar-nested-div-level-one-nestd">
                             <nav className="navigation" id='navbar-categories'>
                             {
-                                navigationcategories?.map((category, index) =>
+                                navigationCategories?.map((category, index) =>
                                 {
                                     return(
                                         parseInt(category?.items?.length) > parseInt(0) &&

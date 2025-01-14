@@ -1,8 +1,8 @@
 "use client";
 import AccountAvailableStore from "@/components/account/AccountAvailableStore";
-import { usePostAfterAuthMutationHook, usePostMutationHook } from "@/components/reactquery/useQueryHook";
+import { usePostAfterAuthenticateMutationHook, usePostMutationHook } from "@/components/reactquery/useQueryHook";
 import HomeContext from "@/contexts/HomeContext";
-import { BRAND_GUID, BRANDSIMPLEGUID, loginAxios, PARTNER_ID, USERIMAGE } from "@/global/Axios";
+import { BRAND_GUID, BRAND_SIMPLE_GUID, loginAxios, PARTNER_ID, USERIMAGE } from "@/global/Axios";
 import { find_matching_postcode, setLocalStorage } from "@/global/Store";
 import moment from "moment";
 import Image from "next/image";
@@ -16,24 +16,24 @@ export default function AddressCreate({handleCreateAddress})
         setMenu,
         setSelectedFilter,
         setFilters,
-        setNavigationcategories,
-        setNavmobileindex,
-        setStoretodaydayname,
-        setStoretodayopeningtime,
-        setStoretodayclosingtime,
+        setNavigationCategories,
+        setnavMobileIndex,
+        setStoreToDayName,
+        setStoreToDayOpeningTime,
+        setStoreToDayClosingTime,
         setIsmenuavailable,
         storeGUID,
         setStoreGUID,
         setStoreName,
-        dayname,
-        daynumber,
+        dayName,
+        dayNumber,
         postcode,
         setPostcode,
-        setIsgobtnclicked,
-        setPostcodefororderamount,
+        setIsGoBtnClicked,
+        setPostCodeForOrderAmount,
         setStreet1,
         setStreet2,
-        setCommingSoon,
+        setComingSoon,
     } = useContext(HomeContext);
 
     const [addressObj, setAddressObj] = useState({
@@ -65,7 +65,7 @@ export default function AddressCreate({handleCreateAddress})
 
     /** Handle Search Postcode. */
 
-    const [deliverymatrix, setDeliverymatrix] = useState(null);
+    const [deliveryMatrix, setDeliveryMatrix] = useState(null);
     const [availableStore, setAvailableStore] = useState([]);
     const [isStoreReady, setIsStoreReady] = useState(false);
 
@@ -102,15 +102,15 @@ export default function AddressCreate({handleCreateAddress})
           grabPostcodeOutWard = filterPostcode.substring(0, 2);
         }
   
-        const ukPostcodeData = {
+        const ukpostcodeData = {
           postcode: filterPostcode,
           brand_guid: BRAND_GUID,
-          dayname: dayName,
-          daynumber: dayNumber,
+          dayName: dayName,
+          dayNumber: dayNumber,
           outwardString: grabPostcodeOutWard,
         };
         
-        ukPostcodeMutate(ukPostcodeData)
+        ukPostcodeMutate(ukpostcodeData)
     }
     
     const onWebsitePostcodeError = (error) => {
@@ -121,7 +121,7 @@ export default function AddressCreate({handleCreateAddress})
         const { deliveryMartix, availableStore } = data?.data?.data
 
         const matrix = deliveryMartix?.delivery_matrix_rows
-        find_matching_postcode(matrix, addressObj?.typedPostCode, setDeliverymatrix);
+        find_matching_postcode(matrix, addressObj?.typedPostCode, setDeliveryMatrix);
         setSelectedStores((prevData) => ({...prevData, address: data?.data?.data, validPostcode: addressObj?.postcode}))
 
         setAddressObj((prevData) => ({...prevData, 
@@ -165,7 +165,7 @@ export default function AddressCreate({handleCreateAddress})
     const onSuccess = (data) => {
         const { customer } = data?.data?.data
         
-        setLocalStorage(`${BRANDSIMPLEGUID}tempcustomer`, customer)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}tempcustomer`, customer)
         /** Now set all the data to make localStorage. */
 
         const selectedStoreData = {
@@ -174,12 +174,12 @@ export default function AddressCreate({handleCreateAddress})
             telephone: selectedStores?.storeTelephone,
         };
         
-        setPostcodefororderamount(deliverymatrix?.postcode);
-        setLocalStorage(`${BRANDSIMPLEGUID}delivery_matrix`,deliverymatrix);
+        setPostCodeForOrderAmount(deliveryMatrix?.postcode);
+        setLocalStorage(`${BRAND_SIMPLE_GUID}delivery_matrix`,deliveryMatrix);
 
-        setLocalStorage(`${BRANDSIMPLEGUID}address`, selectedStores?.address);
-        setLocalStorage(`${BRANDSIMPLEGUID}user_valid_postcode`, selectedStores?.validPostcode);
-        setLocalStorage(`${BRANDSIMPLEGUID}user_selected_store`, selectedStoreData);
+        setLocalStorage(`${BRAND_SIMPLE_GUID}address`, selectedStores?.address);
+        setLocalStorage(`${BRAND_SIMPLE_GUID}user_valid_postcode`, selectedStores?.validPostcode);
+        setLocalStorage(`${BRAND_SIMPLE_GUID}user_selected_store`, selectedStoreData);
 
         
         authMenuMutate({
@@ -190,7 +190,7 @@ export default function AddressCreate({handleCreateAddress})
         handleCreateAddress()
     }
 
-    const {mutate: addressPostMutation, isLoading, isSuccess, reset} = usePostAfterAuthMutationHook("customer-update", `/customer-address-create`, onSuccess, onError)
+    const {mutate: addressPostMutation, isLoading, isSuccess, reset} = usePostAfterAuthenticateMutationHook("customer-update", `/customer-address-create`, onSuccess, onError)
 
     if(isSuccess)
     {
@@ -201,7 +201,7 @@ export default function AddressCreate({handleCreateAddress})
 
     const onAuthError = (error) => {
         setMenu([])
-        setCommingSoon(true)
+        setComingSoon(true)
     }
 
     const onAuthMenuSuccess = (data) => {
@@ -219,7 +219,7 @@ export default function AddressCreate({handleCreateAddress})
         if(convertToJSobj === null || convertToJSobj === undefined)
         {
             setMenu([])
-            setCommingSoon(true)
+            setComingSoon(true)
             return
         }
         
@@ -235,31 +235,31 @@ export default function AddressCreate({handleCreateAddress})
                 if (timePeriods?.[0]?.start_time >= dateTime && dateTime <= timePeriods?.[0]?.end_time) 
                 {
                 setIsTimeToClosed(true);
-                setAtfirstload(false);
+                setAtFirstLoad(false);
                 }
             }
         }
         setMenu(convertToJSobj);
 
-        const getFilterDataFromObj = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}filter`));
+        const getFilterDataFromObj = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`));
 
         if (getFilterDataFromObj === null) 
         {
-            setLocalStorage(`${BRANDSIMPLEGUID}filter`, convertToJSobj.filters[0]);
+            setLocalStorage(`${BRAND_SIMPLE_GUID}filter`, convertToJSobj.filters[0]);
         }
 
         setSelectedFilter(getFilterDataFromObj === null? convertToJSobj.filters[0] : getFilterDataFromObj);
         setFilters(convertToJSobj.filters);
-        setNavigationcategories(convertToJSobj.categories);
-        setNavmobileindex(convertToJSobj.categories[0].id);
+        setNavigationCategories(convertToJSobj.categories);
+        setnavMobileIndex(convertToJSobj.categories[0].id);
 
         const getDayInformation = convertToJSobj.menus[0].service_availability?.find((dayinformation) =>dayinformation.day_of_week === moment().format("dddd").toLowerCase());
-        setStoretodaydayname(moment().format("dddd"));
-        setStoretodayopeningtime(getDayInformation.time_periods[0].start_time);
-        setStoretodayclosingtime(getDayInformation.time_periods[0].end_time);
+        setStoreToDayName(moment().format("dddd"));
+        setStoreToDayOpeningTime(getDayInformation.time_periods[0].start_time);
+        setStoreToDayClosingTime(getDayInformation.time_periods[0].end_time);
     }
 
-    const {mutate: authMenuMutate, isSuccess: authMenuSuccess, reset: authMenuReset} = usePostAfterAuthMutationHook('auth-menu', `/menu-auth`, onAuthMenuSuccess, onAuthError)
+    const {mutate: authMenuMutate, isSuccess: authMenuSuccess, reset: authMenuReset} = usePostAfterAuthenticateMutationHook('auth-menu', `/menu-auth`, onAuthMenuSuccess, onAuthError)
 
     if(authMenuSuccess)
     {
@@ -300,7 +300,7 @@ export default function AddressCreate({handleCreateAddress})
     // code is working
 
     useEffect(() => {
-        const customer = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}tempcustomer`))
+        const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
         
         setAddressObj((prevData) => ({
             ...prevData,

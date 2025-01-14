@@ -4,7 +4,7 @@ import HomeContext from '../contexts/HomeContext'
 
 function MobileTopBar() 
 {
-    const {navigationcategories, websiteModificationData} = useContext(HomeContext)
+    const {navigationCategories, websiteModificationData} = useContext(HomeContext)
     
     useEffect(() => {
         const navbarCategories = document.getElementById("navbar-categories");
@@ -91,11 +91,11 @@ function MobileTopBar()
         //             <div className="alaqbbbcnocqavlcakawtopbar-div"   >
 
         //                 {
-        //                     navigationcategories?.map((category, index) => 
+        //                     navigationCategories?.map((category, index) => 
         //                     {
         //                         return(
         //                             parseInt(category?.items?.length) > parseInt(0) &&
-        //                             <button style={{transition: "transform 0.3s ease",transform: `translate3d(${scrollDirection === 'Down' ? `-${scrollPosition}px` : `${scrollPosition}px`}, 0px, 0px)`}}  key={index} className={`bycsc0ctnmalc8bcc6nptopbar-div ${navmobileindex === index ? "np" : ""}`} onClick={() => handleCategoryClick(index)}>
+        //                             <button style={{transition: "transform 0.3s ease",transform: `translate3d(${scrollDirection === 'Down' ? `-${scrollPosition}px` : `${scrollPosition}px`}, 0px, 0px)`}}  key={index} className={`bycsc0ctnmalc8bcc6nptopbar-div ${navMobileIndex === index ? "np" : ""}`} onClick={() => handleCategoryClick(index)}>
         //                                 <div className="bycsd3d4topbar-div" style={{color: (websiteModificationData?.websiteModificationLive !== null && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor !== null) && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor}}>
         //                                     {category.title}
         //                                 </div>
@@ -112,7 +112,7 @@ function MobileTopBar()
         <div className='top-bar navbar-div' style={{background: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}}>
             <ul className="navbar" id="navbar-categories" style={{background: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}}>
                 {
-                    navigationcategories?.map((category, index) => {
+                    navigationCategories?.map((category, index) => {
                         
                         return(
                             parseInt(category?.items?.length) > parseInt(0) &&

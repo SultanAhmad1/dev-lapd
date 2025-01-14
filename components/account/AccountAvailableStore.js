@@ -1,6 +1,6 @@
 "use client";
 import HomeContext from "@/contexts/HomeContext";
-import { axiosPrivate, BRAND_GUID, BRANDSIMPLEGUID, PARTNER_ID } from "@/global/Axios";
+import { axiosPrivate, BRAND_GUID, BRAND_SIMPLE_GUID, PARTNER_ID } from "@/global/Axios";
 import { setLocalStorage } from "@/global/Store";
 import React, { Fragment, useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -14,27 +14,27 @@ export default function AccountAvailableStore({availablestores})
     setMenu,
     setSelectedFilter,
     setFilters,
-    setNavigationcategories,
-    setNavmobileindex,
-    setStoretodaydayname,
-    setStoretodayopeningtime,
-    setStoretodayclosingtime,
-    setIsmenuavailable,
+    setNavigationCategories,
+    setNavMobileIndex,
+    setStoreToDayName,
+    setStoreToDayOpeningTime,
+    setStoreToDayClosingTime,
+    setIsMenuAvailable,
     storeGUID,
     setStoreGUID,
     setStoreName,
-    dayname,
-    daynumber,
+    dayName,
+    dayNumber,
     postcode,
     setPostcode,
-    setAtfirstload,
-    setIsgobtnclicked,
-    setPostcodefororderamount,
-    deliverymatrix,
-    setDeliverymatrix,
+    setAtFirstLoad,
+    setIsGoBtnClicked,
+    setPostCodeForOrderAmount,
+    deliveryMatrix,
+    setDeliveryMatrix,
     setStreet1,
     setStreet2,
-    setCommingSoon,
+    setComingSoon,
   } = useContext(HomeContext);
 
   const route = useRouter();
@@ -42,7 +42,7 @@ export default function AccountAvailableStore({availablestores})
   function handleLocationSelect(storeGUID, storeName, storeTelephone) 
   {
     setStoreName(storeName);
-    setAtfirstload(false);
+    setAtFirstLoad(false);
     setStoreGUID(storeGUID);
     if (parseInt(availablestores.length) > parseInt(0)) {
       for (const store of availablestores) {
@@ -59,7 +59,7 @@ export default function AccountAvailableStore({availablestores})
       store: storeName,
       telephone: storeTelephone,
     };
-    setLocalStorage(`${BRANDSIMPLEGUID}user_selected_store`, selectedStoreData);
+    setLocalStorage(`${BRAND_SIMPLE_GUID}user_selected_store`, selectedStoreData);
   }
 
   useEffect(() => {

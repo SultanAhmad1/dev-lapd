@@ -4,7 +4,7 @@
 import HomeContext from "@/contexts/HomeContext";
 import { useContext, useEffect, useState } from "react";
 import { usePostMutationHook, useVerifyOTP } from "../reactquery/useQueryHook";
-import { BRAND_GUID, BRANDSIMPLEGUID } from "@/global/Axios";
+import { BRAND_GUID, BRAND_SIMPLE_GUID } from "@/global/Axios";
 import { setLocalStorage } from "@/global/Store";
 
 export default function OTP({handleBack}) 
@@ -59,7 +59,7 @@ export default function OTP({handleBack})
 
         const otpCode = Object.values(inputValues).join('')
         
-        const customerData = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}tempcustomer`))
+        const customerData = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
 
         const otpData = {
             customerId: customerData?.id,
@@ -80,7 +80,7 @@ export default function OTP({handleBack})
     
     const onOTPSuccess = (data) => {
         
-        setLocalStorage(`${BRANDSIMPLEGUID}websiteToken`, data?.data)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}websiteToken`, data?.data)
         handleBoolean(true,'isCustomerVerified')
         if(pathnameArray.includes('registeration'))
         {
@@ -89,7 +89,7 @@ export default function OTP({handleBack})
         }
         else if(pathnameArray.includes('login'))
         {
-            setLocalStorage(`${BRANDSIMPLEGUID}confirmedcode`, true)
+            setLocalStorage(`${BRAND_SIMPLE_GUID}confirmedcode`, true)
             window.location.href = '/login'
             return
         }
@@ -106,7 +106,7 @@ export default function OTP({handleBack})
         setCanResend(false);
         setErrormessage("")
 
-        const customerData = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}tempcustomer`))
+        const customerData = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
 
         const resendData = {
             brand: BRAND_GUID,
@@ -127,7 +127,7 @@ export default function OTP({handleBack})
      */
 
     useEffect(() => {
-        const customer = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}tempcustomer`))
+        const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
         
         
         
@@ -140,14 +140,14 @@ export default function OTP({handleBack})
             }
         }
 
-        const otpExpired = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}otpexpired`))
+        const otpExpired = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}otpexpired`))
         
         if((otpExpired !== null && otpExpired !== undefined) && otpExpired)
         {
             setCounter(60)
             setCanResend(true);
             setErrormessage("")
-            setLocalStorage(`${BRANDSIMPLEGUID}otpexpired`, false)
+            setLocalStorage(`${BRAND_SIMPLE_GUID}otpexpired`, false)
             setInputValues((prevData) => ({
                 ...prevData,
                 input1: '',
@@ -174,7 +174,7 @@ export default function OTP({handleBack})
         // {
           if (counter === 0) {
             setCanResend(true);
-            setLocalStorage(`${BRANDSIMPLEGUID}otpexpired`, true)
+            setLocalStorage(`${BRAND_SIMPLE_GUID}otpexpired`, true)
             setErrormessage("OTP code has been expired.")
             return;
           }

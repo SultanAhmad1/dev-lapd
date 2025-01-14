@@ -8,7 +8,7 @@ import PostcodeModal from "@/components/modals/PostcodeModal";
 import OtpVerifyModal from "@/components/OtpVerifyModal";
 import { useLoginMutationHook, usePatchMutationHook, usePostMutationHook } from "@/components/reactquery/useQueryHook";
 import HomeContext from "@/contexts/HomeContext";
-import { BRANDSIMPLEGUID, BRAND_GUID, IMAGE_URL_Without_Storage, PARTNER_ID, axiosPrivate } from "@/global/Axios";
+import { BRAND_SIMPLE_GUID, BRAND_GUID, IMAGE_URL_Without_Storage, PARTNER_ID, axiosPrivate } from "@/global/Axios";
 import { getAmountConvertToFloatWithFixed, setLocalStorage, validatePhoneNumber } from "@/global/Store";
 import { listtime, round15 } from "@/global/Time";
 import moment from "moment";
@@ -27,20 +27,20 @@ function UserForm() {
     booleanObj,
     dayOpeningClosingTime,
     isTimeToClosed,
-    couponDiscountapplied,
+    couponDiscountApplied,
     totalOrderAmountValue,
-    settotalOrderAmountValue,
+    setTotalOrderAmountValue,
     setIsTimeToClosed,
     storeGUID,
-    cartdata,
+    cartData,
     postcode,
     street1,
     street2,
     isLocationBrandOnline,
 
     setIsLocationBrandOnline,
-    setAtfirstload,
-    setIscartbtnclicked,
+    setAtFirstLoad,
+    setIsCartBtnClicked,
     setHeaderCartBtnDisplay,
     setHeaderPostcodeBtnDisplay,
     handleBoolean,
@@ -48,7 +48,7 @@ function UserForm() {
   } = useContext(HomeContext);
 
   
-  const { setmetaDataToDipslay} = useContext(ContextCheckApi)
+  const { setMetaDataToDisplay} = useContext(ContextCheckApi)
 
   useEffect(() => {
     if(websiteModificationData)
@@ -65,7 +65,7 @@ function UserForm() {
           url: ""
         }
       }
-      setmetaDataToDipslay(metaHeadingData)
+      setMetaDataToDisplay(metaHeadingData)
     }
   }, [websiteModificationData]);
 
@@ -84,7 +84,7 @@ function UserForm() {
     isEmailInputToggle:true,
     isPhoneToggle:true,
     isPhoneinputToggle:true,
-    isFirstnameToggle:true,
+    isfirstNameToggle:true,
     isPostCodeClicked: true,
     isChangePostcodeClicked: false,
 
@@ -103,8 +103,8 @@ function UserForm() {
     email: "",
     phone: "",
     password: "",
-    lastname: "",
-    firstname: "",
+    lastName: "",
+    firstName: "",
     doorhousename: "",
     driverinstruction: "",
     openingtime: "",
@@ -230,11 +230,11 @@ function UserForm() {
     if(!toggleObjects?.isCustomerHasPassword)
     {
       setIsOTP(true)
-      setLocalStorage(`${BRANDSIMPLEGUID}tempcustomer`, data?.data?.data?.customer)
+      setLocalStorage(`${BRAND_SIMPLE_GUID}tempcustomer`, data?.data?.data?.customer)
       return
     }
 
-    setLocalStorage(`${BRANDSIMPLEGUID}websiteToken`, data?.data)
+    setLocalStorage(`${BRAND_SIMPLE_GUID}websiteToken`, data?.data)
     handleBoolean(true,'isCustomerVerified')
 
     settoggleObjects((prevData) => ({...prevData, authButtonDisabledUntilPasswordChanged: false, isAuthed: true,isCustomerHasPassword: true}))
@@ -251,7 +251,7 @@ function UserForm() {
 
   const handleRegisteration = () => {
 
-    const getLocationId = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}user_selected_store`))
+    const getLocationId = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
     const registerationData = {
       location: getLocationId?.display_id,
       brand: BRAND_GUID,
@@ -277,7 +277,7 @@ function UserForm() {
     // once otp is verfied, then get the customer password with confirmpassword field.
 
     setIsOTP(true)
-    setLocalStorage(`${BRANDSIMPLEGUID}tempcustomer`, data?.data?.data?.customer)
+    setLocalStorage(`${BRAND_SIMPLE_GUID}tempcustomer`, data?.data?.data?.customer)
   }
 
   const {mutate: registerationMutation, isLoading: registerLoading, isError: registerError, isSuccess: registerSuccess, reset: registerReset} = usePostMutationHook('registeration', '/website-registeration', onRegisterationSuccess, onRegisterationError)
@@ -285,7 +285,7 @@ function UserForm() {
   async function fetchLocationDeliveryEstimate() {
     // Get the current day name
     try {
-      const placeOrderGetStoreGUID = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}user_selected_store`));
+      const placeOrderGetStoreGUID = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`));
 
       const data = {
         location_guid: placeOrderGetStoreGUID === null ? storeGUID : placeOrderGetStoreGUID?.display_id,
@@ -390,7 +390,7 @@ function UserForm() {
   }
   
   useEffect(() => {
-    const checkedLogin = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}websiteToken`))
+    const checkedLogin = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}websiteToken`))
     
     if(checkedLogin !== null)
     {
@@ -401,7 +401,7 @@ function UserForm() {
       settoggleObjects((prevData) => ({...prevData, isAuthed: false, isCustomerHasPassword: false}))
     } 
 
-    const customer = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}tempcustomer`))
+    const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
 
     if(customer !== undefined || customer !== null)
     {
@@ -409,8 +409,8 @@ function UserForm() {
       setCustomerDetailObj((prevData) => ({...prevData,
         email: customer?.email,
         phone: customer?.phone,
-        lastname: customer?.last_name,
-        firstname: customer?.first_name,
+        lastName: customer?.last_name,
+        firstName: customer?.first_name,
         doorhousename: filterAddress?.house_no_name,
         driverinstruction: filterAddress?.driver_instructions,
       }));
@@ -422,7 +422,7 @@ function UserForm() {
     
     // Check if the cart has not any item then back to home page.
     // Check the brand is active or not.
-    const useAuthenticate = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}websiteToken`))
+    const useAuthenticate = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}websiteToken`))
 
     if(useAuthenticate !== null)
     {
@@ -452,17 +452,17 @@ function UserForm() {
       }
     }
 
-    const placeOrderLocalStorageTotal = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}total_order_value_storage`));
-    settotalOrderAmountValue(placeOrderLocalStorageTotal === null ? totalOrderAmountValue : getAmountConvertToFloatWithFixed(JSON.parse(placeOrderLocalStorageTotal),2));
+    const placeOrderLocalStorageTotal = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`));
+    setTotalOrderAmountValue(placeOrderLocalStorageTotal === null ? totalOrderAmountValue : getAmountConvertToFloatWithFixed(JSON.parse(placeOrderLocalStorageTotal),2));
 
-    setIscartbtnclicked(false);
+    setIsCartBtnClicked(false);
     fetchLocationDeliveryEstimate();
     
 
     setHeaderCartBtnDisplay(false);
     setHeaderPostcodeBtnDisplay(false);
 
-    const getCustomerInforation = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}customer_information`));
+    const getCustomerInforation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`));
 
     if (getCustomerInforation !== null) 
     {
@@ -472,8 +472,8 @@ function UserForm() {
         driverinstruction: getCustomerInforation.driverinstruction,
         email: getCustomerInforation.email,
         phone: getCustomerInforation.phone,
-        firstname: getCustomerInforation.firstname,
-        lastname: getCustomerInforation.lastname,
+        firstName: getCustomerInforation.firstName,
+        lastName: getCustomerInforation.lastName,
       }))
       
       settoggleObjects((prevData) => ({...prevData, isByEmailClicked: getCustomerInforation.isbyemailclicked, isBySmsClicked: getCustomerInforation.isbysmsclicked}))
@@ -552,7 +552,7 @@ function UserForm() {
 
   function handleSaveMyDetails(isActive) {
 
-    if (customerDetailObj?.doorhousename === "" || customerDetailObj?.email === "" || customerDetailObj?.phone === "" || customerDetailObj?.firstname === "" || customerDetailObj?.lastname === "") 
+    if (customerDetailObj?.doorhousename === "" || customerDetailObj?.email === "" || customerDetailObj?.phone === "" || customerDetailObj?.firstName === "" || customerDetailObj?.lastName === "") 
     {
       setSaveMyDetailsError("Please check * (asterisk) mark field and fill them.");
       setIsavefasterdetailsclicked(false);
@@ -580,12 +580,12 @@ function UserForm() {
       return
     }
 
-    // if(parseInt(cartdata?.length) === parseInt(0))
+    // if(parseInt(cartData?.length) === parseInt(0))
     // {
 
     // }
 
-    if (parseInt(customerDetailObj?.doorhousename.length) === parseInt(0) || parseInt(customerDetailObj?.email.length) === parseInt(0) || parseInt(customerDetailObj?.phone.length) === parseInt(0) || parseInt(customerDetailObj?.firstname.length) === parseInt(0) ||parseInt(customerDetailObj?.lastname.length) === parseInt(0)) 
+    if (parseInt(customerDetailObj?.doorhousename.length) === parseInt(0) || parseInt(customerDetailObj?.email.length) === parseInt(0) || parseInt(customerDetailObj?.phone.length) === parseInt(0) || parseInt(customerDetailObj?.firstName.length) === parseInt(0) ||parseInt(customerDetailObj?.lastName.length) === parseInt(0)) 
     {
       setCustomerDetailObj((prevData) => ({...prevData, PayNowBottomError: "Please check * (asterisk) mark field and fill them."}))
       return;
@@ -598,19 +598,19 @@ function UserForm() {
       return;
     }
 
-    // if(parseInt(cartdata.length) === parseInt(0))
+    // if(parseInt(cartData.length) === parseInt(0))
     // {
     //   route.push('/')
     //   return
     // }
     
-    if(parseInt(cartdata.length) > parseInt(0))
+    if(parseInt(cartData.length) > parseInt(0))
     {
-      const deliveryMatrix = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}delivery_matrix`))
+      const deliveryMatrix = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`))
 
       let totalOrder = 0
 
-      for (const total of cartdata) 
+      for (const total of cartData) 
       {
         totalOrder = parseFloat(totalOrder) + parseFloat(total?.total_order_amount);
       }
@@ -628,23 +628,23 @@ function UserForm() {
     }
     setCustomerDetailObj((prevData) => ({...prevData, PayNowBottomError: ""}))
     
-    const subTotalOrderLocal        = JSON.parse(JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}sub_order_total_local`))) === null ? null: getAmountConvertToFloatWithFixed(JSON.parse(JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}sub_order_total_local`))),2);
-    const localStorageTotal         = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}total_order_value_storage`)) === null? null: JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}total_order_value_storage`));
-    const orderAmountDiscountValue  = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}order_amount_number`)) === null ? null: JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}order_amount_number`));
-    const orderFilter               = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}filter`));
-    const deliveryFeeLocalStorage   = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}delivery_fee`)) === null ? null : getAmountConvertToFloatWithFixed(JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}delivery_fee`)),2);
-    const getCouponCode             = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}applied_coupon`));
+    const subTotalOrderLocal        = JSON.parse(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`))) === null ? null: getAmountConvertToFloatWithFixed(JSON.parse(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`))),2);
+    const localStorageTotal         = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`)) === null? null: JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`));
+    const orderAmountdiscountValue  = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_number`)) === null ? null: JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_number`));
+    const orderFilter               = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`));
+    const deliveryFeeLocalStorage   = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_fee`)) === null ? null : getAmountConvertToFloatWithFixed(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_fee`)),2);
+    const getCouponCode             = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}applied_coupon`));
 
-    const couponCodes               = parseInt(getCouponCode.length) > parseInt(0) ? getCouponCode : couponDiscountapplied;
+    const couponCodes               = parseInt(getCouponCode.length) > parseInt(0) ? getCouponCode : couponDiscountApplied;
     const updatedDeliveryTime       = moment(`${moment().format("YYYY-MM-DD")} ${deliverytime}`,"YYYY-MM-DD HH:mm:ss");
 
-    let orderFromDatabaseGUID = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}order_guid`));
+    let orderFromDatabaseGUID = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_guid`));
 
     const customerInformationInLocalStorage = {
       email: customerDetailObj?.email,
       phone: customerDetailObj?.phone,
-      lastname: customerDetailObj?.lastname,
-      firstname: customerDetailObj?.firstname,
+      lastName: customerDetailObj?.lastName,
+      firstName: customerDetailObj?.firstName,
       deliverytime: deliverytime,
       doorhousename: customerDetailObj?.doorhousename,
       isbysmsclicked: customerDetailObj?.isBySmsClicked,
@@ -652,10 +652,10 @@ function UserForm() {
       driverinstruction: customerDetailObj?.driverinstruction,
     };
 
-    setLocalStorage(`${BRANDSIMPLEGUID}customer_information`,customerInformationInLocalStorage);
+    setLocalStorage(`${BRAND_SIMPLE_GUID}customer_information`,customerInformationInLocalStorage);
 
-    const customerAuth = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}websiteToken`))
-    const customerTemp = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}tempcustomer`))
+    const customerAuth = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}websiteToken`))
+    const customerTemp = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
 
     const filterAddress = customerTemp?.addresses?.find(address => address?.is_default_address === 1)
 
@@ -668,12 +668,12 @@ function UserForm() {
       street1:            street1,
       street2:            street2,
       postcode:           postcode,
-      lastname:           customerDetailObj?.lastname,
-      firstname:          customerDetailObj?.firstname,
+      lastName:           customerDetailObj?.lastName,
+      firstName:          customerDetailObj?.firstName,
       password:           customerDetailObj?.password,
       store:              storeGUID,
       brand:              BRAND_GUID,
-      order:              cartdata,
+      order:              cartData,
       filterId:           orderFilter === null ? selectedFilter?.id : orderFilter.id,
       filterName:         orderFilter === null ? selectedFilter?.name : orderFilter.name,
       partner:            PARTNER_ID,
@@ -687,14 +687,14 @@ function UserForm() {
       sub_total_order:    subTotalOrderLocal,
       
       
-      orderAmountDiscount_guid: orderAmountDiscountValue,
+      orderAmountDiscount_guid: orderAmountdiscountValue,
       delivery_estimate_time:   updatedDeliveryTime._i,
       
       // delivery_estimate_time: moment(deliverytime, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
       delivery_fee:             deliveryFeeLocalStorage,
       coupons:                  couponCodes,
       order_guid:               orderFromDatabaseGUID !== null ? JSON.parse(orderFromDatabaseGUID) : null,
-      is_verified:              booleanObj?.isCustomerVerfied
+      is_verified:              booleanObj?.isCustomerVerified
     };
     
     if (orderFromDatabaseGUID !== null) { 
@@ -703,7 +703,6 @@ function UserForm() {
     }
 
     storeMutation(data)
-
   }
 
   const onStoreSuccess = (data) => {
@@ -711,7 +710,7 @@ function UserForm() {
     const responseData = data?.data?.data?.order?.order_total;
     if (data?.data?.status === "success") 
     {
-      setLocalStorage(`${BRANDSIMPLEGUID}order_guid`,data?.data?.data?.order?.external_order_id);
+      setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,data?.data?.data?.order?.external_order_id);
       if (parseFloat(responseData) === parseFloat(0.0)) 
       {
         route.push(`/track-order/${data?.data?.data?.order?.external_order_id}`);
@@ -733,7 +732,7 @@ function UserForm() {
     const responseData = data?.data?.data?.order?.order_total;
     if (data?.data?.status === "success") 
     {
-      setLocalStorage(`${BRANDSIMPLEGUID}order_guid`,data?.data?.data?.order?.external_order_id);
+      setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,data?.data?.data?.order?.external_order_id);
       if (parseFloat(responseData) === parseFloat(0.0)) 
       {
         route.push(`/track-order/${data?.data?.data?.order?.external_order_id}`);
@@ -770,7 +769,7 @@ function UserForm() {
                     <div className="d1g1checkout-desk">
                       <div className="allzc5checkout-desk">
                         <div className="kgcheckout-desk">
-                          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
+                          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8-c7-cc-cd-checkout">
                             <g clipPath="url(#clip0)">
                               <path d="M17.583 5.166a7.896 7.896 0 00-11.166 0c-3.084 3.083-3.084 8.167 0 11.25L12 21.999l5.583-5.666c3.084-3 3.084-8.084 0-11.167zM12 12.416c-.917 0-1.667-.75-1.667-1.667 0-.916.75-1.666 1.667-1.666s1.667.75 1.667 1.666c0 .917-.75 1.667-1.667 1.667z"></path>
                             </g>
@@ -793,7 +792,7 @@ function UserForm() {
                           </p>
                         </div>
 
-                        <button type="button" className="chcicjckhacheckout-desk-btn" name="isPostCodeClicked" onClick={handleToggles}>
+                        <button type="button" className="chic-cj-ckhacheckout-desk-btn" name="isPostCodeClicked" onClick={handleToggles}>
                           {toggleObjects?.isPostCodeClicked ? "Edit" : "Save"}
                         </button>
                       </div>
@@ -809,7 +808,7 @@ function UserForm() {
                           </div>
                         </div>
                       }
-                      <div className="alcheckout-desk">
+                      <div className="al-checkout-desk">
                         <div className="spacer _40"></div>
                         <div className="edhtb9d1checkout-desk"></div>
                       </div>
@@ -838,18 +837,18 @@ function UserForm() {
                           }
                         </div>
 
-                        <button type="button" name="isDoorInputDisplayClicked" className="chcicjckhacheckout-desk-btn" onClick={handleToggles}>
+                        <button type="button" name="isDoorInputDisplayClicked" className="chic-cj-ckhacheckout-desk-btn" onClick={handleToggles}>
                           {toggleObjects?.isDoorInputDisplayClicked ? "Save" : "Add"}
                         </button>
                       </div>
 
                       {
                         toggleObjects?.isDoorInputDisplayClicked && 
-                        <div className="btaucheckout-window">
+                        <div className="bt-au-checkout-window">
                           <input type="text" ref={addDoorNumberRef} placeholder="Enter door number or name" name="doorhousename" value={customerDetailObj?.doorhousename} className={`door_number ${parseInt(customerDetailObj?.doorhousename?.length) > parseInt(0)? "parse-success": "parse-erorr"}`} onChange={handleInputs}/>
                         </div>
                       }
-                      <div className="alcheckout-desk">
+                      <div className="al-checkout-desk">
                         <div className="spacer _40"></div>
                         <div className="edhtb9d1checkout-desk"></div>
                       </div>
@@ -877,14 +876,14 @@ function UserForm() {
                           }
                         </div>
 
-                        <button type="button" name="isAddDriverInstructionClicked" className="chcicjckhacheckout-desk-btn" onClick={handleToggles}>
+                        <button type="button" name="isAddDriverInstructionClicked" className="chic-cj-ckhacheckout-desk-btn" onClick={handleToggles}>
                           {toggleObjects?.isAddDriverInstructionClicked ? "Save" : "Add"}
                         </button>
                       </div>
 
                       {
                         toggleObjects?.isAddDriverInstructionClicked && 
-                        <div className="btaucheckout-window">
+                        <div className="bt-au-checkout-window">
                           <textarea
                             rows="2"
                             spellCheck="false"
@@ -910,7 +909,7 @@ function UserForm() {
                   <div className="d1g1checkout-desk">
                     <div className="allzc5checkout-desk">
                       <div className="f2checkout-desk">
-                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
+                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8-c7-cc-cd-checkout">
                           <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
                         </svg>
                       </div>
@@ -930,14 +929,14 @@ function UserForm() {
                         }
                       </div>
 
-                      <button type="button" name="isEmailInputToggle" className="chcicjckhacheckout-desk-btn" onClick={handleToggles}>
+                      <button type="button" name="isEmailInputToggle" className="chic-cj-ckhacheckout-desk-btn" onClick={handleToggles}>
                         {toggleObjects?.isEmailInputToggle ? "Save" : "Add"}
                       </button>
                     </div>
 
                     {
                       toggleObjects?.isEmailInputToggle && 
-                      <div className="btaucheckout-window">
+                      <div className="bt-au-checkout-window">
                         <input
                           required
                           type="email"
@@ -949,7 +948,7 @@ function UserForm() {
                         />
                       </div>
                     }
-                    <div className="alcheckout-desk">
+                    <div className="al-checkout-desk">
                       <div className="spacer _40"></div>
                       <div className="edhtb9d1checkout-desk"></div>
                     </div>
@@ -958,7 +957,7 @@ function UserForm() {
                   <div className="d1g1checkout-desk">
                     <div className="allzc5checkout-desk">
                       <div className="f2checkout-desk">
-                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
+                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8-c7-cc-cd-checkout">
                           <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
                         </svg>
                       </div>
@@ -977,25 +976,26 @@ function UserForm() {
                         }
                       </div>
 
-                      <button type="button" className="chcicjckhacheckout-desk-btn" name="isPhoneinputToggle" onClick={handleToggles}>
+                      <button type="button" className="chic-cj-ckhacheckout-desk-btn" name="isPhoneinputToggle" onClick={handleToggles}>
                         {toggleObjects?.isPhoneinputToggle ? "Save " : "Add"}
                       </button>
                     </div>
 
                     {
                       toggleObjects?.isPhoneinputToggle && 
-                      <div className="btaucheckout-window">
+                      <div className="bt-au-checkout-window">
                         <input
                           type="number"
                           name="phone"
                           value={customerDetailObj?.phone}
+                          onWheel={(e) => e.target.blur()}
                           onChange={handleInputs}
                           placeholder="Enter phone number"
                           className={`email-checkout ${parseInt(customerDetailObj?.phone?.length) > parseInt(0) ? "parse-success" : "parse-erorr"}`}
                         />
                       </div>
                     }
-                    <div className="alcheckout-desk">
+                    <div className="al-checkout-desk">
                       <div className="spacer _40"></div>
                       <div className="edhtb9d1checkout-desk"></div>
                     </div>
@@ -1004,7 +1004,7 @@ function UserForm() {
                   <div className="d1g1checkout-desk">
                     <div className="allzc5checkout-desk">
                       <div className="f2checkout-desk">
-                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
+                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8-c7-cc-cd-checkout">
                           <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
                         </svg>
                       </div>
@@ -1014,48 +1014,48 @@ function UserForm() {
                           Add name <span style={{ color: "red" }}>*</span>
                         </span>
                         {
-                          !toggleObjects?.isFirstnameToggle && 
+                          !toggleObjects?.isfirstNameToggle && 
                           <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
                             <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
-                              {customerDetailObj?.firstname} {customerDetailObj?.lastname}
+                              {customerDetailObj?.firstName} {customerDetailObj?.lastName}
                             </span>
                           </p>
                         }
                       </div>
 
-                      <button type="button" className="chcicjckhacheckout-desk-btn" name="isFirstnameToggle" onClick={handleToggles}>
-                        {toggleObjects?.isFirstnameToggle ? "Save" : "Add"}
+                      <button type="button" className="chic-cj-ckhacheckout-desk-btn" name="isfirstNameToggle" onClick={handleToggles}>
+                        {toggleObjects?.isfirstNameToggle ? "Save" : "Add"}
                       </button>
                     </div>
 
                     {
-                      toggleObjects?.isFirstnameToggle && 
+                      toggleObjects?.isfirstNameToggle && 
                       <>
-                        <div className="btaucheckout-window">
+                        <div className="bt-au-checkout-window">
                           <input
                             type="text"
-                            value={customerDetailObj?.firstname}
-                            name="firstname"
+                            value={customerDetailObj?.firstName}
+                            name="firstName"
                             onChange={handleInputs}
                             placeholder="Enter first name"
                             style={{ marginBottom: "4px" }}
-                            className={`email-checkout ${parseInt(customerDetailObj?.firstname?.length) > parseInt(0)? "parse-success": "parse-erorr"}`}
+                            className={`email-checkout ${parseInt(customerDetailObj?.firstName?.length) > parseInt(0)? "parse-success": "parse-erorr"}`}
                           />
                         </div>
 
-                        <div className="btaucheckout-window">
+                        <div className="bt-au-checkout-window">
                           <input
                             type="text"
-                            value={customerDetailObj?.lastname}
-                            name="lastname"
+                            value={customerDetailObj?.lastName}
+                            name="lastName"
                             onChange={handleInputs}
                             placeholder="Enter last name"
-                            className={`email-checkout ${parseInt(customerDetailObj?.lastname?.length) > parseInt(0)? "parse-success": "parse-erorr"}`}
+                            className={`email-checkout ${parseInt(customerDetailObj?.lastName?.length) > parseInt(0)? "parse-success": "parse-erorr"}`}
                           />
                         </div>
                       </>
                     }
-                    <div className="alcheckout-desk">
+                    <div className="al-checkout-desk">
                       <div className="spacer _40"></div>
                       <div className="edhtb9d1checkout-desk"></div>
                     </div>
@@ -1116,7 +1116,7 @@ function UserForm() {
                   <div className='mimjepmkmlmmcheckout-desk'>
                     <div className="allzc5checkout-desk">
                       <div className="f2checkout-desk">
-                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
+                        <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8-c7-cc-cd-checkout">
                           <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
                         </svg>
                       </div> 
@@ -1128,7 +1128,7 @@ function UserForm() {
                           <div className="ald1ame7lmlncheckout-desk">
                             <div className="alaqcheckout-desk">
                               <div className="alamjiencheckout-desk">
-                                <div className="chcicjckh6checkout-desk">Save my details for faster checkout next time</div>
+                                <div className="chic-cj-ckh6checkout-desk">Save my details for faster checkout next time</div>
                                 <div className="spacer _8"></div>
                               </div>
                             </div>
@@ -1201,7 +1201,7 @@ function UserForm() {
                             <div className="ald1ame7lmlncheckout-desk">
                               <div className="alaqcheckout-desk">
                                 <div className="alamjiencheckout-desk">
-                                  <div className="chcicjckh6checkout-desk">
+                                  <div className="chic-cj-ckh6checkout-desk">
                                     By Email
                                   </div>
                                   <div className="spacer _8"></div>
@@ -1221,7 +1221,7 @@ function UserForm() {
                             <div className="ald1ame7lmlncheckout-desk">
                               <div className="alaqcheckout-desk">
                                 <div className="alamjiencheckout-desk">
-                                  <div className="chcicjckh6checkout-desk">
+                                  <div className="chic-cj-ckh6checkout-desk">
                                     By SMS
                                   </div>
                                   <div className="spacer _8"></div>
@@ -1364,7 +1364,7 @@ function UserForm() {
                       <div className="d1g1checkout-desk">
                         <a className="allzc5checkout-desk">
                           <div className="kgcheckout-desk">
-                            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout" >
+                            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8-c7-cc-cd-checkout" >
                               <g clipPath="url(#clip0)">
                                 <path d="M17.583 5.166a7.896 7.896 0 00-11.166 0c-3.084 3.083-3.084 8.167 0 11.25L12 21.999l5.583-5.666c3.084-3 3.084-8.084 0-11.167zM12 12.416c-.917 0-1.667-.75-1.667-1.667 0-.916.75-1.666 1.667-1.666s1.667.75 1.667 1.666c0 .917-.75 1.667-1.667 1.667z"></path>
                               </g>
@@ -1387,7 +1387,7 @@ function UserForm() {
                             </p>
                           </div>
 
-                          <button className="chcicjckhacheckout-desk-btn" onClick={handlePostcodeEdit}>
+                          <button className="chic-cj-ckhacheckout-desk-btn" onClick={handlePostcodeEdit}>
                             {deliverydetailtext}
                           </button>
                         </a>
@@ -1411,7 +1411,7 @@ function UserForm() {
                             </div>
                           </div>
                         )}
-                        <div className="alcheckout-desk">
+                        <div className="al-checkout-desk">
                           <div className="spacer _40"></div>
                           <div className="edhtb9d1checkout-desk"></div>
                         </div>
@@ -1438,14 +1438,14 @@ function UserForm() {
                             )}
                           </div>
 
-                          <button type="button" className="chcicjckhacheckout-desk-btn" name="isDoorInputDisplayClicked" onClick={handleToggles}>
+                          <button type="button" className="chic-cj-ckhacheckout-desk-btn" name="isDoorInputDisplayClicked" onClick={handleToggles}>
                             {toggleObjects?.isDoorInputDisplayClicked ? "Save" : "Add"}
                           </button>
                         </div>
 
                         {
                           toggleObjects?.isDoorInputDisplayClicked &&
-                          <div className="btaucheckout-window">
+                          <div className="bt-au-checkout-window">
                             <input
                               type="text"
                               ref={addDoorNumberRef}
@@ -1458,7 +1458,7 @@ function UserForm() {
                           </div>
                         }
 
-                        <div className="alcheckout-desk">
+                        <div className="al-checkout-desk">
                           <div className="spacer _40"></div>
                           <div className="edhtb9d1checkout-desk"></div>
                         </div>
@@ -1485,14 +1485,14 @@ function UserForm() {
                               </p>
                             }
                           </div>
-                          <button type="button" name="isAddDriverInstructionClicked" className="chcicjckhacheckout-desk-btn" onClick={handleToggles}>
+                          <button type="button" name="isAddDriverInstructionClicked" className="chic-cj-ckhacheckout-desk-btn" onClick={handleToggles}>
                             {toggleObjects?.isAddDriverInstructionClicked ? "Save" : "Add"}
                           </button>
                         </div>
 
                         {
                           toggleObjects?.isAddDriverInstructionClicked && 
-                          <div className="btaucheckout-window">
+                          <div className="bt-au-checkout-window">
                             <textarea
                               rows="2"
                               spellCheck="false"
@@ -1519,7 +1519,7 @@ function UserForm() {
                     <div className="d1g1checkout-desk">
                       <div className="allzc5checkout-desk">
                         <div className="f2checkout-desk">
-                          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
+                          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8-c7-cc-cd-checkout">
                             <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
                           </svg>
                         </div>
@@ -1538,17 +1538,18 @@ function UserForm() {
                           )}
                         </div>
 
-                        <button type="button" className="chcicjckhacheckout-desk-btn" name="isEmailInputToggle" onClick={handleToggles}>
+                        <button type="button" className="chic-cj-ckhacheckout-desk-btn" name="isEmailInputToggle" onClick={handleToggles}>
                           {toggleObjects?.isEmailInputToggle ? "Save" : "Add"}
                         </button>
                       </div>
 
                       {toggleObjects?.isEmailInputToggle && (
-                        <div className="btaucheckout-window">
+                        <div className="bt-au-checkout-window">
                           <input
                             required
                             type="email"
                             name="email"
+                            autoComplete="true"
                             value={customerDetailObj?.email}
                             placeholder="Enter email"
                             onChange={handleInputs}
@@ -1557,7 +1558,7 @@ function UserForm() {
                       
                         </div>
                       )}
-                      <div className="alcheckout-desk">
+                      <div className="al-checkout-desk">
                         <div className="spacer _40"></div>
                         <div className="edhtb9d1checkout-desk"></div>
                       </div>
@@ -1566,7 +1567,7 @@ function UserForm() {
                     <div className="d1g1checkout-desk">
                       <div className="allzc5checkout-desk">
                         <div className="f2checkout-desk">
-                          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
+                          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8-c7-cc-cd-checkout">
                             <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
                           </svg>
                         </div>
@@ -1585,24 +1586,25 @@ function UserForm() {
                             </p>
                           }
                         </div>
-                        <button type="button" className="chcicjckhacheckout-desk-btn" name="isPhoneinputToggle" onClick={handleToggles}>
+                        <button type="button" className="chic-cj-ckhacheckout-desk-btn" name="isPhoneinputToggle" onClick={handleToggles}>
                           {toggleObjects?.isPhoneinputToggle ? "Save" : "Add"}
                         </button>
                       </div>
 
                       {toggleObjects?.isPhoneinputToggle && (
-                        <div className="btaucheckout-window">
+                        <div className="bt-au-checkout-window">
                           <input
                             type="number"
                             name="phone"
                             value={customerDetailObj?.phone}
                             placeholder="Enter phone number"
                             className={`email-checkout ${parseInt(customerDetailObj?.phone?.length) > parseInt(0)? "parse-success": "parse-erorr"}`}
+                            onWheel={(e) => e.target.blur()}
                             onChange={handleInputs}
                           />
                         </div>
                       )}
-                      <div className="alcheckout-desk">
+                      <div className="al-checkout-desk">
                         <div className="spacer _40"></div>
                         <div className="edhtb9d1checkout-desk"></div>
                       </div>
@@ -1611,7 +1613,7 @@ function UserForm() {
                     <div className="d1g1checkout-desk">
                       <a className="allzc5checkout-desk">
                         <div className="f2checkout-desk">
-                          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
+                          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8-c7-cc-cd-checkout">
                             <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
                           </svg>
                         </div>
@@ -1621,31 +1623,31 @@ function UserForm() {
                             Add name <span style={{ color: "red" }}>*</span>
                           </span>
                           {
-                            !toggleObjects?.isFirstnameToggle && 
+                            !toggleObjects?.isfirstNameToggle && 
                             <p  data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
                               <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
-                                {customerDetailObj?.firstname} {customerDetailObj?.lastname}
+                                {customerDetailObj?.firstName} {customerDetailObj?.lastName}
                               </span>
                             </p>
                           }
                         </div>
-                        <button type="button" name="isFirstnameToggle" className="chcicjckhacheckout-desk-btn" onClick={handleToggles}>
-                          {toggleObjects?.isFirstnameToggle ? "Save" : "Add"}
+                        <button type="button" name="isfirstNameToggle" className="chic-cj-ckhacheckout-desk-btn" onClick={handleToggles}>
+                          {toggleObjects?.isfirstNameToggle ? "Save" : "Add"}
                         </button>
                       </a>
 
-                      {toggleObjects?.isFirstnameToggle && (
+                      {toggleObjects?.isfirstNameToggle && (
                         <>
-                          <div className="btaucheckout-window">
-                            <input type="text" value={customerDetailObj?.firstname} name="firstname" placeholder="Enter first name" onChange={handleInputs} style={{ marginBottom: "4px" }} className={`email-checkout ${parseInt(customerDetailObj?.firstname?.length) > parseInt(0)? "parse-success" : "parse-erorr"}`}/>
+                          <div className="bt-au-checkout-window">
+                            <input type="text" value={customerDetailObj?.firstName} name="firstName" placeholder="Enter first name" onChange={handleInputs} style={{ marginBottom: "4px" }} className={`email-checkout ${parseInt(customerDetailObj?.firstName?.length) > parseInt(0)? "parse-success" : "parse-erorr"}`}/>
                           </div>
 
-                          <div className="btaucheckout-window">
-                            <input type="text" value={customerDetailObj?.lastname} name="lastname" placeholder="Enter last name" onChange={handleInputs} className={`email-checkout ${parseInt(customerDetailObj?.lastname?.length) > parseInt(0)? "parse-success": "parse-erorr"}`} />
+                          <div className="bt-au-checkout-window">
+                            <input type="text" value={customerDetailObj?.lastName} name="lastName" placeholder="Enter last name" onChange={handleInputs} className={`email-checkout ${parseInt(customerDetailObj?.lastName?.length) > parseInt(0)? "parse-success": "parse-erorr"}`} />
                           </div>
                         </>
                       )}
-                      <div className="alcheckout-desk">
+                      <div className="al-checkout-desk">
                         <div className="spacer _40"></div>
                         <div className="edhtb9d1checkout-desk"></div>
                       </div>
@@ -1705,7 +1707,7 @@ function UserForm() {
                     <div className="mimjepmkmlmmcheckout-desk">
                       <div className="allzc5checkout-desk">
                         <div className="f2checkout-desk">
-                          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8c7cccdcheckout">
+                          <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="c8-c7-cc-cd-checkout">
                             <path d="M11.333 22l10-10V3.667H13l-10 10L11.333 22z"></path>
                           </svg>
                         </div>
@@ -1716,7 +1718,7 @@ function UserForm() {
                             <div className="ald1ame7lmlncheckout-desk">
                               <div className="alaqcheckout-desk">
                                 <div className="alamjiencheckout-desk">
-                                  <div className="chcicjckh6checkout-desk">
+                                  <div className="chic-cj-ckh6checkout-desk">
                                     Save my details for faster checkout next time
                                   </div>
                                   <div className="spacer _8"></div>
@@ -1795,7 +1797,7 @@ function UserForm() {
                               <div className="ald1ame7lmlncheckout-desk">
                                 <div className="alaqcheckout-desk">
                                   <div className="alamjiencheckout-desk">
-                                    <div className="chcicjckh6checkout-desk">
+                                    <div className="chic-cj-ckh6checkout-desk">
                                       By Email &nbsp;
                                     </div>
                                     <div className="spacer _8"></div>
@@ -1815,7 +1817,7 @@ function UserForm() {
                               <div className="ald1ame7lmlncheckout-desk">
                                 <div className="alaqcheckout-desk">
                                   <div className="alamjiencheckout-desk">
-                                    <div className="chcicjckh6checkout-desk">
+                                    <div className="chic-cj-ckh6checkout-desk">
                                       By SMS &nbsp;
                                     </div>
                                     <div className="spacer _8"></div>

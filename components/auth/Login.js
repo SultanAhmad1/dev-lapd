@@ -5,13 +5,13 @@ import React, { Fragment, useCallback, useContext, useEffect, useState } from "r
 
 
 import { useLoginMutationHook } from "@/components/reactquery/useQueryHook";
-import { BRAND_GUID, BRANDSIMPLEGUID, IMAGE_URL_Without_Storage} from "@/global/Axios";
+import { BRAND_GUID, BRAND_SIMPLE_GUID, IMAGE_URL_Without_Storage} from "@/global/Axios";
 import ForgetPassword from "../forgetpassword/ForgetPassword";
 import { ContextCheckApi } from "@/app/layout";
 
 export default function Login() 
 {
-    const { brandlogo , handleBoolean, websiteModificationData} = useContext(HomeContext);
+    const { brandLogo , handleBoolean, websiteModificationData} = useContext(HomeContext);
 
     const [isHover, setIsHover] = useState(false);
     
@@ -26,7 +26,7 @@ export default function Login()
         isForgetPasswordClicked: false,
     });
     
-    const { setmetaDataToDipslay} = useContext(ContextCheckApi)
+    const { setMetaDataToDisplay} = useContext(ContextCheckApi)
 
     useEffect(() => {
         if(websiteModificationData)
@@ -43,7 +43,7 @@ export default function Login()
                 url: ""
             }
         }
-        setmetaDataToDipslay(metaHeadingData)
+        setMetaDataToDisplay(metaHeadingData)
         }
     }, [websiteModificationData]);
 
@@ -89,7 +89,7 @@ export default function Login()
             }
         }
 
-        const storeDetails = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}user_selected_store`))
+        const storeDetails = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
             
         const loginData = {
             brand: BRAND_GUID,
@@ -103,9 +103,9 @@ export default function Login()
     }
 
     const onLoginSuccess = (data) => {
-        setLocalStorage(`${BRANDSIMPLEGUID}tempcustomer`, data?.data?.data?.customer)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}tempcustomer`, data?.data?.data?.customer)
     
-        setLocalStorage(`${BRANDSIMPLEGUID}websiteToken`, data?.data)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}websiteToken`, data?.data)
         handleBoolean(true,'isCustomerVerified')
         window.location.href = "/"
         return
@@ -119,7 +119,7 @@ export default function Login()
     const {mutate: loginMutation, isSuccess, isLoading, isError, reset} = useLoginMutationHook('website-login', '/website-login', onLoginSuccess, onLoginError)
 
     useEffect(() => {
-      const confirmedPassword = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}confirmedcode`))
+      const confirmedPassword = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}confirmedcode`))
 
       if(confirmedPassword !== null && confirmedPassword !== undefined)
       {

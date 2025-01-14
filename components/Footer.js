@@ -2,15 +2,13 @@
 import React, { Fragment, useContext} from "react";
 import HomeContext from "../contexts/HomeContext";
 import moment from "moment";
-import { BrandLogoPath, IMAGE_URL_Without_Storage } from "../global/Axios";
+import { brandLogoPath, IMAGE_URL_Without_Storage } from "../global/Axios";
+import Image from "next/image";
 
 function Footer() {
-  const { websiteModificationData, brandlogo } = useContext(HomeContext);
+  const { websiteModificationData, brandLogo } = useContext(HomeContext);
 
   const myColor = "#000000"
-
-  console.log("Website modification color:", websiteModificationData);
-  
   return (
     <footer className="footer" style={{'--before-border-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,'--before-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}}>
       <div className="footer-div">
@@ -18,10 +16,10 @@ function Footer() {
           <div className="footer-brand-logo">
             <a href="/">
             {
-              brandlogo !== null ?
-                <img loading="lazy" src={IMAGE_URL_Without_Storage+''+brandlogo} width={146} height={24} className="brand-logo" alt='Brand Name' loading='lazy'/>
+              brandLogo !== null ?
+                <Image loading="lazy" src={IMAGE_URL_Without_Storage+''+brandLogo} width={146} height={24} className="brand-logo" alt='Brand Name'/>
               :
-                <img loading="lazy" src={BrandLogoPath} width={146} height={24} className="brand-logo" alt='Brand Name' loading='lazy'/>
+                <Image loading="lazy" src={brandLogoPath} width={146} height={24} className="brand-logo" alt='Brand Name'/>
             }
             </a>
             <div className="footer-partners-log" style={{margin: "10px 0px 0px 0px"}}>
