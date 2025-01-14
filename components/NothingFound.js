@@ -1,3 +1,4 @@
+"use client";
 import React, { useContext, useEffect } from 'react'
 import HomeContext from '../contexts/HomeContext'
 import Image from 'next/image'

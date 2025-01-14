@@ -1,5 +1,6 @@
+"use client";
 import HomeContext from "@/contexts/HomeContext";
-import { axiosPrivate, BRAND_GUID, BRANDSIMPLEGUID, PARTNER_ID } from "@/global/Axios";
+import { axiosPrivate, BRAND_GUID, BRAND_SIMPLE_GUID, PARTNER_ID } from "@/global/Axios";
 import { setLocalStorage } from "@/global/Store";
 import React, { Fragment, useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -13,27 +14,27 @@ export default function AvailableStore({availablestores})
     setMenu,
     setSelectedFilter,
     setFilters,
-    setNavigationcategories,
-    setNavmobileindex,
-    setStoretodaydayname,
-    setStoretodayopeningtime,
-    setStoretodayclosingtime,
-    setIsmenuavailable,
+    setNavigationCategories,
+    setNavMobileIndex,
+    setStoreToDayName,
+    setStoreToDayOpeningTime,
+    setStoreToDayClosingTime,
+    setIsMenuAvailable,
     storeGUID,
     setStoreGUID,
     setStoreName,
-    dayname,
-    daynumber,
+    dayName,
+    dayNumber,
     postcode,
     setPostcode,
-    setAtfirstload,
-    setIsgobtnclicked,
-    setPostcodefororderamount,
-    deliverymatrix,
-    setDeliverymatrix,
+    setAtFirstLoad,
+    setIsGoBtnClicked,
+    setPostCodeForOrderAmount,
+    deliveryMatrix,
+    setDeliveryMatrix,
     setStreet1,
     setStreet2,
-    setCommingSoon,
+    setComingSoon,
   } = useContext(HomeContext);
 
   const route = useRouter();
@@ -61,7 +62,7 @@ export default function AvailableStore({availablestores})
       if(convertToJSobj === null || convertToJSobj === undefined)
       {
         setMenu([])
-        setCommingSoon(true)
+        setComingSoon(true)
         return
       }
       
@@ -77,40 +78,40 @@ export default function AvailableStore({availablestores})
           if (timePeriods?.[0]?.start_time >= dateTime && dateTime <= timePeriods?.[0]?.end_time) 
           {
             setIsTimeToClosed(true);
-            setAtfirstload(false);
+            setAtFirstLoad(false);
           }
         }
       }
       setMenu(convertToJSobj);
 
-      const getFilterDataFromObj = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}filter`));
+      const getFilterDataFromObj = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`));
 
       if (getFilterDataFromObj === null) 
       {
-        setLocalStorage(`${BRANDSIMPLEGUID}filter`, convertToJSobj.filters[0]);
+        setLocalStorage(`${BRAND_SIMPLE_GUID}filter`, convertToJSobj.filters[0]);
       }
       setSelectedFilter(getFilterDataFromObj === null? convertToJSobj.filters[0] : getFilterDataFromObj);
       setFilters(convertToJSobj.filters);
-      setNavigationcategories(convertToJSobj.categories);
-      setNavmobileindex(convertToJSobj.categories[0].id);
+      setNavigationCategories(convertToJSobj.categories);
+      setNavMobileIndex(convertToJSobj.categories[0].id);
 
-      const getDayInformation = convertToJSobj.menus[0].service_availability?.find((dayinformation) =>dayinformation.day_of_week === moment().format("dddd").toLowerCase());
-      setStoretodaydayname(moment().format("dddd"));
-      setStoretodayopeningtime(getDayInformation.time_periods[0].start_time);
-      setStoretodayclosingtime(getDayInformation.time_periods[0].end_time);
+      const getdayInformation = convertToJSobj.menus[0].service_availability?.find((dayInformation) =>dayInformation.day_of_week === moment().format("dddd").toLowerCase());
+      setStoreToDayName(moment().format("dddd"));
+      setStoreToDayOpeningTime(getdayInformation.time_periods[0].start_time);
+      setStoreToDayClosingTime(getdayInformation.time_periods[0].end_time);
     } 
     catch (error) 
     {
-    //  setIsmenuavailable(false)
+    //  setIsMenuAvailable(false)
       setMenu([])
-      setCommingSoon(true)
+      setComingSoon(true)
     }
   }
 
   function handleLocationSelect(storeGUID, storeName, storeTelephone) 
   {
     setStoreName(storeName);
-    setAtfirstload(false);
+    setAtFirstLoad(false);
     setStoreGUID(storeGUID);
     if (parseInt(availablestores.length) > parseInt(0)) {
       for (const store of availablestores) {
@@ -127,7 +128,7 @@ export default function AvailableStore({availablestores})
       store: storeName,
       telephone: storeTelephone,
     };
-    setLocalStorage(`${BRANDSIMPLEGUID}user_selected_store`, selectedStoreData);
+    setLocalStorage(`${BRAND_SIMPLE_GUID}user_selected_store`, selectedStoreData);
     route.push("/");
   }
 

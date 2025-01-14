@@ -1,3 +1,4 @@
+"use client";
 import React, { useEffect } from "react";
 import { useGetAfterAuthMutationHook } from "../reactquery/useQueryHook";
 import { usePathname } from "next/navigation";

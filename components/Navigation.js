@@ -1,49 +1,53 @@
-import React, { Fragment, useContext } from 'react'
+"use client";
+import React, { Fragment, useContext, useEffect } from 'react'
 import HomeContext from '../contexts/HomeContext'
 
 function Navigation() 
 {
-    const {websiteModificationData,navigationcategories} = useContext(HomeContext)
+    const {websiteModificationData,navigationCategories} = useContext(HomeContext)
 
-    const navbarCategories = document.getElementById("navbar-categories");
-    const sections = document.querySelectorAll("section");
-
-    window.addEventListener("scroll", () => {
-        
-        let currentSection = "";
-            // Detect the section currently in the viewport
-        if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) 
-        {
-            sections.forEach((section) => {
-                const sectionTop = section.offsetTop;
-                const sectionHeight = section.clientHeight;
-                if (window.scrollY >= sectionTop - sectionHeight / 3) {
-                    currentSection = section.getAttribute("id");
+    useEffect(() => {
+        const navbarCategories = window.document.getElementById("navbar-categories");
+        const sections = window.document.querySelectorAll("section");
+    
+        window.addEventListener("scroll", () => {
+            
+            let currentSection = "";
+                // Detect the section currently in the viewport
+            if (window.document.body.scrollTop > 100 || window.document.documentElement.scrollTop > 100) 
+            {
+                sections.forEach((section) => {
+                    const sectionTop = section.offsetTop;
+                    const sectionHeight = section.clientHeight;
+                    if (window.scrollY >= sectionTop - sectionHeight / 3) {
+                        currentSection = section.getAttribute("id");
+                    }
+                });
+    
+                // Remove 'active' class from all navbar categories
+                window.document.querySelectorAll(".navigation section div").forEach((li) => {
+                    li.classList.remove("_nav_active");
+                });
+    
+                // Add 'active' class to the navbar category related to the current section
+                if (currentSection) {
+                    window.document.querySelector(`.navigation section div[data-target="${currentSection}"]`).classList.add("_nav_active");
                 }
-            });
-
-            // Remove 'active' class from all navbar categories
-            document.querySelectorAll(".navigation section div").forEach((li) => {
-                li.classList.remove("_nav_active");
-            });
-
-            // Add 'active' class to the navbar category related to the current section
-            if (currentSection) {
-                document.querySelector(`.navigation section div[data-target="${currentSection}"]`).classList.add("_nav_active");
             }
-        }
-    });
-
-    // Navbar category click event to scroll to the corresponding section
-    document.querySelectorAll(".navigation section div").forEach((li) => {
-        li.addEventListener("click", (e) => {
-            const targetSection = document.getElementById(e.target.getAttribute("data-target"));
-            window.scrollTo({
-                top: targetSection.offsetTop,
-                behavior: "smooth",
+        });
+    
+        // Navbar category click event to scroll to the corresponding section
+        window.document.querySelectorAll(".navigation section div").forEach((li) => {
+            li.addEventListener("click", (e) => {
+                const targetSection = window.document.getElementById(e.target.getAttribute("data-target"));
+                window.scrollTo({
+                    top: targetSection.offsetTop,
+                    behavior: "smooth",
+                });
             });
         });
     });
+    
 
     
     return (
@@ -55,7 +59,7 @@ function Navigation()
                         <div className="left-bar-nested-div-level-one-nestd">
                             <nav className="navigation" id='navbar-categories'>
                             {
-                                navigationcategories?.map((category, index) =>
+                                navigationCategories?.map((category, index) =>
                                 {
                                     return(
                                         parseInt(category?.items?.length) > parseInt(0) &&

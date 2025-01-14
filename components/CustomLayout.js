@@ -6,14 +6,12 @@ import HomeContext from "@/contexts/HomeContext";
 import AtLoadModalShow from "./modals/AtLoadModalShow";
 import Cart from "./Cart";
 import DeliveryModal from "./modals/DeliveryModal";
-import StoreClosedModal from "./modals/StoreClosedModal";
 import Loader from "./modals/Loader";
-import { BRAND_GUID, BRANDSIMPLEGUID, PARTNER_ID } from "@/global/Axios";
+import { BRAND_GUID, BRAND_SIMPLE_GUID, PARTNER_ID } from "@/global/Axios";
 import moment from "moment";
 import { setLocalStorage } from "@/global/Store";
 import CustomerPersonal from "./CustomerPersonal";
 import MenuNotAvailableModal from "./modals/MenuNotAvailableModal";
-// Initialize queryClient
 
 export default function CustomLayout({ children }) 
 {
@@ -24,7 +22,7 @@ export default function CustomLayout({ children })
   
   const [websiteModificationData, setWebsiteModificationData] = useState(null);
   // Header Bar buttons to be displayed.
-  const [brandlogo, setBrandlogo] = useState(null);
+  const [brandLogo, setBrandLogo] = useState(null);
   const [headerUserBtnDisplay, setHeaderUserBtnDisplay] = useState(true);
   const [headerPostcodeBtnDisplay, setHeaderPostcodeBtnDisplay] = useState(true);
   const [headerSearchBarDisplay, setHeaderSearchBarDisplay] = useState(false);
@@ -33,81 +31,81 @@ export default function CustomLayout({ children })
   // FilterLocationTime Component States
   const [storeGUID, setStoreGUID] = useState(0);
   const [storeName, setStoreName] = useState("");
-  const [storetodaydayname, setStoretodaydayname] = useState("");
-  const [storetodayopeningtime, setStoretodayopeningtime] = useState("");
-  const [storetodayclosingtime, setStoretodayclosingtime] = useState("");
+  const [storeToDayName, setStoreToDayName] = useState("");
+  const [storeToDayOpeningTime, setStoreToDayOpeningTime] = useState("");
+  const [storeToDayClosingTime, setStoreToDayClosingTime] = useState("");
 
-  const [iscartbtnclicked, setIscartbtnclicked] = useState(false);
+  const [isCartBtnClicked, setIsCartBtnClicked] = useState(false);
 
-  const [selectedcategoryid, setSelectedcategoryid] = useState(0);
-  const [selecteditemid, setSelecteditemid] = useState(0);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(0);
+  const [selectedItemId, setSelectedItemId] = useState(0);
 
-  const [firstname, setFirstname] = useState("Sultan");
-  const [lastname, setLastname] = useState("Ahmad");
+  const [firstName, setFirstName] = useState("Sultan");
+  const [lastName, setLastName] = useState("Ahmad");
 
   // Day Name and Day Number
-  const [dayname, setDayname] = useState("");
-  const [daynumber, setDaynumber] = useState(0);
+  const [dayName, setDayName] = useState("");
+  const [dayNumber, setDayNumber] = useState(0);
   // HomeContext Data
-  const [postcodefororderamount, setPostcodefororderamount] = useState("");
+  const [postCodeForOrderAmount, setPostCodeForOrderAmount] = useState("");
   const [postcode, setPostcode] = useState("");
   const [street1, setStreet1] = useState("");
   const [street2, setStreet2] = useState("");
-  const [deliverymatrix, setDeliverymatrix] = useState(null);
-  const [totalOrderAmountValue, settotalOrderAmountValue] = useState(0);
+  const [deliveryMatrix, setDeliveryMatrix] = useState(null);
+  const [totalOrderAmountValue, setTotalOrderAmountValue] = useState(0);
 
   // Boolean States
-  const [iscouponcodeapplied, setIscouponcodeapplied] = useState(false);
+  const [isCouponCodeApplied, setIsCouponCodeApplied] = useState(false);
 
   const [dayOpeningClosingTime, setDayOpeningClosingTime] = useState(null);
 
   const [isTimeToClosed, setIsTimeToClosed] = useState(false);
-  const [atfirstload, setAtfirstload] = useState(false);
-  const [CommingSoon, setCommingSoon] = useState(false);
+  const [atFirstLoad, setAtFirstLoad] = useState(false);
+  const [comingSoon, setComingSoon] = useState(false);
   
 
-  const [isdeliverybtnclicked, setIsdeliverybtnclicked] = useState(false);
-  const [isdeliverychangedbtnclicked, setIsdeliverychangedbtnclicked] = useState(false);
+  const [isDeliveryBtnClicked, setIsDeliveryBtnClicked] = useState(false);
+  const [isDeliveryChangedBtnClicked, setIsDeliveryChangedBtnClicked] = useState(false);
 
-  const [iscartfull, setIscartfull] = useState(true);
+  const [isCartFull, setIsCartFull] = useState(true);
 
-  const [iscartitemdottedbtnclicked, setIscartitemdottedbtnclicked] = useState(false);
-  const [isitemclicked, setIsitemclicked] = useState(false);
-  // const [isquickviewclicked, setIsquickviewclicked] = useState(false)
-  const [ischeckoutclicked, setIscheckoutclicked] = useState(false);
+  const [iscartItemDottedBtnClicked, setIscartItemDottedBtnClicked] = useState(false);
+  const [isItemClicked, setIsItemClicked] = useState(false);
+  // const [isQuickViewClicked, setIsQuickViewClicked] = useState(false)
+  const [isCheckOutClicked, setIsCheckOutClicked] = useState(false);
   const [isReviewPage, setIsReviewPage] = useState(false);
   
   // Button states
-  const [isgobtnclicked, setIsgobtnclicked] = useState(false);
+  const [isGoBtnClicked, setIsGoBtnClicked] = useState(false);
 
   const [Menu, setMenu] = useState([]);
   const [selectedFilter, setSelectedFilter] = useState(null);
   const [filters, setFilters] = useState([]);
 
-  const [navigationcategories, setNavigationcategories] = useState([]);
-  const [navmobileindex, setNavmobileindex] = useState(0);
-  const [ismenuavailable, setIsmenuavailable] = useState(true);
+  const [navigationCategories, setNavigationCategories] = useState([]);
+  const [navMobileIndex, setNavMobileIndex] = useState(0);
+  const [isMenuAvailable, setIsMenuAvailable] = useState(true);
 
-  const [cartdata, setCartdata] = useState([]);
-  const [amountDiscountapplied, setAmountDiscountapplied] = useState(null);
-  const [couponDiscountapplied, setCouponDiscountapplied] = useState([]);
+  const [cartData, setCartData] = useState([]);
+  const [amountDiscountApplied, setAmountDiscountApplied] = useState(null);
+  const [couponDiscountApplied, setCouponDiscountApplied] = useState([]);
   
   const [booleanObj, setBooleanObj] = useState({
-    isCustomerCanvaOpen: false,
-    isCustomerVerfied: false,
+    isCustomerCanvasOpen: false,
+    isCustomerVerified: false,
     isOTPModalShow: false,
   });
   
-  const handleBoolean = useCallback((newValue, fiedlName) => {
-    setBooleanObj((prevData) => ({...prevData, [fiedlName]: newValue}))
+  const handleBoolean = useCallback((newValue, fieldName) => {
+    setBooleanObj((prevData) => ({...prevData, [fieldName]: newValue}))
   }, [booleanObj]);
 
   useEffect(() => {
     
-    const useAuth = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}websiteToken`))
+    const useAuth = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}websiteToken`))
     if(useAuth !== null)
     {
-      handleBoolean(true, 'isCustomerVerfied')
+      handleBoolean(true, 'isCustomerVerified')
     }
 
     const url = new URL(window.location.href);
@@ -118,45 +116,45 @@ export default function CustomLayout({ children })
     // Get the current day name
     const dayName = moment().format("dddd");
 
-    setDayname(dayName);
-    setDaynumber(dayNumber);
+    setDayName(dayName);
+    setDayNumber(dayNumber);
 
-    const afterReloadingGetCouponCode = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}applied_coupon`));
-    setCouponDiscountapplied(afterReloadingGetCouponCode !== null ? afterReloadingGetCouponCode : []);
+    const afterReloadingGetCouponCode = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}applied_coupon`));
+    setCouponDiscountApplied(afterReloadingGetCouponCode !== null ? afterReloadingGetCouponCode : []);
 
-    const getSelectStore = window.localStorage.getItem(`${BRANDSIMPLEGUID}user_selected_store`);
+    const getSelectStore = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`);
 
     if (getSelectStore === null) 
     {
-      if (pathnameArray[0] === "track-order" || pathnameArray[0] === "review-order" || pathnameArray[0] === "payment" || pathnameArray[0] === "place-order") 
+      if (pathnameArray?.[0] === "track-order" || pathnameArray?.[0] === "review-order" || pathnameArray?.[0] === "payment" || pathnameArray?.[0] === "place-order") 
       {
-        setAtfirstload(false);
+        setAtFirstLoad(false);
         setHeaderCartBtnDisplay(false);
         setHeaderPostcodeBtnDisplay(false);
       } 
       else 
       {
-        setAtfirstload(true);
+        setAtFirstLoad(true);
         setHeaderCartBtnDisplay(true);
         setHeaderPostcodeBtnDisplay(true);
       }
     } 
     else 
     {
-      setPostcode(JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}user_valid_postcode`)));
+      setPostcode(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_valid_postcode`)));
 
       const parseToJSobj = JSON.parse(getSelectStore);
       // menuRefetch(parseToJSobj === null ? storeGUID : parseToJSobj.display_id);
       setStoreGUID(parseToJSobj === null ? storeGUID : parseToJSobj.display_id);
       setStoreName(parseToJSobj.store);
 
-      const appliedAmountDiscount = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}order_amount_discount_applied`));
-      const address = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}address`));
-      const getDeliveryMatrix = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}delivery_matrix`));
+      const appliedAmountDiscount = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`));
+      const address = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}address`));
+      const getDeliveryMatrix = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`));
 
-      setAmountDiscountapplied(appliedAmountDiscount);
-      setDeliverymatrix(getDeliveryMatrix);
-      setPostcodefororderamount(getDeliveryMatrix?.postcode);
+      setAmountDiscountApplied(appliedAmountDiscount);
+      setDeliveryMatrix(getDeliveryMatrix);
+      setPostCodeForOrderAmount(getDeliveryMatrix?.postcode);
 
       const parseToJSobjAvailableStore = address?.availableStore;
       if (parseInt(parseToJSobjAvailableStore.length) > parseInt(0)) {
@@ -168,17 +166,21 @@ export default function CustomLayout({ children })
         }
       }
 
-      const cartDataFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}cart`));
+      const cartDataFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}cart`));
 
-      setCartdata(cartDataFromLocalStorage === null ? [] : cartDataFromLocalStorage);
-
-      console.log("Custom layout cart item:", cartdata);
-      
+      setCartData(cartDataFromLocalStorage === null ? [] : cartDataFromLocalStorage);
       menuRefetch()
       colorRefetch()
     }
   }, []);
-    
+  
+  useEffect(() => {
+    if(parseInt(cartData?.length) > parseInt(0))
+    {
+      setLocalStorage(`${BRAND_SIMPLE_GUID}cart`, cartData)
+    }
+  }, [cartData]);
+  
   const onMenuSuccess = (data) => 
   {
     setLoader(false)
@@ -193,56 +195,56 @@ export default function CustomLayout({ children })
     const currentDay = convertToJSobj?.menus?.[0]?.service_availability?.find((day) => day?.day_of_week?.toLowerCase().includes(dayName.toLowerCase()));
 
     setDayOpeningClosingTime(currentDay);
-    if (currentDay) 
-    {
-      const timePeriods = currentDay?.time_periods;
-      if (timePeriods) 
-      {
-        if (timePeriods?.[0]?.start_time >= dateTime && dateTime <= timePeriods?.[0]?.end_time) 
-        {
-          setIsTimeToClosed(true);
-          setAtfirstload(false);
-        }
-        else{
-          setIsTimeToClosed(false)
+    // if (currentDay) 
+    // {
+    //   const timePeriods = currentDay?.time_periods;
+    //   if (timePeriods) 
+    //   {
+    //     if (timePeriods?.[0]?.start_time >= dateTime && dateTime <= timePeriods?.[0]?.end_time) 
+    //     {
+    //       setIsTimeToClosed(true);
+    //       setAtFirstLoad(false);
+    //     }
+    //     else{
+    //       setIsTimeToClosed(false)
           
-          setAtfirstload((atfirstload === false) ? false : true);
-        }
-      }
-    }
+    //       setAtFirstLoad((atFirstLoad === false) ? false : true);
+    //     }
+    //   }
+    // }
+
     setMenu(convertToJSobj);
 
-    const getFilterDataFromObj = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}filter`));
+    const getFilterDataFromObj = (window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`) !== undefined ? JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`)) : null);
     if (getFilterDataFromObj === null) 
     {
-      setLocalStorage(`${BRANDSIMPLEGUID}filter`, convertToJSobj?.filters?.[0]);
+      setLocalStorage(`${BRAND_SIMPLE_GUID}filter`, convertToJSobj?.filters?.[0]);
     }
 
     setSelectedFilter(getFilterDataFromObj === null ? convertToJSobj?.filters?.[0] : getFilterDataFromObj);
     setFilters(convertToJSobj?.filters);
-    setNavigationcategories(convertToJSobj?.categories);
-    setNavmobileindex(0);
+    setNavigationCategories(convertToJSobj?.categories);
+    setNavMobileIndex(0);
 
-    const getDayInformation = convertToJSobj.menus?.[0].service_availability?.find((dayinformation) => dayinformation.day_of_week === moment().format("dddd").toLowerCase());
-    setStoretodaydayname(moment().format("dddd"));
-    setStoretodayopeningtime(getDayInformation?.time_periods?.[0].start_time);
-    setStoretodayclosingtime(getDayInformation?.time_periods?.[0].end_time);
+    const getdayInformation = convertToJSobj.menus?.[0].service_availability?.find((dayInformation) => dayInformation.day_of_week === moment().format("dddd").toLowerCase());
+    setStoreToDayName(moment().format("dddd"));
+    setStoreToDayOpeningTime(getdayInformation?.time_periods?.[0].start_time);
+    setStoreToDayClosingTime(getdayInformation?.time_periods?.[0].end_time);
   }
 
   const onMenuError = (error) => {
     console.error("Error fetching data:", error);
-    setIsmenuavailable(false);
+    setIsMenuAvailable(false);
     setLoader(false)
   }
 
   const { isLoading: menuLoading, isError: menuError, refetch: menuRefetch } = useGetQueryAutoUpdate('website-menu', `/menu/${storeGUID}/${BRAND_GUID}`, onMenuSuccess, onMenuError, true)
 
-  const onWebsiteModificationSucccess = (data) => {
+  const onWebsiteModificationSuccess = (data) => {
     setLoader(false)
-    
     if (data?.data?.websiteModificationLive !== null && data?.data?.websiteModificationLive?.json_log?.[0]?.websiteLogoUrl !== null) 
     {
-      setBrandlogo(data?.data?.websiteModificationLive?.json_log?.[0]?.websiteLogoUrl);
+      setBrandLogo(data?.data?.websiteModificationLive?.json_log?.[0]?.websiteLogoUrl);
     }
     setWebsiteModificationData(data?.data);
   }
@@ -251,114 +253,135 @@ export default function CustomLayout({ children })
     setLoader(false)
   }
 
-  const { isLoading, isError, refetch: colorRefetch} = useGetQueryAutoUpdate('website-color', `/website-modification-detail/${BRAND_GUID}/${PARTNER_ID}`, onWebsiteModificationSucccess, onWebsiteModificationError, true)
+  const { isLoading, isError, refetch: colorRefetch} = useGetQueryAutoUpdate('website-color', `/website-modification-detail/${BRAND_GUID}/${PARTNER_ID}`, onWebsiteModificationSuccess, onWebsiteModificationError, true)
 
-  useEffect(() => {
-    if(booleanObj?.isCustomerVerfied === false)
-    {
-      /**
-       * all the localStorage clear when 
-       */
+  // useEffect(() => {
+  //   if(booleanObj?.isCustomerVerified === false)
+  //   {
+  //     /**
+  //      * all the localStorage clear when 
+  //      */
       
-      // Set a timeout to clear localStorage after 20 minutes (20 * 60 * 1000 milliseconds)
-      const timeoutId = setTimeout(() => {
-        // Clear all items in localStorage
-        localStorage.clear();
-        window.location.reload(true);
-        setTimeout(() => {setLoader(false);}, 2000);
-      }, 30 * 60 * 1000); 
+  //     // Set a timeout to clear localStorage after 20 minutes (20 * 60 * 1000 milliseconds)
+  //     const timeoutId = setTimeout(() => {
+  //       // Clear all items in localStorage
+  //       localStorage.clear();
+  //       window.location.reload(true);
+  //       setTimeout(() => {setLoader(false);}, 2000);
+  //     }, 30 * 60 * 1000); 
 
-      // Clear the timeout if the component is unmounted before 20 minutes
-      return () => clearTimeout(timeoutId);
+  //     // Clear the timeout if the component is unmounted before 20 minutes
+  //     return () => clearTimeout(timeoutId);
+  //   }
+  // });
+  const [countMinutes, setCountMinutes] = useState(0);
+  
+  useEffect(() => {
+    if(booleanObj?.isCustomerVerified === false)
+    {
+      const userSelectedTime = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_postcode_time`))
+
+      if(userSelectedTime)
+      {
+        const firstDateString = moment().format('YYYY-MM-DD HH:mm:ss');
+
+        const firstDate = moment(firstDateString, 'YYYY-MM-DD HH:mm:ss');
+
+        const differenceMinutes = firstDate?.diff(userSelectedTime, 'minutes')
+
+        setCountMinutes(differenceMinutes)
+        if(differenceMinutes >= 60)
+        {
+          localStorage.clear();
+          window.location.reload(true);
+        }
+      }
     }
-  });
-  
+  },[countMinutes]);
 
-  console.log("Custom layout cart data:", cartdata);
-  
   // Context Data
   const contextData = {
     Menu,
     loader,
     filters,
-    brandlogo,
+    brandLogo,
     storeGUID,
     storeName,
-    selecteditemid,
+    selectedItemId,
     totalOrderAmountValue,
-    storetodaydayname,
-    storetodayopeningtime,
-    storetodayclosingtime,
-    navigationcategories,
-    navmobileindex,
-    ismenuavailable,
+    storeToDayName,
+    storeToDayOpeningTime,
+    storeToDayClosingTime,
+    navigationCategories,
+    navMobileIndex,
+    isMenuAvailable,
     websiteModificationData,
     dayOpeningClosingTime,
     selectedFilter,
-    selectedcategoryid,
+    selectedCategoryId,
     headerSearchBarDisplay,
     headerPostcodeBtnDisplay,
     headerCartBtnDisplay,
     headerUserBtnDisplay,
-    dayname,
-    daynumber,
-    firstname,
-    lastname,
+    dayName,
+    dayNumber,
+    firstName,
+    lastName,
     postcode,
     street1,
     street2,
-    isdeliverychangedbtnclicked,
-    ischeckoutclicked,
-    iscartitemdottedbtnclicked,
-    iscartfull,
-    iscartbtnclicked,
-    amountDiscountapplied,
-    couponDiscountapplied,
-    cartdata,
-    deliverymatrix,
-    postcodefororderamount,
+    isDeliveryChangedBtnClicked,
+    isCheckOutClicked,
+    iscartItemDottedBtnClicked,
+    isCartFull,
+    isCartBtnClicked,
+    amountDiscountApplied,
+    couponDiscountApplied,
+    cartData,
+    deliveryMatrix,
+    postCodeForOrderAmount,
     isReviewPage,
     isLocationBrandOnline,
 
     booleanObj,
-    CommingSoon,
+    comingSoon,
 
-    setCommingSoon,
+    setComingSoon,
     handleBoolean,
     setIsLocationBrandOnline,
     setMenu,
     setLoader,
     setFilters,
-    setBrandlogo,
+    setBrandLogo,
     setStoreGUID,
     setStoreName,
     setIsTimeToClosed,
     setSelectedFilter,
-    setSelecteditemid,
-    setStoretodaydayname,
-    setSelectedcategoryid,
-    setIscouponcodeapplied,
-    settotalOrderAmountValue,
+    setSelectedItemId,
+    setStoreToDayName,
+    setSelectedCategoryId,
+    setIsCouponCodeApplied,
+    setTotalOrderAmountValue,
     setDayOpeningClosingTime,
-    setStoretodayopeningtime,
-    setStoretodayclosingtime,
+    setStoreToDayOpeningTime,
+    setStoreToDayClosingTime,
     
-    setCartdata,
-    setIsitemclicked,
-    setDeliverymatrix,
-    setIscartbtnclicked,
-    setIsdeliverybtnclicked,
-    setAmountDiscountapplied,
-    setCouponDiscountapplied,
-    setPostcodefororderamount,
+    setCartData,
+    setIsItemClicked,
+    setDeliveryMatrix,
+    setIsCartBtnClicked,
+    setIsDeliveryBtnClicked,
+    setAmountDiscountApplied,
+    setCouponDiscountApplied,
+    setPostCodeForOrderAmount,
 
-    setAtfirstload,
+    setAtFirstLoad,
     setIsReviewPage,
-    setIsgobtnclicked,
-    setNavmobileindex,
-    setIsmenuavailable,
+    setIsGoBtnClicked,
+    setNavMobileIndex,
+    setIsMenuAvailable,
     setHeaderCartBtnDisplay,
-    setNavigationcategories,
+    setNavigationCategories,
     setHeaderUserBtnDisplay,
     setHeaderSearchBarDisplay,
     setHeaderPostcodeBtnDisplay,
@@ -366,9 +389,9 @@ export default function CustomLayout({ children })
     setStreet1,
     setStreet2,
     setPostcode,
-    setIscheckoutclicked,
-    setIscartitemdottedbtnclicked,
-    setIsdeliverychangedbtnclicked,
+    setIsCheckOutClicked,
+    setIscartItemDottedBtnClicked,
+    setIsDeliveryChangedBtnClicked,
   }
   
   const loaderState = menuLoading || isLoading || loader
@@ -376,20 +399,18 @@ export default function CustomLayout({ children })
   return (
     <HomeContext.Provider value={contextData}>
       {children}
-      {booleanObj?.isCustomerCanvaOpen && <CustomerPersonal />}
+      {booleanObj?.isCustomerCanvasOpen && <CustomerPersonal />}
 
-      {CommingSoon && <MenuNotAvailableModal />}
+      {comingSoon && <MenuNotAvailableModal />}
 
-      {atfirstload && <AtLoadModalShow />}
-      {iscartbtnclicked && <Cart />}
-      {isdeliverybtnclicked && <DeliveryModal />}
-      {isTimeToClosed && <StoreClosedModal />}
+      {atFirstLoad && <AtLoadModalShow />}
+      {isCartBtnClicked && <Cart />}
+      {/* {isDeliveryBtnClicked && <DeliveryModal />} */}
+      {/* {isTimeToClosed && <StoreClosedModal />} */}
 
       {/* <OtpVerifyModal /> */}
       {
-        loaderState &&
-        <Loader loader={loaderState}/>
-      }
+        loaderState && <Loader loader={loaderState}/>}
     </HomeContext.Provider>
          
   );

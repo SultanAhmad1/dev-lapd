@@ -1,3 +1,4 @@
+"use client";
 import { axiosPrivate } from '@/global/Axios';
 import { country, currency, getAmountConvertToFloatWithFixed } from '@/global/Store';
 import { PaymentRequestButtonElement, useStripe } from '@stripe/react-stripe-js';

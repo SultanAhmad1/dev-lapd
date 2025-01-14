@@ -1,35 +1,35 @@
 'use client';
 
 import Image from "next/image";
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useCheckAuthMutationHook, useLogoutMutationHook } from "../reactquery/useQueryHook";
 import HomeContext from "@/contexts/HomeContext";
-import { BRANDSIMPLEGUID } from "@/global/Axios";
+import { BRAND_SIMPLE_GUID } from "@/global/Axios";
 
 export default function CustomerPersonCom() 
 {
     
-    const {booleanObj,handleBoolean,} = useContext(HomeContext)
+    const {booleanObj,handleBoolean,websiteModificationData} = useContext(HomeContext)
     
     const asideRef = useRef(null);
 
-    const loginToken = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}websiteToken`));
+    const loginToken = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}websiteToken`));
       
     // Function to close the canvas if clicked outside the aside
     const handleClickOutside = (event) => {
         if (asideRef.current && !asideRef.current.contains(event.target)) {
-          handleBoolean(false, "isCustomerCanvaOpen"); // This will close the canvas when clicked outside
+          handleBoolean(false, "isCustomerCanvasOpen"); // This will close the canvas when clicked outside
         }
     };
     
     // Adding event listener when the component mounts
     useEffect(() => {
-        const customer = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}tempcustomer`))
+        const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
 
         if(customer === undefined && customer === null)
         {
-            window.localStorage.removeItem(`${BRANDSIMPLEGUID}tempcustomer`);
-            window.localStorage.removeItem(`${BRANDSIMPLEGUID}websiteToken`);
+            window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}tempcustomer`);
+            window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}websiteToken`);
             return
         }
         
@@ -55,8 +55,8 @@ export default function CustomerPersonCom()
 
         if(response?.status === 401)
         {
-            setLocalStorage(`${BRANDSIMPLEGUID}tempcustomer`, null)
-            setLocalStorage(`${BRANDSIMPLEGUID}websiteToken`, null)
+            setLocalStorage(`${BRAND_SIMPLE_GUID}tempcustomer`, null)
+            setLocalStorage(`${BRAND_SIMPLE_GUID}websiteToken`, null)
             return
         }
     }
@@ -76,9 +76,9 @@ export default function CustomerPersonCom()
     }
     
     const onLogoutSuccess = (data) => {
-        window.localStorage.removeItem(`${BRANDSIMPLEGUID}websiteToken`)
-        window.localStorage.removeItem(`${BRANDSIMPLEGUID}tempcustomer`)
-        window.localStorage.removeItem(`${BRANDSIMPLEGUID}isOTPHas`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}websiteToken`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}tempcustomer`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}isOTPHas`)
 
         handleBoolean(false,'isCustomerVerified')
 
@@ -104,7 +104,18 @@ export default function CustomerPersonCom()
                                 loginToken === null || loginToken === undefined ?
                                 <div className="canva-auth-buttons">
                                     <div>
-                                    <a href='/registeration' className="auth-sign">
+                                    <a 
+                                        href='/registeration' 
+                                        className="auth-sign" 
+                                      
+                                        style={{
+                                            '--auth-border-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, 
+                                            '--auth-background-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                                            '--auth-font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                                            '--auth-hover-background': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor,
+                                            '--auth-hover-color':  websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                                        }}
+                                    >
                                         Sign up
                                     </a>
                                     <a href='/login' className="auth-in">

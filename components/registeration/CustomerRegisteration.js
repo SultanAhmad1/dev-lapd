@@ -1,11 +1,40 @@
-import React, { useEffect, useState } from "react";
+"use client";
+import React, { useContext, useEffect, useState } from "react";
 import OTP from "../otp/OTP";
 import { useLoginMutationHook } from "../reactquery/useQueryHook";
-import { BRAND_GUID, BRANDSIMPLEGUID } from "@/global/Axios";
+import { BRAND_GUID, BRAND_SIMPLE_GUID, IMAGE_URL_Without_Storage } from "@/global/Axios";
 import { formatPhoneNumber, passwordMessageData, setLocalStorage, validatePassword } from "@/global/Store";
+import HomeContext from "@/contexts/HomeContext";
+import { ContextCheckApi } from "@/app/layout";
 
 export default function CustomerRegisteration() 
 {
+
+    const {websiteModificationData} = useContext(HomeContext)
+
+       
+    const { setMetaDataToDisplay} = useContext(ContextCheckApi)
+    useEffect(() => {
+        if(websiteModificationData)
+        {
+        const metaHeadingData = {
+            title: websiteModificationData?.brand?.name,
+            contentData: websiteModificationData?.brand?.name,
+            iconImage: IMAGE_URL_Without_Storage+"/"+websiteModificationData?.websiteModificationLive?.json_log?.[0]?.websiteFavicon,
+            singleItemsDetails: {
+            title: "",
+            description: "",
+            itemImage: "",
+            keywords: "",
+            url: ""
+            }
+        }
+        setMetaDataToDisplay(metaHeadingData)
+        }
+    }, [websiteModificationData]);
+
+    const [isHover, setIsHover] = useState(false);
+    
     const [errorsObj, setErrorsObj] = useState({
         errormessage:"",
         passwordMessage: "",
@@ -15,7 +44,6 @@ export default function CustomerRegisteration()
     const [registerationBoolean, setRegisterationBoolean] = useState({
         isOTPReady: false,
     });
-    
 
     const [registerationObj, setRegisterationObj] = useState({
         firstName: "",
@@ -99,9 +127,9 @@ export default function CustomerRegisteration()
             
         setErrorsObj((prevData) => ({...prevData, passwordMessage: "", confirmMessage: "", errormessage: ""}))
 
-        const selectedRegistered = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}user_selected_store`))
+        const selectedRegistered = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
 
-        const customerAddress = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}address`))
+        const customerAddress = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}address`))
 
         // check the first index is zero or not.
 
@@ -122,8 +150,8 @@ export default function CustomerRegisteration()
     };
 
     const onSuccess = (data) => {
-        setLocalStorage(`${BRANDSIMPLEGUID}tempcustomer`, data?.data?.data?.customer)
-        setLocalStorage(`${BRANDSIMPLEGUID}isOTPHas`, true)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}tempcustomer`, data?.data?.data?.customer)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}isOTPHas`, true)
         setRegisterationBoolean((prevData) => ({...prevData, isOTPReady: !registerationBoolean.isOTPReady}))
     }
     
@@ -141,7 +169,7 @@ export default function CustomerRegisteration()
      */
 
     useEffect(() => {
-        const isReadyOTP = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}isOTPHas`))
+        const isReadyOTP = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}isOTPHas`))
 
         if(isReadyOTP !== null && isReadyOTP !== undefined)
         {
@@ -231,7 +259,19 @@ export default function CustomerRegisteration()
                             }
 
                             <div className="form-group">
-                                <button type="submit" className="register-button">Sign Up</button>
+                                <button 
+                                    type="submit" 
+                                    className="register-button"
+                                    style={{
+                                        background: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                                        color: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                                        border: isHover ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}` : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
+                                    }} 
+                                    onMouseEnter={() => setIsHover(true)} 
+                                    onMouseLeave={() => setIsHover(false)} 
+                                >
+                                    Sign Up
+                                </button>
                             </div>
 
                     

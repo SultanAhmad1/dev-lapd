@@ -1,13 +1,14 @@
+"use client";
 import AvailableStore from "@/components/AvailableStore";
-import { usePostAfterAuthMutationHook } from "@/components/reactquery/useQueryHook";
+import { usePostAfterAuthenticateMutationHook } from "@/components/reactquery/useQueryHook";
 import HomeContext from "@/contexts/HomeContext";
-import { axiosPrivate, BRAND_GUID, BRANDSIMPLEGUID } from "@/global/Axios";
+import { axiosPrivate, BRAND_GUID, BRAND_SIMPLE_GUID } from "@/global/Axios";
 import { find_matching_postcode, setLocalStorage } from "@/global/Store";
 import React, { Fragment, useContext, useEffect, useState } from "react";
 
 export default function AddressList({handleCreateAddress}) 
 {
-    const {setDeliverymatrix, dayname, daynumber,setPostcode, setStreet1, setStreet2} = useContext(HomeContext)
+    const {setDeliveryMatrix, dayName, dayNumber,setPostcode, setStreet1, setStreet2} = useContext(HomeContext)
 
     const [listObj, setListObj] = useState({
         customer: null,
@@ -17,7 +18,7 @@ export default function AddressList({handleCreateAddress})
     const [postcodeerror, setPostcodeerror] = useState("");
     
     useEffect(() => {
-        const customer = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}tempcustomer`))
+        const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
 
         if(customer !== undefined || customer !== null)
         {
@@ -26,7 +27,7 @@ export default function AddressList({handleCreateAddress})
 
     }, []);
     
-    async function fetchPostcodeData(validpostcode) {
+    async function fetchpostcodeData(validpostcode) {
         try 
         {
           let filterPostcode = validpostcode.replace(/\s/g, "");
@@ -48,17 +49,17 @@ export default function AddressList({handleCreateAddress})
           const data = {
             postcode: filterPostcode,
             brand_guid: BRAND_GUID,
-            dayname: dayname,
-            daynumber: daynumber,
+            dayName: dayName,
+            dayNumber: dayNumber,
             outwardString: grabPostcodeOutWard,
           };
     
           const response = await axiosPrivate.post(`/ukpostcode-website`, data);
           const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows;
-          find_matching_postcode(matrix, validpostcode, setDeliverymatrix);
+          find_matching_postcode(matrix, validpostcode, setDeliveryMatrix);
     
-          setLocalStorage(`${BRANDSIMPLEGUID}address`, response?.data?.data);
-          setLocalStorage(`${BRANDSIMPLEGUID}user_valid_postcode`, validpostcode);
+          setLocalStorage(`${BRAND_SIMPLE_GUID}address`, response?.data?.data);
+          setLocalStorage(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validpostcode);
     
           
           setListObj((prevData) => ({...prevData, availablestores: response.data?.data?.availableStore}))
@@ -105,7 +106,7 @@ export default function AddressList({handleCreateAddress})
             }
     
             addressPostMutation(filterData)
-            fetchPostcodeData(filterAddress?.postcode)
+            fetchpostcodeData(filterAddress?.postcode)
         }
     }
 
@@ -113,7 +114,7 @@ export default function AddressList({handleCreateAddress})
     }
 
     const onPatchSuccess = (data) => {
-        setLocalStorage(`${BRANDSIMPLEGUID}tempcustomer`, listObj?.customer)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}tempcustomer`, listObj?.customer)
 
         const filterAddress = listObj?.customer?.addresses?.find((address) => address?.is_default_address === 1)
 
@@ -122,7 +123,7 @@ export default function AddressList({handleCreateAddress})
         setStreet2(filterAddress?.street2)
     }
 
-    const{mutate: addressPostMutation, isSuccess, reset} = usePostAfterAuthMutationHook('address-upadte', `/create-address`, onPatchSuccess, onPatchError)
+    const{mutate: addressPostMutation, isSuccess, reset} = usePostAfterAuthenticateMutationHook('address-upadte', `/create-address`, onPatchSuccess, onPatchError)
     
     if(isSuccess)
     {

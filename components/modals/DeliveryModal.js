@@ -1,3 +1,4 @@
+"use client";
 import React, { useContext, useEffect } from "react";
 import PostcodeModal from "./PostcodeModal";
 import HomeContext from "@/contexts/HomeContext";
@@ -7,15 +8,15 @@ function DeliveryModal() {
     postcode,
     street1,
     street2,
-    isdeliverychangedbtnclicked,
-    isdeliverybtnclicked,
-    setIsdeliverybtnclicked,
-    setIsdeliverychangedbtnclicked,
+    isDeliveryChangedBtnClicked,
+    isDeliveryBtnClicked,
+    setIsDeliveryBtnClicked,
+    setIsDeliveryChangedBtnClicked,
   } = useContext(HomeContext);
 
   // Boolean State
   useEffect(() => {
-    setIsdeliverychangedbtnclicked(false);
+    setIsDeliveryChangedBtnClicked(false);
   }, []);
 
   return (
@@ -31,12 +32,12 @@ function DeliveryModal() {
               <div className="delivery-empty-div"></div>
 
               <button className="delivery-modal-close-button">
-                {isdeliverychangedbtnclicked ? (
+                {isDeliveryChangedBtnClicked ? (
                   <div
                     className="delivery-modal-close-button-svg-div testing2 deliverychange"
                     onClick={() =>
-                      setIsdeliverychangedbtnclicked(
-                        !isdeliverychangedbtnclicked
+                      setIsDeliveryChangedBtnClicked(
+                        !isDeliveryChangedBtnClicked
                       )
                     }
                   >
@@ -51,7 +52,7 @@ function DeliveryModal() {
                 ) : (
                   <div
                     className="delivery-modal-close-button-svg-div testing1 delivery"
-                    onClick={() => setIsdeliverybtnclicked(false)}
+                    onClick={() => setIsDeliveryBtnClicked(false)}
                   >
                     <svg
                       width="24px"
@@ -72,9 +73,9 @@ function DeliveryModal() {
               </button>
             </div>
 
-            {isdeliverychangedbtnclicked && <PostcodeModal />}
+            {isDeliveryChangedBtnClicked && <PostcodeModal />}
 
-            {isdeliverychangedbtnclicked === false && (
+            {isDeliveryChangedBtnClicked === false && (
               <>
                 {/* Content */}
                 <div className="modal-delivery-details-level-one-div-dialog-body">
@@ -114,7 +115,7 @@ function DeliveryModal() {
                           <div className="spacer _8"></div>
                           <a
                             className="postocde-change-button"
-                            onClick={() => setIsdeliverychangedbtnclicked(true)}
+                            onClick={() => setIsDeliveryChangedBtnClicked(true)}
                           >
                             Change
                           </a>

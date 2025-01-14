@@ -3,7 +3,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { useLoginMutationHook } from "../reactquery/useQueryHook";
 import OTP from "../otp/OTP";
-import { BRAND_GUID, BRANDSIMPLEGUID } from "@/global/Axios";
+import { BRAND_GUID, BRAND_SIMPLE_GUID } from "@/global/Axios";
 import { setLocalStorage } from "@/global/Store";
 import ConfirmPassword from "../confirmpassword/ConfirmPassword";
 
@@ -49,7 +49,7 @@ export default function ForgetPassword()
     }
 
     const onForgetSuccess = (data) => {
-        setLocalStorage(`${BRANDSIMPLEGUID}tempcustomer`, data?.data?.data?.customer)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}tempcustomer`, data?.data?.data?.customer)
         setForgetObj((prevData) => ({...prevData, isOTPReady: true, errormessage: ""}))
     }
 
@@ -62,7 +62,7 @@ export default function ForgetPassword()
     const { mutate: forgetMutation, isLoading, isSuccess, reset} = useLoginMutationHook('forget-password', '/forget-password',onForgetSuccess, onForgetError)
 
     useEffect(() => {
-      const confirmedCode = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}confirmedcode`))
+      const confirmedCode = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}confirmedcode`))
 
       if(confirmedCode !== null && confirmedCode !== undefined)
       {

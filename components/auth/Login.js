@@ -1,16 +1,20 @@
+"use client";
 import HomeContext from "@/contexts/HomeContext";
 import { setLocalStorage, validatePhoneNumber } from "@/global/Store";
 import React, { Fragment, useCallback, useContext, useEffect, useState } from "react";
 
 
 import { useLoginMutationHook } from "@/components/reactquery/useQueryHook";
-import { BRAND_GUID, BRANDSIMPLEGUID} from "@/global/Axios";
+import { BRAND_GUID, BRAND_SIMPLE_GUID, IMAGE_URL_Without_Storage} from "@/global/Axios";
 import ForgetPassword from "../forgetpassword/ForgetPassword";
+import { ContextCheckApi } from "@/app/layout";
 
 export default function Login() 
 {
-    const { brandlogo , handleBoolean} = useContext(HomeContext);
+    const { brandLogo , handleBoolean, websiteModificationData} = useContext(HomeContext);
 
+    const [isHover, setIsHover] = useState(false);
+    
     const [loginObj, setLoginObj] = useState({
         userEmail: "",
         userPhone: "",
@@ -22,6 +26,27 @@ export default function Login()
         isForgetPasswordClicked: false,
     });
     
+    const { setMetaDataToDisplay} = useContext(ContextCheckApi)
+
+    useEffect(() => {
+        if(websiteModificationData)
+        {
+            const metaHeadingData = {
+                title: websiteModificationData?.brand?.name,
+                contentData: websiteModificationData?.brand?.name,
+                iconImage: IMAGE_URL_Without_Storage+"/"+websiteModificationData?.websiteModificationLive?.json_log?.[0]?.websiteFavicon,
+                singleItemsDetails: {
+                title: "",
+                description: "",
+                itemImage: "",
+                keywords: "",
+                url: ""
+            }
+        }
+        setMetaDataToDisplay(metaHeadingData)
+        }
+    }, [websiteModificationData]);
+
     const handleInput = useCallback((event) => {
         const { value, name } = event.target
         setLoginObj((prevData) => ({...prevData, [name]: value, isBtnClickAble: false}))
@@ -64,7 +89,7 @@ export default function Login()
             }
         }
 
-        const storeDetails = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}user_selected_store`))
+        const storeDetails = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
             
         const loginData = {
             brand: BRAND_GUID,
@@ -78,9 +103,9 @@ export default function Login()
     }
 
     const onLoginSuccess = (data) => {
-        setLocalStorage(`${BRANDSIMPLEGUID}tempcustomer`, data?.data?.data?.customer)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}tempcustomer`, data?.data?.data?.customer)
     
-        setLocalStorage(`${BRANDSIMPLEGUID}websiteToken`, data?.data)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}websiteToken`, data?.data)
         handleBoolean(true,'isCustomerVerified')
         window.location.href = "/"
         return
@@ -94,7 +119,7 @@ export default function Login()
     const {mutate: loginMutation, isSuccess, isLoading, isError, reset} = useLoginMutationHook('website-login', '/website-login', onLoginSuccess, onLoginError)
 
     useEffect(() => {
-      const confirmedPassword = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}confirmedcode`))
+      const confirmedPassword = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}confirmedcode`))
 
       if(confirmedPassword !== null && confirmedPassword !== undefined)
       {
@@ -105,7 +130,6 @@ export default function Login()
         }
       }
     }, []);
-
     return(
         <Fragment>
         {
@@ -150,7 +174,19 @@ export default function Login()
                     <br></br>
 
                     <div className="form-group">
-                        <button type="submit" className="login-button" disabled={loginObj.isBtnClickAble}>Login</button>
+                        <button 
+                            type="submit" 
+                            className="login-button" 
+                            style={{
+                                background: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                                color: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                                border: isHover ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}` : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
+                            }} 
+                            onMouseEnter={() => setIsHover(true)} 
+                            onMouseLeave={() => setIsHover(false)} 
+                        >
+                            Login my data
+                        </button>
                     </div>
                     <a href='/registeration' className="register-account">Register Account!.</a>
                 </form>

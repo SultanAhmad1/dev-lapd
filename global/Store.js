@@ -1,3 +1,4 @@
+"use client";
 let storeName = "LAPD"
 let isUserEnteredPostcode = false
 let categoryUUID = 0
@@ -39,7 +40,7 @@ export function setAtFirstLoadModalShow(isUserEnterValidPostcode)
     return isUserEnteredPostcode = isUserEnterValidPostcode
 }
 
-export function getAtFirstLoadModalShow()
+export function getatFirstLoadModalShow()
 {
     return isUserEnteredPostcode
 }

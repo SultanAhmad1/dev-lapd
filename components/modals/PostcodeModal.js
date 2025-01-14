@@ -1,5 +1,6 @@
+"use client";
 import HomeContext from "@/contexts/HomeContext";
-import { BRANDSIMPLEGUID, BRAND_GUID, axiosPrivate } from "@/global/Axios";
+import { BRAND_SIMPLE_GUID, BRAND_GUID, axiosPrivate } from "@/global/Axios";
 import { find_matching_postcode, setLocalStorage } from "@/global/Store";
 import { useRouter } from "next/navigation";
 import React, { useContext, useState } from "react";
@@ -12,17 +13,17 @@ function PostcodeModal() {
 
   // React Context
   const {
-    setIsdeliverybtnclicked,
-    setPostcodefororderamount,
-    deliverymatrix,
+    setIsDeliveryBtnClicked,
+    setPostCodeForOrderAmount,
+    deliveryMatrix,
     setPostcode,
-    dayname,
-    daynumber,
+    dayName,
+    dayNumber,
     setStoreName,
     setStreet1,
     setStreet2,
-    setDeliverymatrix,
-    setIscartbtnclicked,
+    setDeliveryMatrix,
+    setIsCartBtnClicked,
     setLoader
   } = useContext(HomeContext);
 
@@ -68,8 +69,8 @@ function PostcodeModal() {
       const postcodeData = {
         postcode: updatedvalidpostcode,
         brand_guid: BRAND_GUID,
-        dayname: dayname,
-        daynumber: daynumber,
+        dayName: dayName,
+        dayNumber: dayNumber,
         outwardString: grabPostcodeOutWard,
       }
 
@@ -84,7 +85,7 @@ function PostcodeModal() {
     setLoader(false)
     const matrix = data.data?.data?.deliveryMartix?.delivery_matrix_rows;
 
-    find_matching_postcode(matrix, updatedvalidpostcode, setDeliverymatrix);
+    find_matching_postcode(matrix, updatedvalidpostcode, setDeliveryMatrix);
 
     setTempaddress(data?.data?.data);
     setAvailablestores(data.data?.data?.availableStore);
@@ -120,14 +121,14 @@ function PostcodeModal() {
       }
     }
 
-    setLocalStorage(`${BRANDSIMPLEGUID}address`, tempaddress);
+    setLocalStorage(`${BRAND_SIMPLE_GUID}address`, tempaddress);
     setLocalStorage(
-      `${BRANDSIMPLEGUID}user_valid_postcode`,
+      `${BRAND_SIMPLE_GUID}user_valid_postcode`,
       updatedvalidpostcode
     );
 
-    setPostcodefororderamount(deliverymatrix?.postcode);
-    setLocalStorage(`${BRANDSIMPLEGUID}delivery_matrix`, deliverymatrix);
+    setPostCodeForOrderAmount(deliveryMatrix?.postcode);
+    setLocalStorage(`${BRAND_SIMPLE_GUID}delivery_matrix`, deliveryMatrix);
 
     setPostcode(updatedvalidpostcode);
 
@@ -136,10 +137,10 @@ function PostcodeModal() {
       store: storeName,
       telephone: storeTelephone,
     };
-    setLocalStorage(`${BRANDSIMPLEGUID}user_selected_store`, selectedStoreData);
+    setLocalStorage(`${BRAND_SIMPLE_GUID}user_selected_store`, selectedStoreData);
     router.push("/");
-    setIscartbtnclicked(true);
-    setIsdeliverybtnclicked(false);
+    setIsCartBtnClicked(true);
+    setIsDeliveryBtnClicked(false);
   };
 
   

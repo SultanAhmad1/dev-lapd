@@ -1,15 +1,16 @@
+"use client";
 import HomeContext from '@/app/contexts/HomeContext'
 import React, { useContext } from 'react'
 
 function SubProduct() {
 
     
-    const {navigationcategories} = useContext(HomeContext)
+    const {navigationCategories} = useContext(HomeContext)
     return (
         <div className="cat-items-content">
             <ul className="items-ul">
                 {
-                    navigationcategories?.map((category, index) =>
+                    navigationCategories?.map((category, index) =>
                     {
                         return(
                             <li className="item-lists" key={index} id={`section${category?.id}`}>
@@ -49,7 +50,7 @@ function SubProduct() {
 
                                                                     <div className="item-img-style">
                                                                         <div className="lazyload-wrapper">
-                                                                            <img className="item-img" src={item?.image_url} alt='Product'></img>
+                                                                            <img  loading='lazy' className="item-img" src={item?.image_url} alt='Product'></img>
                                                                         </div>
                                                                     </div>
                                                                 </div>

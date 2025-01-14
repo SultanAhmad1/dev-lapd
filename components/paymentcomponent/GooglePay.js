@@ -1,3 +1,4 @@
+"use client";
 import React, {useState, useEffect} from 'react';
 import {CardElement, PaymentRequestButtonElement, useStripe} from '@stripe/react-stripe-js';
 import { country, currency, getAmountConvertToFloatWithFixed } from '@/app/global/Store';
@@ -62,7 +63,6 @@ const GooglePay = (props) => {
           } 
           else 
           {
-            // console.log("Confirm success: ", ev);
               // Report to the browser that the confirmation was successful, prompting
               // it to close the browser payment method collection interface.
               ev.complete('success');
@@ -77,19 +77,16 @@ const GooglePay = (props) => {
                   if (result.error) 
                   {
                     // The payment failed -- ask your customer for a new payment method.
-                    // console.log("strip confirmcard ask your customer new payment method if part:", result);
                   } 
                   else 
                   {  
                     // The payment has succeeded.
-                    // console.log("strip confirmcard ask your customer new payment method else:", result);
                   }
                 });
               } 
               else 
               {
                 // The payment has succeeded.
-                // console.log("Payment intent:",confirmResult.paymentIntent.id)
                 afterPaymentSavedOrderUpdate(confirmResult.paymentIntent)
               }
           }

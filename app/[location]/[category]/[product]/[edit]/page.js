@@ -1,11 +1,9 @@
 "use client";
 
-import DisplaySingleItem from "@/components/singleitem/DisplaySingleItem";
+import DisplaySingleItem from "@/components/singleItem/DisplaySingleItem";
 
 function productEdit({ params }) 
 {
-  console.log("Params: ", params);
-  
   return (
     <DisplaySingleItem params={params}/>
   );

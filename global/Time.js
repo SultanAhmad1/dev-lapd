@@ -1,3 +1,4 @@
+"use client";
 export const listtime = [
     {
         id: 1,

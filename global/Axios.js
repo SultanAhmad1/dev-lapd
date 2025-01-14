@@ -1,7 +1,7 @@
 import axios from "axios";
 import { setLocalStorage } from "./Store";
-export const BASE_URL = "https://laravel-jouleskitchen.cleartwo.uk/api";
-export const IMAGE_URL = "https://laravel-jouleskitchen.cleartwo.uk/storage/";
+// export const BASE_URL = "https://laravel-jouleskitchen.cleartwo.uk/api";
+export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 export const IMAGE_URL_Without_Storage = "https://laravel-jouleskitchen.cleartwo.uk/";
 
 // export const BASE_URL = "https://api.jouleskitchen.co.uk/api";
@@ -9,10 +9,10 @@ export const IMAGE_URL_Without_Storage = "https://laravel-jouleskitchen.cleartwo
 // export const IMAGE_URL_Without_Storage ="https://api.jouleskitchen.co.uk/";
 
 export const BRAND_GUID = "28D0041C-F48D-4054-BA0E-7153D2B8642C";
-export const BRANDSIMPLEGUID = "28D0041CF48D4054BA0E7153D2B8642C";
+export const BRAND_SIMPLE_GUID = "28D0041CF48D4054BA0E7153D2B8642C";
 export const PARTNER_ID = 2;
 export const DELIVERY_ID = "79857505-DA6E-4256-B9CF-E0F41DACB086";
-export const BrandLogoPath = "/gallery/logo.svg";
+export const brandLogoPath = "/gallery/logo.svg";
 export const USERIMAGE = "/gallery/user-image.jpeg"
 
 export default axios.create({
@@ -31,11 +31,11 @@ export const axiosPrivate = axios.create({
 });
 
 export const request = ({...options}) => {
-  const token = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}websiteToken`));
+  const token = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}websiteToken`));
   
   if(token === undefined || token === null || token?.isLoggedIn === false)
   {
-    setLocalStorage(`${BRANDSIMPLEGUID}websiteToken`, null)
+    setLocalStorage(`${BRAND_SIMPLE_GUID}websiteToken`, null)
     return
   }
 

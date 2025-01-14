@@ -1,8 +1,9 @@
-import React, { useContext, useEffect, useState } from "react";
+"use client";
+import React, { useContext, useEffect, useRef, useState } from "react";
 
 import HomeContext from "@/contexts/HomeContext";
 import {
-  BRANDSIMPLEGUID,
+  BRAND_SIMPLE_GUID,
   BRAND_GUID,
   axiosPrivate,
 } from "@/global/Axios";
@@ -12,18 +13,29 @@ import {
   setLocalStorage,
 } from "@/global/Store";
 import AvailableStore from "@/components/AvailableStore";
+import moment from "moment";
 
 function SubAtLoadLoadShow({ setLoader }) {
   
+  const postCodeRef = useRef(null)
+
   const {
-    dayname,
-    daynumber,
+    dayName,
+    dayNumber,
     setPostcode,
-    setPostcodefororderamount,
-    deliverymatrix,
-    setDeliverymatrix,
+    setPostCodeForOrderAmount,
+    deliveryMatrix,
+    setDeliveryMatrix,
+    websiteModificationData,
   } = useContext(HomeContext);
 
+  useEffect(() => {
+    if(postCodeRef.current)
+    {
+      postCodeRef.current.focus();
+    }
+  }, []);
+  
   const [validpostcode, setValidpostcode] = useState("");
   const [postcodeerror, setPostcodeerror] = useState("");
 
@@ -54,7 +66,7 @@ function SubAtLoadLoadShow({ setLoader }) {
     }
   }
 
-  async function fetchPostcodeData() {
+  async function fetchpostcodeData() {
     try {
       let filterPostcode = validpostcode.replace(/\s/g, "");
 
@@ -75,17 +87,23 @@ function SubAtLoadLoadShow({ setLoader }) {
       const data = {
         postcode: filterPostcode,
         brand_guid: BRAND_GUID,
-        dayname: dayname,
-        daynumber: daynumber,
+        dayName: dayName,
+        dayNumber: dayNumber,
         outwardString: grabPostcodeOutWard,
       };
 
       const response = await axiosPrivate.post(`/ukpostcode-website`, data);
       const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows;
-      find_matching_postcode(matrix, validpostcode, setDeliverymatrix);
+      find_matching_postcode(matrix, validpostcode, setDeliveryMatrix);
 
-      setLocalStorage(`${BRANDSIMPLEGUID}address`, response?.data?.data);
-      setLocalStorage(`${BRANDSIMPLEGUID}user_valid_postcode`, validpostcode);
+      const currentDateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+
+      // make cart empty.
+      setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[]);
+      setLocalStorage(`${BRAND_SIMPLE_GUID}user_postcode_time`, currentDateTime)
+
+      setLocalStorage(`${BRAND_SIMPLE_GUID}address`, response?.data?.data);
+      setLocalStorage(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validpostcode);
 
       setAvailablestores(response.data?.data?.availableStore);
 
@@ -115,12 +133,12 @@ function SubAtLoadLoadShow({ setLoader }) {
   }
 
   useEffect(() => {
-    if (deliverymatrix !== null) 
+    if (deliveryMatrix !== null) 
     {
-      setPostcodefororderamount(deliverymatrix?.postcode);
-      window.localStorage.setItem(`${BRANDSIMPLEGUID}delivery_matrix`,JSON.stringify(deliverymatrix));
+      setPostCodeForOrderAmount(deliveryMatrix?.postcode);
+      window.localStorage.setItem(`${BRAND_SIMPLE_GUID}delivery_matrix`,JSON.stringify(deliveryMatrix));
     }
-  }, [deliverymatrix]);
+  }, [deliveryMatrix]);
 
   const handleGoBtn = (e) => 
   {
@@ -128,7 +146,7 @@ function SubAtLoadLoadShow({ setLoader }) {
     if (parseInt(validpostcode?.length) > parseInt(3)) 
     {
       setLoader(true);
-      fetchPostcodeData();
+      fetchpostcodeData();
       return 
     } 
     
@@ -155,8 +173,19 @@ function SubAtLoadLoadShow({ setLoader }) {
                 <div className="deliver-to-body-content-nested-div-level-one-nested">
                   <div className="deliver-to-body-content-nested-div-level-one-nested-svg-div-one">
                     <div className="deliver-to-body-content-nested-div-level-one-nested-svg-div-two">
-                      <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                        <path d="M17.5834 5.16602C14.5001 2.08268 9.50008 2.08268 6.41675 5.16602C3.33341 8.24935 3.33341 13.3327 6.41675 16.416L12.0001 21.9993L17.5834 16.3327C20.6667 13.3327 20.6667 8.24935 17.5834 5.16602ZM12.0001 12.416C11.0834 12.416 10.3334 11.666 10.3334 10.7493C10.3334 9.83268 11.0834 9.08268 12.0001 9.08268C12.9167 9.08268 13.6667 9.83268 13.6667 10.7493C13.6667 11.666 12.9167 12.416 12.0001 12.416Z" fill="currentColor"></path>
+                      <svg 
+                        width="24px" 
+                        height="24px" 
+                        fill="none" 
+                        viewBox="0 0 24 24" 
+                        xmlns="http://www.w3.org/2000/svg" 
+                        aria-hidden="true" 
+                        focusable="false"
+                      >
+                        <path 
+                          d="M17.5834 5.16602C14.5001 2.08268 9.50008 2.08268 6.41675 5.16602C3.33341 8.24935 3.33341 13.3327 6.41675 16.416L12.0001 21.9993L17.5834 16.3327C20.6667 13.3327 20.6667 8.24935 17.5834 5.16602ZM12.0001 12.416C11.0834 12.416 10.3334 11.666 10.3334 10.7493C10.3334 9.83268 11.0834 9.08268 12.0001 9.08268C12.9167 9.08268 13.6667 9.83268 13.6667 10.7493C13.6667 11.666 12.9167 12.416 12.0001 12.416Z" 
+                          fill="currentColor"
+                        ></path>
                       </svg>
                     </div>
                   </div>
@@ -166,6 +195,7 @@ function SubAtLoadLoadShow({ setLoader }) {
                   <input
                     type="text"
                     autoComplete="off"
+                    ref={postCodeRef}
                     value={validpostcode}
                     onChange={handlePostCode}
                     className="deliver-to-input"
@@ -184,7 +214,13 @@ function SubAtLoadLoadShow({ setLoader }) {
 
                 {
                   isgobtnclickable && 
-                  <button type="submit" className="deliver-to-done-button">
+                  <button type="submit" className="deliver-to-done-button" style={{
+                    '--go-btn-background-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, 
+                    '--go-btn-font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor, 
+                    '--go-hover-btn-background-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor, 
+                    '--go-hover-btn-font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor, 
+                    '--go-hover-border': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, 
+                  }}>
                     Go
                   </button>
                 }

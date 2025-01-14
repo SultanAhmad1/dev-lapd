@@ -5,6 +5,7 @@ import CustomerRegisteration from "@/components/registeration/CustomerRegisterat
 
 export default function page() 
 {
+
     return(
         <div className="form-container">
             <div className="register-header">

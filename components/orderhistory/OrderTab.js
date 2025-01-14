@@ -1,11 +1,12 @@
-import { BRANDSIMPLEGUID, IMAGE_URL_Without_Storage } from "@/global/Axios";
+"use client";
+import { BRAND_SIMPLE_GUID, IMAGE_URL_Without_Storage } from "@/global/Axios";
 import moment from "moment";
 import React from "react";
 import Item from "./children/Item";
 
 export default function OrderTab({order}) 
 {
-    const customer = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}tempcustomer`))
+    const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
 
     let statusColor = "order-awaiting-status"
     let urlStart = 'track-order'
@@ -39,7 +40,7 @@ export default function OrderTab({order})
                         <div className="lazyload-wrapper " style={{height: "140px"}}>
                             <picture>
                                 <source type="image/webp" srcSet={`${order?.order_lines?.[0]?.product_image ? IMAGE_URL_Without_Storage+""+ order?.order_lines?.[0]?.product_image?.url: "https://cn-geo1.uber.com/image-proc/resize/eats/format=webp/width=550/height=440/quality=70/srcb64=aHR0cHM6Ly9kdXl0NGg5bmZuajUwLmNsb3VkZnJvbnQubmV0L3NrdS8wN2E1N2IzYzZjZjRhMTY0MzExMmE4ZmExM2I4MjUzMQ=="}`} />
-                                <img alt={order?.order_lines?.[0]?.product_name} role="presentation" src={`${order?.order_lines?.[0]?.product_image ? IMAGE_URL_Without_Storage+""+ order?.order_lines?.[0]?.product_image?.url: "https://duyt4h9nfnj50.cloudfront.net/sku/07a57b3c6cf4a1643112a8fa13b82531"}`} aria-hidden="true" className="order-item-img" />
+                                <img  loading='lazy' alt={order?.order_lines?.[0]?.product_name} role="presentation" src={`${order?.order_lines?.[0]?.product_image ? IMAGE_URL_Without_Storage+""+ order?.order_lines?.[0]?.product_image?.url: "https://duyt4h9nfnj50.cloudfront.net/sku/07a57b3c6cf4a1643112a8fa13b82531"}`} aria-hidden="true" className="order-item-img" />
                             </picture>
                         </div>
                     </div>

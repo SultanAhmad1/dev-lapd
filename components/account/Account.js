@@ -1,6 +1,7 @@
-import { BRAND_GUID, BRANDSIMPLEGUID } from "@/global/Axios";
+"use client";
+import { BRAND_GUID, BRAND_SIMPLE_GUID } from "@/global/Axios";
 import React, { Fragment, useEffect, useState } from "react";
-import { useCheckAuthMutationHook, usePostAfterAuthMutationHook } from "../reactquery/useQueryHook";
+import { useCheckAuthMutationHook, usePostAfterAuthenticateMutationHook } from "../reactquery/useQueryHook";
 import AccountInfo from "../accountchild/AccountInfo";
 import Security from "../accountchild/Security";
 import AccountOTP from "../otp/AccountOTP";
@@ -33,7 +34,7 @@ export default function Account()
   const handlePasswordUpdate = (isPasswordClicked) => {
     setBooleanObj((prevData) => ({...prevData, isPasswordUpdateClicked: isPasswordClicked, securityClicked: true, isOTPSend: true,}))
 
-    const customer = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}tempcustomer`))
+    const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
 
     forgetMutation({
       brand: BRAND_GUID,
@@ -41,25 +42,25 @@ export default function Account()
     })
   }
   const onForgetSuccess = (data) => {
-    setLocalStorage(`${BRANDSIMPLEGUID}tempcustomer`, data?.data?.data?.customer)
+    setLocalStorage(`${BRAND_SIMPLE_GUID}tempcustomer`, data?.data?.data?.customer)
   } 
 
   const onForgetError = (error) => {
   }
 
-  const { mutate: forgetMutation, isLoading, isSuccess, reset} = usePostAfterAuthMutationHook('forget-password', '/forget-password',onForgetSuccess, onForgetError)
+  const { mutate: forgetMutation, isLoading, isSuccess, reset} = usePostAfterAuthenticateMutationHook('forget-password', '/forget-password',onForgetSuccess, onForgetError)
 
   const handleBack = (isPasswordClicked) => {
     setBooleanObj((prevData) => ({...prevData, isPasswordUpdateClicked: isPasswordClicked, securityClicked: true, isOTPSend: false}))
   }
 
   useEffect(() => {
-    const customer = JSON.parse(window.localStorage.getItem(`${BRANDSIMPLEGUID}tempcustomer`))
+    const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
     
     if(customer === undefined && customer === null)
     {
-      window.localStorage.removeItem(`${BRANDSIMPLEGUID}tempcustomer`);
-      window.localStorage.removeItem(`${BRANDSIMPLEGUID}websiteToken`);
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}tempcustomer`);
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}websiteToken`);
       window.location.href = '/'
       return
     }

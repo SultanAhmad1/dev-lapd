@@ -1,3 +1,4 @@
+"use client";
 import { axiosPrivate, loginAxios, request } from "@/global/Axios"
 import { useMutation, useQuery } from "@tanstack/react-query"
 
@@ -48,7 +49,7 @@ export const useGetAfterAuthMutationHook = (key,keepUrl, id, onSuccess, onError,
   return useQuery([`${key}-${id}`], () => fetchOrderHistory(keepUrl),{onSuccess,onError, enabled: !!isEnabled})
 }
 
-export const usePostAfterAuthMutationHook = (key,url, onSuccess, onError) => {
+export const usePostAfterAuthenticateMutationHook = (key,url, onSuccess, onError) => {
   return useMutation((newData) => request({method: 'POST',url: url,data: newData}), {key,onSuccess,onError,})
 }
 
