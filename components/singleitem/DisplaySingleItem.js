@@ -2042,7 +2042,6 @@ export default function DisplaySingleItem({params})
           
         }
     }, [singleItem, optionNumber,cartData, isCartBtnClicked,quantity]);    
-
     
     const handleMobileAddToCart = useCallback((action) => {
         if (singleItem) {
@@ -2596,8 +2595,6 @@ export default function DisplaySingleItem({params})
                         handleModalModifierToggle,
                     }   
                 }
-
-                
             />
         }
     </>)
