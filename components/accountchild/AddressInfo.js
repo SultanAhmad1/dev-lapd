@@ -1,8 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { usePatchMutationHook } from "../reactquery/useQueryHook";
-import { BRAND_SIMPLE_GUID, USERIMAGE } from "@/global/Axios";
-import Image from "next/image";
+import React, { useState } from "react";
 import AddressList from "./addresschild/AddressList";
 import AddressCreate from "./addresschild/AddressCreate";
 
@@ -17,15 +14,12 @@ export default function AddressInfo()
     
     return(
         <div className="account-component">
-
             {/* Display all the Customer's Addresses */}
             {
                 ! isCreateClicked ?
-                <AddressList {...{handleCreateAddress}}/>
+                    <AddressList {...{handleCreateAddress}}/>
                 :
-
-                <AddressCreate {...{handleCreateAddress}}/>
-               
+                    <AddressCreate {...{handleCreateAddress}}/>
             }
         </div>
     )

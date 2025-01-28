@@ -1,6 +1,6 @@
 'use client';
 
-import { BRAND_SIMPLE_GUID, USERIMAGE } from "@/global/Axios";
+import { BRAND_SIMPLE_GUID, USER_IMAGE } from "@/global/Axios";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
 import { usePatchMutationHook, usePostMutationHook } from "../reactquery/useQueryHook";
@@ -10,8 +10,8 @@ export default function AccountInfo()
 {
     const [accountInfoObj, setAccountInfoObj] = useState({
         userGUID: "",
-        userfirstName: "",
-        userlastName: "",
+        userFirstName: "",
+        userLastName: "",
         userEmail: "",
         userPhone: "",
 
@@ -29,14 +29,14 @@ export default function AccountInfo()
     const handleAccountUpdate = (event) => {
         event.preventDefault()
 
-        const { userfirstName, userlastName, userEmail, userPhone } = accountInfoObj
+        const { userFirstName, userLastName, userEmail, userPhone } = accountInfoObj
 
-        if(!userfirstName)
+        if(!userFirstName)
         {
             setAccountInfoObj((prevData) => ({...prevData, firstNameError: "First name required!."}))
             return
         }
-        else if(! userlastName){
+        else if(! userLastName){
             setAccountInfoObj((prevData) => ({...prevData, lastNameError: "Last name required!."}))
             return
         }
@@ -50,8 +50,8 @@ export default function AccountInfo()
         }
 
         const accountData = {
-            first_name: userfirstName,
-            last_name: userlastName,
+            first_name: userFirstName,
+            last_name: userLastName,
             email: userEmail,
             phone: userPhone
         }
@@ -64,7 +64,7 @@ export default function AccountInfo()
         setAccountInfoObj((prevData) => ({...prevData, 
             firstNameError: "First name required!.",
             lastNameError: "Last name required!.",
-            emailError: "Eamil address required!.",
+            emailError: "Email address required!.",
             phoneError: "Phone number required!.",
         }))    
     }
@@ -72,13 +72,13 @@ export default function AccountInfo()
     const onSuccess = (data) => {
         const { customer } = data?.data?.data
         setAccountInfoObj((prevData) => ({...prevData, 
-            userfirstName: customer?.first_name,
-            userlastName: customer?.last_name,
+            userFirstName: customer?.first_name,
+            userLastName: customer?.last_name,
             userEmail: customer?.email,
             userPhone: customer?.phone,
         }))
 
-        setLocalStorage(`${BRAND_SIMPLE_GUID}tempcustomer`, customer)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}tempCustomer`, customer)
     }
 
     const {mutate: patchMutation, isLoading, isSuccess, reset} = usePatchMutationHook("customer-update", `/customer-update/${accountInfoObj?.userGUID}`, onSuccess, onError)
@@ -91,13 +91,13 @@ export default function AccountInfo()
     }
 
     useEffect(() => {
-      const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
+      const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempCustomer`))
 
         setAccountInfoObj((prevData) => ({
             ...prevData,
             userGUID: customer?.customer_guid,
-            userfirstName: customer?.first_name,
-            userlastName: customer?.last_name,
+            userFirstName: customer?.first_name,
+            userLastName: customer?.last_name,
             userEmail: customer?.email,
             userPhone: customer?.phone
         }))
@@ -116,7 +116,7 @@ export default function AccountInfo()
                     <Image
                         alt=""
                         role="presentation"
-                        src={USERIMAGE}
+                        src={USER_IMAGE}
                         className="canv-anchor-image-tags"
                         width={100}
                         height={100}
@@ -129,12 +129,12 @@ export default function AccountInfo()
 
                 <div className="form-group">
                     <label className="form-label">&nbsp; First Name:</label>
-                        <input type="text" className="form-input" name="userfirstName" value={accountInfoObj?.userfirstName} onChange={handleInputs} placeholder="Enter first name..." required/>
+                        <input type="text" className="form-input" name="userFirstName" value={accountInfoObj?.userFirstName} onChange={handleInputs} placeholder="Enter first name..." required/>
                 </div>
 
                 <div className="form-group">
                     <label className="form-label">&nbsp; Last Name:</label>
-                    <input type="text" className="form-input" name="userlastName" value={accountInfoObj.userlastName} onChange={handleInputs} placeholder="Enter last name..." required/>
+                    <input type="text" className="form-input" name="userLastName" value={accountInfoObj.userLastName} onChange={handleInputs} placeholder="Enter last name..." required/>
                 </div>
 
                 <div className="form-group">

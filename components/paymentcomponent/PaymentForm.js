@@ -57,41 +57,51 @@ const PaymentForm = ({orderId}) =>
   const elements = useElements();
   const [paymentError, setPaymentError] = useState(null);
 
-  const [isgeterrorfromdatabase, setIsgeterrorfromdatabase] = useState(false)
+  const [isGetErrorFromDatabase, setIsGetErrorFromDatabase] = useState(false)
 
   /**
    * Check the Brand is active for a location.
   */
 
-  const foreceFullyCheckBrandLocationTrue  = async() =>{
-    const response = await axiosPrivate.get(`/location-brand-status/${orderId}`)
-    
-    const { brandExists, isExpired } = response?.data?.data
-    
-    setIsgeterrorfromdatabase(isExpired)
-    setIsLocationBrandOnline(brandExists)
-  }
-
-  // Fetch Order Price related to Order GUID.
-  const forceFullyGetOrderPriceFromDatabase = async () =>
-  {
-    try 
-    {
-      const data = {guid: orderId,}  
-      const response = await axiosPrivate.post(`/order-price-to-payable-get`, data)
-      
-      setIsgeterrorfromdatabase(response.data.data?.orderAmountDetails === null ? true : false)
-
-      setTotalOrderAmountValue(response.data.data?.orderAmountDetails === null ? 0 : response.data.data?.orderAmountDetails?.order_total)
-
-    } 
-    catch (error) 
-    {
-    }
-  }
 
   useEffect(() => {
     
+    const forceFullyCheckBrandLocationTrue  = async() =>{
+      try {
+        const response = await axiosPrivate.get(`/location-brand-status/${orderId}`)
+        
+        const { brandExists, isExpired } = response?.data?.data
+        
+        setIsGetErrorFromDatabase(isExpired)
+        setIsLocationBrandOnline(brandExists)
+        
+      } catch (error) {
+        if(error.response.status === 419)
+        {
+          setIsGetErrorFromDatabase(true)
+          return
+        }
+      }
+    }
+
+    // Fetch Order Price related to Order GUID.
+    const forceFullyGetOrderPriceFromDatabase = async () =>
+    {
+      try 
+      {
+        const data = {guid: orderId,}  
+        const response = await axiosPrivate.post(`/order-price-to-payable-get`, data)
+        
+        setIsGetErrorFromDatabase(response.data.data?.orderAmountDetails === null ? true : false)
+
+        setTotalOrderAmountValue(response.data.data?.orderAmountDetails === null ? 0 : response.data.data?.orderAmountDetails?.order_total)
+
+      } 
+      catch (error) 
+      {
+      }
+    }
+
     const dayNumber = moment().day();
     const dateTime  = moment().format('HH:mm')
     const dayName = moment().format('dddd');
@@ -111,10 +121,13 @@ const PaymentForm = ({orderId}) =>
     }
 
     const orderTotalFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`))
-    foreceFullyCheckBrandLocationTrue()
+    forceFullyCheckBrandLocationTrue()
     if(orderTotalFromLocalStorage !== null || orderTotalFromLocalStorage !== undefined)
     {
-      setTotalOrderAmountValue(orderTotalFromLocalStorage === null ? getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) : getAmountConvertToFloatWithFixed(JSON.parse(orderTotalFromLocalStorage),2))
+      setTotalOrderAmountValue(orderTotalFromLocalStorage === null ? 
+        getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) 
+      : 
+        getAmountConvertToFloatWithFixed(JSON.parse(orderTotalFromLocalStorage),2))
     }
     else
     {
@@ -280,7 +293,7 @@ const PaymentForm = ({orderId}) =>
       <div className='payment-container'>
         <div className="payment-div">
           {
-            !isgeterrorfromdatabase ?
+            !isGetErrorFromDatabase ?
               <form onSubmit={handleSubmit}>
                 <div className="hmg1payment-desk">
                   <div className="hmg1mhb0payment-desk">
@@ -460,7 +473,7 @@ const PaymentForm = ({orderId}) =>
                     </div>
                   </div>
                 </div>
-            </>
+              </>
           }
         </div>
       </div>

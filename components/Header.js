@@ -1,11 +1,12 @@
 "use client";
 import Image from 'next/image'
 
-import React, { useContext, useState } from 'react'
+import React, { Fragment, useContext, useState } from 'react'
 import HomeContext from '../contexts/HomeContext'
 import { brandLogoPath,IMAGE_URL_Without_Storage } from '../global/Axios'
 import moment from 'moment';
 import FilterLocationTime from './FilterLocationTime';
+import { usePathname } from 'next/navigation';
 
 export default function Header(props) 
 {
@@ -47,6 +48,9 @@ export default function Header(props)
         // setIsDeliveryBtnClicked(false)
     }
 
+    const pathName = usePathname()
+
+    const splitToArray = pathName.split("/").filter(segment => segment)
     return (
         <header>
             <div className="header">
@@ -74,7 +78,10 @@ export default function Header(props)
                     <div className='logo-location-cart'>
                       
                         {
-                            headerPostcodeBtnDisplay &&
+                            (!["track-orders", "place-order", "payment"].some(term => splitToArray?.[0]?.includes(term)) && 
+                            headerPostcodeBtnDisplay )
+                            
+                            &&
 
                             <div>
                                 <FilterLocationTime />

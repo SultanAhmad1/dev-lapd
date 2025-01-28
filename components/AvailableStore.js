@@ -6,7 +6,7 @@ import React, { Fragment, useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import moment from "moment";
 
-export default function AvailableStore({availablestores}) 
+export default function AvailableStore({availableStores}) 
 {
   const {
     setDayOpeningClosingTime,
@@ -113,8 +113,8 @@ export default function AvailableStore({availablestores})
     setStoreName(storeName);
     setAtFirstLoad(false);
     setStoreGUID(storeGUID);
-    if (parseInt(availablestores.length) > parseInt(0)) {
-      for (const store of availablestores) {
+    if (parseInt(availableStores.length) > parseInt(0)) {
+      for (const store of availableStores) {
         if (storeGUID === store?.location_guid) {
           setStreet1(store?.user_street1);
           setStreet2(store?.user_street2);
@@ -134,15 +134,15 @@ export default function AvailableStore({availablestores})
 
   useEffect(() => {
     setTimeout(() => {
-      if (parseInt(availablestores.length) === parseInt(1)) {
+      if (parseInt(availableStores.length) === parseInt(1)) {
         handleLocationSelect(
-          availablestores[0]?.location_guid,
-          availablestores[0]?.location_name,
-          availablestores[0]?.telephone
+          availableStores[0]?.location_guid,
+          availableStores[0]?.location_name,
+          availableStores[0]?.telephone
         );
       }
     }, 2000);
-  }, [availablestores]);
+  }, [availableStores]);
   // code is working
   
   return(
@@ -160,7 +160,7 @@ export default function AvailableStore({availablestores})
             explore by touch or with swipe gestures.
             </label>
 
-            {availablestores?.map((stores, index) => {
+            {availableStores?.map((stores, index) => {
             return (
                 <div className="available-stores-show" style={{ cursor: "pointer" }} key={index} onClick={() => handleLocationSelect(stores.location_guid,stores.location_name,stores.telephone)}>
                 <div className="deliver-to-body-content-nested-div-level-one-nested-svg-div-one">

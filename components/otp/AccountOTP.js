@@ -59,7 +59,7 @@ export default function AccountOTP({handleBack})
 
     const otpCode = Object.values(inputValues).join('')
     
-    const customerData = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
+    const customerData = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempCustomer`))
 
     const otpData = {
       customerId: customerData?.id,
@@ -95,7 +95,7 @@ export default function AccountOTP({handleBack})
     setCanResend(false);
     setErrormessage("")
 
-    const customerData = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
+    const customerData = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempCustomer`))
 
     const resendData = {
       brand: BRAND_GUID,
@@ -116,7 +116,7 @@ export default function AccountOTP({handleBack})
      */
 
     useEffect(() => {
-      const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
+      const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempCustomer`))
         
       if(customer !== null && customer !== undefined)
       {

@@ -55,7 +55,7 @@ export default function OtpVerifyModal({setIsOTP})
     setCanResend(false);
     setErrormessage("")
 
-    const customerData = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
+    const customerData = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempCustomer`))
 
     const resendData = {
         brand: BRAND_GUID,
@@ -135,7 +135,7 @@ export default function OtpVerifyModal({setIsOTP})
     // declare
     const otpCode = Object.values(inputValues).join('')
     
-    const customerData = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
+    const customerData = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempCustomer`))
 
     const otpData = {
       customerId: customerData?.id,

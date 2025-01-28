@@ -2713,6 +2713,8 @@ ul {
   font-weight: 700;
   font-size: 20px;
   font-family: sans-serif;
+  display: flex;
+  justify-content: space-between;
 }
 
 .product-modifier-option {
@@ -3161,7 +3163,7 @@ input {
   border-radius: 8px;
   /* font-size: 18px; */
   background: var(--addToCart);
-  padding: 10px 20px;
+  padding: 14px 9px;
   color: #ffffff;
   /* min-height: 56px; */
   /* justify-content: center; */
@@ -10736,7 +10738,6 @@ ul.track-steps {
   }
 
   .modifier-div {
-    padding-top: 12px;
     -webkit-box-pack: justify;
     justify-content: space-between;
     -webkit-box-orient: horizontal;
@@ -10744,9 +10745,8 @@ ul.track-steps {
     flex-direction: row;
     display: flex;
     background: #cbcbcb75;
-    padding: 4px;
     border-radius: 8px;
-    padding: 14px;
+    padding: 7px;
   }
 
   .alamsingle-product {
@@ -10774,13 +10774,23 @@ ul.track-steps {
     display: inline-flex;
     align-items: center;
     box-sizing: border-box;
-    margin-bottom: 9px;
+    margin-bottom: 6px;
+    font-size: 14px;
+  }
+
+  .choose-items {
+    font-size: 13px;
   }
 
   .bnfrbpfsingle-product {
     /* line-height: 28px;
     font-size: 20px;
     font-weight: 700; */
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .modifier-dropdown-title {
     line-height: 20px;
     font-size: 16px;
     font-weight: 500;
@@ -10799,8 +10809,9 @@ ul.track-steps {
   }
 
   .g5single-product {
-    padding: 16px 16px 24px;
+    /* padding: 16px 16px 24px; */
     /* display: none; */
+    padding: 0px 16px 0px;
   }
 
   .show {
@@ -10841,7 +10852,7 @@ ul.track-steps {
     cursor: pointer;
     display: flex;
     box-sizing: border-box;
-    padding: 4px;
+    padding: 0px;
   }
 
   .modifier-product{
@@ -10878,6 +10889,7 @@ ul.track-steps {
     font-weight: 500;
     font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
       sans-serif;
+    width: 85%;
   }
 
   .brbsdpdqbkalbfafg6single-productlablecheck {
@@ -10896,7 +10908,7 @@ ul.track-steps {
     cursor: pointer;
     display: flex;
     box-sizing: border-box;
-    padding: 4px;
+    padding: 0px;
   }
 
   .g4single-product {
@@ -10914,6 +10926,10 @@ ul.track-steps {
     display: -ms-flexbox;
     display: -webkit-flex;
     display: flex;
+    padding: 8px;
+    border: 1px solid grey;
+    border-radius: 5px;
+    margin-top: 10px;
   }
 
   .alaqbfsingle-product {
@@ -11257,6 +11273,8 @@ ul.track-steps {
     font-weight: 500;
     font-size: 16px;
     font-family: sans-serif;
+    display: flex;
+    justify-content: space-between;
   }
 
   .product-list-div {

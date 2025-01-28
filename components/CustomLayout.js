@@ -15,7 +15,6 @@ import MenuNotAvailableModal from "./modals/MenuNotAvailableModal";
 
 export default function CustomLayout({ children }) 
 {
-  
   const [loader, setLoader] = useState(true);
 
   const [isLocationBrandOnline, setIsLocationBrandOnline] = useState(null);
@@ -69,7 +68,7 @@ export default function CustomLayout({ children })
 
   const [isCartFull, setIsCartFull] = useState(true);
 
-  const [iscartItemDottedBtnClicked, setIscartItemDottedBtnClicked] = useState(false);
+  const [isCartItemDottedBtnClicked, setIsCartItemDottedBtnClicked] = useState(false);
   const [isItemClicked, setIsItemClicked] = useState(false);
   // const [isQuickViewClicked, setIsQuickViewClicked] = useState(false)
   const [isCheckOutClicked, setIsCheckOutClicked] = useState(false);
@@ -332,7 +331,7 @@ export default function CustomLayout({ children })
     street2,
     isDeliveryChangedBtnClicked,
     isCheckOutClicked,
-    iscartItemDottedBtnClicked,
+    isCartItemDottedBtnClicked,
     isCartFull,
     isCartBtnClicked,
     amountDiscountApplied,
@@ -390,7 +389,7 @@ export default function CustomLayout({ children })
     setStreet2,
     setPostcode,
     setIsCheckOutClicked,
-    setIscartItemDottedBtnClicked,
+    setIsCartItemDottedBtnClicked,
     setIsDeliveryChangedBtnClicked,
   }
   
@@ -399,6 +398,7 @@ export default function CustomLayout({ children })
   return (
     <HomeContext.Provider value={contextData}>
       {children}
+      
       {booleanObj?.isCustomerCanvasOpen && <CustomerPersonal />}
 
       {comingSoon && <MenuNotAvailableModal />}

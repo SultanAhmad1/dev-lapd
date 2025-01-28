@@ -49,7 +49,7 @@ export default function Products() {
         setLoader(false)
       }, 3000);
     }
-  }, [loader]);
+  }, [loader,setLoader]);
   
   const cartItems = [
     {

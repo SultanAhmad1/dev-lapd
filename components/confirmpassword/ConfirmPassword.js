@@ -14,8 +14,8 @@ export default function ConfirmPassword()
         password: "",
         confirmPassword: "",
         errormessage: "",
-        passwordmessage: passwordMessageData,
-        passwordnotmatched: "",
+        passwordMessage: passwordMessageData,
+        passwordNotMatched: "",
     });
     
 
@@ -52,11 +52,11 @@ export default function ConfirmPassword()
         
         if (! validatePassword(confirmObj?.password)) 
         {
-            setConfirmObj((prevData) => ({...prevData, errormessage: passwordnotmatched}))
+            setConfirmObj((prevData) => ({...prevData, errormessage: passwordNotMatched}))
             return;
         }
 
-        const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
+        const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempCustomer`))
 
         const confirmData = {
             brand: BRAND_GUID,
@@ -106,13 +106,13 @@ export default function ConfirmPassword()
                 </div>
 
                 <p style={{margin: "1vh"}}>
-                    {confirmObj?.passwordmessage}
+                    {confirmObj?.passwordMessage}
                 </p>
 
                 {
-                    confirmObj?.passwordnotmatched !== "" &&
+                    confirmObj?.passwordNotMatched !== "" &&
                     <div className="alert-message" style={{margin: "1vh"}}>
-                        {confirmObj?.passwordnotmatched}
+                        {confirmObj?.passwordNotMatched}
                     </div>
 
                 }

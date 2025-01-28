@@ -1,9 +1,9 @@
 "use client";
 
-function AvailableStoresShow() {
+function availableStoresShow() {
   return (
-    <div>AvailableStoresShow</div>
+    <div>availableStoresShow</div>
   )
 }
 
-export default AvailableStoresShow
+export default availableStoresShow

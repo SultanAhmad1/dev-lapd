@@ -24,11 +24,11 @@ export default function CustomerPersonCom()
     
     // Adding event listener when the component mounts
     useEffect(() => {
-        const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
+        const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempCustomer`))
 
         if(customer === undefined && customer === null)
         {
-            window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}tempcustomer`);
+            window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}tempCustomer`);
             window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}websiteToken`);
             return
         }
@@ -55,7 +55,7 @@ export default function CustomerPersonCom()
 
         if(response?.status === 401)
         {
-            setLocalStorage(`${BRAND_SIMPLE_GUID}tempcustomer`, null)
+            setLocalStorage(`${BRAND_SIMPLE_GUID}tempCustomer`, null)
             setLocalStorage(`${BRAND_SIMPLE_GUID}websiteToken`, null)
             return
         }
@@ -77,7 +77,7 @@ export default function CustomerPersonCom()
     
     const onLogoutSuccess = (data) => {
         window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}websiteToken`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}tempcustomer`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}tempCustomer`)
         window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}isOTPHas`)
 
         handleBoolean(false,'isCustomerVerified')
@@ -105,7 +105,7 @@ export default function CustomerPersonCom()
                                 <div className="canva-auth-buttons">
                                     <div>
                                     <a 
-                                        href='/registeration' 
+                                        href='/register' 
                                         className="auth-sign" 
                                       
                                         style={{
@@ -129,7 +129,7 @@ export default function CustomerPersonCom()
                                         <Image
                                             alt="User presentation"
                                             role="presentation"
-                                            src={USERIMAGE}
+                                            src={USER_IMAGE}
                                             className="canv-anchor-image-tags"
                                             width={100}
                                             height={100}

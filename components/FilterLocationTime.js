@@ -2,7 +2,7 @@
 import React, { useContext } from 'react'
 import HomeContext from '../contexts/HomeContext'
 import moment from 'moment'
-import { setLocalStorage, setSessionStorage } from '../global/Store'
+import { setLocalStorage, setNextCookies, setSessionStorage } from '../global/Store'
 import { BRAND_SIMPLE_GUID } from '../global/Axios'
 
 function FilterLocationTime() 
@@ -27,6 +27,8 @@ function FilterLocationTime()
         {
             setSelectedFilter(updateFilter)
             setLocalStorage(`${BRAND_SIMPLE_GUID}filter`,updateFilter)
+            setNextCookies(`${BRAND_SIMPLE_GUID}filter`,updateFilter)
+            document.cookie = `${BRAND_SIMPLE_GUID}filter=${updateFilter}`
         }
     }
 
@@ -41,19 +43,19 @@ function FilterLocationTime()
                 </div> */}
 
             </div>
-
+            
             <div className='openCloseTime-type'>
 
                 <div className="filter-type">
                     {
-                        filters?.map((fitler,index) =>
+                        filters?.map((filter,index) =>
                         {
                             return(
-                                <div key={index} className={`akd0afbz-delivery-type ${fitler?.id === selectedFilter?.id && "delivery-type-active"}`} onClick={() => handleOrderType(fitler?.id)}>
+                                <div key={index} className={`akd0afbz-delivery-type ${filter?.id === selectedFilter?.id && "delivery-type-active"}`} onClick={() => handleOrderType(filter?.id)}>
                                     <div className="algid0amc5-delivery-type">
                                         <div className="chic-cj-ckeeafgmc9gnehclbz g7">
-                                            <div className={`algid0amc5-delivery-type ${fitler?.status === false && "p8"}`}>
-                                                <div className="chic-cj-ck b1">{fitler?.name}</div>
+                                            <div className={`algid0amc5-delivery-type ${filter?.status === false && "p8"}`}>
+                                                <div className="chic-cj-ck b1">{filter?.name}</div>
                                             </div>
                                         </div>
                                     </div>

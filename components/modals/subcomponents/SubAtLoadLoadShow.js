@@ -11,12 +11,16 @@ import {
   find_matching_postcode,
   setAtFirstLoadModalShow,
   setLocalStorage,
+  setNextCookies,
 } from "@/global/Store";
 import AvailableStore from "@/components/AvailableStore";
 import moment from "moment";
+import { NextResponse } from "next/server";
 
 function SubAtLoadLoadShow({ setLoader }) {
   
+  const responseNext = NextResponse.next()
+
   const postCodeRef = useRef(null)
 
   const {
@@ -36,14 +40,14 @@ function SubAtLoadLoadShow({ setLoader }) {
     }
   }, []);
   
-  const [validpostcode, setValidpostcode] = useState("");
+  const [validPostcode, setValidPostcode] = useState("");
   const [postcodeerror, setPostcodeerror] = useState("");
 
-  const [isgobtnclickable, setIsgobtnclickable] = useState(false);
+  const [isGoBtnClickAble, setIsGoBtnClickAble] = useState(false);
 
-  const [availablestores, setAvailablestores] = useState([]);
+  const [availableStores, setAvailableStores] = useState([]);
 
-  const [isstoreavailable, setIsstoreavailable] = useState(true);
+  const [isStoreAvailable, setIsStoreAvailable] = useState(true);
 
   function handlePostCode(event) {
 
@@ -52,23 +56,23 @@ function SubAtLoadLoadShow({ setLoader }) {
     const { value } = event.target
 
     const countPostcodeLength = value.toUpperCase().trim();
-    setValidpostcode(countPostcodeLength);
+    setValidPostcode(countPostcodeLength);
     setPostcodeerror("");
 
     if (parseInt(countPostcodeLength.length) > parseInt(3)) 
     {
-      setIsgobtnclickable(true)
+      setIsGoBtnClickAble(true)
       setAtFirstLoadModalShow(true)
     } 
     else 
     {
-      setIsgobtnclickable(false)
+      setIsGoBtnClickAble(false)
     }
   }
 
-  async function fetchpostcodeData() {
+  async function fetchPostcodeData() {
     try {
-      let filterPostcode = validpostcode.replace(/\s/g, "");
+      let filterPostcode = validPostcode.replace(/\s/g, "");
 
       let grabPostcodeOutWard = "";
       if (parseInt(filterPostcode.length) === parseInt(7)) 
@@ -94,24 +98,31 @@ function SubAtLoadLoadShow({ setLoader }) {
 
       const response = await axiosPrivate.post(`/ukpostcode-website`, data);
       const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows;
-      find_matching_postcode(matrix, validpostcode, setDeliveryMatrix);
+      find_matching_postcode(matrix, validPostcode, setDeliveryMatrix);
 
       const currentDateTime = moment().format('YYYY-MM-DD HH:mm:ss');
 
       // make cart empty.
       setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[]);
       setLocalStorage(`${BRAND_SIMPLE_GUID}user_postcode_time`, currentDateTime)
-
       setLocalStorage(`${BRAND_SIMPLE_GUID}address`, response?.data?.data);
-      setLocalStorage(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validpostcode);
+      setLocalStorage(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validPostcode)
 
-      setAvailablestores(response.data?.data?.availableStore);
+      responseNext.cookies.set("theme","dark")
+      setNextCookies("theme", "dark")
+      responseNext.cookies.set(`${BRAND_SIMPLE_GUID}cart`,[]);
+      responseNext.cookies.set(`${BRAND_SIMPLE_GUID}user_postcode_time`, currentDateTime)
+      responseNext.cookies.set(`${BRAND_SIMPLE_GUID}address`, response?.data?.data);
+      responseNext.cookies.set(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validPostcode)
 
-      setIsgobtnclickable(false);
-      setPostcode(validpostcode);
+      setAvailableStores(response.data?.data?.availableStore);
+
+      setIsGoBtnClickAble(false);
+      setPostcode(validPostcode);
       setTimeout(() => {
         setLoader(false);
       }, 1000);
+      return responseNext
     } 
     catch (error) 
     {
@@ -124,8 +135,8 @@ function SubAtLoadLoadShow({ setLoader }) {
       {
         setPostcodeerror(error?.response?.data?.postcode);
       }
-      setIsstoreavailable(true);
-      setIsgobtnclickable(false);
+      setIsStoreAvailable(true);
+      setIsGoBtnClickAble(false);
       setTimeout(() => {
         setLoader(false);
       }, 1000);
@@ -136,17 +147,17 @@ function SubAtLoadLoadShow({ setLoader }) {
     if (deliveryMatrix !== null) 
     {
       setPostCodeForOrderAmount(deliveryMatrix?.postcode);
-      window.localStorage.setItem(`${BRAND_SIMPLE_GUID}delivery_matrix`,JSON.stringify(deliveryMatrix));
+      setLocalStorage(`${BRAND_SIMPLE_GUID}delivery_matrix`,deliveryMatrix)
     }
-  }, [deliveryMatrix]);
+  }, [deliveryMatrix, responseNext, setPostCodeForOrderAmount]);
 
   const handleGoBtn = (e) => 
   {
     e.preventDefault()
-    if (parseInt(validpostcode?.length) > parseInt(3)) 
+    if (parseInt(validPostcode?.length) > parseInt(3)) 
     {
       setLoader(true);
-      fetchpostcodeData();
+      fetchPostcodeData();
       return 
     } 
     
@@ -196,7 +207,7 @@ function SubAtLoadLoadShow({ setLoader }) {
                     type="text"
                     autoComplete="off"
                     ref={postCodeRef}
-                    value={validpostcode}
+                    value={validPostcode}
                     onChange={handlePostCode}
                     className="deliver-to-input"
                     placeholder="Enter postcode"
@@ -213,7 +224,7 @@ function SubAtLoadLoadShow({ setLoader }) {
                 }
 
                 {
-                  isgobtnclickable && 
+                  isGoBtnClickAble && 
                   <button type="submit" className="deliver-to-done-button" style={{
                     '--go-btn-background-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, 
                     '--go-btn-font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor, 
@@ -229,7 +240,7 @@ function SubAtLoadLoadShow({ setLoader }) {
             </div>
 
             {/* All the Available Stores */}
-            {isstoreavailable === false && (
+            {isStoreAvailable === false && (
               <div className="available-stores-show" style={{cursor: "pointer",textAlign: "center",marginTop: "10px",fontWeight: "bold",}}>
                 <div className="available-stores">
                   Your are out of radius.
@@ -239,8 +250,8 @@ function SubAtLoadLoadShow({ setLoader }) {
             )}
 
             {
-              parseInt(availablestores.length) > parseInt(0) && 
-              <AvailableStore {...{availablestores}} />
+              parseInt(availableStores.length) > parseInt(0) && 
+              <AvailableStore {...{availableStores}} />
             }
           </div>
         </div>
