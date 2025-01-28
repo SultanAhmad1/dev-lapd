@@ -1,5 +1,7 @@
 import axios from "axios";
 import { removeLastApi, setLocalStorage } from "./Store";
+
+// Making global mostly used keys.
 export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
 
 export const IMAGE_URL_Without_Storage = removeLastApi(BASE_URL);
