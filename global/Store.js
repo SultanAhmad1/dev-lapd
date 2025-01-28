@@ -1,4 +1,7 @@
 "use client";
+
+import { NextResponse } from "next/server";
+
 let storeName = "LAPD"
 let isUserEnteredPostcode = false
 let categoryUUID = 0
@@ -8,6 +11,14 @@ export const country = "GB"
 export const currency = "gbp"
 
 export const passwordMessageData = "Password length must be 8 character and contain capital and small case letters,$,% etc."
+
+export const removeLastApi = (url) => {
+    const lastApiIndex = url.lastIndexOf("api");
+    if (lastApiIndex !== -1) {
+      return url.substring(0, lastApiIndex); // Remove everything from the last "/api"
+    }
+    return url; // Return the original URL if "/api" is not found
+};
 
 export const validatePassword = (password) => {
     const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
@@ -124,6 +135,12 @@ export function getAmountConvertToFloatWithFixed(amount, number)
 export function setLocalStorage(keyName,data)
 {
     return window.localStorage.setItem(`${keyName}`,JSON.stringify(data))
+}
+
+export function setNextCookies(key, value)
+{
+    const responseNext = NextResponse.next()
+    return responseNext.cookies.set(key, value)
 }
 
 export function setSessionStorage(keyName,data)

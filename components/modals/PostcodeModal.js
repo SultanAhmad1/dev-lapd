@@ -28,29 +28,29 @@ function PostcodeModal() {
   } = useContext(HomeContext);
 
   // Boolean States
-  const [isgobtnclickable, setIsgobtnclickable] = useState(false);
+  const [isGoBtnClickAble, setIsGoBtnClickAble] = useState(false);
 
   // Get Value States
-  const [updatedvalidpostcode, setUpdatedvalidpostcode] = useState("");
-  const [availablestores, setAvailablestores] = useState([]);
-  const [tempaddress, setTempaddress] = useState([]);
+  const [updatedValidPostcode, setUpdatedValidPostcode] = useState("");
+  const [availableStores, setAvailableStores] = useState([]);
+  const [tempAddress, setTempAddress] = useState([]);
   // Get Error States
   const [postcodeerror, setPostcodeerror] = useState("");
 
   const handleValidPostcode = (event) => {
     const getLength = event.target.value.length;
-    setUpdatedvalidpostcode(event.target.value.toUpperCase().trim());
-    setIsgobtnclickable(parseInt(getLength) > parseInt(3) ? true : false);
+    setUpdatedValidPostcode(event.target.value.toUpperCase().trim());
+    setIsGoBtnClickAble(parseInt(getLength) > parseInt(3) ? true : false);
     setPostcodeerror("");
   };
 
   const handleGoBtnClicked = (e) => {
     e.preventDefault()
 
-    if(parseInt(updatedvalidpostcode?.length) > parseInt(3))
+    if(parseInt(updatedValidPostcode?.length) > parseInt(3))
     {
       setLoader(true)
-      let filterPostcode = updatedvalidpostcode.replace(/\s/g, "");
+      let filterPostcode = updatedValidPostcode.replace(/\s/g, "");
 
       let grabPostcodeOutWard = "";
       if (parseInt(filterPostcode.length) === parseInt(7)) 
@@ -67,7 +67,7 @@ function PostcodeModal() {
       }
       
       const postcodeData = {
-        postcode: updatedvalidpostcode,
+        postcode: updatedValidPostcode,
         brand_guid: BRAND_GUID,
         dayName: dayName,
         dayNumber: dayNumber,
@@ -85,18 +85,18 @@ function PostcodeModal() {
     setLoader(false)
     const matrix = data.data?.data?.deliveryMartix?.delivery_matrix_rows;
 
-    find_matching_postcode(matrix, updatedvalidpostcode, setDeliveryMatrix);
+    find_matching_postcode(matrix, updatedValidPostcode, setDeliveryMatrix);
 
-    setTempaddress(data?.data?.data);
-    setAvailablestores(data.data?.data?.availableStore);
+    setTempAddress(data?.data?.data);
+    setAvailableStores(data.data?.data?.availableStore);
 
-    setIsgobtnclickable(!isgobtnclickable);
+    setIsGoBtnClickAble(!isGoBtnClickAble);
   }
 
   const onUkPostcodeError = (error) => {
     setLoader(false)
     setPostcodeerror(error?.response?.data?.postcode);
-    setIsgobtnclickable(!isgobtnclickable);
+    setIsGoBtnClickAble(!isGoBtnClickAble);
   }
 
 
@@ -112,8 +112,8 @@ function PostcodeModal() {
 
   const handleLocationSelect = (storeGUID, storeName, storeTelephone) => {
     setStoreName(storeName);
-    if (parseInt(availablestores.length) > parseInt(0)) {
-      for (const store of availablestores) {
+    if (parseInt(availableStores.length) > parseInt(0)) {
+      for (const store of availableStores) {
         if (storeGUID === store?.location_guid) {
           setStreet1(store?.user_street1);
           setStreet2(store?.user_street2);
@@ -121,16 +121,16 @@ function PostcodeModal() {
       }
     }
 
-    setLocalStorage(`${BRAND_SIMPLE_GUID}address`, tempaddress);
+    setLocalStorage(`${BRAND_SIMPLE_GUID}address`, tempAddress);
     setLocalStorage(
       `${BRAND_SIMPLE_GUID}user_valid_postcode`,
-      updatedvalidpostcode
+      updatedValidPostcode
     );
 
     setPostCodeForOrderAmount(deliveryMatrix?.postcode);
     setLocalStorage(`${BRAND_SIMPLE_GUID}delivery_matrix`, deliveryMatrix);
 
-    setPostcode(updatedvalidpostcode);
+    setPostcode(updatedValidPostcode);
 
     const selectedStoreData = {
       display_id: storeGUID,
@@ -172,7 +172,7 @@ function PostcodeModal() {
                   autoComplete="off"
                   className="deliver-to-input"
                   placeholder="Enter postcode"
-                  value={updatedvalidpostcode}
+                  value={updatedValidPostcode}
                   onChange={handleValidPostcode}
                 />
               <div className="spacer _8"></div>
@@ -189,7 +189,7 @@ function PostcodeModal() {
 
             {/* Find Postcode related information via Go button. */}
             {
-              isgobtnclickable && 
+              isGoBtnClickAble && 
               <button type="submit" className="deliver-to-done-button" >
                 Go
               </button> 
@@ -197,7 +197,7 @@ function PostcodeModal() {
           </form>
 
           {/* All the Available Stores */}
-          {parseInt(availablestores.length) > parseInt(0) && (
+          {parseInt(availableStores.length) > parseInt(0) && (
             <>
               <h2 className="available-store-h2"> Available Stores </h2>
               <div className="deliver-to-body-content-nested-div-level-one">
@@ -208,7 +208,7 @@ function PostcodeModal() {
                 </label>
 
                 {
-                  availablestores?.map((stores, index) => {
+                  availableStores?.map((stores, index) => {
                     return (
                       <div className="available-stores-show" style={{ cursor: "pointer" }} key={index} onClick={() => handleLocationSelect(stores.location_guid,stores.location_name,stores.telephone)} >
                         <div className="deliver-to-body-content-nested-div-level-one-nested-svg-div-one">

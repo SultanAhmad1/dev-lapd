@@ -24,6 +24,8 @@ function UserForm() {
 
   const [errormessage, setErrormessage] = useState("");
   const {
+    loader,
+    setLoader,
     booleanObj,
     dayOpeningClosingTime,
     isTimeToClosed,
@@ -47,7 +49,6 @@ function UserForm() {
     websiteModificationData,
   } = useContext(HomeContext);
 
-  
   const { setMetaDataToDisplay} = useContext(ContextCheckApi)
 
   useEffect(() => {
@@ -72,14 +73,14 @@ function UserForm() {
   const [isHover, setIsHover] = useState(false);
   const [isOTP, setIsOTP] = useState(false);
   
-  const [toggleObjects, settoggleObjects] = useState({
+  const [toggleObjects, setToggleObjects] = useState({
     isCustomerHasPassword: false,
     isLoginShow: true,
     authButtonDisabledUntilPasswordChanged: true,
     isPhoneToggle: true,
     isAdddoororHouseClicked: true,
     isDoorInputDisplayClicked: true,
-    isAddDriverInstructionClicked: false,
+    isAdddriverInstructionClicked: false,
     isEmailToggle: true,
     isEmailInputToggle:true,
     isPhoneToggle:true,
@@ -93,10 +94,9 @@ function UserForm() {
 
     isAuthed: false
   });
-  
 
-  const [isbysmsclicked, setIsbysmsclicked] = useState(false);
-  const [isbyemailclicked, setIsbyemailclicked] = useState(false);
+  const [isBySmsClicked, setIsBySmsClicked] = useState(false);
+  const [isByEmailClicked, setIsByEmailClicked] = useState(false);
   // Get value states
 
   const [customerDetailObj, setCustomerDetailObj] = useState({
@@ -105,36 +105,42 @@ function UserForm() {
     password: "",
     lastName: "",
     firstName: "",
-    doorhousename: "",
-    driverinstruction: "",
-    openingtime: "",
-    closingtime: "",
+    doorHouseName: "",
+    driverInstruction: "",
+    openingTime: "",
+    closingTime: "",
 
-    deliverytimefrom: "",
-    deliverytimeend: "",
+    deliveryTimeFrom: "",
+    deliveryTimeEnd: "",
 
     phoneError: "",
     PayNowBottomError: "",
     saveMyDetailsError: "",
   });
 
-  const [openingtime, setOpeningtime] = useState("");
-  const [closingtime, setClosingtime] = useState("");
-  const [deliverytimefrom, setDeliverytimefrom] = useState("");
-  const [deliverytimeend, setDeliverytimeend] = useState("");
+  const [openingTime, setOpeningTime] = useState("");
+  const [closingTime, setClosingTime] = useState("");
+  const [deliveryTimeFrom, setDeliveryTimeFrom] = useState("");
+  const [deliveryTimeEnd, setDeliveryTimeEnd] = useState("");
 
-  const [deliverytime, setDeliveryTime] = useState("");
-
+  const [deliveryTime, setDeliveryTime] = useState("");
   const [due, setDue] = useState("due");
-
-  // Message
   const [Message, setMessage] = useState("");
+
+  // Change Postcode and Address states
+  const [deliveryDetailText, setDeliveryDetailText] = useState("Edit");
+  const [isPostcodeEditClicked, setIsPostcodeEditClicked] = useState(false);
+
+  
+  const [isChangePostcodeClicked, setIsChangePostcodeClicked] = useState(false);
+  const [isSaveFasterDetailsClicked, setIsSaveFasterDetailsClicked] = useState(false);
+
   // Error states
   const [saveMyDetailsError, setSaveMyDetailsError] = useState("");
 
   const handleToggles = useCallback((event) => {
     const { name} = event.target
-    settoggleObjects((prevData) => ({...prevData, [name]: !prevData[name]}))
+    setToggleObjects((prevData) => ({...prevData, [name]: !prevData[name]}))
   }, [toggleObjects]);
   
   const handleInputs = useCallback((event) => {
@@ -142,15 +148,15 @@ function UserForm() {
 
     switch (name) {
       case "password":
-        settoggleObjects((prevData) => ({...prevData, authButtonDisabledUntilPasswordChanged: false}))
+        setToggleObjects((prevData) => ({...prevData, authButtonDisabledUntilPasswordChanged: false}))
         setCustomerDetailObj((prevData) => ({...prevData, [name]: value}))
         break;
       case "email":
-        setIsavefasterdetailsclicked(false)
+        setIsSaveFasterDetailsClicked(false)
         setCustomerDetailObj((prevData) => ({...prevData, [name]: value}))
         break;
       case 'phone':
-        setIsavefasterdetailsclicked(false)
+        setIsSaveFasterDetailsClicked(false)
         setCustomerDetailObj((prevData) => ({...prevData, [name]: value}))
         break;
       default:
@@ -164,20 +170,13 @@ function UserForm() {
     setDeliveryTime(event.target.value);
     setDue("requested");
   }
-  // Change Postcode and Address states
-  const [deliverydetailtext, setDeliverydetailtext] = useState("Edit");
-  const [ispostcodeeditclicked, setIspostcodeeditclicked] = useState(false);
+
 
   function handlePostcodeEdit() {
-    setIspostcodeeditclicked(!ispostcodeeditclicked);
-    setDeliverydetailtext(deliverydetailtext === "Edit" ? "Save" : "Edit");
+    setIsPostcodeEditClicked(!isPostcodeEditClicked);
+    setDeliveryDetailText(deliveryDetailText === "Edit" ? "Save" : "Edit");
   }
 
-  const [ischangepostcodeclicked, setIschangepostcodeclicked] = useState(false);
-
-  // Save details for Faster Checkout next time
-  const [isavefasterdetailsclicked, setIsavefasterdetailsclicked] = useState(false);
-  
   // Function to validate the email format
   const validateEmail = (email) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -187,7 +186,7 @@ function UserForm() {
   function handleLogin() {
     // navigate("/login");
     
-    settoggleObjects((prevData) => ({...prevData, authButtonDisabledUntilPasswordChanged: true}))
+    setToggleObjects((prevData) => ({...prevData, authButtonDisabledUntilPasswordChanged: true}))
     const loginData = {
       userEmail: customerDetailObj?.email,
       userPhone: customerDetailObj?.phone,
@@ -199,7 +198,7 @@ function UserForm() {
     {
       if (validateEmail(loginData?.userEmail)) {
       } else {
-        settoggleObjects((prevData) => ({...prevData, authButtonDisabledUntilPasswordChanged: false}))
+        setToggleObjects((prevData) => ({...prevData, authButtonDisabledUntilPasswordChanged: false}))
         window.alert("Enter valid email address.")
         return
       }
@@ -207,7 +206,7 @@ function UserForm() {
     
     if(!toggleObjects?.isCustomerHasPassword && customerDetailObj?.password?.length === parseInt(0))
     {
-      settoggleObjects((prevData) => ({...prevData, authButtonDisabledUntilPasswordChanged: false}))
+      setToggleObjects((prevData) => ({...prevData, authButtonDisabledUntilPasswordChanged: false}))
       window.alert("Some fields need to be filled.")
       return 
     }
@@ -215,7 +214,7 @@ function UserForm() {
     if(customerDetailObj?.email?.length === parseInt(0) || customerDetailObj?.phone?.length === parseInt(0))
     {
 
-      settoggleObjects((prevData) => ({...prevData, authButtonDisabledUntilPasswordChanged: false}))
+      setToggleObjects((prevData) => ({...prevData, authButtonDisabledUntilPasswordChanged: false}))
       window.alert("Some fields need to be filled.")
       return 
     }
@@ -230,29 +229,29 @@ function UserForm() {
     if(!toggleObjects?.isCustomerHasPassword)
     {
       setIsOTP(true)
-      setLocalStorage(`${BRAND_SIMPLE_GUID}tempcustomer`, data?.data?.data?.customer)
+      setLocalStorage(`${BRAND_SIMPLE_GUID}tempCustomer`, data?.data?.data?.customer)
       return
     }
 
     setLocalStorage(`${BRAND_SIMPLE_GUID}websiteToken`, data?.data)
     handleBoolean(true,'isCustomerVerified')
 
-    settoggleObjects((prevData) => ({...prevData, authButtonDisabledUntilPasswordChanged: false, isAuthed: true,isCustomerHasPassword: true}))
+    setToggleObjects((prevData) => ({...prevData, authButtonDisabledUntilPasswordChanged: false, isAuthed: true,isCustomerHasPassword: true}))
     // route.push('/')    
   }
 
   const onLoginError = (error) => {
-    settoggleObjects((prevData) => ({...prevData, authButtonDisabledUntilPasswordChanged: false}))
+    setToggleObjects((prevData) => ({...prevData, authButtonDisabledUntilPasswordChanged: false}))
     window.alert(error?.response?.data?.error)
     return
   }
 
   const {mutate: loginMutation, isLoading: loginLoading, isError: loginError, isSuccess: loginSuccess, reset: loginReset} = useLoginMutationHook('login', '/website-login', onLoginSuccess, onLoginError)
 
-  const handleRegisteration = () => {
+  const handleRegister = () => {
 
     const getLocationId = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
-    const registerationData = {
+    const registerData = {
       location: getLocationId?.display_id,
       brand: BRAND_GUID,
       email: customerDetailObj?.email,
@@ -260,27 +259,27 @@ function UserForm() {
       password: customerDetailObj?.password
     }
 
-    registerationMutation(registerationData)
+    registerMutation(registerData)
   }
 
   /**
    * 
    * User no need to redirect can save information related to order.
    */
-  const onRegisterationError = (error) => {
+  const onRegisterError = (error) => {
     window.alert("There is something went wrong!. Please refresh and try again.")
     return
   }
 
-  const onRegisterationSuccess = (data) => {
+  const onRegisterSuccess = (data) => {
     // redirect to OTP screen verify.
-    // once otp is verfied, then get the customer password with confirmpassword field.
+    // once otp is verified, then get the customer password with confirm-password field.
 
     setIsOTP(true)
-    setLocalStorage(`${BRAND_SIMPLE_GUID}tempcustomer`, data?.data?.data?.customer)
+    setLocalStorage(`${BRAND_SIMPLE_GUID}tempCustomer`, data?.data?.data?.customer)
   }
 
-  const {mutate: registerationMutation, isLoading: registerLoading, isError: registerError, isSuccess: registerSuccess, reset: registerReset} = usePostMutationHook('registeration', '/website-registeration', onRegisterationSuccess, onRegisterationError)
+  const {mutate: registerMutation, isLoading: registerLoading, isError: registerError, isSuccess: registerSuccess, reset: registerReset} = usePostMutationHook('register', '/website-register', onRegisterSuccess, onRegisterError)
 
   async function fetchLocationDeliveryEstimate() {
     // Get the current day name
@@ -376,12 +375,12 @@ function UserForm() {
 
       setDeliveryTime(temp_time);
 
-      setOpeningtime(temp_time);
+      setOpeningTime(temp_time);
 
-      // setOpeningtime(response?.data?.data?.brandDeliveryEstimatePartner?.start_time)
-      setClosingtime(response?.data?.data?.brandDeliveryEstimatePartner?.end_time);
-      setDeliverytimefrom(response?.data?.data?.brandDeliveryEstimatePartner?.time_from);
-      setDeliverytimeend(response?.data?.data?.brandDeliveryEstimatePartner?.time_to);
+      // setOpeningTime(response?.data?.data?.brandDeliveryEstimatePartner?.start_time)
+      setClosingTime(response?.data?.data?.brandDeliveryEstimatePartner?.end_time);
+      setDeliveryTimeFrom(response?.data?.data?.brandDeliveryEstimatePartner?.time_from);
+      setDeliveryTimeEnd(response?.data?.data?.brandDeliveryEstimatePartner?.time_to);
       if (parseInt(listtime.length) > parseInt(0)) {}
  
     } catch (error) {
@@ -394,14 +393,14 @@ function UserForm() {
     
     if(checkedLogin !== null)
     {
-      settoggleObjects((prevData) => ({...prevData, isAuthed: true, isCustomerHasPassword: true}))
+      setToggleObjects((prevData) => ({...prevData, isAuthed: true, isCustomerHasPassword: true}))
     }
     else
     {
-      settoggleObjects((prevData) => ({...prevData, isAuthed: false, isCustomerHasPassword: false}))
+      setToggleObjects((prevData) => ({...prevData, isAuthed: false, isCustomerHasPassword: false}))
     } 
 
-    const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
+    const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempCustomer`))
 
     if(customer !== undefined || customer !== null)
     {
@@ -411,15 +410,23 @@ function UserForm() {
         phone: customer?.phone,
         lastName: customer?.last_name,
         firstName: customer?.first_name,
-        doorhousename: filterAddress?.house_no_name,
-        driverinstruction: filterAddress?.driver_instructions,
+        doorHouseName: filterAddress?.house_no_name,
+        driverInstruction: filterAddress?.driver_instructions,
       }));
     }
     
   }, [booleanObj?.isCustomerVerified]);
   
   useEffect(() => {
-    
+    const checkTheCart = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}cart`))
+
+    if(checkTheCart === null || checkTheCart === undefined || parseInt(checkTheCart.length) === parseInt(0))
+    {
+      setLoader(true)
+      window.location.reload(true);
+      window.location.href = "/"
+      return
+    }
     // Check if the cart has not any item then back to home page.
     // Check the brand is active or not.
     const useAuthenticate = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}websiteToken`))
@@ -462,22 +469,22 @@ function UserForm() {
     setHeaderCartBtnDisplay(false);
     setHeaderPostcodeBtnDisplay(false);
 
-    const getCustomerInforation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`));
+    const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`));
 
-    if (getCustomerInforation !== null) 
+    if (getCustomerInformation !== null) 
     {
       setCustomerDetailObj((prevData) => ({
         ...prevData, 
-        doorhousename: getCustomerInforation.doorhousename,
-        driverinstruction: getCustomerInforation.driverinstruction,
-        email: getCustomerInforation.email,
-        phone: getCustomerInforation.phone,
-        firstName: getCustomerInforation.firstName,
-        lastName: getCustomerInforation.lastName,
+        doorHouseName: getCustomerInformation.doorHouseName,
+        driverInstruction: getCustomerInformation.driverInstruction,
+        email: getCustomerInformation.email,
+        phone: getCustomerInformation.phone,
+        firstName: getCustomerInformation.firstName,
+        lastName: getCustomerInformation.lastName,
       }))
       
-      settoggleObjects((prevData) => ({...prevData, isByEmailClicked: getCustomerInforation.isbyemailclicked, isBySmsClicked: getCustomerInforation.isbysmsclicked}))
-      setDeliveryTime(getCustomerInforation.deliverytime);
+      setToggleObjects((prevData) => ({...prevData, isByEmailClicked: getCustomerInformation.isByEmailClicked, isBySmsClicked: getCustomerInformation.isBySmsClicked}))
+      setDeliveryTime(getCustomerInformation.deliveryTime);
     }
   }, []);
 
@@ -510,30 +517,30 @@ function UserForm() {
     {
       if (data?.data?.data?.customer?.password === null || data?.data?.data?.customer?.password === '') 
       {
-        settoggleObjects((prevData) => ({...prevData, isCustomerHasPassword: false, isLoginShow: true, authButtonDisabledUntilPasswordChanged: false}))
+        setToggleObjects((prevData) => ({...prevData, isCustomerHasPassword: false, isLoginShow: true, authButtonDisabledUntilPasswordChanged: false}))
         setCustomerDetailObj((prevData) => ({...prevData, password: null}))
         setMessage("The phone/email you have entered is already registered.");
         return
       }
       else
       {
-        settoggleObjects((prevData) => ({...prevData, isCustomerHasPassword: true, isLoginShow: true, authButtonDisabledUntilPasswordChanged: false}))
+        setToggleObjects((prevData) => ({...prevData, isCustomerHasPassword: true, isLoginShow: true, authButtonDisabledUntilPasswordChanged: false}))
         setMessage("The phone/email you have entered is already registered.");
         return
       }
 
       setCustomerDetailObj((prevData) => ({...prevData, password: data?.data?.data?.customer?.password}))
-      settoggleObjects((prevData) => ({...prevData, isCustomerHasPassword: false,  isLoginShow: true}))
+      setToggleObjects((prevData) => ({...prevData, isCustomerHasPassword: false,  isLoginShow: true}))
       setMessage("The phone/email you have entered is already registered.");
 
       return
     } 
-    settoggleObjects((prevData) => ({...prevData, isCustomerHasPassword: false,  isLoginShow: false, authButtonDisabledUntilPasswordChanged: true}))
+    setToggleObjects((prevData) => ({...prevData, isCustomerHasPassword: false,  isLoginShow: false, authButtonDisabledUntilPasswordChanged: true}))
     setMessage("Register yourself to get more coupons and discounts on your favourite meals.");
   }
 
   const onCustomerError = (error) => {
-    setIsavefasterdetailsclicked(false);
+    setIsSaveFasterDetailsClicked(false);
     window.alert("Some fields need to be filled.")
 
     if (parseInt(error?.response?.data?.errors?.email?.length) > parseInt(0)) 
@@ -552,15 +559,15 @@ function UserForm() {
 
   function handleSaveMyDetails(isActive) {
 
-    if (customerDetailObj?.doorhousename === "" || customerDetailObj?.email === "" || customerDetailObj?.phone === "" || customerDetailObj?.firstName === "" || customerDetailObj?.lastName === "") 
+    if (customerDetailObj?.doorHouseName === "" || customerDetailObj?.email === "" || customerDetailObj?.phone === "" || customerDetailObj?.firstName === "" || customerDetailObj?.lastName === "") 
     {
       setSaveMyDetailsError("Please check * (asterisk) mark field and fill them.");
-      setIsavefasterdetailsclicked(false);
+      setIsSaveFasterDetailsClicked(false);
       return;
     }
 
     setSaveMyDetailsError("");
-    setIsavefasterdetailsclicked(isActive);
+    setIsSaveFasterDetailsClicked(isActive);
 
     if(isActive === true)
     {
@@ -575,7 +582,7 @@ function UserForm() {
   {
     e.preventDefault()
 
-    if(isavefasterdetailsclicked || isLocationBrandOnline === null)
+    if(isSaveFasterDetailsClicked || isLocationBrandOnline === null)
     {
       return
     }
@@ -585,7 +592,7 @@ function UserForm() {
 
     // }
 
-    if (parseInt(customerDetailObj?.doorhousename.length) === parseInt(0) || parseInt(customerDetailObj?.email.length) === parseInt(0) || parseInt(customerDetailObj?.phone.length) === parseInt(0) || parseInt(customerDetailObj?.firstName.length) === parseInt(0) ||parseInt(customerDetailObj?.lastName.length) === parseInt(0)) 
+    if (parseInt(customerDetailObj?.doorHouseName.length) === parseInt(0) || parseInt(customerDetailObj?.email.length) === parseInt(0) || parseInt(customerDetailObj?.phone.length) === parseInt(0) || parseInt(customerDetailObj?.firstName.length) === parseInt(0) ||parseInt(customerDetailObj?.lastName.length) === parseInt(0)) 
     {
       setCustomerDetailObj((prevData) => ({...prevData, PayNowBottomError: "Please check * (asterisk) mark field and fill them."}))
       return;
@@ -593,7 +600,7 @@ function UserForm() {
 
     let checkNumber = validatePhoneNumber(customerDetailObj?.phone);
     if (!checkNumber) {
-      setIsavefasterdetailsclicked(false);
+      setIsSaveFasterDetailsClicked(false);
       setCustomerDetailObj((prevData) => ({...prevData, PayNowBottomError: "Kindly enter valid contact number!."}))
       return;
     }
@@ -630,13 +637,13 @@ function UserForm() {
     
     const subTotalOrderLocal        = JSON.parse(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`))) === null ? null: getAmountConvertToFloatWithFixed(JSON.parse(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`))),2);
     const localStorageTotal         = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`)) === null? null: JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`));
-    const orderAmountdiscountValue  = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_number`)) === null ? null: JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_number`));
+    const orderAmountDiscountValue  = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_number`)) === null ? null: JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_number`));
     const orderFilter               = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`));
     const deliveryFeeLocalStorage   = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_fee`)) === null ? null : getAmountConvertToFloatWithFixed(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_fee`)),2);
     const getCouponCode             = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}applied_coupon`));
 
     const couponCodes               = parseInt(getCouponCode.length) > parseInt(0) ? getCouponCode : couponDiscountApplied;
-    const updatedDeliveryTime       = moment(`${moment().format("YYYY-MM-DD")} ${deliverytime}`,"YYYY-MM-DD HH:mm:ss");
+    const updatedDeliveryTime       = moment(`${moment().format("YYYY-MM-DD")} ${deliveryTime}`,"YYYY-MM-DD HH:mm:ss");
 
     let orderFromDatabaseGUID = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_guid`));
 
@@ -645,17 +652,17 @@ function UserForm() {
       phone: customerDetailObj?.phone,
       lastName: customerDetailObj?.lastName,
       firstName: customerDetailObj?.firstName,
-      deliverytime: deliverytime,
-      doorhousename: customerDetailObj?.doorhousename,
-      isbysmsclicked: customerDetailObj?.isBySmsClicked,
-      isbyemailclicked: customerDetailObj?.isByEmailClicked,
-      driverinstruction: customerDetailObj?.driverinstruction,
+      deliveryTime: deliveryTime,
+      doorHouseName: customerDetailObj?.doorHouseName,
+      isBySmsClicked: customerDetailObj?.isBySmsClicked,
+      isByEmailClicked: customerDetailObj?.isByEmailClicked,
+      driverInstruction: customerDetailObj?.driverInstruction,
     };
 
     setLocalStorage(`${BRAND_SIMPLE_GUID}customer_information`,customerInformationInLocalStorage);
 
     const customerAuth = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}websiteToken`))
-    const customerTemp = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
+    const customerTemp = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempCustomer`))
 
     const filterAddress = customerTemp?.addresses?.find(address => address?.is_default_address === 1)
 
@@ -678,23 +685,23 @@ function UserForm() {
       filterName:         orderFilter === null ? selectedFilter?.name : orderFilter.name,
       partner:            PARTNER_ID,
       total_order:        localStorageTotal === null? getAmountConvertToFloatWithFixed(totalOrderAmountValue, 2): getAmountConvertToFloatWithFixed(JSON.parse(localStorageTotal),2),
-      deliverytime:       deliverytime,
-      doorhousename:      customerDetailObj?.doorhousename,
-      isbysmsclicked:     toggleObjects?.isBySmsClicked,
+      deliveryTime:       deliveryTime,
+      doorHouseName:      customerDetailObj?.doorHouseName,
+      isBySmsClicked:     toggleObjects?.isBySmsClicked,
       
-      isbyemailclicked:   toggleObjects?.isByEmailClicked,
-      driverinstruction:  customerDetailObj?.driverinstruction,
+      isByEmailClicked:   toggleObjects?.isByEmailClicked,
+      driverInstruction:  customerDetailObj?.driverInstruction,
       sub_total_order:    subTotalOrderLocal,
       
       
-      orderAmountDiscount_guid: orderAmountdiscountValue,
+      orderAmountDiscount_guid: orderAmountDiscountValue,
       delivery_estimate_time:   updatedDeliveryTime._i,
       
-      // delivery_estimate_time: moment(deliverytime, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
+      // delivery_estimate_time: moment(deliveryTime, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
       delivery_fee:             deliveryFeeLocalStorage,
       coupons:                  couponCodes,
       order_guid:               orderFromDatabaseGUID !== null ? JSON.parse(orderFromDatabaseGUID) : null,
-      is_verified:              booleanObj?.isCustomerVerified
+      is_verified:              booleanObj?.isCustomerVerified,
     };
     
     if (orderFromDatabaseGUID !== null) { 
@@ -722,7 +729,10 @@ function UserForm() {
 
   const onStoreError = (error) => {
     console.error("Store error:", error);
-    
+    // if(error?.response?.data?.status.includes("success"))
+    // {
+    //   route.push(`/payment/${data?.data?.data?.order?.external_order_id}`);
+    // }
     setErrormessage("There is something went wrong!. Please refresh and try again.")
   }
 
@@ -750,7 +760,8 @@ function UserForm() {
 
   const {isLoading: patchLoading, isError: patchError, isSuccess: patchSuccess, reset: patchReset, mutate: patchMutation} = usePatchMutationHook('customer-update',`/update-customer-details`, onPatchSuccess, onPatchError)
 
-  const loadingState = patchLoading || storeLoading
+  const loadingState = patchLoading || storeLoading || loader
+  
   return (
     <Fragment>
       <Header />
@@ -831,7 +842,7 @@ function UserForm() {
                             !toggleObjects?.isDoorInputDisplayClicked && 
                             <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
                               <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
-                                {customerDetailObj?.doorhousename}
+                                {customerDetailObj?.doorHouseName}
                               </span>
                             </p>
                           }
@@ -845,7 +856,7 @@ function UserForm() {
                       {
                         toggleObjects?.isDoorInputDisplayClicked && 
                         <div className="bt-au-checkout-window">
-                          <input type="text" ref={addDoorNumberRef} placeholder="Enter door number or name" name="doorhousename" value={customerDetailObj?.doorhousename} className={`door_number ${parseInt(customerDetailObj?.doorhousename?.length) > parseInt(0)? "parse-success": "parse-erorr"}`} onChange={handleInputs}/>
+                          <input type="text" ref={addDoorNumberRef} placeholder="Enter door number or name" name="doorHouseName" value={customerDetailObj?.doorHouseName} className={`door_number ${parseInt(customerDetailObj?.doorHouseName?.length) > parseInt(0)? "parse-success": "parse-erorr"}`} onChange={handleInputs}/>
                         </div>
                       }
                       <div className="al-checkout-desk">
@@ -867,29 +878,29 @@ function UserForm() {
                             Add driver instructions
                           </span>
                           {
-                            !toggleObjects?.isAddDriverInstructionClicked && 
+                            !toggleObjects?.isAdddriverInstructionClicked && 
                             <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
                               <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
-                                {customerDetailObj?.driverinstruction}
+                                {customerDetailObj?.driverInstruction}
                               </span>
                             </p>
                           }
                         </div>
 
-                        <button type="button" name="isAddDriverInstructionClicked" className="chic-cj-ckhacheckout-desk-btn" onClick={handleToggles}>
-                          {toggleObjects?.isAddDriverInstructionClicked ? "Save" : "Add"}
+                        <button type="button" name="isAdddriverInstructionClicked" className="chic-cj-ckhacheckout-desk-btn" onClick={handleToggles}>
+                          {toggleObjects?.isAdddriverInstructionClicked ? "Save" : "Add"}
                         </button>
                       </div>
 
                       {
-                        toggleObjects?.isAddDriverInstructionClicked && 
+                        toggleObjects?.isAdddriverInstructionClicked && 
                         <div className="bt-au-checkout-window">
                           <textarea
                             rows="2"
                             spellCheck="false"
                             className="door_number"
-                            name="driverinstruction"
-                            value={customerDetailObj?.driverinstruction}
+                            name="driverInstruction"
+                            value={customerDetailObj?.driverInstruction}
                             placeholder="Add delivery instructions"
                             aria-label="Add delivery instructions"
                             onChange={handleInputs}
@@ -1085,11 +1096,11 @@ function UserForm() {
                               Schedule
                             </span>
                           </div>
-                          <select value={moment(deliverytime).format("HH:mm A")} className="bubvbwbdbxbybkaubzc0checkout-window-input" onChange={handleDeliveryTime}>
+                          <select value={moment(deliveryTime).format("HH:mm A")} className="bubvbwbdbxbybkaubzc0checkout-window-input" onChange={handleDeliveryTime}>
                             {
                               listtime?.map((time, index) => {
                                 return (
-                                  (moment(time?.time,"HH:mm").format("HH:mm")   >= moment(openingtime,"HH:mm").format("HH:mm") && moment(closingtime,"HH:mm").format("HH:mm")  >= moment(time?.time,"HH:mm").format("HH:mm")) && 
+                                  (moment(time?.time,"HH:mm").format("HH:mm")   >= moment(openingTime,"HH:mm").format("HH:mm") && moment(closingTime,"HH:mm").format("HH:mm")  >= moment(time?.time,"HH:mm").format("HH:mm")) && 
                                   (
                                     <option key={index} defaultValue={time?.time}>
                                       {moment(time?.time, "HH:mm A").format("HH:mm A")}
@@ -1122,7 +1133,7 @@ function UserForm() {
                       </div> 
                       <input type="checkbox" className="agaxlqdflacheckout-desk-input"></input>
 
-                      <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isavefasterdetailsclicked ? "mch" : ""}`} onClick={() => handleSaveMyDetails(!isavefasterdetailsclicked)}>
+                      <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isSaveFasterDetailsClicked ? "mch" : ""}`} onClick={() => handleSaveMyDetails(!isSaveFasterDetailsClicked)}>
                         <div className="spacer _16"></div>
                         <div className="d1alfwllcheckout-desk">
                           <div className="ald1ame7lmlncheckout-desk">
@@ -1138,7 +1149,7 @@ function UserForm() {
                     </div>
 
                     {
-                      isavefasterdetailsclicked &&
+                      isSaveFasterDetailsClicked &&
                       <>
                         <div className='chcicwd3undersavefastercheckout'>
                           <div className='toundersavefastercheckout'>
@@ -1167,9 +1178,9 @@ function UserForm() {
                                 toggleObjects?.isCustomerHasPassword  || toggleObjects?.isLoginShow ?
                                   <button type="button" className='agloundersavefastercheckout' disabled={toggleObjects?.authButtonDisabledUntilPasswordChanged} onClick={handleLogin}>Login</button>
                                 :
-                                  <button type="button" className='agloundersavefastercheckout' disabled={toggleObjects?.authButtonDisabledUntilPasswordChanged} onClick={handleRegisteration}>Register</button>
+                                  <button type="button" className='agloundersavefastercheckout' disabled={toggleObjects?.authButtonDisabledUntilPasswordChanged} onClick={handleRegister}>Register</button>
                               }
-                              <button type="button" className='coasgundersavefastercheckout' disabled={toggleObjects?.authButtonDisabledUntilPasswordChanged} onClick={() => setIsavefasterdetailsclicked(!isavefasterdetailsclicked)}>Continue as guest user</button>
+                              <button type="button" className='coasgundersavefastercheckout' disabled={toggleObjects?.authButtonDisabledUntilPasswordChanged} onClick={() => setIsSaveFasterDetailsClicked(!isSaveFasterDetailsClicked)}>Continue as guest user</button>
                             </div>
                           </div>
                         </div>
@@ -1193,9 +1204,9 @@ function UserForm() {
                     </div>
 
                     <div className="almycheckout-desk">
-                      <div className="allzc5checkout-desk" onClick={() => setIsbyemailclicked(!isbyemailclicked)}>
+                      <div className="allzc5checkout-desk" onClick={() => setIsByEmailClicked(!isByEmailClicked)}>
                         <input type="checkbox" className="agaxlqdflacheckout-desk-input"/>
-                        <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isbyemailclicked ? "mch" : ""}`}>
+                        <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isByEmailClicked ? "mch" : ""}`}>
                           <div className="spacer _16"></div>
                           <div className="d1alfwllcheckout-desk">
                             <div className="ald1ame7lmlncheckout-desk">
@@ -1213,9 +1224,9 @@ function UserForm() {
                       </div>
 
                       <div className="spacer _48"></div>
-                      <div className="allzc5checkout-desk" onClick={() => setIsbysmsclicked(!isbysmsclicked)}>
+                      <div className="allzc5checkout-desk" onClick={() => setIsBySmsClicked(!isBySmsClicked)}>
                         <input type="checkbox" className="agaxlqdflacheckout-desk-input"/>
-                        <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isbysmsclicked ? "mch" : ""}`}>
+                        <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isBySmsClicked ? "mch" : ""}`}>
                           <div className="spacer _16"></div>
                           <div className="d1alfwllcheckout-desk">
                             <div className="ald1ame7lmlncheckout-desk">
@@ -1388,7 +1399,7 @@ function UserForm() {
                           </div>
 
                           <button className="chic-cj-ckhacheckout-desk-btn" onClick={handlePostcodeEdit}>
-                            {deliverydetailtext}
+                            {deliveryDetailText}
                           </button>
                         </a>
                         {toggleObjects?.isPostCodeClicked && (
@@ -1404,7 +1415,7 @@ function UserForm() {
                                 defaultValue={postcode}
                               />
 
-                              <button className="change_postcode_btn" onClick={() =>setIschangepostcodeclicked(!ischangepostcodeclicked)}>
+                              <button className="change_postcode_btn" onClick={() =>setIsChangePostcodeClicked(!isChangePostcodeClicked)}>
                                 Change postcode
                               </button>
 
@@ -1432,7 +1443,7 @@ function UserForm() {
                             {!toggleObjects?.isDoorInputDisplayClicked && (
                               <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
                                 <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
-                                  {customerDetailObj?.doorhousename}
+                                  {customerDetailObj?.doorHouseName}
                                 </span>
                               </p>
                             )}
@@ -1449,11 +1460,11 @@ function UserForm() {
                             <input
                               type="text"
                               ref={addDoorNumberRef}
-                              value={customerDetailObj?.doorhousename}
-                              name="doorhousename"
+                              value={customerDetailObj?.doorHouseName}
+                              name="doorHouseName"
                               onChange={handleInputs}
                               placeholder="Enter door number or name"
-                              className={`door_number ${customerDetailObj?.doorhousename ? "parse-success" : "parse-erorr"}`}
+                              className={`door_number ${customerDetailObj?.doorHouseName ? "parse-success" : "parse-erorr"}`}
                             />
                           </div>
                         }
@@ -1477,28 +1488,28 @@ function UserForm() {
                               Add driver instructions
                             </span>
                             {
-                              !toggleObjects?.isAddDriverInstructionClicked && 
+                              !toggleObjects?.isAdddriverInstructionClicked && 
                               <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk" >
                                 <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
-                                  {customerDetailObj?.driverinstruction}
+                                  {customerDetailObj?.driverInstruction}
                                 </span>
                               </p>
                             }
                           </div>
-                          <button type="button" name="isAddDriverInstructionClicked" className="chic-cj-ckhacheckout-desk-btn" onClick={handleToggles}>
-                            {toggleObjects?.isAddDriverInstructionClicked ? "Save" : "Add"}
+                          <button type="button" name="isAdddriverInstructionClicked" className="chic-cj-ckhacheckout-desk-btn" onClick={handleToggles}>
+                            {toggleObjects?.isAdddriverInstructionClicked ? "Save" : "Add"}
                           </button>
                         </div>
 
                         {
-                          toggleObjects?.isAddDriverInstructionClicked && 
+                          toggleObjects?.isAdddriverInstructionClicked && 
                           <div className="bt-au-checkout-window">
                             <textarea
                               rows="2"
                               spellCheck="false"
                               className="door_number"
-                              name="driverinstruction"
-                              value={customerDetailObj?.driverinstruction}
+                              name="driverInstruction"
+                              value={customerDetailObj?.driverInstruction}
                               placeholder="Add delivery instructions"
                               aria-label="Add delivery instructions"
                               onChange={handleInputs}
@@ -1677,11 +1688,11 @@ function UserForm() {
                                 Schedule
                               </span>
                             </div>
-                            <select value={moment(deliverytime, "HH:mm A").format("HH:mm A")} className="bubvbwbdbxbybkaubzc0checkout-window-input" onChange={handleDeliveryTime}>
+                            <select value={moment(deliveryTime, "HH:mm A").format("HH:mm A")} className="bubvbwbdbxbybkaubzc0checkout-window-input" onChange={handleDeliveryTime}>
                               {
                                 listtime?.map((time, index) => {
                                   return (
-                                    moment(time?.time, "HH:mm").format("HH:mm") >= moment(openingtime, "HH:mm").format("HH:mm") && moment(closingtime, "HH:mm").format("HH:mm") >= moment(time?.time, "HH:mm").format("HH:mm") &&
+                                    moment(time?.time, "HH:mm").format("HH:mm") >= moment(openingTime, "HH:mm").format("HH:mm") && moment(closingTime, "HH:mm").format("HH:mm") >= moment(time?.time, "HH:mm").format("HH:mm") &&
                                       <option key={index} defaultValue={time?.time}>
                                         {moment(time?.time, "HH:mm A").format("HH:mm A")}
                                       </option>
@@ -1712,7 +1723,7 @@ function UserForm() {
                           </svg>
                         </div>
                         <input type="checkbox" className="agaxlqdflacheckout-desk-input"/>
-                        <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isavefasterdetailsclicked ? "mch" : ""}`} onClick={() => handleSaveMyDetails(!isavefasterdetailsclicked)}>
+                        <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isSaveFasterDetailsClicked ? "mch" : ""}`} onClick={() => handleSaveMyDetails(!isSaveFasterDetailsClicked)}>
                           <div className="spacer _16"></div>
                           <div className="d1alfwllcheckout-desk">
                             <div className="ald1ame7lmlncheckout-desk">
@@ -1732,7 +1743,7 @@ function UserForm() {
                   }
 
                   {
-                    isavefasterdetailsclicked && 
+                    isSaveFasterDetailsClicked && 
                     <div className="chcicwd3undersavefastercheckout">
                       <div className="toundersavefastercheckout">
                         <div className="eik4ekk5g8undersavefastercheckout">
@@ -1765,9 +1776,9 @@ function UserForm() {
                             toggleObjects?.isCustomerHasPassword || toggleObjects?.isLoginShow ? 
                             <button type="button" className="agloundersavefastercheckout" disabled={toggleObjects?.authButtonDisabledUntilPasswordChanged} onClick={handleLogin}>{toggleObjects?.authButtonDisabledUntilPasswordChanged ? "Working...": "Login"}</button>
                           : 
-                            <button type="button" className="agloundersavefastercheckout" disabled={toggleObjects?.authButtonDisabledUntilPasswordChanged} onClick={handleRegisteration}>{toggleObjects?.authButtonDisabledUntilPasswordChanged ? "Working...": "Register"}</button>
+                            <button type="button" className="agloundersavefastercheckout" disabled={toggleObjects?.authButtonDisabledUntilPasswordChanged} onClick={handleRegister}>{toggleObjects?.authButtonDisabledUntilPasswordChanged ? "Working...": "Register"}</button>
                           }
-                          <button type="button" className="coasgundersavefastercheckout" disabled={toggleObjects?.authButtonDisabledUntilPasswordChanged} onClick={() => setIsavefasterdetailsclicked(!isavefasterdetailsclicked)}>
+                          <button type="button" className="coasgundersavefastercheckout" disabled={toggleObjects?.authButtonDisabledUntilPasswordChanged} onClick={() => setIsSaveFasterDetailsClicked(!isSaveFasterDetailsClicked)}>
                             Continue as guest user
                           </button>
                         </div>
@@ -1789,9 +1800,9 @@ function UserForm() {
                       </div>
 
                       <div className="almycheckout-desk">
-                        <div className="allzc5checkout-desk" onClick={() => setIsbyemailclicked(!isbyemailclicked)}>
+                        <div className="allzc5checkout-desk" onClick={() => setIsByEmailClicked(!isByEmailClicked)}>
                           <input type="checkbox" className="agaxlqdflacheckout-desk-input"/>
-                          <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isbyemailclicked ? "mch" : ""}`}>
+                          <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isByEmailClicked ? "mch" : ""}`}>
                             <div className="spacer _16"></div>
                             <div className="d1alfwllcheckout-desk">
                               <div className="ald1ame7lmlncheckout-desk">
@@ -1809,9 +1820,9 @@ function UserForm() {
                         </div>
 
                         <div className="spacer _48"></div>
-                        <div className="allzc5checkout-desk" onClick={() => setIsbysmsclicked(!isbysmsclicked)}>
+                        <div className="allzc5checkout-desk" onClick={() => setIsBySmsClicked(!isBySmsClicked)}>
                           <input type="checkbox" className="agaxlqdflacheckout-desk-input"/>
-                          <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isbysmsclicked ? "mch" : ""}`}>
+                          <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isBySmsClicked ? "mch" : ""}`}>
                             <div className="spacer _16"></div>
                             <div className="d1alfwllcheckout-desk">
                               <div className="ald1ame7lmlncheckout-desk">

@@ -49,7 +49,7 @@ export default function ForgetPassword()
     }
 
     const onForgetSuccess = (data) => {
-        setLocalStorage(`${BRAND_SIMPLE_GUID}tempcustomer`, data?.data?.data?.customer)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}tempCustomer`, data?.data?.data?.customer)
         setForgetObj((prevData) => ({...prevData, isOTPReady: true, errormessage: ""}))
     }
 
@@ -113,7 +113,7 @@ export default function ForgetPassword()
                         <div className="form-group">
                             <button type="submit" className="login-button" disabled={isLoading}>Send OTP</button>
                         </div>
-                        <a href='/registeration' className="register-account">Register Account!.</a>
+                        <a href='/register' className="register-account">Register Account!.</a>
                     </form>
             }
             

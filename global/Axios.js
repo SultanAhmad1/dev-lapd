@@ -1,19 +1,18 @@
 import axios from "axios";
-import { setLocalStorage } from "./Store";
-// export const BASE_URL = "https://laravel-jouleskitchen.cleartwo.uk/api";
+import { removeLastApi, setLocalStorage } from "./Store";
 export const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL
-export const IMAGE_URL_Without_Storage = "https://laravel-jouleskitchen.cleartwo.uk/";
 
-// export const BASE_URL = "https://api.jouleskitchen.co.uk/api";
-// export const IMAGE_URL = "https://api.jouleskitchen.co.uk/storage/";
-// export const IMAGE_URL_Without_Storage ="https://api.jouleskitchen.co.uk/";
+export const IMAGE_URL_Without_Storage = removeLastApi(BASE_URL);
+export const BRAND_GUID = process.env.NEXT_PUBLIC_STORE_PUBLIC_KEYS;
 
-export const BRAND_GUID = "28D0041C-F48D-4054-BA0E-7153D2B8642C";
-export const BRAND_SIMPLE_GUID = "28D0041CF48D4054BA0E7153D2B8642C";
+export const BRAND_SIMPLE_GUID = BRAND_GUID.replace(/-/g, "");
+export const STRIPE_PK_KEY=process.env.NEXT_PUBLIC_STRIPE_KEYS
+
 export const PARTNER_ID = 2;
-export const DELIVERY_ID = "79857505-DA6E-4256-B9CF-E0F41DACB086";
+export const DELIVERY_ID = process.env.NEXT_PUBLIC_DELIVERY_ID;
+
 export const brandLogoPath = "/gallery/logo.svg";
-export const USERIMAGE = "/gallery/user-image.jpeg"
+export const USER_IMAGE = "/gallery/user-image.jpeg"
 
 export default axios.create({
   baseURL: BASE_URL,

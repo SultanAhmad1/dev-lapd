@@ -1,11 +1,11 @@
-
 // import LoaderStatus from "@/components/LoaderStatus";
-import { lazy } from "react";
+import dynamic from "next/dynamic";
 
-const DisplaySingleItem = lazy(() => import("@/components/singleitem/DisplaySingleItem"));
+const DisplaySingleItem = dynamic(() => import("@/components/singleitem/DisplaySingleItem"));
 
 function productDetails({ params }) 
 {
+  
   return (
     <DisplaySingleItem params={params}/>
   );

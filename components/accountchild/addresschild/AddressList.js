@@ -12,13 +12,13 @@ export default function AddressList({handleCreateAddress})
 
     const [listObj, setListObj] = useState({
         customer: null,
-        availablestores: [],
+        availableStores: [],
     });
 
     const [postcodeerror, setPostcodeerror] = useState("");
     
     useEffect(() => {
-        const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
+        const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempCustomer`))
 
         if(customer !== undefined || customer !== null)
         {
@@ -27,10 +27,10 @@ export default function AddressList({handleCreateAddress})
 
     }, []);
     
-    async function fetchpostcodeData(validpostcode) {
+    async function fetchPostcodeData(validPostcode) {
         try 
         {
-          let filterPostcode = validpostcode.replace(/\s/g, "");
+          let filterPostcode = validPostcode.replace(/\s/g, "");
     
           let grabPostcodeOutWard = "";
           if (parseInt(filterPostcode.length) === parseInt(7)) 
@@ -56,15 +56,15 @@ export default function AddressList({handleCreateAddress})
     
           const response = await axiosPrivate.post(`/ukpostcode-website`, data);
           const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows;
-          find_matching_postcode(matrix, validpostcode, setDeliveryMatrix);
+          find_matching_postcode(matrix, validPostcode, setDeliveryMatrix);
     
           setLocalStorage(`${BRAND_SIMPLE_GUID}address`, response?.data?.data);
-          setLocalStorage(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validpostcode);
+          setLocalStorage(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validPostcode);
     
           
-          setListObj((prevData) => ({...prevData, availablestores: response.data?.data?.availableStore}))
+          setListObj((prevData) => ({...prevData, availableStores: response.data?.data?.availableStore}))
 
-          setPostcode(validpostcode);
+          setPostcode(validPostcode);
           
         } 
         catch (error) 
@@ -80,7 +80,6 @@ export default function AddressList({handleCreateAddress})
           }
         }
     }
-
     
     const handleDefaultAddress = (id) => {
         setListObj((prevData) => ({...prevData, 
@@ -106,7 +105,7 @@ export default function AddressList({handleCreateAddress})
             }
     
             addressPostMutation(filterData)
-            fetchpostcodeData(filterAddress?.postcode)
+            fetchPostcodeData(filterAddress?.postcode)
         }
     }
 
@@ -114,7 +113,7 @@ export default function AddressList({handleCreateAddress})
     }
 
     const onPatchSuccess = (data) => {
-        setLocalStorage(`${BRAND_SIMPLE_GUID}tempcustomer`, listObj?.customer)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}tempCustomer`, listObj?.customer)
 
         const filterAddress = listObj?.customer?.addresses?.find((address) => address?.is_default_address === 1)
 
@@ -141,7 +140,7 @@ export default function AddressList({handleCreateAddress})
             }
             <div className="title-with-button">
                 <h1>Address List</h1>
-                <button type="button" className="register-button" onClick={handleCreateAddress}>Craete new address</button>
+                <button type="button" className="register-button" onClick={handleCreateAddress}>Create new address</button>
             </div>
 
             {
@@ -163,7 +162,7 @@ export default function AddressList({handleCreateAddress})
                 })
             }
             {
-                listObj?.availablestores?.length > 0 &&
+                listObj?.availableStores?.length > 0 &&
                 <div className="modal-delivery-details">
                     <div className="modal-delivery-details-level-one-div">
                     <div className="modal-delivery-details-level-one-div-height"></div>
@@ -171,7 +170,7 @@ export default function AddressList({handleCreateAddress})
                     <div className="modal-delivery-details-level-one-div-dialog">
                         <div className="deliver-to-body-content">
                         
-                            <AvailableStore availablestores={listObj?.availablestores}/>
+                            <AvailableStore availableStores={listObj?.availableStores}/>
                         
                         </div>
                     </div>

@@ -103,7 +103,7 @@ export default function Login()
     }
 
     const onLoginSuccess = (data) => {
-        setLocalStorage(`${BRAND_SIMPLE_GUID}tempcustomer`, data?.data?.data?.customer)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}tempCustomer`, data?.data?.data?.customer)
     
         setLocalStorage(`${BRAND_SIMPLE_GUID}websiteToken`, data?.data)
         handleBoolean(true,'isCustomerVerified')
@@ -119,16 +119,16 @@ export default function Login()
     const {mutate: loginMutation, isSuccess, isLoading, isError, reset} = useLoginMutationHook('website-login', '/website-login', onLoginSuccess, onLoginError)
 
     useEffect(() => {
-      const confirmedPassword = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}confirmedcode`))
+        const confirmedPassword = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}confirmedcode`))
 
-      if(confirmedPassword !== null && confirmedPassword !== undefined)
-      {
-        if(confirmedPassword)
+        if(confirmedPassword !== null && confirmedPassword !== undefined)
         {
-            setLoginObj((prevData) => ({...prevData, isForgetPasswordClicked: true}))
-            return
+            if(confirmedPassword)
+            {
+                setLoginObj((prevData) => ({...prevData, isForgetPasswordClicked: true}))
+                return
+            }
         }
-      }
     }, []);
     return(
         <Fragment>
@@ -175,20 +175,20 @@ export default function Login()
 
                     <div className="form-group">
                         <button 
-                            type="submit" 
-                            className="login-button" 
-                            style={{
-                                background: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
-                                color: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
-                                border: isHover ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}` : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
-                            }} 
-                            onMouseEnter={() => setIsHover(true)} 
-                            onMouseLeave={() => setIsHover(false)} 
-                        >
+                                type="submit" 
+                                className="login-button" 
+                                style={{
+                                    background: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                                    color: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                                    border: isHover ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}` : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
+                                }} 
+                                onMouseEnter={() => setIsHover(true)} 
+                                onMouseLeave={() => setIsHover(false)} 
+                            >
                             Login my data
                         </button>
                     </div>
-                    <a href='/registeration' className="register-account">Register Account!.</a>
+                    <a href='/register' className="register-account">Register Account!.</a>
                 </form>
         }
         </Fragment>

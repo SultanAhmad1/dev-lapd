@@ -515,17 +515,21 @@ export default function DisplaySingleItem({params})
     }, [params]);
     
     useEffect(() => {
-        if(websiteModificationData)
+        
+        if(websiteModificationData || singleItem !== undefined || singleItem !== null)
         {
+            const getSeoTitle = singleItem?.seo_title === null ? singleItem.title : singleItem?.seo_title
+            const getSeoDescription = singleItem?.seo_description === null ? singleItem?.description : singleItem?.seo_description
+
             const metaHeadingData = {
-                   title: `${singleItem?.seo_title} - ${websiteModificationData?.brand?.name}`,
-                   contentData: `${singleItem?.seo_description} - ${websiteModificationData?.brand?.name}`,
+                   title: `${getSeoTitle} - ${websiteModificationData?.brand?.name}`,
+                   contentData: `${getSeoDescription} - ${websiteModificationData?.brand?.name}`,
                    iconImage: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.websiteFavicon,
                    singleItemsDetails: {
-                    title: singleItem?.seo_title,
-                    description: singleItem?.seo_description,
+                    title: getSeoTitle,
+                    description: getSeoDescription,
                     itemImage: singleItem?.image_url,
-                    keywords: singleItem?.seo_description,
+                    keywords: getSeoDescription,
                     url: window.location.href
                     //  url: {`${storeName.toLowerCase()}/${category?.slug}/${item?.slug}`}
                 }
@@ -1163,8 +1167,8 @@ export default function DisplaySingleItem({params})
                                 for (const secondModifier of secondItem?.secondary_item_modifiers) {
                                     if (secondaryModifierId === secondModifier?.id) {
                                         if (parseInt(secondModifier?.secondary_items_modifier_items.length) > parseInt(0)) {
-                                            for (const secondModfierItems of secondModifier?.secondary_items_modifier_items) {
-                                                if (secondModfierItems?.is_item_select) {
+                                            for (const secondModifierItems of secondModifier?.secondary_items_modifier_items) {
+                                                if (secondModifierItems?.is_item_select) {
                                                     countItemSelected += 1;
                                                 }
                                             }
@@ -1395,13 +1399,13 @@ export default function DisplaySingleItem({params})
                     {
                         return {
                             ...modifier,
-                            modifier_secondary_items: modifier?.modifier_secondary_items?.map((seconditems) => 
+                            modifier_secondary_items: modifier?.modifier_secondary_items?.map((secondItems) => 
                             {
-                                if (itemId === seconditems?.id) 
+                                if (itemId === secondItems?.id) 
                                 {
                                     return {
-                                        ...seconditems,
-                                        secondary_item_modifiers: seconditems?.secondary_item_modifiers?.map((secondItemModifier) => 
+                                        ...secondItems,
+                                        secondary_item_modifiers: secondItems?.secondary_item_modifiers?.map((secondItemModifier) => 
                                         {
                                             if (secondModifierId === secondItemModifier?.id) 
                                             {
@@ -1416,7 +1420,7 @@ export default function DisplaySingleItem({params})
                                     };
                                 }
     
-                                return seconditems;
+                                return secondItems;
                             }),
                         };
                     }
@@ -1548,11 +1552,11 @@ export default function DisplaySingleItem({params})
                 if (modifierId === modifier?.id) {
                     return {
                         ...modifier,
-                        modifier_secondary_items: modifier?.modifier_secondary_items?.map((seconditems) => {
-                            if (itemId === seconditems?.id) {
+                        modifier_secondary_items: modifier?.modifier_secondary_items?.map((secondItems) => {
+                            if (itemId === secondItems?.id) {
                                 return {
-                                    ...seconditems,
-                                    secondary_item_modifiers: seconditems?.secondary_item_modifiers?.map((secondItemModifier) => {
+                                    ...secondItems,
+                                    secondary_item_modifiers: secondItems?.secondary_item_modifiers?.map((secondItemModifier) => {
                                         if (secondModifierId === secondItemModifier?.id) {
                                             let addClass = secondItemModifier.valid_class;
                                             if (secondItemModifier?.modifier_counter === 0) {
@@ -1574,7 +1578,7 @@ export default function DisplaySingleItem({params})
                                 };
                             }
 
-                            return seconditems;
+                            return secondItems;
                         }),
                     };
                 }
@@ -1684,15 +1688,15 @@ export default function DisplaySingleItem({params})
                             is_modifier_selected: true,
                             valid_class: "success_check",
                             modifier_secondary_items:
-                            modifier?.modifier_secondary_items?.map((seconditems) => {
-                                if (itemId === seconditems?.id) {
+                            modifier?.modifier_secondary_items?.map((secondItems) => {
+                                if (itemId === secondItems?.id) {
                                 return {
-                                    ...seconditems,
+                                    ...secondItems,
                                     total_price: parseFloat(selectedModifierItemPrice),
                                 };
                                 }
 
-                                return seconditems;
+                                return secondItems;
                             }),
                         };
                         }
@@ -1725,23 +1729,22 @@ export default function DisplaySingleItem({params})
                     if (handleCheckModifierId === modifier?.id) {
                         return {
                             ...modifier,
-                            modifier_secondary_items: modifier?.modifier_secondary_items?.map(
-                            (seconditems) => {
+                            modifier_secondary_items: modifier?.modifier_secondary_items?.map((secondItems) => 
+                            {
                                 if (
-                                parseInt(modifier?.max_permitted) ===
+                                    parseInt(modifier?.max_permitted) ===
                                     parseInt(countNumberOfCheck?.length) &&
-                                seconditems?.activeClass !== "mch"
+                                    secondItems?.activeClass !== "mch"
                                 ) {
-                                return {
-                                    ...seconditems,
-                                    activeClass: "mchw",
-                                    is_item_select: false,
-                                };
+                                    return {
+                                        ...secondItems,
+                                        activeClass: "mchw",
+                                        is_item_select: false,
+                                    };
                                 }
 
-                                return seconditems;
-                            }
-                            ),
+                                return secondItems;
+                            }),
                         };
                     }
 

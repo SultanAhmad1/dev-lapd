@@ -150,7 +150,7 @@ export default function CustomerRegisteration()
     };
 
     const onSuccess = (data) => {
-        setLocalStorage(`${BRAND_SIMPLE_GUID}tempcustomer`, data?.data?.data?.customer)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}tempCustomer`, data?.data?.data?.customer)
         setLocalStorage(`${BRAND_SIMPLE_GUID}isOTPHas`, true)
         setRegisterationBoolean((prevData) => ({...prevData, isOTPReady: !registerationBoolean.isOTPReady}))
     }
@@ -160,7 +160,7 @@ export default function CustomerRegisteration()
         setErrorsObj((prevData) => ({...prevData, errormessage: response?.data?.message}))
     }
 
-    const {mutate: registerMutation, isSuccess, isLoading, isError, reset} = useLoginMutationHook('website-register','/website-registeration',onSuccess, onError)
+    const {mutate: registerMutation, isSuccess, isLoading, isError, reset} = useLoginMutationHook('website-register','/website-register',onSuccess, onError)
 
     /** Verify OTP Code. */
 

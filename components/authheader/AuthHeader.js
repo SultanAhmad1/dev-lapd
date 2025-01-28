@@ -12,9 +12,9 @@ export default function AuthHeader()
         <a className="logo" href="/">
             {
                 brandLogo !== null ?
-                <Image  src={IMAGE_URL_Without_Storage+''+brandLogo} width={10} height={10} className="register-brand-header" alt='Brand Name'/>
+                    <Image  src={IMAGE_URL_Without_Storage+''+brandLogo} width={10} height={10} className="register-brand-header" alt='Brand Name'/>
                 :
-                <Image  src={brandLogoPath} width={10} height={10} className="register-brand-header" alt='Brand Name'/>
+                    <Image  src={brandLogoPath} width={10} height={10} className="register-brand-header" alt='Brand Name'/>
             }
         </a>
     )

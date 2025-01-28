@@ -1,6 +1,9 @@
 "use client";
 import { getAmountConvertToFloatWithFixed } from "@/global/Store";
 import React, { Fragment } from "react";
+import ChooseOnlyOne from "./nestedModifierItems/ChooseOnlyOne";
+import ChooseOneItemOneTime from "./nestedModifierItems/ChooseOneItemOneTime";
+import CounterItem from "./nestedModifierItems/CounterItem";
 
 export const NestedModifiers = (props) => 
 {
@@ -85,350 +88,56 @@ export const NestedModifiers = (props) =>
                                     {
                                       return(
                                       secondItemModifier?.select_single_option === 1 && secondItemModifier?.min_permitted === 1 && secondItemModifier?.max_permitted === 1 ?
-                                        <li key={`${index}.${secondItemModifierIndex}`} className="mb-10">
-                                          <div className="k5modifier-modal-item">
-                                            <div className="alaqg5fxmodifier-modal-div" onClick={() => handleModalModifierToggle(selectedModifierId, selectedModifierItemId, secondItemModifier?.id)}>
-                                              <div className="alammodifier-modal">
-                                                <div className="product-modifier-name">
-                                                  {secondItemModifier?.title}
-                                                </div>
-                                                <div className="chcicwd3czmodifier-choose">
-                                                  <div>
-                                                  {
-                                                    !secondItemModifier?.is_second_item_modifier_clicked &&
-                                                    secondItemModifier?.secondary_items_modifier_items?.map((displaySelectedItem, displaySelectedItemIndex) => 
-                                                    {
-                                                      return (
-                                                        displaySelectedItem?.is_item_select && 
-                                                          <Fragment key={`${index}.${displaySelectedItemIndex}`}>
-                                                            {parseInt(displaySelectedItem?.title?.length) > parseInt(20) ? displaySelectedItem?.title?.substring(0,20) + "..." : displaySelectedItem?.title}
-                                                            <br />
-                                                          </Fragment>
-                                                      );
-                                                    })
-                                                  }
-                                                  </div>
-                                                  
-                                                  <div className="irmodifier-modal">
-                                                    <div className={`isafcbitiuivcymodifier-modal ${secondItemModifier?.valid_class}`}>
-                                                      {parseInt(secondItemModifier?.min_permitted) > parseInt(0) ? "Required" : "Optional"}
-                                                    </div>
-                                                    <div className="mt-2">
-                                                      Choose {parseInt(secondItemModifier?.min_permitted) === parseInt(0) && "up to"} {secondItemModifier?.max_permitted}
-                                                    </div>
-                                                  </div>
-                                                </div>
-                                              
-                                              </div>
-
-                                              <div className="single-product-svg-div accordion">
-                                                <div className="single-product-svg-div-one">
-                                                  {
-                                                    secondItemModifier?.is_second_item_modifier_clicked ? 
-                                                    <svg className="bottom-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                                      <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(180, 12, 12)"></path>
-                                                    </svg>
-                                                  : 
-                                                    <svg className="rigth-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{cursor: "pointer",}}>
-                                                      <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(90, 12, 12)"></path>
-                                                    </svg>
-                                                  }
-                                                </div>
-                                              </div>
-                                            </div>
-
-                                            {
-                                              <div className={`iwmodifier-data ${secondItemModifier?.is_second_item_modifier_clicked ? "show" : "fade"}`}>
-                                                {
-                                                  secondItemModifier?.secondary_items_modifier_items?.map((item, itemIndex) => 
-                                                  {
-                                                    let isItemSuspend = false;
-                                                    if(item?.suspension_info !== null)
-                                                    {
-                                                      if(moment().format('YYYY-MM-DD') <= moment.unix(item?.suspension_info?.suspend_untill).format('YYYY-MM-DD'))
-                                                      {
-                                                        isItemSuspend = true
-                                                      }
-                                                    }
-                                                    return (
-                                                      isItemSuspend === false &&
-                                                      <div className="alakixc5modifier-data" style={{background: item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, border: item?.item_select_to_sale && `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`}} key={`${index}.${itemIndex}`} onClick={() => handleModalRadioInput(selectedModifierId,selectedModifierItemId,secondItemModifier?.id,item?.id)}>
-
-                                                        <label className={`chd2cjmodifier-modal-label`} style={{ '--before-color': `${item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,}}>
-                                                          <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                            <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}`} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                                          </svg>
-                                                          <div className="spacer _16"></div>
-                                                          <div className="alamdxdvmodifier-modal">
-                                                            <div className="chic-cj-ckjdmodifier-modal" style={{color: item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
-                                                              {item?.title}
-                                                            </div>
-                                                            <div className="spacer _8"></div>
-                                                            {
-                                                              getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) && 
-                                                              <div className="modifier-group-price" style={{color: item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
-                                                                &pound;{parseFloat(item?.price_info).toFixed(2)}
-                                                              </div>
-                                                            }
-                                                          </div>
-                                                        </label>
-                                                      </div>
-                                                    );
-                                                  }
-                                                )}
-                                              </div>
+                                        <ChooseOnlyOne 
+                                          key={`${index}.${secondItemModifierIndex}`} 
+                                          {
+                                            ...{
+                                              index,
+                                              secondItemModifier,
+                                              selectedModifierId,
+                                              selectedModifierItemId,
+                                              handleModalRadioInput,
+                                              secondItemModifierIndex,
+                                              handleModalModifierToggle,
+                                              websiteModificationData,
                                             }
-                                          </div>
-                                        </li>
+                                          }
+                                        />
                                       : 
                                       (secondItemModifier?.select_single_option === 1 && secondItemModifier?.max_permitted > 1) ?
-                                      <li key={`${index}.${secondItemModifierIndex}`} className="mb-10">
-                                        <div className="k5modifier-modal-item">
-
-                                          <div className="alaqg5fxmodifier-modal-div" onClick={() => handleModalModifierToggle(selectedModifierId, selectedModifierItemId, secondItemModifier?.id)}>
-                                            <div className="alammodifier-modal">
-                                              <div className="product-modifier-name">
-                                                {secondItemModifier?.title}
-                                              </div>
-                                              <div className="chcicwd3czmodifier-choose">
-                                                <div>
-                                                {
-                                                  !secondItemModifier?.is_second_item_modifier_clicked &&
-                                                  secondItemModifier?.secondary_items_modifier_items?.map((displaySelectedItem, displaySelectedItemIndex) => 
-                                                  {
-                                                    return (
-                                                      displaySelectedItem?.is_item_select && 
-                                                        <Fragment key={`${index}.${displaySelectedItemIndex}`}>
-                                                          {parseInt(displaySelectedItem?.title?.length) > parseInt(20) ? displaySelectedItem?.title?.substring(0,20) + "..." : displaySelectedItem?.title}
-                                                          <br />
-                                                        </Fragment>
-                                                    );
-                                                  })
-                                                }
-                                                </div>
-                                                
-                                                <div className="irmodifier-modal">
-                                                  <div className={`isafcbitiuivcymodifier-modal ${secondItemModifier?.valid_class}`}>
-                                                    {parseInt(secondItemModifier?.min_permitted) > parseInt(0) ? "Required" : "Optional"}
-                                                  </div>
-                                                  <div className="mt-2">
-                                                    Choose {parseInt(secondItemModifier?.min_permitted) === parseInt(0) && "up to"} {secondItemModifier?.max_permitted}
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            
-                                            </div>
-
-                                            <div className="single-product-svg-div accordion">
-                                              <div className="single-product-svg-div-one">
-                                                {
-                                                  secondItemModifier?.is_second_item_modifier_clicked ? 
-                                                  <svg className="bottom-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                                    <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(180, 12, 12)"></path>
-                                                  </svg>
-                                                : 
-                                                  <svg className="rigth-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{cursor: "pointer",}}>
-                                                    <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(90, 12, 12)"></path>
-                                                  </svg>
-                                                }
-                                              </div>
-                                            </div>
-                                          </div>
-
+                                        <ChooseOneItemOneTime 
+                                          key={`${index}.${secondItemModifierIndex}`} 
                                           {
-                                            <div
-                                              className={`iwmodifier-data ${secondItemModifier?.is_second_item_modifier_clicked ? "show" : "fade"}`}>
-                                              {
-                                                secondItemModifier?.secondary_items_modifier_items?.map((item, itemIndex) => 
-                                                {
-                                                  let isItemSuspend = false;
-                                                  if(item?.suspension_info !== null)
-                                                  {
-                                                    if(moment().format('YYYY-MM-DD') <= moment.unix(item?.suspension_info?.suspend_untill).format('YYYY-MM-DD'))
-                                                    {
-                                                      isItemSuspend = true
-                                                    }
-                                                  }
-                                                  return(
-                                                    isItemSuspend === false &&
-                                                    <div key={`${index}.${itemIndex}`}>
-                                                      {
-                                                        item?.activeClass !=="mchw" ? (
-                                                        <div className="alakixc5modifier-data" style={{background: item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, border: item?.item_select_to_sale && `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`}} onClick={() =>handleModalCheckInput(selectedModifierId,selectedModifierItemId,secondItemModifier?.id,item?.id)}>
-                                                          {/* <label className={`modifier-product-item-name-checkbox ${item?.activeClass}`} style={{ '--before-color': `${item?.activeClass && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,}}> */}
-                                                          <label className={`modifier-product-item-name-checkbox`} style={{ '--before-color': `${item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,}}>
-
-                                                          <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                                            <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}`} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                                                          </svg>
-
-                                                            <div className="spacer _16"></div>
-                                                              <div className="alamdxdvmodifier-modal">
-                                                                <span className="chic-cj-ckjdmodifier-modal" style={{color: item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
-                                                                  {item?.title}
-                                                                </span>
-                                                                <div className="spacer _8"></div>
-                                                                {
-                                                                  getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) && 
-                                                                  <span className="modifier-group-price" style={{color: item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
-                                                                    &pound;{parseFloat(item?.price_info).toFixed(2)}
-                                                                  </span>
-                                                                }
-                                                              </div>
-                                                          </label>
-                                                        </div>
-                                                      ) : (
-                                                        <div className="alakixc5modifier-data">
-                                                          <label className={`modifier-product-item-name-checkbox ${item?.activeClass}`} style={{ '--before-color': `${item?.activeClass && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,}}>
-                                                            <div className="spacer _16"></div>
-                                                            <div className="alamdxdvmodifier-modal">
-                                                              <div className="chic-cj-ckjdmodifier-modal">
-                                                                {item?.title}
-                                                              </div>
-                                                              <div className="spacer _8"></div>
-                                                              {
-                                                                getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) && 
-                                                                <div className="modifier-group-price">
-                                                                  &pound;{parseFloat(item?.price_info).toFixed(2)}
-                                                                </div>
-                                                              }
-                                                            </div>
-                                                          </label>
-                                                        </div>
-                                                      )}
-                                                    </div>
-                                                  )
-                                                }
-                                              )}
-                                            </div>
+                                            ...{
+                                              index,
+                                              secondItemModifier,
+                                              selectedModifierId,
+                                              selectedModifierItemId,
+                                              secondItemModifierIndex,
+                                              handleModalCheckInput,
+                                              handleModalModifierToggle,
+                                              websiteModificationData,
+                                            }
                                           }
-                                        </div>
-                                      </li>
+                                        />
                                       : 
                                       (secondItemModifier?.select_single_option > 1 && secondItemModifier?.max_permitted >= 1) &&
                                       
-                                        <li key={`${index}.${secondItemModifierIndex}`} className="mb-10">
-                                          
-                                          <div className="alaqg5fxmodifier-modal-div" onClick={() => handleModalModifierToggle(selectedModifierId, selectedModifierItemId, secondItemModifier?.id)}>
-                                            <div className="alammodifier-modal">
-                                              <div className="product-modifier-name">
-                                                {secondItemModifier?.title}
-                                              </div>
-                                              <div className="chcicwd3czmodifier-choose">
-                                                <div>
-                                                {
-                                                  !secondItemModifier?.is_second_item_modifier_clicked &&
-                                                  secondItemModifier?.secondary_items_modifier_items?.map((displaySelectedItem, displaySelectedItemIndex) => 
-                                                  {
-                                                    return (
-                                                      parseInt(displaySelectedItem?.counter) > parseInt(0) && 
-                                                        <Fragment key={`${index}.${displaySelectedItemIndex}`}>
-                                                          {parseInt(displaySelectedItem?.title?.length) > parseInt(20) ? displaySelectedItem?.title?.substring(0,20) + "..." : displaySelectedItem?.title}
-                                                          <br />
-                                                        </Fragment>
-                                                    );
-                                                  })
-                                                }
-                                                </div>
-                                                
-                                                <div className="irmodifier-modal">
-                                                  <div className={`isafcbitiuivcymodifier-modal ${secondItemModifier?.valid_class}`}>
-                                                    {parseInt(secondItemModifier?.min_permitted) > parseInt(0) ? "Required" : "Optional"}
-                                                  </div>
-                                                  <div className="mt-2">
-                                                    Choose {parseInt(secondItemModifier?.min_permitted) === parseInt(0) && "up to"}{secondItemModifier?.max_permitted}
-                                                  </div>
-                                                </div>
-                                              </div>
-                                            
-                                            </div>
-
-                                            <div className="single-product-svg-div accordion">
-                                              <div className="single-product-svg-div-one">
-                                                {
-                                                  secondItemModifier?.is_second_item_modifier_clicked ? 
-                                                  <svg className="bottom-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                                    <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(180, 12, 12)"></path>
-                                                  </svg>
-                                                : 
-                                                  <svg className="rigth-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{cursor: "pointer",}}>
-                                                    <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(90, 12, 12)"></path>
-                                                  </svg>
-                                                }
-                                              </div>
-                                            </div>
-                                          </div>
-
+                                        <CounterItem 
+                                          key={`${index}.${secondItemModifierIndex}`} 
                                           {
-                                            <div className={`iwmodifier-data ${secondItemModifier?.is_second_item_modifier_clicked? "show" : "fade"}`}>
-                                              {
-                                                secondItemModifier?.secondary_items_modifier_items?.map((item, itemIndex) => 
-                                                {
-                                                  return (
-                                                    <div key={`${index}.${itemIndex}`} style={{marginBottom: "8px"}}>
-                                                      <div className="product-modifier-item-detail">
-                                                        <div className="modifier-product-item-name-inc-dec">
-                                                          <div className="modifier-inc-dec">
-                                                            {
-                                                              parseInt(item?.counter) > parseInt(0) &&
-
-                                                              <>
-                                                                <button className="modifier-btn" disabled={item?.is_item_select} onClick={() =>handleModalDecrement(selectedModifierId,selectedModifierItemId,secondItemModifier?.id,item?.id)}>
-                                                                  <div className="modifier-btn-div">
-                                                                    <div className="modifier-btn-svg">
-                                                                      <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                                                        <path d="m7.33325 13v-2h9.33335v2z" fill="#000000"></path>
-                                                                      </svg>
-                                                                    </div>
-                                                                  </div>
-                                                                </button>
-
-                                                                <div className="incremented-values">
-                                                                  {parseInt(item?.counter)}
-                                                                </div>  
-                                                              
-                                                              </>
-                                                            }
-
-                                                            <button className="modifier-btn" disabled={ parseInt(secondItemModifier?.max_permitted) === parseInt(secondItemModifier?.modifier_counter)? true: false} onClick={() => handleModalIncrement(selectedModifierId,selectedModifierItemId,secondItemModifier?.id,item?.id)}>
-                                                              <div className="modifier-btn-div">
-                                                                <div className="modifier-btn-svg">
-                                                                  <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"focusable="false">
-                                                                    <path d="m16.6666 11.0007h-3.6667v-3.66672h-2v3.66672h-3.66665v2h3.66665v3.6666h2v-3.6666h3.6667z" fill="#000000"></path>
-                                                                  </svg>
-                                                                </div>
-                                                              </div>
-                                                            </button>
-                                                          </div>
-
-                                                          <div className="spacer _16"></div>
-                                                          <div className="modifier-product-item-name-one-div">
-                                                            <div className="modifier-product-item-name-one-nested-div">
-                                                              <div className="modifier-product-item-name-one-nested-div-one">
-                                                                <div className="modifier-product-item-name-one-nested-div-one-nested">
-                                                                  <div className="modifier-product-item-name-one-nested-div-one-nested-div">
-                                                                    {item?.title}
-                                                                  </div>
-                                                                  <div className="spacer _8"></div>
-                                                                  {
-                                                                    getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) && 
-                                                                    <div className="modifier-group-price">
-                                                                      &pound;{parseFloat(item?.price_info).toFixed(2)}
-                                                                    </div>
-                                                                  }
-                                                                </div>
-                                                              </div>
-                                                            </div>
-                                                          </div>
-                                                        </div>
-                                                      </div>
-                                                    </div>
-                                                  );
-                                                }
-                                              )}
-                                            </div>
+                                            ...{
+                                              index,
+                                              selectedModifierId, 
+                                              selectedModifierItemId,
+                                              secondItemModifier,
+                                              selectedModifierId,
+                                              handleModalModifierToggle,
+                                              handleModalDecrement,
+                                              handleModalIncrement
+                                            }
                                           }
-                                        </li>
+                                        />
                                       )
                                     })
                                   }

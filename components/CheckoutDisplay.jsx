@@ -15,7 +15,8 @@ import {
   axiosPrivate,
 } from "../global/Axios";
 import { useRouter } from "next/navigation";
-import { useGetQueryAutoUpdate } from "./reactquery/useQueryHook";
+import { useGetQueryAutoUpdate, useGetQueryForDeliveryFee } from "./reactquery/useQueryHook";
+import { NextResponse } from "next/server";
 
 
 export default function CheckoutDisplay()
@@ -32,10 +33,10 @@ export default function CheckoutDisplay()
     storeName,
     cartData,
     setCartData,
-    iscartItemDottedBtnClicked,
+    isCartItemDottedBtnClicked,
     isCartFull,
     setIsCartBtnClicked,
-    setIscartItemDottedBtnClicked,
+    setIsCartItemDottedBtnClicked,
     setIsCheckOutClicked,
     deliveryMatrix,
     postcode,
@@ -65,6 +66,9 @@ export default function CheckoutDisplay()
   const [coupon, setCoupon] = useState("");
   const [isAppliedBtnActive, setIsAppliedBtnActive] = useState(true);
   
+  const [selectedPostcode, setSelectedPostcode] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
+
   const [couponCodeError, setCouponCodeError] = useState("")
 
   const asideRef = useRef(null);
@@ -172,17 +176,6 @@ export default function CheckoutDisplay()
   //     selectedLocation: 0
   // });
 
-  useEffect(() => {
-   
-    if(parseInt(cartData?.length) > parseInt(0))
-    {
-      deliveryRefetch()
-    }
-    setItemIndividuallyUpdate(false)
-    // setLoader(false)
-
-  }, [cartData]);
-  
   const onDeliveryError = (error) => {}
 
   const onDeliverySuccess = (data) => {
@@ -256,7 +249,7 @@ export default function CheckoutDisplay()
         const textMessage = (
           // <span style={{color: "red",background: "#eda7a7",textAlign: "center",padding: "10px",}}>
           <span style={{color: "red"}}>
-            Minimum order is <strong>&pound;{getAmountConvertToFloatWithFixed(selectedMatrix?.order_value,2)}</strong> to your postcode
+            Minimum order is <strong>&pound;{getAmountConvertToFloatWithFixed(selectedMatrix.order_value,2)}</strong> to your postcode
           </span>
         );
         setDeliveryMessage(textMessage);
@@ -279,14 +272,35 @@ export default function CheckoutDisplay()
     setLocalStorage(`${BRAND_SIMPLE_GUID}cart`, cartData);
   }
 
-  const districtPostcode = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`))
+  // const districtPostcode = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`))
+  // const selectedPostcode = districtPostcode?.postcode
+
+  // const userLocation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
+  // const selectedLocation = userLocation?.display_id
+
+  const {refetch: deliveryRefetch} = useGetQueryForDeliveryFee('district-delivery-matrix-data',`/district-delivery-matrix/${selectedLocation}/${selectedPostcode}`,onDeliverySuccess, onDeliveryError)
+
   
-  const selectedPostcode = districtPostcode?.postcode
+  useEffect(() => {
+   
+    if(parseInt(cartData?.length) > parseInt(0))
+    {
+      const districtPostcode = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`))
+      setSelectedPostcode(districtPostcode?.postcode)
+      
+      const userLocation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
+      setSelectedLocation(userLocation?.display_id)
+    }
+    setItemIndividuallyUpdate(false)
+    // setLoader(false)
+  }, [cartData]);
 
-  const userLocation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
-  const selectedLocation = userLocation?.display_id
-
-  const {refetch: deliveryRefetch} = useGetQueryAutoUpdate('district-delivery-matrix-data',`/district-delivery-matrix/${selectedLocation}/${selectedPostcode}`,onDeliverySuccess, onDeliveryError, false)
+  useEffect(() => {
+    if(parseInt(selectedLocation.length) > parseInt(0) && parseInt(selectedPostcode.length) > parseInt(0))
+    {
+      deliveryRefetch()
+    }
+  },[selectedLocation, selectedPostcode]);
 
   function handlePromoCodeToggle() 
   {
@@ -332,6 +346,7 @@ export default function CheckoutDisplay()
 
     setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,filterItems)
     setCartData(filterItems);
+    deliveryRefetch()
   }
 
   // Handle Coupon Code functionality

@@ -1,6 +1,6 @@
-"use client";
+import dynamic from "next/dynamic";
 
-import DisplaySingleItem from "@/components/singleItem/DisplaySingleItem";
+const DisplaySingleItem = dynamic(() => import("@/components/singleitem/DisplaySingleItem"));
 
 function productEdit({ params }) 
 {

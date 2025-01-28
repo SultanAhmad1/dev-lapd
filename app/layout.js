@@ -7,7 +7,6 @@ import CustomLayout from "@/components/CustomLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createContext, useState } from "react";
-
 const inter = Inter({ subsets: ["latin"] });
 // export const metadata = {
 //   title: 'Create Next App',
@@ -20,6 +19,7 @@ export const ContextCheckApi = createContext()
 
 export default function RootLayout({ children }) 
 {
+
   const [metaDataToDisplay, setMetaDataToDisplay] = useState({
     title: "Your Brand Info",
     contentData: "Dev lapd food website",

@@ -6,7 +6,7 @@ import Item from "./children/Item";
 
 export default function OrderTab({order}) 
 {
-    const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
+    const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempCustomer`))
 
     let statusColor = "order-awaiting-status"
     let urlStart = 'track-order'

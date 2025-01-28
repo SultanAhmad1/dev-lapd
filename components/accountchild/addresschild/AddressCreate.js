@@ -2,10 +2,9 @@
 import AccountAvailableStore from "@/components/account/AccountAvailableStore";
 import { usePostAfterAuthenticateMutationHook, usePostMutationHook } from "@/components/reactquery/useQueryHook";
 import HomeContext from "@/contexts/HomeContext";
-import { BRAND_GUID, BRAND_SIMPLE_GUID, loginAxios, PARTNER_ID, USERIMAGE } from "@/global/Axios";
-import { find_matching_postcode, setLocalStorage } from "@/global/Store";
+import { BRAND_GUID, BRAND_SIMPLE_GUID, loginAxios, PARTNER_ID, USER_IMAGE } from "@/global/Axios";
+import { find_matching_postcode, setLocalStorage, setNextCookies } from "@/global/Store";
 import moment from "moment";
-import Image from "next/image";
 import React, { Fragment, useContext, useEffect, useState } from "react";
 
 export default function AddressCreate({handleCreateAddress}) 
@@ -17,11 +16,11 @@ export default function AddressCreate({handleCreateAddress})
         setSelectedFilter,
         setFilters,
         setNavigationCategories,
-        setnavMobileIndex,
+        setNavMobileIndex,
         setStoreToDayName,
         setStoreToDayOpeningTime,
         setStoreToDayClosingTime,
-        setIsmenuavailable,
+        setIsMenuAvailable,
         storeGUID,
         setStoreGUID,
         setStoreName,
@@ -102,7 +101,7 @@ export default function AddressCreate({handleCreateAddress})
           grabPostcodeOutWard = filterPostcode.substring(0, 2);
         }
   
-        const ukpostcodeData = {
+        const ukPostcodeData = {
           postcode: filterPostcode,
           brand_guid: BRAND_GUID,
           dayName: dayName,
@@ -110,7 +109,7 @@ export default function AddressCreate({handleCreateAddress})
           outwardString: grabPostcodeOutWard,
         };
         
-        ukPostcodeMutate(ukpostcodeData)
+        ukPostcodeMutate(ukPostcodeData)
     }
     
     const onWebsitePostcodeError = (error) => {
@@ -165,7 +164,7 @@ export default function AddressCreate({handleCreateAddress})
     const onSuccess = (data) => {
         const { customer } = data?.data?.data
         
-        setLocalStorage(`${BRAND_SIMPLE_GUID}tempcustomer`, customer)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}tempCustomer`, customer)
         /** Now set all the data to make localStorage. */
 
         const selectedStoreData = {
@@ -246,14 +245,15 @@ export default function AddressCreate({handleCreateAddress})
         if (getFilterDataFromObj === null) 
         {
             setLocalStorage(`${BRAND_SIMPLE_GUID}filter`, convertToJSobj.filters[0]);
+            setNextCookies(`${BRAND_SIMPLE_GUID}filter`, convertToJSobj.filters[0]);
         }
 
         setSelectedFilter(getFilterDataFromObj === null? convertToJSobj.filters[0] : getFilterDataFromObj);
         setFilters(convertToJSobj.filters);
         setNavigationCategories(convertToJSobj.categories);
-        setnavMobileIndex(convertToJSobj.categories[0].id);
+        setNavMobileIndex(convertToJSobj.categories[0].id);
 
-        const getDayInformation = convertToJSobj.menus[0].service_availability?.find((dayinformation) =>dayinformation.day_of_week === moment().format("dddd").toLowerCase());
+        const getDayInformation = convertToJSobj.menus[0].service_availability?.find((dayInformation) =>dayInformation.day_of_week === moment().format("dddd").toLowerCase());
         setStoreToDayName(moment().format("dddd"));
         setStoreToDayOpeningTime(getDayInformation.time_periods[0].start_time);
         setStoreToDayClosingTime(getDayInformation.time_periods[0].end_time);
@@ -300,7 +300,7 @@ export default function AddressCreate({handleCreateAddress})
     // code is working
 
     useEffect(() => {
-        const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempcustomer`))
+        const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempCustomer`))
         
         setAddressObj((prevData) => ({
             ...prevData,
@@ -399,7 +399,7 @@ export default function AddressCreate({handleCreateAddress})
                         <div className="modal-delivery-details-level-one-div-dialog">
                             <div className="deliver-to-body-content">
                             
-                                {/* <AccountAvailableStore availablestores={availableStore} isStoreReady={isStoreReady} setIsStoreReady={setIsStoreReady}/> */}
+                                {/* <AccountAvailableStore availableStores={availableStore} isStoreReady={isStoreReady} setIsStoreReady={setIsStoreReady}/> */}
 
                                 <Fragment>
                                     <>
