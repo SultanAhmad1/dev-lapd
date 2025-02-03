@@ -1,11 +1,21 @@
 "use client";
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect } from 'react'
 import HomeContext from '../contexts/HomeContext'
 
 function MobileTopBar() 
 {
     const {navigationCategories, websiteModificationData} = useContext(HomeContext)
     
+    const handleClickScroll = (index, e) => {
+        e.preventDefault()
+
+        const targetSection = document.getElementById(`section_${index}`);
+        window.scrollTo({
+            top: targetSection.offsetTop,
+            behavior: "smooth",
+        });
+    }
+
     useEffect(() => {
         const navbarCategories = document.getElementById("navbar-categories");
         const sections = document.querySelectorAll("section");
@@ -15,7 +25,7 @@ function MobileTopBar()
             const topBar = document.querySelector('.top-bar');
             
             // Check if the scroll is past 100px
-            if (document.body.scrollTop > 100 || document.documentElement.scrollTop > 100) {
+            if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
                 topBar.style.top = "0vh";
                 topBar.style.zIndex = "999";
                 topBar.style.position = "fixed";
@@ -37,16 +47,36 @@ function MobileTopBar()
                 });
     
                 // Add 'active' class to the navbar category related to the current section
+               
                 if (currentSection) {
+                    
+                    // const activeLi = document.querySelector(`.navbar li[data-target="${currentSection}"]`);
+                    // if (activeLi) {
+                        // activeLi.classList.add("active");
+                        // activeLi.style.background = websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor;
+                        // activeLi.style.color = websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor;
+    
+                        // // Scroll the active category into view (left-align)
+                        // // activeLi.scrollIntoView({ behavior: "smooth", inline: "start" });
+                        // activeLi.scrollTo({ behavior: "smooth", inline: "start" });
+                    // }
+
+                    const navbar = document.querySelector(".navbar"); // Get the scrollable container
                     const activeLi = document.querySelector(`.navbar li[data-target="${currentSection}"]`);
-                    if (activeLi) {
+
+                    if (activeLi && navbar) {
                         activeLi.classList.add("active");
                         activeLi.style.background = websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor;
                         activeLi.style.color = websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor;
-    
-                        // Scroll the active category into view (left-align)
-                        activeLi.scrollIntoView({ behavior: "smooth", inline: "start" });
+
+                        // Scroll the navbar container instead of the individual item
+                        navbar.scrollTo({
+                            left: activeLi.offsetLeft - navbar.offsetWidth / 3 + activeLi.offsetWidth / 3,
+                            // left: activeLi.offsetLeft,
+                            behavior: "smooth"
+                        });
                     }
+
                 }
     
             } else {
@@ -73,42 +103,11 @@ function MobileTopBar()
         });
     
         // Navbar category click event to scroll to the corresponding section
-        document.querySelectorAll(".navbar li").forEach((li) => {
-            li.addEventListener("click", (e) => {
-                const targetSection = document.getElementById(e.target.getAttribute("data-target"));
-                window.scrollTo({
-                    top: targetSection.offsetTop,
-                    behavior: "smooth",
-                });
-            });
-        });
+      
     });
     
     return (
-        // <div className="top-bar-div-level-one">
-        //     <div className="akaptopbar-div">
-        //         <div className="b0albctopbar-div">
-        //             <div className="alaqbbbcnocqavlcakawtopbar-div"   >
-
-        //                 {
-        //                     navigationCategories?.map((category, index) => 
-        //                     {
-        //                         return(
-        //                             parseInt(category?.items?.length) > parseInt(0) &&
-        //                             <button style={{transition: "transform 0.3s ease",transform: `translate3d(${scrollDirection === 'Down' ? `-${scrollPosition}px` : `${scrollPosition}px`}, 0px, 0px)`}}  key={index} className={`bycsc0ctnmalc8bcc6nptopbar-div ${navMobileIndex === index ? "np" : ""}`} onClick={() => handleCategoryClick(index)}>
-        //                                 <div className="bycsd3d4topbar-div" style={{color: (websiteModificationData?.websiteModificationLive !== null && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor !== null) && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor}}>
-        //                                     {category.title}
-        //                                 </div>
-        //                             </button>
-        //                         )
-        //                     })
-        //                 }
-
-        //             </div>
-        //         </div>
-        //     </div>
-        // </div>
-            // {/* <ul id="navbar-categories" style={{background: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}}> */}
+       
         <div className='top-bar navbar-div' style={{background: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}}>
             <ul className="navbar" id="navbar-categories" style={{background: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}}>
                 {
@@ -116,19 +115,25 @@ function MobileTopBar()
                         
                         return(
                             parseInt(category?.items?.length) > parseInt(0) &&
-                            // <li key={index} data-target={`section_${index}`} className={index === 0 ? "active" : ""} >{category?.title}</li>
 
                             <li 
-                                key={index} 
-                                data-target={`section_${index}`} 
-                                className={index === 0 ? "active" : ""}
-                                style={{
-                                    background: index === 0 ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
-                                    color: index === 0 ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
-                                    // border: index !== 0 && `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
-                                }}      
-                            
-                            >{category?.title}</li>
+                                    key={index} 
+                                    data-target={`section_${index}`} 
+                                    className={index === 0 ? "active" : ""}
+                                    style={{
+                                        background: index === 0 ? 
+                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor 
+                                        : 
+                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                                        color: index === 0 ? 
+                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor 
+                                        : 
+                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                                    }} 
+                                    onClick={(e) => handleClickScroll(index, e)}    
+                                >
+                                {category?.title}
+                            </li>
                         )
                     })
                 }

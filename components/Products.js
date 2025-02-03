@@ -288,7 +288,14 @@ export default function Products() {
                   return (
                     category?.items?.length > 0 && 
                     <li key={category.id}  className={`item-lists`}>
-                      <section id={`section_${index}`} className="item-title">
+                      <section 
+                          id={`section_${index}`} 
+                          className="item-title"
+                          style={{
+                            width: "100vw",
+                            overflowX: "auto"
+                          }}
+                        >
                         <h3 className="item-title-h3" style={{'--category-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.categoryFontColor,}}>
                           {category.title}
                         </h3>
