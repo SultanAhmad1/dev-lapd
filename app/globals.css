@@ -1912,6 +1912,8 @@ ul {
   max-width: 83vw;
   margin: 0 auto;
   overflow-x: scroll;
+  -webkit-overflow-scrolling: touch;
+  scroll-behavior: smooth;
 }
 
 .navbar li {
@@ -10332,26 +10334,6 @@ ul.track-steps {
     display: unset;
   }
 
-  .top-bar-div-level-one {
-    z-index: 1;
-  }
-
-  .akaptopbar-div {
-    height: 0;
-    position: relative;
-  }
-
-  .b0albctopbar-div {
-    -webkit-box-align: center;
-    align-items: center;
-    background-color: #ffffff;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-  }
-
   .nlalh2bcbdnmnntopbar-div {
     border-bottom: 5px solid rgb(226, 226, 226);
     height: 52px;
@@ -10367,56 +10349,12 @@ ul.track-steps {
     display: -webkit-flex;
     display: flex;
   }
-
-  .alaqbbbcnocqavlcakawtopbar-div {
-    box-shadow: rgb(226, 226, 226) 0px -5px 0px inset;
-    overflow-x: scroll;
-    z-index: 1;
-    -webkit-box-align: center;
-    align-items: center;
-    flex: 1;
-    -webkit-overflow-scrolling: touch;
-    overflow-y: hidden;
-    -webkit-box-orient: horizontal;
-    -webkit-box-direction: normal;
-    flex-direction: row;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    position: relative;
-  }
-
   .np {
     border-bottom: 5px solid rgb(0, 0, 0);
   }
 
   .nn {
     border-bottom: 5px solid rgb(255, 255, 255);
-  }
-
-  .bycsc0ctnmalc8bcc6nptopbar-div {
-    height: 12vh;
-    line-height: 20px;
-    font-size: 14px;
-    padding: 0px 16px;
-    white-space: nowrap;
-    font-weight: normal;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    -webkit-box-align: center;
-    align-items: center;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    color: rgb(0, 0, 0);
-  }
-
-  .bycsc0ctnmalc8bcc6nptopbar-div:active {
-    border-bottom: #000000;
   }
 
   .bycsd3d4topbar-div {
