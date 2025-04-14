@@ -42,14 +42,17 @@ export default function RootLayout({ children })
           iconImage={metaDataToDisplay?.iconImage}
           singleItemsDetails={metaDataToDisplay?.singleItemsDetails}
         />
+
         <body className="body-tag">
           <div>
             <QueryClientProvider client={queryClient}>
               <CustomLayout {...{children}}/>
-              <ReactQueryDevtools />
+              <ReactQueryDevtools position="top-right"/>
             </QueryClientProvider>
           </div>
+
         </body>
+        
       </html>
     </ContextCheckApi.Provider>
   );

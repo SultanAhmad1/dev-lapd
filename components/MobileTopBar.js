@@ -22,13 +22,16 @@ function MobileTopBar()
     
         window.addEventListener("scroll", () => {
             let currentSection = "";
-            const topBar = document.querySelector('.top-bar');
+            let topBar = document.querySelector('.top-bar');
             
             // Check if the scroll is past 100px
             if (document.body.scrollTop > 20 || document.documentElement.scrollTop > 20) {
-                topBar.style.top = "0vh";
-                topBar.style.zIndex = "999";
-                topBar.style.position = "fixed";
+                if(topBar !== null)
+                {
+                    topBar.style.top = "0vh";
+                    topBar.style.zIndex = "999";
+                    topBar.style.position = "fixed";
+                }
                 
                 // Detect the section currently in the viewport
                 sections.forEach((section) => {
@@ -96,9 +99,12 @@ function MobileTopBar()
                 }
     
                 // Reset top bar styles
-                topBar.style.top = "";
-                topBar.style.zIndex = "";
-                topBar.style.position = "";
+                if(topBar !== null)
+                {
+                    topBar.style.top = "unset";
+                    topBar.style.zIndex = "0";
+                    topBar.style.position = "unset";
+                }
             }
         });
     
@@ -108,8 +114,15 @@ function MobileTopBar()
     
     return (
        
-        <div className='top-bar navbar-div' style={{background: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}}>
-            <ul className="navbar" id="navbar-categories" style={{background: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}}>
+        <div 
+            className='top-bar navbar-div' 
+            style={{background: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || "#444"}}
+        >
+            <ul 
+                className="navbar" 
+                id="navbar-categories" 
+                style={{background: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || "#444"}}
+            >
                 {
                     navigationCategories?.map((category, index) => {
                         

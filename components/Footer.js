@@ -4,6 +4,7 @@ import HomeContext from "../contexts/HomeContext";
 import moment from "moment";
 import { brandLogoPath, IMAGE_URL_Without_Storage } from "../global/Axios";
 import Image from "next/image";
+import Link from "next/link";
 
 function Footer() {
   const { websiteModificationData, brandLogo } = useContext(HomeContext);
@@ -104,7 +105,7 @@ function Footer() {
           <div className="copy-right-hr"></div>
           <div className="copy-rigth">
             <div className="copy-right-nested-div" style={{'--copy-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
-              @ All Rights Reserved. {websiteModificationData?.brand?.name} {moment().format("YYYY")}. Powered by ClearTwo
+              @ All Rights Reserved. {websiteModificationData?.brand?.name} {moment().format("YYYY")}. Powered by&nbsp;<Link href="https://cleartwo.co.uk/" target="_blank">Cleartwo</Link>
             </div>
           </div>
         </div>

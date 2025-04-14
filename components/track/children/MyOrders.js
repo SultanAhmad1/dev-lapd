@@ -5,6 +5,18 @@ import Modifiers from "./Modifiers";
 
 export default function MyOrders({orderLine}) 
 {
+    const hasNotExtras = {
+        ...orderLine,
+        order_line_modifier_group_products: orderLine?.order_line_modifier_group_products?.filter((isExtras) => parseInt(isExtras?.modifier_group?.is_extras) === parseInt(0))
+    };
+    const hasExtras = {
+        ...orderLine,
+        order_line_modifier_group_products: orderLine?.order_line_modifier_group_products?.filter((isExtras) => parseInt(isExtras?.modifier_group?.is_extras) === parseInt(1))
+    };
+   
+    console.log("has Extras:", orderLine);
+    
+    
     return(
         <div className="es-et-checkout">
             <div className="al-d5-eg-bh-dd-et-eu-d1-checkout-edit-item d1">
@@ -16,14 +28,26 @@ export default function MyOrders({orderLine})
                     <ul className="excheckout">
                         
                         {
-                            orderLine?.order_line_modifier_group_products?.map((modifier, index) =>
+                            hasNotExtras?.order_line_modifier_group_products?.map((modifier, index) =>
                             {
                                 return(
-                                    (modifier?.default_option !== 1) &&
+                                    (parseInt(modifier?.default_option) === parseInt(0)) &&
                                     <Modifiers key={`${index}.${modifier?.id}`} {...{modifier}} />
                                 )
                             })
                         }
+
+                         
+                        {
+                            hasExtras?.order_line_modifier_group_products?.map((modifier, index) =>
+                            {
+                                return(
+                                    (parseInt(modifier?.default_option) === parseInt(0)) &&
+                                    <Modifiers key={`${index}.${modifier?.id}`} {...{modifier}} />
+                                )
+                            })
+                        }
+
                     </ul>
                 </div>
                 <div className="f1-al-am-checkout-item-qty">

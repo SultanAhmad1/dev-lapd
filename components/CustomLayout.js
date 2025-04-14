@@ -5,16 +5,19 @@ import { useGetQueryAutoUpdate } from "./reactquery/useQueryHook";
 import HomeContext from "@/contexts/HomeContext";
 import AtLoadModalShow from "./modals/AtLoadModalShow";
 import Cart from "./Cart";
-import DeliveryModal from "./modals/DeliveryModal";
 import Loader from "./modals/Loader";
-import { BRAND_GUID, BRAND_SIMPLE_GUID, PARTNER_ID } from "@/global/Axios";
+import { BRAND_GUID, BRAND_SIMPLE_GUID, DEFAULT_LOCATION, PARTNER_ID } from "@/global/Axios";
 import moment from "moment";
 import { setLocalStorage } from "@/global/Store";
 import CustomerPersonal from "./CustomerPersonal";
 import MenuNotAvailableModal from "./modals/MenuNotAvailableModal";
+import PlaceOrderModal from "./modals/PlaceOrderModal";
+import { useSearchParams } from "next/navigation";
 
 export default function CustomLayout({ children }) 
 {
+  
+  
   const [loader, setLoader] = useState(true);
 
   const [isLocationBrandOnline, setIsLocationBrandOnline] = useState(null);
@@ -28,7 +31,8 @@ export default function CustomLayout({ children })
   const [headerCartBtnDisplay, setHeaderCartBtnDisplay] = useState(true);
   
   // FilterLocationTime Component States
-  const [storeGUID, setStoreGUID] = useState(0);
+  // const [storeGUID, setStoreGUID] = useState(DEFAULT_LOCATION);
+  const [storeGUID, setStoreGUID] = useState(DEFAULT_LOCATION);
   const [storeName, setStoreName] = useState("");
   const [storeToDayName, setStoreToDayName] = useState("");
   const [storeToDayOpeningTime, setStoreToDayOpeningTime] = useState("");
@@ -60,7 +64,9 @@ export default function CustomLayout({ children })
 
   const [isTimeToClosed, setIsTimeToClosed] = useState(false);
   const [atFirstLoad, setAtFirstLoad] = useState(false);
+  const [displayFilterModal, setDisplayFilterModal] = useState(false);
   const [comingSoon, setComingSoon] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("Coming Soon");
   
 
   const [isDeliveryBtnClicked, setIsDeliveryBtnClicked] = useState(false);
@@ -93,7 +99,23 @@ export default function CustomLayout({ children })
     isCustomerCanvasOpen: false,
     isCustomerVerified: false,
     isOTPModalShow: false,
+    isPlaceOrderButtonClicked: false,
+    isChangePostcodeButtonClicked: false,
   });
+  
+  // useEffect(() => {
+  //   if(locationDetails !== null && parseInt(locationDetails?.length) > parseInt(0))
+  //   {
+  //     console.log("use effect:", locationDetails);
+      
+  //     setStoreGUID(locationDetails)
+  //     setAtFirstLoad(false)
+  //   }
+  //   else
+  //   {
+  //     setStoreGUID(DEFAULT_LOCATION)
+  //   }
+  // }, [locationDetails]);
   
   const handleBoolean = useCallback((newValue, fieldName) => {
     setBooleanObj((prevData) => ({...prevData, [fieldName]: newValue}))
@@ -110,8 +132,8 @@ export default function CustomLayout({ children })
     const url = new URL(window.location.href);
     var pathnameArray = url.pathname.split("/").filter(segment => segment);
 
-    const dayNumber = moment().day();
-
+    const dayNumber = moment().isoWeekday();
+    
     // Get the current day name
     const dayName = moment().format("dddd");
 
@@ -119,7 +141,13 @@ export default function CustomLayout({ children })
     setDayNumber(dayNumber);
 
     const afterReloadingGetCouponCode = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}applied_coupon`));
-    setCouponDiscountApplied(afterReloadingGetCouponCode !== null ? afterReloadingGetCouponCode : []);
+    
+    const updatedCoupons = [
+      ...couponDiscountApplied,
+      ...(afterReloadingGetCouponCode ? [afterReloadingGetCouponCode] : [])
+    ];
+
+    setCouponDiscountApplied(updatedCoupons);
 
     const getSelectStore = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`);
 
@@ -133,7 +161,14 @@ export default function CustomLayout({ children })
       } 
       else 
       {
-        setAtFirstLoad(true);
+        // if(locationDetails !== null && parseInt(locationDetails?.length) > parseInt(0))
+        // {
+        //   setAtFirstLoad(false);
+        // }
+        // else
+        // {
+          setAtFirstLoad(true)
+        // }
         setHeaderCartBtnDisplay(true);
         setHeaderPostcodeBtnDisplay(true);
       }
@@ -168,10 +203,15 @@ export default function CustomLayout({ children })
       const cartDataFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}cart`));
 
       setCartData(cartDataFromLocalStorage === null ? [] : cartDataFromLocalStorage);
-      menuRefetch()
+      // if(parseInt(storeGUID.length) > parseInt(0))
+      // {
+        menuRefetch()
+      // }
       colorRefetch()
     }
   }, []);
+  
+  // console.log("store guid here:", storeGUID);
   
   useEffect(() => {
     if(parseInt(cartData?.length) > parseInt(0))
@@ -185,7 +225,10 @@ export default function CustomLayout({ children })
     setLoader(false)
     const { menu } = data?.data
 
+    // console.log("success:", menu);
+    
     const convertToJSobj = menu?.menu_json_log;
+
 
     const dayNumber = moment().day();
     const dateTime = moment().format("HH:mm");
@@ -221,19 +264,26 @@ export default function CustomLayout({ children })
     }
 
     setSelectedFilter(getFilterDataFromObj === null ? convertToJSobj?.filters?.[0] : getFilterDataFromObj);
-    setFilters(convertToJSobj?.filters);
+    // setFilters(convertToJSobj?.filters);
+
     setNavigationCategories(convertToJSobj?.categories);
     setNavMobileIndex(0);
 
-    const getdayInformation = convertToJSobj.menus?.[0].service_availability?.find((dayInformation) => dayInformation.day_of_week === moment().format("dddd").toLowerCase());
+    const menuToParse = JSON.parse(convertToJSobj.menus)
+
+    const getdayInformation = menuToParse?.[0].service_availability?.find((dayInformation) => dayInformation.day_of_week === moment().format("dddd").toLowerCase());
     setStoreToDayName(moment().format("dddd"));
+    
     setStoreToDayOpeningTime(getdayInformation?.time_periods?.[0].start_time);
     setStoreToDayClosingTime(getdayInformation?.time_periods?.[0].end_time);
   }
 
   const onMenuError = (error) => {
-    console.error("Error fetching data:", error);
+    // console.log("Menu error:", error);
+    
     setIsMenuAvailable(false);
+    setComingSoon(true)
+    setErrorMessage("There is no menu publish for that store yet.")
     setLoader(false)
   }
 
@@ -300,6 +350,7 @@ export default function CustomLayout({ children })
 
   // Context Data
   const contextData = {
+    isChangePostcodeButtonClicked: booleanObj?.isChangePostcodeButtonClicked,
     Menu,
     loader,
     filters,
@@ -346,6 +397,7 @@ export default function CustomLayout({ children })
     comingSoon,
 
     setComingSoon,
+    setErrorMessage,
     handleBoolean,
     setIsLocationBrandOnline,
     setMenu,
@@ -375,6 +427,7 @@ export default function CustomLayout({ children })
     setPostCodeForOrderAmount,
 
     setAtFirstLoad,
+    setDisplayFilterModal,
     setIsReviewPage,
     setIsGoBtnClicked,
     setNavMobileIndex,
@@ -401,16 +454,18 @@ export default function CustomLayout({ children })
       
       {booleanObj?.isCustomerCanvasOpen && <CustomerPersonal />}
 
-      {comingSoon && <MenuNotAvailableModal />}
+      {comingSoon && <MenuNotAvailableModal {...{errorMessage}}/>}
 
       {atFirstLoad && <AtLoadModalShow />}
+      {/* {displayFilterModal && <FilterModal />} */}
+
       {isCartBtnClicked && <Cart />}
+      {booleanObj.isPlaceOrderButtonClicked && <PlaceOrderModal />}
       {/* {isDeliveryBtnClicked && <DeliveryModal />} */}
       {/* {isTimeToClosed && <StoreClosedModal />} */}
 
       {/* <OtpVerifyModal /> */}
-      {
-        loaderState && <Loader loader={loaderState}/>}
+      {loaderState && <Loader loader={loaderState}/>}
     </HomeContext.Provider>
          
   );

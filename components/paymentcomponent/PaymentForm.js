@@ -166,9 +166,12 @@ const PaymentForm = ({orderId}) =>
       } 
 
       const response = await axiosPrivate.post(`/send-sms-and-email`, data)
+
+      console.log("payment form: 1");
+      
       setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
       setLocalStorage(`${BRAND_SIMPLE_GUID}order_amount_number`,null)
-      setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`,[])
+      // setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`,[])
       setLocalStorage(`${BRAND_SIMPLE_GUID}customer_information`,null)
       setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,null)
       setCartData([])
@@ -182,11 +185,12 @@ const PaymentForm = ({orderId}) =>
     } 
     catch (error) 
     {
+      console.log("payment form: 2");
       window.alert(error?.response?.data?.error)
       setLoader(false)
       setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
       setLocalStorage(`${BRAND_SIMPLE_GUID}order_amount_number`,null)
-      setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`,[])
+      // setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`,[])
       setLocalStorage(`${BRAND_SIMPLE_GUID}customer_information`,null)
       setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,null)
       setCartData([])

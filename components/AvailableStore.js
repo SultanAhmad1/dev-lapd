@@ -1,18 +1,30 @@
 "use client";
 import HomeContext from "@/contexts/HomeContext";
-import { axiosPrivate, BRAND_GUID, BRAND_SIMPLE_GUID, PARTNER_ID } from "@/global/Axios";
-import { setLocalStorage } from "@/global/Store";
+import { axiosPrivate, BLACK_COLOR, BRAND_GUID, BRAND_SIMPLE_GUID, DELIVERY_ID, LIGHT_BLACK_COLOR, PARTNER_ID, WHITE_COLOR } from "@/global/Axios";
+import { find_matching_postcode, setLocalStorage } from "@/global/Store";
 import React, { Fragment, useContext, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import moment from "moment";
+import FilterLocationTime from "./FilterLocationTime";
+import FilterLocationTimeEdit from "./FilterLocationTimeEdit";
 
-export default function AvailableStore({availableStores}) 
+export default function AvailableStore({availableStores, setAvailableStores,validPostcode}) 
 {
+
+  const searchParams = useSearchParams()
+  
+  const locationFiltered = searchParams.get('location')
+  
+  const locationDetails = locationFiltered ? locationFiltered.replace(/^"+|"+$/g, '') : '';
+
+  // console.log("location details:", locationDetails);
+
   const {
     setDayOpeningClosingTime,
     setIsTimeToClosed,
     setMenu,
     setSelectedFilter,
+    filters,
     setFilters,
     setNavigationCategories,
     setNavMobileIndex,
@@ -35,6 +47,9 @@ export default function AvailableStore({availableStores})
     setStreet1,
     setStreet2,
     setComingSoon,
+    setErrorMessage,
+    setDisplayFilterModal,
+    websiteModificationData,
   } = useContext(HomeContext);
 
   const route = useRouter();
@@ -52,6 +67,7 @@ export default function AvailableStore({availableStores})
       /**
        * Day
        * Current Time
+       * here make sure to update the delivery postcodes.
        */
       const dayNumber = moment().day();
       const dateTime = moment().format("HH:mm");
@@ -59,7 +75,7 @@ export default function AvailableStore({availableStores})
       
       const convertToJSobj = response.data?.data?.menu.menu_json_log;
       
-      if(convertToJSobj === null || convertToJSobj === undefined)
+      if(response?.data?.data?.menu === null || response?.data?.data?.menu === undefined)
       {
         setMenu([])
         setComingSoon(true)
@@ -91,11 +107,13 @@ export default function AvailableStore({availableStores})
         setLocalStorage(`${BRAND_SIMPLE_GUID}filter`, convertToJSobj.filters[0]);
       }
       setSelectedFilter(getFilterDataFromObj === null? convertToJSobj.filters[0] : getFilterDataFromObj);
-      setFilters(convertToJSobj.filters);
+      // setFilters(convertToJSobj.filters);
       setNavigationCategories(convertToJSobj.categories);
       setNavMobileIndex(convertToJSobj.categories[0].id);
 
-      const getdayInformation = convertToJSobj.menus[0].service_availability?.find((dayInformation) =>dayInformation.day_of_week === moment().format("dddd").toLowerCase());
+      const convertToJSObject = JSON.parse(convertToJSobj.menus)
+      const getdayInformation = convertToJSObject[0].service_availability?.find((dayInformation) =>dayInformation.day_of_week === moment().format("dddd").toLowerCase());
+      
       setStoreToDayName(moment().format("dddd"));
       setStoreToDayOpeningTime(getdayInformation.time_periods[0].start_time);
       setStoreToDayClosingTime(getdayInformation.time_periods[0].end_time);
@@ -111,7 +129,10 @@ export default function AvailableStore({availableStores})
   function handleLocationSelect(storeGUID, storeName, storeTelephone) 
   {
     setStoreName(storeName);
+    
     setAtFirstLoad(false);
+    setDisplayFilterModal(true)
+
     setStoreGUID(storeGUID);
     if (parseInt(availableStores.length) > parseInt(0)) {
       for (const store of availableStores) {
@@ -132,76 +153,215 @@ export default function AvailableStore({availableStores})
     route.push("/");
   }
 
-  useEffect(() => {
-    setTimeout(() => {
-      if (parseInt(availableStores.length) === parseInt(1)) {
-        handleLocationSelect(
-          availableStores[0]?.location_guid,
-          availableStores[0]?.location_name,
-          availableStores[0]?.telephone
-        );
-      }
-    }, 2000);
-  }, [availableStores]);
+  // useEffect(() => {
+  //   setTimeout(() => {
+  //     if (parseInt(availableStores.length) === parseInt(1)) {
+  //       handleLocationSelect(
+  //         availableStores[0]?.location_guid,
+  //         availableStores[0]?.location_name,
+  //         availableStores[0]?.telephone
+  //       );
+  //     }
+  //   }, 2000);
+  // }, [availableStores]);
   // code is working
   
-  return(
-    <Fragment>
-      <>
-        <h2 className="available-store-h2"> Available Stores </h2>
-        <div className="deliver-to-body-content-nested-div-level-one">
-            <label
-            id="location-typeahead-location-manager-label"
-            htmlFor="location-typeahead-location-manager-input"
-            className="deliver-to-body-content-nested-div-level-one-label"
-            >
-            When autocomplete results are available, use up and down
-            arrows to review and enter to select. Touch device users,
-            explore by touch or with swipe gestures.
-            </label>
+   const handleOrderType = (storeId, id) => 
+  {
+    
+    // if(parseInt(findAvailableStores?.orderType?.length) === parseInt(0))
+    // {
+    //     return
+    // }
 
-            {availableStores?.map((stores, index) => {
+    // first check available store delivery matrix matched.
+
+    const findStore = availableStores?.find((store) => store?.location_guid === storeId)
+
+    //  at first customer selected the delivery 
+
+    
+    if(findStore && findStore?.orderType?.length > 0)
+    {
+      const findDelivery = findStore?.orderType?.find((order) => order?.id === DELIVERY_ID)
+
+      if(findDelivery)
+      {
+        // now check the matrix
+        const matrixFind = findStore?.deliveryMatrixes?.delivery_matrix_rows?.find((matchPostcode) => matchPostcode?.postcode.toUpperCase().startsWith(validPostcode.toUpperCase()) || matchPostcode?.postcode?.toUpperCase().startsWith("STANDARD"))
+        if(! matrixFind)
+        {
+          setComingSoon(true)
+          setErrorMessage("We are currently unable to accept orders for delivery to your postcode from this store. Apologies for this. ")
+          return
+        }
+        
+      }
+    }
+    else
+    {
+      // return error message
+      setComingSoon(true)
+      setErrorMessage("There must be at least one order type available.")
+      return
+    }
+
+    const updateAvailableStores = availableStores?.map((stores) => {
+      if(stores?.location_guid === storeId)
+      {
+          return {
+              ...stores,
+              orderType: stores?.orderType?.map((order) => {
+                  if(order?.id === id)
+                  {
+                      return {
+                          ...order,
+                          isClicked: true
+                      }
+                  }
+
+                  return {
+                      ...order,
+                      isClicked: false
+                  }
+              })
+          }
+      }
+      return stores
+    })
+
+    setAvailableStores(updateAvailableStores)
+    
+    const findAvailableStores = updateAvailableStores?.find((checkStores) => checkStores?.location_guid === storeId)
+    setLocalStorage(`${BRAND_SIMPLE_GUID}filtersList`, findAvailableStores?.orderType);
+
+    const getSelectedFilter = findAvailableStores?.orderType?.find((findActiveType) => findActiveType?.isClicked)
+    
+    setSelectedFilter(getSelectedFilter)
+    setLocalStorage(`${BRAND_SIMPLE_GUID}filter`,getSelectedFilter)
+
+    setFilters(findAvailableStores?.orderType)
+    const updateFilter = filters?.find((findFilter) => findFilter?.id === id && findFilter?.status)
+    if(updateFilter)
+    {
+        setSelectedFilter(updateFilter)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}filter`,updateFilter)
+        setNextCookies(`${BRAND_SIMPLE_GUID}filter`,updateFilter)
+        document.cookie = `${BRAND_SIMPLE_GUID}filter=${updateFilter}`
+
+        if(isDisplayFromModal)
+        {
+            setTimeout(() => {
+                setDisplayFilterModal(false)
+            }, 3000);
+        }
+    }
+
+    const findDeliveryMatrix = availableStores?.find((stores) => stores?.location_guid === storeId)
+
+    console.log("valid postcode :", validPostcode);
+    
+    find_matching_postcode(findDeliveryMatrix?.deliveryMatrixes?.delivery_matrix_rows, validPostcode, setDeliveryMatrix);
+
+    handleLocationSelect(findAvailableStores?.location_guid, findAvailableStores?.location_name, findAvailableStores?.telephone)
+  }
+
+  useEffect(() => {
+    if(parseInt(locationDetails?.length) > parseInt(0))
+    {
+      handleOrderType(availableStores?.[0]?.location_guid, "9BDF79F9-BD1E-4C77-A9E1-238DB7A59DC5")
+    }
+  }, [locationDetails]);
+  
+
+  console.log("available store:", availableStores);
+  
+  return(
+    <>
+      <h2 className="available-store-h2"> Available Stores </h2>
+
+      <div className="deliver-to-body-content-nested-div-level-one" style={{
+          overflowY: "scroll",
+          height: '60vh'
+        }}
+      >
+
+        <label
+          id="location-typeahead-location-manager-label"
+          htmlFor="location-typeahead-location-manager-input"
+          className="deliver-to-body-content-nested-div-level-one-label"
+        >
+          When autocomplete results are available, use up and down
+          arrows to review and enter to select. Touch device users,
+          explore by touch or with swipe gestures.
+        </label>
+
+        {
+          availableStores?.map((stores, index) => {
             return (
-                <div className="available-stores-show" style={{ cursor: "pointer" }} key={index} onClick={() => handleLocationSelect(stores.location_guid,stores.location_name,stores.telephone)}>
-                <div className="deliver-to-body-content-nested-div-level-one-nested-svg-div-one">
-                    <div className="deliver-to-body-content-nested-div-level-one-nested-svg-div-two">
-                    <svg
-                        xmlns="http://www.w3.org/2000/svg"
-                        viewBox="0 0 64 64"
-                    >
-                        <g data-name="Building Store">
-                        <path
-                            d="M42 2a1 1 0 0 0-1-1H23a1 1 0 0 0-1 1v15h20zM30 15a1 1 0 1 1 1-1 1.003 1.003 0 0 1-1 1zm4 0a1 1 0 1 1 1-1 1.003 1.003 0 0 1-1 1zm3.93-8.63-2 5A1 1 0 0 1 35 12h-6a1.002 1.002 0 0 1-.99-.86l-.71-4.98v-.03L27.13 5H26a1 1 0 0 1 0-2h2a.993.993 0 0 1 .99.86L29.16 5H37a.999.999 0 0 1 .83.44 1.02 1.02 0 0 1 .1.93z"
-                            style={{ fill: "#232328" }}
-                        />
-                        <path
-                            style={{ fill: "#232328" }}
-                            d="M29.87 10h4.45l1.2-3h-6.08l.43 3z"
-                        />
-                        <path
-                            d="M53 10c0-1.55-.45-2-1-2h-8v10a1.003 1.003 0 0 1-1 1H21a1.003 1.003 0 0 1-1-1V8h-8a1.003 1.003 0 0 0-1 1v14h42zM12 35a3.999 3.999 0 0 0 4-4 1 1 0 0 1 2 0 4 4 0 0 0 8 0 1 1 0 0 1 2 0 4 4 0 0 0 8 0 1 1 0 0 1 2 0 4 4 0 0 0 8 0 1 1 0 0 1 2 0 4.002 4.002 0 0 0 8 .19L53.34 25H10.66L8 31.19A4.016 4.016 0 0 0 12 35zM44 44h3v2h-3zM39 48h3v2h-3zM39 44h3v2h-3zM44 48h3v2h-3z"
-                            style={{ fill: "#232328" }}
-                        />
-                        <path
-                            d="M55 61h-2V36.91a5.47 5.47 0 0 1-1 .09 6.01 6.01 0 0 1-5-2.69 5.992 5.992 0 0 1-10 0 5.992 5.992 0 0 1-10 0 5.992 5.992 0 0 1-10 0A6.01 6.01 0 0 1 12 37a5.47 5.47 0 0 1-1-.09V61H9a1 1 0 0 0 0 2h46a1 1 0 0 0 0-2zM37 43a1.003 1.003 0 0 1 1-1h10a1.003 1.003 0 0 1 1 1v8a1.003 1.003 0 0 1-1 1H38a1.003 1.003 0 0 1-1-1zm-6 18V44h-5v17h-2V44h-5v17h-2V43a1.003 1.003 0 0 1 1-1h14a1.003 1.003 0 0 1 1 1v18z"
-                            style={{ fill: "#232328" }}
-                        />
-                        </g>
-                    </svg>
-                    </div>
-                </div>
+              <div className="available-stores-show" style={{ cursor: "pointer" }} key={index} onClick={() => handleLocationSelect(stores.location_guid,stores.location_name,stores.telephone)}>
 
                 <div className="spacer _16"></div>
 
                 <div className="available-stores">
-                    {stores?.location_name}
+                  <div style={{display:"flex", justifyContent:"space-between", color: "blue"}}>
+                    <h6>
+                      {stores?.location_name}
+                      &nbsp;({stores?.postcode})
+                    </h6>
+                  </div>
+
+                  <p style={{ wordBreak: "break-word", overflowWrap: "break-word",}}>
+                    {stores?.address} ({Math.round(parseInt(stores?.ConvertDataPostFound?.[0]))} miles)
+                  </p>
+
+                      
+                  <p style={{float: "right", marginTop: "10px", marginBottom: "10px"}}>
+                    {stores?.storeTiming?.[0].day_name.slice(0, 3)} {moment(stores?.storeTiming?.[0]?.start_time, "HH:mm A").format("HH:mm A")} - {moment(stores?.storeTiming?.[0]?.end_time,"HH:mm A").format("HH:mm A")}
+                  </p>
+                    
+                  {/* order Type buttons */}
+                  <div style={{ display: "flex", justifyContent: "space-between", width: "100%", gap: "10px" }}>
+                    {
+                      stores?.orderType?.map((order, index) => (
+                        <button 
+                          key={index} 
+                          type="button" 
+                          style={{
+                            background: order?.isClicked 
+                              ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || WHITE_COLOR
+                              : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || LIGHT_BLACK_COLOR,
+                            
+                            color: order?.isClicked 
+                              ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor || BLACK_COLOR
+                              : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR,
+
+                            border: order?.isClicked 
+                              ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || LIGHT_BLACK_COLOR}` 
+                              : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || LIGHT_BLACK_COLOR}`,
+
+                            padding: "5px",
+                            flexGrow: 1, // Makes buttons equal width
+                            marginTop: "3px",
+                            marginBottom: "3px"
+                          }}
+                          onClick={() => handleOrderType(stores?.location_guid, order?.id)}
+                        >
+                          {order?.name}
+                        </button>
+                      ))
+                    }
+                  </div>
+
                 </div>
+
                 <div className="spacer _8"></div>
-                </div>
+                
+              </div>
             );
-            })}
-        </div>
-      </>
-    </Fragment>
+          })
+        }
+      </div>
+    </>
   )
 }

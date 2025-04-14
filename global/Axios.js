@@ -9,12 +9,19 @@ export const BRAND_GUID = process.env.NEXT_PUBLIC_STORE_PUBLIC_KEYS;
 
 export const BRAND_SIMPLE_GUID = BRAND_GUID.replace(/-/g, "");
 export const STRIPE_PK_KEY=process.env.NEXT_PUBLIC_STRIPE_KEYS
+export const DEFAULT_LOCATION = process.env.NEXT_PUBLIC_DEFAULT_LOCATION
 
 export const PARTNER_ID = 2;
 export const DELIVERY_ID = process.env.NEXT_PUBLIC_DELIVERY_ID;
 
 export const brandLogoPath = "/gallery/logo.svg";
 export const USER_IMAGE = "/gallery/user-image.jpeg"
+export const BANNER_IMAGE = "/gallery/banner.png"
+
+export const BLACK_COLOR = "#000"
+export const LIGHT_BLACK_COLOR = "#444"
+export const WHITE_COLOR = "#fff"
+export const HOVER_COLOR = "#9d9d9d"
 
 export default axios.create({
   baseURL: BASE_URL,

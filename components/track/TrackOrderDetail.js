@@ -1,5 +1,5 @@
 "use client";
-import { axiosPrivate, BRAND_GUID, IMAGE_URL_Without_Storage } from "@/global/Axios";
+import { axiosPrivate, BLACK_COLOR, BRAND_GUID, IMAGE_URL_Without_Storage, LIGHT_BLACK_COLOR, WHITE_COLOR } from "@/global/Axios";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import React, { useContext, useEffect, useState } from "react";
@@ -54,6 +54,10 @@ export default function TrackOrderDetail()
     
     const [getTrackOrderData, setGetTrackOrderData] = useState(null);
     
+    const [isDeliveryFree, setIsDeliveryFree] = useState(false);
+    const [couponTotal, setCouponTotal] = useState(0);
+    
+    
     const [orderhash, setOrderhash] = useState("")
    
     // useEffect(() => 
@@ -96,6 +100,26 @@ export default function TrackOrderDetail()
     const onGetSuccess = (data) => {
         setGetTrackOrderData(data)
         setOrderhash(data?.data?.trackOrder?.order_hash)
+
+        
+        let minusAmount = 0
+
+        for(let orderCoupon of data?.data?.trackOrder?.order_coupons)
+        {
+            if(orderCoupon?.coupon?.free_delivery === 1)
+            {
+                setIsDeliveryFree(true)
+            }
+            else
+            {
+                setIsDeliveryFree(false)
+            }
+            minusAmount = parseFloat(minusAmount) + parseFloat(orderCoupon?.coupon_discount_applied)
+        }
+
+        
+        setCouponTotal(minusAmount)
+
     }
 
     const {isLoading: getTrackLoading, isError: getTrackError} = useGetQueryAutoUpdate("track-order", `/website-track-order/${stringToArray?.[1]}`, onGetSuccess, onGetError, stringToArray?.[1] ? true : false)
@@ -161,6 +185,8 @@ export default function TrackOrderDetail()
         return
     }
     
+    console.log("get the track order:", getTrackOrderData);
+    
     return(
         <div className='e5ald0m1m2amc5trackorder-desk'>
             <div className="m3m4m5gim6trackorder-desk">
@@ -185,7 +211,7 @@ export default function TrackOrderDetail()
                                 <form className="btautrackorder-window" onSubmit={handleSearchOrderCode}>
                                     <input 
                                         type="text"     
-                                        style={{border: `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,}}
+                                        style={{border: `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR}`,}}
                                         placeholder="Enter your order code" 
                                         name="orderhash" 
                                         value={orderhash} 
@@ -198,12 +224,12 @@ export default function TrackOrderDetail()
                                         disabled={isLoading}
 
                                         style={{
-                                            '--track-btn-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
-                                            '--track-btn-background': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
-                                            '--track-btn-hover-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor,
-                                            '--track-btn-hover-background': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor,
-                                            '--track-btn-border-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
-                                            '--track-btn-hover-border-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                                            '--track-btn-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR,
+                                            '--track-btn-background': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR,
+                                            '--track-btn-hover-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor || BLACK_COLOR,
+                                            '--track-btn-hover-background': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || LIGHT_BLACK_COLOR,
+                                            '--track-btn-border-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR,
+                                            '--track-btn-hover-border-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR,
                                         }} 
 
                                     >
@@ -286,18 +312,54 @@ export default function TrackOrderDetail()
                                                                 )
                                                             })
                                                         }
-                                                    
+
+
+                                                        {
+                                                            parseInt(getTrackOrderData?.data?.trackOrder?.order_coupons?.length) > parseInt(0) &&
+
+                                                            getTrackOrderData?.data?.trackOrder?.order_coupons?.map((record,index) => {
+                                                                return(
+                                                                    <div className="es-et-checkout" key={index}>
+                                                                        <div className="al-d5-eg-bh-dd-et-eu-d1-checkout-edit-item d1">
+                                                                            <div className="bodgdfcheckout-qty">
+                                                                                
+                                                                            </div>
+                                                                            <div className="al-am-cj-ew-checkout">
+                                                                                <span className="bo-bp-df-cv-checkout-item-header">{record?.coupon?.name}: {record?.coupon?.value}{record?.coupon?.discount_type === "P" ? "%" : "£"}</span>
+                                                                                
+                                                                            </div>
+                                                                            <div className="f1-al-am-checkout-item-qty">
+                                                                                <span className="gy-e2-gz-checkout-item-qty-span">(&pound;{getAmountConvertToFloatWithFixed(record?.coupon_discount_applied,2)})</span>
+                                                                            </div>
+                                                                        </div>
+
+                                                                        <hr style={{marginBottom: "10px", marginTop: "10px"}}/>
+                                                                    </div>
+                                                                )
+                                                            }) 
+                                                        }
+
                                                     </div>
                                                 </div>
 
                                                 <div className="dxc6checkout"></div>
-
-                                                <Total 
-                                                    subtotal={getTrackOrderData?.data?.trackOrder?.order_subtotal}
-                                                    deliveryCharge={getTrackOrderData?.data?.trackOrder?.delivery_charge}
-                                                    serviceCharge={getTrackOrderData?.data?.trackOrder?.service_charge}
-                                                    discountAmount={((getTrackOrderData?.data.trackOrder?.order_amount_discounts === null) ? 0 : getTrackOrderData?.data.trackOrder?.order_amount_discounts?.amount_discount_applied)}
-                                                />
+                                                {
+                                                    parseInt(getTrackOrderData?.data?.trackOrder?.order_coupons?.length) > parseInt(0) ?
+                                                        
+                                                        <Total 
+                                                            subtotal={getTrackOrderData?.data?.trackOrder?.order_subtotal}
+                                                            deliveryCharge={isDeliveryFree ? parseFloat(0).toFixed(2) : getTrackOrderData?.data?.trackOrder?.delivery_charge}
+                                                            serviceCharge={getTrackOrderData?.data?.trackOrder?.service_charge}
+                                                            discountAmount={parseFloat(couponTotal).toFixed(2)}
+                                                        />   
+                                                    :
+                                                        <Total 
+                                                            subtotal={getTrackOrderData?.data?.trackOrder?.order_subtotal}
+                                                            deliveryCharge={getTrackOrderData?.data?.trackOrder?.delivery_charge}
+                                                            serviceCharge={getTrackOrderData?.data?.trackOrder?.service_charge}
+                                                            discountAmount={((getTrackOrderData?.data.trackOrder?.order_amount_discounts === null) ? 0 : getTrackOrderData?.data.trackOrder?.order_amount_discounts?.amount_discount_applied)}
+                                                        />
+                                                }
 
                                             </div>
                                         </div>

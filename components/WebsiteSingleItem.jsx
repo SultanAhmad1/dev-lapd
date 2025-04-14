@@ -57,7 +57,7 @@ export const WebsiteSingleItem = (props) => {
           </button>
 
           {
-            (singleItem?.image_url && singleItem?.image_url !== null) && 
+            (singleItem?.image_url && singleItem?.image_url !== null) &&
             <div className="product-img">
               <div className="bz">
                 <div className="product-img-div-one-div">
@@ -66,21 +66,25 @@ export const WebsiteSingleItem = (props) => {
                       <div className="product-img-zoom">
                         {
                           isValidHttpsUrl(singleItem?.image_url) ?
-                          <img
+                          <Image
                             alt={singleItem?.title}
                             role="presentation"
                             src={singleItem?.image_url}
                             className="product-img-display"
                             loading="lazy"
+                            width={100}
+                            height={100}
                           />
 
                           :
-                          <img
+                          <Image
                             alt={singleItem?.title}
                             role="presentation"
-                            src={"/"+singleItem?.image_url}
+                            src={IMAGE_URL_Without_Storage+"/"+singleItem?.image_url}
                             className="product-img-display"
                             loading="lazy"
+                            width={100}
+                            height={100}
                           />
 
                         }
@@ -251,7 +255,7 @@ export const WebsiteSingleItem = (props) => {
                   {
                     isAnyModifierHasExtras ? 
                       <button type="button" style={{marginLeft: "10px"}} className="add-to-cart-btn-item" onClick={() => handleAddOrNextClickedToCart("next")}>
-                        Next
+                        NEXT
                       </button>
                     :
                       <button type="button" style={{marginLeft: "10px"}} className="add-to-cart-btn-item" onClick={() => handleAddOrNextClickedToCart("addToCart")}>
