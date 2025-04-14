@@ -14,18 +14,18 @@
   --cartBtnColor: #45b70c;
   --cartBtnHover: #5def13;
   --addToCart: #009000;
+  --font-family: "futura-pt-bold", Arial, Tahoma, sans-serif;
 }
 .body-tag {
   background: #ffffff;
   color: #000000;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   height: 100%;
   width: 100%;
 }
 
 .open-close-time {
-  padding: 0 40px;
+  padding: 0px;
   max-width: 100vw;
   margin: 0 auto;
   margin-top: 2px;
@@ -34,7 +34,7 @@
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,sans-serif;
+  font-family: var(--font-family);
   display: flex;
   justify-content: space-around;
 }
@@ -43,7 +43,7 @@
   line-height: 36px;
   font-weight: 700;
   font-size: 36px;
-  font-family: sans-serif;
+  font-family: var(--font-family);
   text-align: center;
   justify-content: center;
   display: flex;
@@ -67,8 +67,7 @@
   color: #545454;
   font-weight: normal;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .chicCwd3Cz-time {
@@ -78,12 +77,12 @@
   color: #545454;
   font-weight: normal;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .openCloseTime-type {
-  width: 438px;
+  /* width: 438px; */
+  width: 100%;
   height: 48px;
   position: relative;
 }
@@ -105,6 +104,7 @@
   display: flex;
   box-sizing: border-box;
   height: 100%;
+  gap: 10px;
 }
 
 .delivery-type-active {
@@ -124,6 +124,8 @@
   width: 100%;
   position: relative;
   box-sizing: border-box;
+  padding: 4px;
+  border-radius: 500px;
 }
 
 .algid0amc5-delivery-type {
@@ -151,8 +153,7 @@
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   width: 100%;
   box-sizing: border-box;
@@ -182,8 +183,7 @@
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .header {
@@ -191,7 +191,7 @@
   margin: 0 auto;
   background: #ffffff;
   box-shadow: 0px 3px 6px #00000029;
-  
+  height: 24vh;
 }
 
 .header-div {
@@ -265,7 +265,7 @@ img {
 .brand-logo {
   display: block;
   width: auto;
-  height: 12vh;
+  height: 15vh;
   filter: unset;
 }
 
@@ -297,17 +297,18 @@ button {
 .logo-location-cart{
   display: flex;
   column-gap: 6vw;
+  width: 25%;
 }
 
 .edit-delivery-location-button {
   background: #eeeeee;
-  padding: 5px 0px;
+  padding: 10px;
   height: auto;
   /* border-radius: 500px; */
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   box-sizing: border-box;
   display: flex;
@@ -327,13 +328,13 @@ button {
 }
 
 .store-detail-display>div{
-  padding: 8px 12px;
-  height: 48px;
+  padding: 10px;
+  /* height: 48px; */
   /* border-radius: 500px; */
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   box-sizing: border-box;
   color: #000000;
@@ -344,14 +345,14 @@ button {
 
 .selected_location_name{
   font-weight: 500;
-  font-family: 'futura-pt';
+  font-family: var(--font-family);
   display: block;
-  width: 100%;
+  /* width: 100%; */
 }
 
 .store_opening_closing_time{
   font-weight: 500;
-  font-family: 'futura-pt';
+  font-family: var(--font-family);
   display: block;
   width: 100%;
 }
@@ -368,8 +369,7 @@ button {
   line-height: 24px;
   font-weight: normal;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   -webkit-box-align: center;
   align-items: center;
 }
@@ -409,8 +409,7 @@ button {
   height: 48px;
   border-radius: 500px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   -webkit-box-align: center;
   align-items: center;
   width: 100%;
@@ -492,8 +491,7 @@ input {
   font-size: 16px;
   height: 48px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   white-space: nowrap;
   overflow: hidden;
@@ -532,6 +530,7 @@ input {
   left: 0;
   top: 0;
   background: rgba(38, 38, 38, 0.8);
+  overflow-y: hidden;
 }
 
 .modal-delivery-details-level-one-div {
@@ -624,7 +623,7 @@ input {
   font-size: 32px;
   margin-bottom: 16px;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
 }
 
 h1,
@@ -720,8 +719,7 @@ p {
   -webkit-box-flex: 1;
   flex-grow: 1;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   overflow: hidden;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
@@ -738,8 +736,7 @@ p {
   font-size: 16px;
   text-overflow: ellipsis;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   white-space: nowrap;
   overflow: hidden;
 }
@@ -750,8 +747,7 @@ p {
   font-weight: normal;
   text-overflow: ellipsis;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   white-space: nowrap;
   overflow: hidden;
 }
@@ -767,8 +763,7 @@ p {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -793,8 +788,7 @@ p {
   justify-content: center;
   line-height: 24px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -818,7 +812,7 @@ p {
   font-size: 20px;
   margin-bottom: 16px;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
 }
 
 .available-store-h2 {
@@ -827,7 +821,7 @@ p {
   font-size: 20px;
   margin-bottom: 16px;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
 }
 
 .deliver-to-body-content-nested-div-level-one {
@@ -857,8 +851,7 @@ p {
   font-size: 16px;
   line-height: 24px;
   font-weight: normal;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
   display: -webkit-box;
   display: -moz-box;
@@ -879,8 +872,7 @@ p {
   font-size: 16px;
   line-height: 24px;
   font-weight: normal;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
   display: -webkit-box;
   display: -moz-box;
@@ -940,7 +932,7 @@ p {
   justify-content: center;
   line-height: 24px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -1015,8 +1007,7 @@ p {
   line-height: 20px;
   font-size: 14px;
   font-weight: normal;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   width: 100%;
   background-color: #eaeaea;
 }
@@ -1086,7 +1077,7 @@ p {
   margin-bottom: 12px;
   display: block;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -1096,8 +1087,7 @@ p {
   display: block;
   font-weight: normal;
   font-size: 16px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   text-align: center;
   max-width: 80%;
 }
@@ -1113,8 +1103,7 @@ p {
   font-weight: 500;
   font-size: 14px;
   cursor: pointer;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   -webkit-box-align: center;
   align-items: center;
   display: flex;
@@ -1151,7 +1140,7 @@ p {
   line-height: 40px;
   font-size: 32px;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
   color: #545454;
 }
 
@@ -1160,8 +1149,7 @@ p {
   color: #545454;
   line-height: 24px;
   font-weight: normal;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .cart-header-dotted-btn-div {
@@ -1185,8 +1173,7 @@ p {
   line-height: 24px;
   background: #eeeeee;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -1250,8 +1237,7 @@ p {
   font-size: 16px;
   flex: 1;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   -webkit-box-align: center;
   align-items: center;
   display: -webkit-box;
@@ -1305,8 +1291,7 @@ p {
   font-size: 16px;
   flex: 1;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   -webkit-box-align: center;
   align-items: center;
   display: -webkit-box;
@@ -1334,8 +1319,7 @@ p {
   -webkit-box-flex: 1;
   flex-grow: 1;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .cart-subtotal {
@@ -1344,16 +1328,14 @@ p {
   color: #545454;
   line-height: 24px;
   font-weight: normal;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .cart-total-amount {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .hr-row {
@@ -1397,8 +1379,7 @@ ul {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #545454;
 }
 
@@ -1422,16 +1403,14 @@ ul {
   line-height: 20px;
   font-weight: 500;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .item-modifier-details {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
@@ -1478,8 +1457,7 @@ ul {
   font-size: 16px;
   line-height: 24px;
   font-weight: normal;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .qty-div-leve-one-nested {
@@ -1509,8 +1487,7 @@ ul {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   white-space: nowrap;
   color: #000000;
@@ -1538,8 +1515,7 @@ ul {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
@@ -1574,8 +1550,7 @@ ul {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
@@ -1595,8 +1570,7 @@ ul {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -1626,7 +1600,7 @@ ul {
   line-height: 28px;
   font-weight: 700;
   font-size: 20px;
-  font-family: sans-serif;
+  font-family: var(--font-family);
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
@@ -1655,6 +1629,23 @@ ul {
   padding: 24px;
 }
 
+/* Modal css */
+.modal-display {
+  overflow: auto;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  top: 0;
+  position: fixed;
+  z-index: 999;
+}
+
+.modal-lg {
+  max-width: 800px;
+  width: 800px;
+  padding: 24px;
+}
+
 .go-to-checkout-btn {
   background: rgb(0, 0, 0);
   border-radius: 8px;
@@ -1666,8 +1657,7 @@ ul {
   justify-content: center;
   line-height: 24px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -1691,8 +1681,7 @@ ul {
   line-height: 24px;
   background: #eeeeee;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -1845,7 +1834,7 @@ ul {
   font-weight: 500;
   color: #ffffff;
   line-height: 24px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,sans-serif;
+  font-family: var(--font-family);
   float: right;
 }
 
@@ -1856,7 +1845,7 @@ ul {
   font-weight: 500;
   color: #ffffff;
   line-height: 24px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,sans-serif;
+  font-family: var(--font-family);
   float: right;
 }
 
@@ -1882,8 +1871,7 @@ ul {
   display: -ms-flexbox;
   display: -webkit-flex;
   display: flex;
-  /* max-width: calc(100% - 450px); */
-  max-width: 50vw;
+  max-width: calc(100% - 450px);
 }
 
 /* Left Bar CSS Styling */
@@ -1912,8 +1900,6 @@ ul {
   max-width: 83vw;
   margin: 0 auto;
   overflow-x: scroll;
-  -webkit-overflow-scrolling: touch;
-  scroll-behavior: smooth;
 }
 
 .navbar li {
@@ -2022,8 +2008,7 @@ ul {
   font-size: 16px;
   text-overflow: ellipsis;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   white-space: nowrap;
   overflow: hidden;
   color: #000000;
@@ -2037,8 +2022,7 @@ ul {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 /* Left Bar CSS Styling End */
@@ -2066,7 +2050,7 @@ ul {
   line-height: 32px;
   font-size: 24px;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: "futura-pt", Arial, Tahoma, sans-serif;
   color:var(--category-color, #000000);
 }
 
@@ -2076,12 +2060,14 @@ ul {
 }
 
 .items-list-nested-ul {
-  -ms-grid-columns: repeat(4, 1fr);
-  grid-template-columns: repeat(4, 1fr);
-  grid-gap: 24px;
-  display: -ms-grid;
-  display: grid;
+  /* -ms-grid-columns: repeat(4, 1fr); */
+  /* grid-template-columns: repeat(4, 1fr); */
+  /* grid-gap: 24px; */
+  /* display: -ms-grid; */
+  /* display: grid; */
   margin-bottom: 24px;
+  display: flex;
+  flex-wrap: wrap;
 }
 
 .items-list-nested-list:hover {
@@ -2089,7 +2075,7 @@ ul {
   -webkit-transition: box-shadow 0.3s ease-in-out;
   -moz-transition: box-shadow 0.3s ease-in-out;
   transition: box-shadow 0.3s ease-in-out;
-  padding: 18px;
+  padding: 15px;
   background: var(--item-hover-background, #ffffff);
   color: var(--item-hover-font-color, #000000);
 }
@@ -2099,11 +2085,14 @@ ul {
 }
 
 .items-list-nested-list {
-  grid-column: span 2;
-  min-width: 0;
-  position: relative;
-  display: block;
-  padding: 18px;
+  /* grid-column: span 2; */
+  /* position: relative; */
+  /* display: block; */
+  padding: 5px;
+  width: 43%;
+  border: 1px solid #e6e6e6;
+  margin: 0 1% 40px;
+  padding: 15px 15px;
 }
 
 .items-nested-div {
@@ -2147,7 +2136,33 @@ ul {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,sans-serif;
+  font-family: "futura-pt", Arial, Tahoma, sans-serif;
+
+  /* font-family: "futura-pt", Arial, Tahoma, sans-serif;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.2;
+  overflow: hidden;
+  color: #000;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #989898;
+  transition: all ease-in-out .2s;
+  height: 48px; */
+}
+
+.item-title-p {
+  font-family:var(--font-family);
+  font-size: 16px;
+  font-weight: 600;
+  line-height: 1.2;
+  overflow: hidden;
+  color: #000;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #989898;
+  transition: all ease-in-out .2s;
+  height: 48px;
 }
 
 .item-price {
@@ -2164,33 +2179,48 @@ ul {
 }
 
 .item-price-span {
-  -webkit-text-decoration-line: none;
-  text-decoration-line: none;
-  white-space: pre-wrap;
-  padding: 0;
-  line-height: 20px;
-  font-weight: normal;
-  font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+
+  min-height: inherit;
+  font-size: 18px;
+  line-height: 21px;
+  color: #808080;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  transition: all ease-in-out .2s;
+  text-align: right;
+  padding-bottom: 10px;
 }
 
 .item-description-style {
+  /* color: #808080;
   word-break: break-word;
   -webkit-line-clamp: 4;
   padding-top: 4px;
   -webkit-box-orient: vertical;
   display: -webkit-box;
   flex: none;
+  overflow: hidden; */
+
+  min-height: inherit;
+  font-size: 18px;
+  line-height: 21px;
+  color: #808080;
   overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  transition: all ease-in-out .2s;
 }
 
 .item-description {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .item-img-style {
@@ -2260,8 +2290,7 @@ ul {
   -webkit-box-pack: center;
   justify-content: center;
   line-height: 24px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   -webkit-box-align: center;
   align-items: center;
   cursor: pointer;
@@ -2288,8 +2317,7 @@ ul {
   -webkit-box-pack: center;
   justify-content: center;
   line-height: 24px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   -webkit-box-align: center;
   align-items: center;
   cursor: pointer;
@@ -2320,8 +2348,7 @@ ul {
   -webkit-box-pack: center;
   justify-content: center;
   line-height: 24px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   -webkit-box-align: center;
   align-items: center;
   cursor: pointer;
@@ -2401,8 +2428,7 @@ ul {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -2496,8 +2522,7 @@ ul {
   display: -webkit-inline-flex;
   display: inline-flex;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   -webkit-box-align: center;
   align-items: center;
   position: relative;
@@ -2521,8 +2546,7 @@ ul {
   display: -webkit-inline-flex;
   display: none;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   -webkit-box-align: center;
   align-items: center;
   position: relative;
@@ -2620,14 +2644,14 @@ ul {
   line-height: 28px;
   font-weight: 700;
   font-size: 20px;
-  font-family: sans-serif;
+  font-family: var(--font-family);
 }
 
 .product-h1 {
   line-height: 40px;
   font-size: 32px;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
   -webkit-box-align: center;
   align-items: center;
   display: -webkit-box;
@@ -2644,7 +2668,7 @@ ul {
   line-height: 28px;
   font-weight: 700;
   font-size: 20px;
-  font-family: sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -2662,8 +2686,7 @@ ul {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   overflow: hidden;
 }
 
@@ -2714,7 +2737,7 @@ ul {
   line-height: 28px;
   font-weight: 700;
   font-size: 20px;
-  font-family: sans-serif;
+  font-family: var(--font-family);
   display: flex;
   justify-content: space-between;
 }
@@ -2724,7 +2747,7 @@ ul {
   color: #545454;
   font-weight: normal;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: var(--font-family);
   /* display: flex;
   justify-content: space-between; */
 }
@@ -2828,7 +2851,7 @@ input {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -2849,7 +2872,7 @@ input {
   background-size: cover;
   background-position: center center;
   background-color: var(--before-color, rgb(255, 255, 255));
-  background-image: url(data:image/svg+xml,%0A%20%20%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M0%200V20H20V0H0ZM8.5%2015.1L2.90002%209.5L5%207.39999L8.40002%2010.8L14.8%204.39999L16.9%206.5L8.5%2015.1Z%22%20fill%3D%22%23000000%22%20%2F%3E%0A%20%20%3C%2Fsvg%3E%0A%20%20);
+  background-image: url("data:image/svg+xml,%0A%20%20%3Csvg%20width%3D%2220%22%20height%3D%2220%22%20viewBox%3D%220%200%2020%2020%22%20fill%3D%22none%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%3E%0A%20%20%20%20%3Cpath%20d%3D%22M0%200V20H20V0H0ZM8.5%2015.1L2.90002%209.5L5%207.39999L8.40002%2010.8L14.8%204.39999L16.9%206.5L8.5%2015.1Z%22%20fill%3D%22%23000000%22%20%2F%3E%0A%20%20%3C%2Fsvg%3E%0A%20%20");
   border: 0px;
   vertical-align: middle;
   flex: 0 0 auto;
@@ -2890,7 +2913,7 @@ input {
   font-size: 16px;
   font-weight: 500;
 
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -2941,8 +2964,7 @@ input {
   font-size: 16px;
   font-weight: 500;
 
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -3015,8 +3037,7 @@ input {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .modifier-product-item-name-one-nested-div-one-nested {
@@ -3036,18 +3057,16 @@ input {
 .modifier-product-item-name-one-nested-div-one-nested-div {
   word-break: break-word;
   line-height: 16px;
-  font-weight: 500;
-  font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-weight: bold;
+  font-size: 17px;
+  font-family: var(--font-family);
 }
 
 .modifier-group-price {
   line-height: 20px;
-  font-weight: normal;
-  font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-weight: bold;
+  font-size: 17px;
+  font-family: var(--font-family);
   white-space: nowrap;
   color: #000000;
 }
@@ -3089,8 +3108,7 @@ input {
   font-size: 16px;
   line-height: 24px;
   font-weight: normal;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .qty-selector-div {
@@ -3119,8 +3137,7 @@ input {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   white-space: nowrap;
   color: #000000;
@@ -3163,18 +3180,15 @@ input {
 
 .add-to-cart-btn-item {
   border-radius: 8px;
-  /* font-size: 18px; */
+  font-size: 20px;
+  font-weight: bold;
   background: var(--addToCart);
   padding: 14px 9px;
   color: #ffffff;
-  /* min-height: 56px; */
-  /* justify-content: center; */
-  /* line-height: 24px; */
-  font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: "futura-pt-bold", Arial, Tahoma, sans-serif;
   /* cursor: pointer; */
   /* align-items: center; */
-  /* width: 100%; */
+  min-width: 180px;
   /* display: flex
 ; */
   /* box-sizing: border-box;*/
@@ -3189,8 +3203,7 @@ input {
   display: inline-flex;
   line-height: 24px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   -webkit-box-align: center;
   align-items: center;
 }
@@ -3213,8 +3226,7 @@ input {
   justify-content: center;
   line-height: 24px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -3390,8 +3402,7 @@ input {
   display: inline-flex;
   height: 48px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -3414,8 +3425,7 @@ input {
   line-height: 24px;
   text-overflow: ellipsis;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   white-space: nowrap;
   overflow: hidden;
 }
@@ -3465,8 +3475,7 @@ input {
   display: inline-flex;
   height: 48px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -3690,8 +3699,7 @@ input {
 .chd2cwcxquickreview-modal {
   font-size: 16px;
   line-height: 24px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .bzakalalquickreview-modal {
@@ -3720,8 +3728,7 @@ input {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   white-space: nowrap;
   color: #000000;
@@ -3756,8 +3763,7 @@ input {
   justify-content: center;
   line-height: 24px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -3817,8 +3823,7 @@ input {
   display: inline-flex;
   line-height: 24px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -3905,7 +3910,7 @@ input {
   font-size: 16px;
   line-height: 24px;
   font-weight: normal;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,sans-serif;
+  font-family: var(--font-family);
   color: var(--condition-btn-color, #000000);
   display: flex;
 
@@ -3975,8 +3980,7 @@ input {
   display: flex;
   justify-content: center;
   align-items: center;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: var(--copy-color,#000000) ;
 }
 
@@ -4095,7 +4099,7 @@ input {
   line-height: 28px;
   font-size: 20px;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
 }
 
 .g0s6modifier-modal {
@@ -4140,7 +4144,7 @@ input {
   line-height: 30px;
   font-weight: 500;
   font-size: 16px;
-  font-family: sans-serif;
+  font-family: var(--font-family);
 }
 
 .chcicwd3czmodifier-choose {
@@ -4148,8 +4152,7 @@ input {
   color: #545454;
   font-weight: normal;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   display: flex;
   justify-content: space-between;
 }
@@ -4172,8 +4175,7 @@ input {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   height: 20px;
   -webkit-box-align: center;
   align-items: center;
@@ -4214,8 +4216,7 @@ input {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -4240,10 +4241,9 @@ input {
 .chic-cj-ckjdmodifier-modal {
   word-break: break-word;
   line-height: 16px;
-  font-weight: 500;
-  font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-weight: bold;
+  font-size: 17px;
+  font-family: var(--font-family);
 }
 
 .edb9jegdmodifier-hr {
@@ -4282,7 +4282,7 @@ input {
   justify-content: center;
   line-height: 24px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,sans-serif;
+  font-family: var(--font-family);
   align-items: center;
   width: 100%;
   display: flex;
@@ -4297,7 +4297,7 @@ input {
   display: inline-flex;
   line-height: 24px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,sans-serif;
+  font-family: var(--font-family);
   -webkit-box-align: center;
   align-items: center;
 }
@@ -4363,7 +4363,7 @@ input {
   line-height: 40px;
   font-size: 32px;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   flex-direction: column;
@@ -4438,8 +4438,7 @@ input {
   font-weight: 500;
   line-height: 20px;
   font-size: 16px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -4447,8 +4446,7 @@ input {
   font-size: 14px;
   line-height: 20px;
   font-weight: normal;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -4462,8 +4460,7 @@ input {
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   -webkit-box-align: center;
   align-items: center;
   color: #000000;
@@ -4501,7 +4498,7 @@ input {
   margin-bottom: 8px;
   flex: 1;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
   -webkit-box-align: center;
   align-items: center;
   display: -webkit-box;
@@ -4560,8 +4557,7 @@ input {
   justify-content: center;
   width: 24px;
   height: 24px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   -webkit-box-align: center;
   align-items: center;
   display: -webkit-box;
@@ -4595,8 +4591,7 @@ input {
   font-size: 14px;
   font-weight: 500;
   line-height: 20px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   /* width: 100%; */
   max-width: 220px;
 }
@@ -4605,8 +4600,7 @@ input {
   font-size: 14px;
   line-height: 20px;
   font-weight: normal;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
@@ -4661,8 +4655,7 @@ input {
   font-weight: 500;
   line-height: 20px;
   font-size: 16px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -4678,8 +4671,7 @@ input {
   line-height: 24px;
   font-weight: normal;
   font-size: 16px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
@@ -4704,8 +4696,7 @@ input {
   line-height: 24px;
   font-weight: normal;
   font-size: 16px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -4721,7 +4712,7 @@ input {
   -webkit-box-pack: justify;
   justify-content: space-between;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
@@ -4755,16 +4746,14 @@ input {
   line-height: 20px;
   font-size: 12px;
   font-weight: normal;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .bocubqcvb1checkout {
   line-height: 20px;
   font-size: 12px;
   font-weight: normal;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -4773,8 +4762,7 @@ input {
   line-height: 20px;
   font-size: 12px;
   font-weight: normal;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .bocudfdhgy {
@@ -4782,8 +4770,7 @@ input {
   line-height: 16px;
   font-weight: 500;
   font-size: 12px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .dxc9checkout {
@@ -4805,11 +4792,12 @@ input {
     rgba(255, 255, 255, 0) 2.5%,
     rgba(255, 255, 255, 0.92) 55.35%
   );
-  padding: 16px 16px 24px;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  position: fixed;
+  /* padding: 16px 16px 0px 16px; */
+  padding: 26px 16px 0px 16px;
+  /* right: 0; */
+  /* bottom: 0; */
+  /* left: 0; */
+  /* position: fixed; */
 }
 
 .fwbrbocheckout-place-order {
@@ -4824,17 +4812,13 @@ input {
   color: #ffffff;
   cursor: pointer;
   line-height: 24px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
-  width: 100%;
+  font-family: var(--font-family);
+  width: 30%;
   -webkit-box-align: center;
   align-items: center;
-  display: -webkit-box;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
   display: flex;
   box-sizing: border-box;
+  margin: 0 auto;
 }
 
 .fwbrbocheckout-place-order:hover {
@@ -4853,9 +4837,8 @@ input {
   color: #ffffff;
   cursor: pointer;
   line-height: 24px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
-  width: 100%;
+  font-family: var(--font-family);
+  width: 40%;
   -webkit-box-align: center;
   align-items: center;
   display: -webkit-box;
@@ -4879,8 +4862,7 @@ input {
   font-weight: 500;
   cursor: pointer;
   line-height: 24px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -4897,8 +4879,7 @@ input {
   font-size: 14px;
   font-weight: 500;
   cursor: pointer;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   align-items: center;
   color: #000000;
   display: flex;
@@ -5015,14 +4996,13 @@ input {
   line-height: 32px;
   font-weight: 700;
   font-size: 24px;
-  font-family: sans-serif;
   line-height: 40px;
   font-size: 32px;
   margin-bottom: 0;
   -webkit-box-align: start;
   align-items: flex-start;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   flex-direction: column;
@@ -5078,14 +5058,15 @@ input {
 }
 
 .boh7bqh8payment-desk {
+  margin-top: 20px;
   line-height: 28px;
   font-size: 18px;
   font-weight: normal;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .h7brboe1payment-btn {
+  margin-top: 50px;
   animation-name: ag;
   animation-duration: 2500ms;
   background: rgb(4, 136, 72);
@@ -5094,15 +5075,14 @@ input {
   animation-iteration-count: infinite;
   min-height: 56px;
   font-weight: 500;
-  padding: 16px 0;
+  padding: 20px 15px 20px 15px;
   -webkit-box-pack: center;
   justify-content: center;
   color: #ffffff;
   cursor: pointer;
   line-height: 24px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
-  width: 100%;
+  font-family: var(--font-family);
+  width: unset;
   -webkit-box-align: center;
   align-items: center;
   display: -webkit-box;
@@ -5111,6 +5091,7 @@ input {
   display: -webkit-flex;
   display: flex;
   box-sizing: border-box;
+  margin: 0 auto;
 }
 
 .allzc5payment-desk {
@@ -5153,8 +5134,7 @@ input {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -5244,14 +5224,13 @@ input {
   line-height: 32px;
   font-weight: 700;
   font-size: 24px;
-  font-family: sans-serif;
   line-height: 40px;
   font-size: 32px;
   margin-bottom: 0;
   -webkit-box-align: start;
   align-items: flex-start;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   flex-direction: column;
@@ -5314,8 +5293,7 @@ input {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -5419,8 +5397,7 @@ input {
   line-height: 16px;
   font-weight: 500;
   font-size: 12px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 ul.track-steps {
@@ -5505,14 +5482,13 @@ ul.track-steps {
   line-height: 32px;
   font-weight: 700;
   font-size: 24px;
-  font-family: sans-serif;
   line-height: 40px;
   font-size: 32px;
   margin-bottom: 0;
   -webkit-box-align: start;
   align-items: flex-start;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   flex-direction: column;
@@ -5544,7 +5520,7 @@ ul.track-steps {
 }
 
 .kgmytrackorder-desk {
-  width: 40px;
+  width: 29px;
 }
 
 .c8c7cccdmytrackorder {
@@ -5552,8 +5528,7 @@ ul.track-steps {
   font-weight: 500;
   cursor: pointer;
   line-height: 24px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -5579,12 +5554,12 @@ ul.track-steps {
 .door_number {
   width: 100%;
   background: #cfcfcfb5;
-  padding: 6px;
-  border-radius: 10px;
+  padding: 15px;
+  /* border-radius: 10px; */
 }
 
 .strtpostcode {
-  width: 100%;
+  width: 97%;
   background: #cfcfcfb5;
   padding: 6px;
   /* border-radius: 10px; */
@@ -5597,7 +5572,7 @@ ul.track-steps {
 }
 
 .change_postcode_btn {
-  width: 30%;
+  width: 100%;
   background: #cfcfcfb5;
   color: #0226f1;
   text-decoration: underline;
@@ -5771,7 +5746,7 @@ ul.track-steps {
   line-height: 24px;
   font-weight: 500;
   font-size: 16px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: var(--font-family);
 }
 
 .canva-user-anchor{
@@ -5779,7 +5754,7 @@ ul.track-steps {
   line-height: 16px;
   font-size: 14px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: var(--font-family);
 }
 
 .canva-anchor-btn{
@@ -5826,7 +5801,7 @@ ul.track-steps {
   line-height: 24px;
   font-weight: 500;
   font-size: 16px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: var(--font-family);
 
 }
 
@@ -5849,7 +5824,8 @@ ul.track-steps {
 }
 
 .auth-sign{
-  background: var(--auth-background-color, rgb(0,0,));
+  /* background: var(--auth-background-color, rgb(0,0,)); */
+  background: var(--auth-background-color, "#000");
   padding: 12px 16px;
   min-height: 56px;
   font-size: 18px;
@@ -5860,7 +5836,7 @@ ul.track-steps {
   width: 15rem;
   font-weight: 500;
 
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
 
   -webkit-box-pack: center;
@@ -5898,7 +5874,7 @@ ul.track-steps {
   width: 15rem;
   font-weight: 500;
 
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
 
   -webkit-box-pack: center;
@@ -6303,7 +6279,7 @@ ul.track-steps {
   line-height: 32px;
   font-size: 24px;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
   -webkit-box-align: center;
   align-items: center;
   display: -webkit-box;
@@ -6319,8 +6295,7 @@ ul.track-steps {
   line-height: 24px;
   font-weight: normal;
   font-size: 16px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   -webkit-box-align: center;
   align-items: center;
   display: -webkit-box;
@@ -6347,8 +6322,7 @@ ul.track-steps {
   line-height: 24px;
   font-weight: normal;
   font-size: 16px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -6356,8 +6330,7 @@ ul.track-steps {
   line-height: 24px;
   font-weight: normal;
   font-size: 16px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -6379,7 +6352,7 @@ ul.track-steps {
   -webkit-box-pack: justify;
   justify-content: space-between;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
@@ -6409,16 +6382,14 @@ ul.track-steps {
   line-height: 20px;
   font-size: 12px;
   font-weight: normal;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .bodgbqdhb1checkout-desK {
   line-height: 20px;
   font-size: 12px;
   font-weight: normal;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -6427,8 +6398,7 @@ ul.track-steps {
   line-height: 20px;
   font-size: 12px;
   font-weight: normal;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .bodge1exiucheckout-desk-span {
@@ -6436,8 +6406,7 @@ ul.track-steps {
   line-height: 16px;
   font-weight: 500;
   font-size: 12px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .e6h3checkout-desk {
@@ -6460,12 +6429,12 @@ ul.track-steps {
 }
 
 .mimjepmkmlmmcheckout-desk {
-  border-bottom: 2px solid rgb(238, 238, 238);
-  padding-left: 24px;
-  padding-right: 24px;
+  /* border-bottom: 2px solid rgb(238, 238, 238); */
+  /* padding-left: 24px;
+  padding-right: 24px; */
   /* padding-top: 24px; */
-  padding-top: 0px;
-  padding-bottom: 8px;
+  /* padding-top: 0px; */
+  /* padding-bottom: 8px; */
 }
 
 .eik5ekk6checkout-desk {
@@ -6477,14 +6446,14 @@ ul.track-steps {
   line-height: 32px;
   font-weight: 700;
   font-size: 24px;
-  font-family: sans-serif;
+  font-family: var(--font-family);
   line-height: 40px;
   font-size: 32px;
   margin-bottom: 0;
   -webkit-box-align: start;
   align-items: flex-start;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
   flex-direction: column;
@@ -6495,10 +6464,10 @@ ul.track-steps {
   display: flex;
 }
 
-.allzc5checkout-desk {
+.allzc5checkout-desk, .save-my-details-nested {
   /* -webkit-box-align: center; */
   /* align-items: center; */
-  padding: 16px 0px;
+  padding: 8px 0px;
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
@@ -6527,8 +6496,7 @@ ul.track-steps {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -6536,8 +6504,7 @@ ul.track-steps {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -6552,8 +6519,7 @@ ul.track-steps {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -6588,7 +6554,7 @@ ul.track-steps {
   line-height: 32px;
   font-size: 24px;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
   flex: 1;
   -webkit-box-align: center;
   align-items: center;
@@ -6614,8 +6580,7 @@ ul.track-steps {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -6637,8 +6602,7 @@ ul.track-steps {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .e6ficheckout-desk {
@@ -6703,8 +6667,15 @@ ul.track-steps {
 .email-checkout {
   width: 100%;
   background: #cfcfcfb5;
-  padding: 6px;
-  border-radius: 10px;
+  padding: 15px;
+  /* border-radius: 10px; */
+}
+
+.full-name-inputs {
+  width: 100%;
+  background: #cfcfcfb5;
+  padding: 15px;
+  /* border-radius: 10px; */
 }
 
 .gdcheckout-desk {
@@ -6743,8 +6714,7 @@ ul.track-steps {
   line-height: 28px;
   font-size: 18px;
   font-weight: normal;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .h7brboe1checkout-btn {
@@ -6762,8 +6732,7 @@ ul.track-steps {
   color: #ffffff;
   cursor: pointer;
   line-height: 24px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   width: 100%;
   -webkit-box-align: center;
   align-items: center;
@@ -6869,8 +6838,7 @@ ul.track-steps {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .chcicwd3czcheckout-desk {
@@ -6878,8 +6846,7 @@ ul.track-steps {
   color: #545454;
   font-weight: normal;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 /* Schedule Modal */
@@ -7053,7 +7020,7 @@ ul.track-steps {
   border-bottom-right-radius: 50%;
   border-top-right-radius: 50%;
   transition-timing-function: cubic-bezier(0, 0, 1, 1);
-  transition-property: background;
+  /* transition-property: background; */
   appearance: none;
   border-bottom-style: none;
   border-top-style: none;
@@ -7087,8 +7054,7 @@ ul.track-steps {
   display: inline-flex;
   height: 48px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -7110,8 +7076,7 @@ ul.track-steps {
   line-height: 24px;
   text-overflow: ellipsis;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   white-space: nowrap;
   overflow: hidden;
   opacity: 0;
@@ -7130,8 +7095,7 @@ ul.track-steps {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -7144,7 +7108,7 @@ ul.track-steps {
   font-size: 32px;
   margin-bottom: 16px;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
 }
 
 .h3euh4eimfekfdschedule-span {
@@ -7155,7 +7119,7 @@ ul.track-steps {
   line-height: 36px;
   padding: 0;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
 }
 
 .alh2amenc9jdschedule {
@@ -7205,8 +7169,7 @@ ul.track-steps {
   -webkit-box-flex: 1;
   flex-grow: 1;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -7241,8 +7204,7 @@ ul.track-steps {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .c5iztctatbtdschedule {
@@ -7368,7 +7330,7 @@ ul.track-steps {
   padding-right: -77px;
   padding-left: 20px;
   transition-timing-function: cubic-bezier(0, 0, 1, 1);
-  transition-property: background;
+  /* transition-property: background; */
   appearance: none;
   border-bottom-style: none;
   border-top-style: none;
@@ -7405,8 +7367,7 @@ ul.track-steps {
   display: inline-flex;
   line-height: 24px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -7425,7 +7386,7 @@ ul.track-steps {
   padding-right: -77px;
   padding-left: 20px;
   transition-timing-function: cubic-bezier(0, 0, 1, 1);
-  transition-property: background;
+  /* transition-property: background; */
   appearance: none;
   border-bottom-style: none;
   border-top-style: none;
@@ -7462,8 +7423,7 @@ ul.track-steps {
   display: inline-flex;
   line-height: 24px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -7486,8 +7446,7 @@ ul.track-steps {
   padding: 0;
   line-height: 24px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   white-space: nowrap;
 }
 
@@ -7508,14 +7467,7 @@ ul.track-steps {
   position: relative;
 }
 
-.agaxlqdflacheckout-desk-input {
-  pointer-events: none;
-  outline: none;
-  opacity: 0;
-  position: absolute;
-}
-
-.agaxlqdflacheckout-desk-input {
+.agaxlqdflacheckout-desk-input, .save-details-input {
   pointer-events: none;
   outline: none;
   opacity: 0;
@@ -7534,6 +7486,7 @@ ul.track-steps {
   display: flex;
 }
 
+
 .chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label {
   transition: background-color 100ms ease 0s;
   -webkit-box-orient: horizontal;
@@ -7544,12 +7497,11 @@ ul.track-steps {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
-  width: 100%;
+  width: 20%;
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
@@ -7558,7 +7510,43 @@ ul.track-steps {
   box-sizing: border-box;
 }
 
-.d1alfwllcheckout-desk {
+.save-details::before {
+  vertical-align: middle;
+  flex: 0 0 auto;
+  width: 22px;
+  height: 22px;
+  cursor: pointer;
+  content: "";
+  border: 3px solid rgb(107, 107, 107);
+  box-sizing: border-box;
+  display: flex;
+}
+
+
+.save-details {
+  transition: background-color 100ms ease 0s;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: reverse;
+  flex-direction: row-reverse;
+  -webkit-box-pack: justify;
+  justify-content: space-between;
+  line-height: 20px;
+  font-size: 16px;
+  font-weight: 500;
+  font-family: var(--font-family);
+  cursor: pointer;
+  -webkit-box-align: center;
+  align-items: center;
+  width: 60%;
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  box-sizing: border-box;
+}
+
+.d1alfwllcheckout-desk, .save-my-detail-desk {
   margin-top: calc(3px);
   -webkit-box-pack: justify;
   justify-content: space-between;
@@ -7570,7 +7558,7 @@ ul.track-steps {
   display: flex;
 }
 
-.ald1ame7lmlncheckout-desk {
+.ald1ame7lmlncheckout-desk, .save-my-checkout-details-desk {
   margin: -8px;
   padding: 8px;
   align-self: flex-start;
@@ -7587,7 +7575,7 @@ ul.track-steps {
   display: flex;
 }
 
-.alaqcheckout-desk {
+.alaqcheckout-desk, .save-my-details-checkout-desk {
   -webkit-box-orient: horizontal;
   -webkit-box-direction: normal;
   flex-direction: row;
@@ -7598,7 +7586,7 @@ ul.track-steps {
   display: flex;
 }
 
-.alamjiencheckout-desk {
+.alamjiencheckout-desk, .save-my-details-jiencheckout-desk {
   -webkit-box-pack: start;
   justify-content: flex-start;
   -webkit-box-align: start;
@@ -7613,13 +7601,12 @@ ul.track-steps {
   display: flex;
 }
 
-.chic-cj-ckh6checkout-desk {
+.chic-cj-ckh6checkout-desk, .save-my-details-ckh6checkout-desk {
   word-break: break-word;
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .chcicwd3undersavefastercheckout {
@@ -7631,8 +7618,7 @@ ul.track-steps {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -7645,7 +7631,7 @@ ul.track-steps {
   font-size: 32px;
   margin-bottom: 16px;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
 }
 
 .h3euh4eimfekfdundersavefastercheckout-span {
@@ -7684,8 +7670,7 @@ ul.track-steps {
   color: #ffffff;
   cursor: pointer;
   line-height: 24px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   width: 45%;
   align-items: center;
   display: flex;
@@ -7707,8 +7692,7 @@ ul.track-steps {
   color: #ffffff;
   cursor: pointer;
   line-height: 24px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   width: 45%;
   align-items: center;
   display: flex;
@@ -7720,7 +7704,8 @@ ul.track-steps {
 }
 
 .almycheckout-desk {
-  display: flex;
+  /* display: flex; */
+  display: block;
   justify-content: center;
 }
 
@@ -7895,7 +7880,7 @@ ul.track-steps {
   border-bottom-right-radius: 50%;
   border-top-right-radius: 50%;
   transition-timing-function: cubic-bezier(0, 0, 1, 1);
-  transition-property: background;
+  /* transition-property: background; */
   appearance: none;
   border-bottom-style: none;
   border-top-style: none;
@@ -7929,8 +7914,7 @@ ul.track-steps {
   display: inline-flex;
   height: 48px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -7952,8 +7936,7 @@ ul.track-steps {
   line-height: 24px;
   text-overflow: ellipsis;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   white-space: nowrap;
   overflow: hidden;
   opacity: 0;
@@ -7972,8 +7955,7 @@ ul.track-steps {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -7986,7 +7968,7 @@ ul.track-steps {
   font-size: 32px;
   margin-bottom: 16px;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
 }
 
 .h3euh4eimfekfdsavefastercheckout-span {
@@ -8024,8 +8006,7 @@ ul.track-steps {
   color: #ffffff;
   cursor: pointer;
   line-height: 24px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   width: 45%;
   align-items: center;
   display: flex;
@@ -8047,8 +8028,7 @@ ul.track-steps {
   color: #ffffff;
   cursor: pointer;
   line-height: 24px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   width: 45%;
   align-items: center;
   display: flex;
@@ -8333,9 +8313,9 @@ ul.track-steps {
   font-weight: 500;
   box-shadow: none;
   background: #eeeeee;
-  -webkit-transition: background 200ms cubic-bezier(0, 0, 1, 1);
+  /* -webkit-transition: background 200ms cubic-bezier(0, 0, 1, 1);
   -moz-transition: background 200ms cubic-bezier(0, 0, 1, 1);
-  transition: background 200ms cubic-bezier(0, 0, 1, 1);
+  transition: background 200ms cubic-bezier(0, 0, 1, 1); */
   line-height: 20px;
   color: black;
   margin: 0;
@@ -8446,7 +8426,7 @@ ul.track-steps {
   background: #eee;
   line-height: 24px;
   width: 100%;
-  padding: 10px;
+  padding: 15px;
 }
 
 .btaundersavefastercheckout {
@@ -8582,7 +8562,7 @@ ul.track-steps {
   line-height: 40px;
   font-size: 32px;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
 }
 
 .bobpbqbre8e9eadoor {
@@ -8597,8 +8577,7 @@ ul.track-steps {
   line-height: 24px;
   font-weight: normal;
   font-size: 16px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
   min-width: 100%;
   box-sizing: border-box;
@@ -8611,8 +8590,7 @@ ul.track-steps {
   line-height: 24px;
   font-weight: normal;
   font-size: 16px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
@@ -8631,7 +8609,7 @@ ul.track-steps {
   font-weight: 500;
   line-height: 20px;
   font-size: 16px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-family: var(--font-family);
 } */
 
 .eidoor {
@@ -8650,8 +8628,7 @@ ul.track-steps {
   line-height: 24px;
   font-weight: normal;
   font-size: 16px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
   min-width: 100%;
   box-sizing: border-box;
@@ -8670,8 +8647,7 @@ ul.track-steps {
   line-height: 24px;
   font-weight: normal;
   font-size: 16px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
   min-width: 100%;
   box-sizing: border-box;
@@ -8690,8 +8666,7 @@ ul.track-steps {
   color: #ffffff;
   cursor: pointer;
   line-height: 24px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   width: 100%;
   -webkit-box-align: center;
   align-items: center;
@@ -8724,8 +8699,7 @@ ul.track-steps {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -8766,8 +8740,7 @@ ul.track-steps {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   cursor: pointer;
   -webkit-box-align: center;
   align-items: center;
@@ -8811,7 +8784,7 @@ ul.track-steps {
   -webkit-box-pack: justify;
   justify-content: space-between;
   font-weight: 700;
-  font-family: sans-serif;
+  font-family: var(--font-family);
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
@@ -8836,8 +8809,7 @@ ul.track-steps {
   line-height: 20px;
   font-size: 16px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
 }
 
@@ -8941,7 +8913,7 @@ ul.track-steps {
   line-height: 20px;
   font-weight: 500;
   font-size: 16px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,sans-serif;
+  font-family: var(--font-family);
   max-width: 58%;
 }
 
@@ -8952,7 +8924,7 @@ ul.track-steps {
   line-height: 20px;
   font-weight: 500;
   font-size: 16px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,sans-serif;
+  font-family: var(--font-family);
   width: 20%;
 }
 
@@ -8962,16 +8934,14 @@ ul.track-steps {
   line-height: 24px;
   font-weight: normal;
   font-size: 16px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .c3hmc5em {
   line-height: 20px;
   font-weight: 500;
   font-size: 16px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 /* new design for items cart */
@@ -9023,7 +8993,7 @@ ul.track-steps {
   font-size: 16px;
   line-height: 20px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,sans-serif;
+  font-family: var(--font-family);
 }
 
 .cart-item-title{
@@ -9031,7 +9001,7 @@ ul.track-steps {
   font-size: 16px;
   line-height: 20px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,sans-serif;
+  font-family: var(--font-family);
 }
 
 .ib-cv-cart-item-display {
@@ -9049,8 +9019,7 @@ ul.track-steps {
   line-height: 20px;
   font-weight: normal;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 .md-cart-item-display {
@@ -9124,8 +9093,7 @@ ul.track-steps {
   font-weight: 500;
   cursor: pointer;
   line-height: 24px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   -webkit-box-align: center;
   align-items: center;
   display: -webkit-box;
@@ -9171,8 +9139,7 @@ ul.track-steps {
   line-height: 24px;
   white-space: nowrap;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   -webkit-box-pack: center;
   justify-content: center;
   -webkit-box-align: center;
@@ -9207,8 +9174,7 @@ ul.track-steps {
   font-size: 16px;
   line-height: 20px;
   font-weight: 500;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
   color: #000000;
   -webkit-box-orient: vertical;
   -webkit-box-direction: normal;
@@ -9228,8 +9194,7 @@ ul.track-steps {
   line-height: 16px;
   font-weight: 500;
   font-size: 14px;
-  font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-    sans-serif;
+  font-family: var(--font-family);
 }
 
 /* Review system design css */
@@ -9300,7 +9265,7 @@ ul.track-steps {
 /* Tooltip */
 .review-ul li {
   cursor: help;
-  font-family: "Gill Sans", Impact, sans-serif;
+  font-family: var(--font-family);
   font-size: 20px;
   position: relative;
   text-align: center;
@@ -9749,7 +9714,7 @@ ul.track-steps {
 .account-component > h1{
   font-size: 30px;
   font-weight: 700;
-  font-family: "Gill Sans", Impact, sans-serif;
+  font-family: var(--font-family);
 }
 
 .security-detail {
@@ -9909,6 +9874,81 @@ ul.track-steps {
   color: #7f7f7f;
 }
 
+.store-information {
+  background: var(--store-timing-bg, #ffffff);
+  color: var(--store-timing-color, #000000);
+}
+
+.header-order-type {
+  width: 100%;
+}
+
+.checkout-cross-btn {
+  position: absolute;
+  right: 10px;
+  bottom: 12px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  background-color: #ffffff;
+  border: 1px solid;
+  border-radius: 50%;
+  padding: 3px
+}
+
+.at-first-cross-btn {
+  position: absolute;
+  right: 10px;
+  top: 0px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  background-color: #ffffff;
+  border: 1px solid;
+  border-radius: 50%;
+  padding: 3px
+}
+
+.checkout-form {
+  padding: 0px 10px 0px 10px;
+}
+
+.custom-form-group{
+  display: flex;
+  justify-content: space-between;
+}
+
+.form-total-value{
+  display: flex;
+  justify-content: space-between;
+}
+
+
+.checkout-window-form {
+  padding-left: 4px;
+  width: 60%;
+  display: flex;
+}
+
+.checkout-group-window-form {
+  padding-left: 4px;
+  width: 60%;
+  display: flex;
+  gap: 11px;
+  margin-left: 180px;
+}
+
+/* Remove spinner arrows for Chrome, Safari, Edge, Opera */
+.no-spinner::-webkit-inner-spin-button,
+.no-spinner::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Remove spinner for Firefox */
+.no-spinner {
+  -moz-appearance: textfield;
+}
 
 @media only screen and (max-width: 768px)
 {
@@ -10015,7 +10055,7 @@ ul.track-steps {
     font-weight: 500;
     color: #ffffff;
     line-height: 24px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,sans-serif;
+    font-family: var(--font-family);
     float: right;
   }
   
@@ -10132,6 +10172,7 @@ ul.track-steps {
   .logo-location-cart {
     align-items: center;
     justify-content: center;
+    width: 100%;
   }
 
   .hamburger-button {
@@ -10148,6 +10189,7 @@ ul.track-steps {
   .brand-logo {
     display: flex;
     justify-content: center;
+    height: 12vh;
   }
 
   .search-outer-level-one-div {
@@ -10222,7 +10264,7 @@ ul.track-steps {
     line-height: 36px;
     font-weight: 700;
     font-size: 36px;
-    font-family: sans-serif;
+    font-family: var(--font-family);
     text-align: center;
     justify-content: center;
     display: flex;
@@ -10236,7 +10278,8 @@ ul.track-steps {
   }
 
   .openCloseTime-type {
-    width: 374px;
+    width: 285px;
+    /* width: 100%; */
     margin: 0 auto;
   }
 
@@ -10250,8 +10293,7 @@ ul.track-steps {
     line-height: 20px;
     font-weight: 500;
     font-size: 16px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
   }
 
   .item-details {
@@ -10279,16 +10321,14 @@ ul.track-steps {
     font-size: 14px;
     line-height: 20px;
     font-weight: 500;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
   }
 
   .item-modifier-details {
     font-size: 14px;
     line-height: 20px;
     font-weight: normal;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     display: -webkit-box;
     display: -moz-box;
     display: -ms-flexbox;
@@ -10334,6 +10374,26 @@ ul.track-steps {
     display: unset;
   }
 
+  .top-bar-div-level-one {
+    z-index: 1;
+  }
+
+  .akaptopbar-div {
+    height: 0;
+    position: relative;
+  }
+
+  .b0albctopbar-div {
+    -webkit-box-align: center;
+    align-items: center;
+    background-color: #ffffff;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+  }
+
   .nlalh2bcbdnmnntopbar-div {
     border-bottom: 5px solid rgb(226, 226, 226);
     height: 52px;
@@ -10349,6 +10409,27 @@ ul.track-steps {
     display: -webkit-flex;
     display: flex;
   }
+
+  .alaqbbbcnocqavlcakawtopbar-div {
+    box-shadow: rgb(226, 226, 226) 0px -5px 0px inset;
+    overflow-x: scroll;
+    z-index: 1;
+    -webkit-box-align: center;
+    align-items: center;
+    flex: 1;
+    -webkit-overflow-scrolling: touch;
+    overflow-y: hidden;
+    -webkit-box-orient: horizontal;
+    -webkit-box-direction: normal;
+    flex-direction: row;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    position: relative;
+  }
+
   .np {
     border-bottom: 5px solid rgb(0, 0, 0);
   }
@@ -10357,12 +10438,33 @@ ul.track-steps {
     border-bottom: 5px solid rgb(255, 255, 255);
   }
 
+  .bycsc0ctnmalc8bcc6nptopbar-div {
+    height: 12vh;
+    line-height: 20px;
+    font-size: 14px;
+    padding: 0px 16px;
+    white-space: nowrap;
+    font-weight: normal;
+    font-family: var(--font-family);
+    -webkit-box-align: center;
+    align-items: center;
+    display: -webkit-box;
+    display: -moz-box;
+    display: -ms-flexbox;
+    display: -webkit-flex;
+    display: flex;
+    color: rgb(0, 0, 0);
+  }
+
+  .bycsc0ctnmalc8bcc6nptopbar-div:active {
+    border-bottom: #000000;
+  }
+
   .bycsd3d4topbar-div {
     line-height: 16px;
     font-weight: 500;
     font-size: 14px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
   }
 
   .item-lists {
@@ -10372,7 +10474,7 @@ ul.track-steps {
   }
 
   .items-list-nested-ul {
-    grid-template-columns: repeat(1, 1fr);
+    /* grid-template-columns: repeat(1, 1fr); */
     display: flex;
     flex-direction: column;
   }
@@ -10513,7 +10615,7 @@ ul.track-steps {
     font-weight: 500;
     transition-timing-function: cubic-bezier(0, 0, 1, 1);
     transition-duration: 200ms;
-    transition-property: background;
+    /* transition-property: background; */
     appearance: none;
     text-decoration: none;
     box-shadow: none;
@@ -10534,8 +10636,7 @@ ul.track-steps {
     -webkit-box-pack: center;
     justify-content: center;
     font-size: 16px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     -webkit-box-align: center;
     align-items: center;
     cursor: pointer;
@@ -10560,8 +10661,7 @@ ul.track-steps {
     text-align: center;
     overflow: hidden;
     line-height: 24px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
   }
 
   .akbkbxc3single-product {
@@ -10581,7 +10681,7 @@ ul.track-steps {
     line-height: 32px;
     font-size: 24px;
     font-weight: 700;
-    font-family: sans-serif;
+    font-family: var(--font-family);
     -webkit-box-align: center;
     align-items: center;
     display: -webkit-box;
@@ -10598,7 +10698,7 @@ ul.track-steps {
     padding: 0px;
     white-space: pre-wrap;
     font-weight: 700;
-    font-family: sans-serif;
+    font-family: var(--font-family);
     color: #000000;
   }
 
@@ -10616,8 +10716,7 @@ ul.track-steps {
     line-height: 20px;
     overflow: hidden;
     font-weight: normal;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
   }
 
   .bkeaebalsingle-product {
@@ -10730,20 +10829,20 @@ ul.track-steps {
 
   .modifier-dropdown-title {
     line-height: 20px;
-    font-size: 16px;
-    font-weight: 500;
-    font-family: sans-serif;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: var(--font-family);
   }
 
   .bresbtdqfysingle-product {
     color: rgb(84, 84, 84);
-    font-size: 14px;
+    font-size: 20px;
     line-height: 20px;
-    font-weight: normal;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    display: flex;
-    justify-content: space-between;
+    font-weight: bold;
+    font-family: var(--font-family);
+    display: block;
+    /* display: flex;
+    justify-content: space-between; */
   }
 
   .g5single-product {
@@ -10772,18 +10871,18 @@ ul.track-steps {
     position: relative;
     border: 1px solid grey;
     border-radius: 5px;
-    margin: 10px 0px 10px 0px;
+    margin: 2px 0px 3px 0px;
   }
 
   .brbsdpdqbkalbfafg6single-productlable {
     transition: background-color 100ms ease 0s;
     -webkit-box-orient: horizontal;
     line-height: 20px;
-    font-weight: 500;
+    font-weight: bold;
     -webkit-box-pack: justify;
     justify-content: space-between;
     font-size: 16px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,sans-serif;
+    font-family: var(--font-family);
     width: 100%;
     -webkit-box-align: center;
     align-items: center;
@@ -10823,10 +10922,9 @@ ul.track-steps {
   .bresdpg4gosingle-product {
     word-break: break-word;
     line-height: 16px;
-    font-size: 14px;
-    font-weight: 500;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-size: 17px;
+    font-weight: bold;
+    font-family: var(--font-family);
     width: 85%;
   }
 
@@ -10838,8 +10936,7 @@ ul.track-steps {
     -webkit-box-pack: justify;
     justify-content: space-between;
     font-size: 16px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     width: 100%;
     -webkit-box-align: center;
     align-items: center;
@@ -10867,7 +10964,7 @@ ul.track-steps {
     padding: 8px;
     border: 1px solid grey;
     border-radius: 5px;
-    margin-top: 10px;
+    margin-top: 5px;
   }
 
   .alaqbfsingle-product {
@@ -10907,11 +11004,10 @@ ul.track-steps {
 
   .bresbtdqiqsingle-product {
     margin: 0px 12px;
-    font-size: 14px;
+    font-size: 20px;
     line-height: 20px;
-    font-weight: normal;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-weight: bold;
+    font-family: var(--font-family);
   }
 
   .e4ald0ghsingle-productincdec {
@@ -10961,19 +11057,17 @@ ul.track-steps {
   .bresdpg3gnsingle-productincdecheading {
     word-break: break-word;
     line-height: 16px;
-    font-size: 14px;
-    font-weight: 500;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-size: 17px;
+    font-weight: bold;
+    font-family: var(--font-family);
   }
 
   .bresbtdqb1bzsingle-productincdecprice {
     font-size: 14px;
     line-height: 20px;
     white-space: nowrap;
-    font-weight: normal;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-weight: bold;
+    font-family: var(--font-family);
     color: #000000;
   }
 
@@ -11022,6 +11116,7 @@ ul.track-steps {
     display: -webkit-flex;
     display: flex;
     position: absolute; */
+    /* margin: 0px 0px 0px 40px; */
   }
 
   .e3bubrdpb9h9h0albfc4affoh6hagzf1hbhcdohdhesingle-dec-product {
@@ -11038,8 +11133,7 @@ ul.track-steps {
     -webkit-box-pack: center;
     justify-content: center;
     line-height: 24px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     -webkit-box-align: center;
     align-items: center;
     cursor: pointer;
@@ -11066,8 +11160,7 @@ ul.track-steps {
     -webkit-box-pack: center;
     justify-content: center;
     line-height: 24px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     -webkit-box-align: center;
     align-items: center;
     cursor: pointer;
@@ -11123,9 +11216,10 @@ ul.track-steps {
 
   .add-to-cart-design
   {
-    padding-top: 16px;
+    /* padding-top: 16px;
     padding-right: 16px;
-    padding-left: 16px;
+    padding-left: 16px; */
+    padding: 15px;
     position: sticky;
     /* background: rgb(255, 255, 255); */
     background: #000;
@@ -11139,19 +11233,12 @@ ul.track-steps {
   .e3bubrdpb9ihbkalbfc4afh2iibbijikilgwgxsingle-product {
     background: var(--addToCart);
     border-radius: 8px;
-    /* min-height: 56px; */
     padding: 9px 12px;
-    /* font-size: 18px; */
     font-weight: 500;
     justify-content: center;
-    /* line-height: 24px; */
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial, sans-serif;
-    /* width: 100%; */
+    font-family: var(--font-family);
     align-items: center;
     color: #ffffff;
-    /* cursor: pointer; */
-    /* display: flex; */
-    /* box-sizing: border-box; */
   }
 
   .bre3dpbud6imbfsingle-product-span {
@@ -11159,8 +11246,7 @@ ul.track-steps {
     font-weight: 500;
     display: inline-flex;
     line-height: 24px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     -webkit-box-align: center;
     align-items: center;
   }
@@ -11210,7 +11296,7 @@ ul.track-steps {
     line-height: 20px;
     font-weight: 500;
     font-size: 16px;
-    font-family: sans-serif;
+    font-family: var(--font-family);
     display: flex;
     justify-content: space-between;
   }
@@ -11273,7 +11359,7 @@ ul.track-steps {
   }
 
   .arcgatchl4h2view-cart {
-    padding: 0px 16px 32px;
+    padding: 4px 10px;
     z-index: 1;
     position: fixed;
     right: 0;
@@ -11350,8 +11436,7 @@ ul.track-steps {
     line-height: 24px;
     color: #ffffff;
     font-weight: 500;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     -webkit-box-pack: center;
     justify-content: space-between;
     width: 100%;
@@ -11388,7 +11473,7 @@ ul.track-steps {
     line-height: 40px;
     font-size: 32px;
     font-weight: 700;
-    font-family: sans-serif;
+    font-family: var(--font-family);
     -webkit-box-orient: vertical;
     -webkit-box-direction: normal;
     flex-direction: column;
@@ -11463,8 +11548,7 @@ ul.track-steps {
     font-weight: 500;
     line-height: 20px;
     font-size: 16px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     color: #000000;
   }
 
@@ -11472,8 +11556,7 @@ ul.track-steps {
     font-size: 14px;
     line-height: 20px;
     font-weight: normal;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     color: #000000;
   }
 
@@ -11487,8 +11570,7 @@ ul.track-steps {
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     -webkit-box-align: center;
     align-items: center;
     color: #000000;
@@ -11526,7 +11608,7 @@ ul.track-steps {
     margin-bottom: 8px;
     flex: 1;
     font-weight: 700;
-    font-family: sans-serif;
+    font-family: var(--font-family);
     -webkit-box-align: center;
     align-items: center;
     display: -webkit-box;
@@ -11585,8 +11667,7 @@ ul.track-steps {
     justify-content: center;
     width: 24px;
     height: 24px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     -webkit-box-align: center;
     align-items: center;
     display: -webkit-box;
@@ -11620,16 +11701,14 @@ ul.track-steps {
     font-size: 14px;
     font-weight: 500;
     line-height: 20px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
   }
 
   .albodgbqcvcheckout-li-modi-detail {
     font-size: 14px;
     line-height: 20px;
     font-weight: normal;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     display: -webkit-box;
     display: -moz-box;
     display: -ms-flexbox;
@@ -11684,8 +11763,7 @@ ul.track-steps {
     font-weight: 500;
     line-height: 20px;
     font-size: 16px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     color: #000000;
   }
 
@@ -11701,8 +11779,7 @@ ul.track-steps {
     line-height: 24px;
     font-weight: normal;
     font-size: 16px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     display: -webkit-box;
     display: -moz-box;
     display: -ms-flexbox;
@@ -11727,8 +11804,7 @@ ul.track-steps {
     line-height: 24px;
     font-weight: normal;
     font-size: 16px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     color: #000000;
   }
 
@@ -11744,7 +11820,7 @@ ul.track-steps {
     -webkit-box-pack: justify;
     justify-content: space-between;
     font-weight: 700;
-    font-family: sans-serif;
+    font-family: var(--font-family);
     display: -webkit-box;
     display: -moz-box;
     display: -ms-flexbox;
@@ -11778,16 +11854,14 @@ ul.track-steps {
     line-height: 20px;
     font-size: 12px;
     font-weight: normal;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
   }
 
   .bocubqcvb1checkout {
     line-height: 20px;
     font-size: 12px;
     font-weight: normal;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     color: #000000;
   }
 
@@ -11796,8 +11870,7 @@ ul.track-steps {
     line-height: 20px;
     font-size: 12px;
     font-weight: normal;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
   }
 
   .bocudfdhgy {
@@ -11805,8 +11878,7 @@ ul.track-steps {
     line-height: 16px;
     font-weight: 500;
     font-size: 12px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
   }
 
   .dxc9checkout {
@@ -11832,11 +11904,11 @@ ul.track-steps {
       rgba(255, 255, 255, 0) 2.5%,
       rgba(255, 255, 255, 0.92) 55.35%
     );
-    padding: 16px 16px 24px;
-    right: 0;
-    bottom: 0;
-    left: 0;
-    position: fixed;
+    padding: 20px 0px;
+    /* right: 0; */
+    /* bottom: 0; */
+    /* left: 0; */
+    /* position: fixed; */
   }
 
   .fwbrbocheckout-place-order {
@@ -11851,16 +11923,15 @@ ul.track-steps {
     color: #ffffff;
     cursor: pointer;
     line-height: 24px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    width: 100%;
+    font-family: var(--font-family);
+    width: 40%;
     -webkit-box-align: center;
     align-items: center;
     display: -webkit-box;
     display: -moz-box;
     display: -ms-flexbox;
     display: -webkit-flex;
-    display: flex;
+    /* display: flex; */
     box-sizing: border-box;
   }
 
@@ -11882,8 +11953,7 @@ ul.track-steps {
     color: #ffffff;
     cursor: pointer;
     line-height: 24px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     width: 100%;
     -webkit-box-align: center;
     align-items: center;
@@ -11904,7 +11974,7 @@ ul.track-steps {
     position: relative;
   }
 
-  .gmgngoalamgppayment-desk {
+  /* .gmgngoalamgppayment-desk {
     background: linear-gradient(
       rgba(255, 255, 255, 0) 2.5%,
       rgba(255, 255, 255, 0.92) 55.35%
@@ -11915,7 +11985,7 @@ ul.track-steps {
     bottom: 0;
     left: 0;
     position: fixed;
-  }
+  } */
 
   .gqpayment-desk {
     min-height: 56px;
@@ -11925,25 +11995,24 @@ ul.track-steps {
     line-height: 28px;
     font-size: 18px;
     font-weight: normal;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
   }
 
   .h7brboe1payment-btn {
+    margin-top: 50px;
     background: rgb(2, 117, 37);
-    padding: 12px 16px;
+    padding: 15px 20px 15px 20px;
     border-radius: 8px;
     min-height: 56px;
     font-size: 18px;
-    font-weight: 500;
+    font-weight: bold;
     -webkit-box-pack: center;
     justify-content: center;
     color: #ffffff;
     cursor: pointer;
     line-height: 24px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
-    width: 100%;
+    font-family: var(--font-family);
+    width: unset;
     -webkit-box-align: center;
     align-items: center;
     display: -webkit-box;
@@ -11952,6 +12021,7 @@ ul.track-steps {
     display: -webkit-flex;
     display: flex;
     box-sizing: border-box;
+    margin: 0 auto;
   }
 
   .h7brboe1payment-btn:hover {
@@ -11967,8 +12037,7 @@ ul.track-steps {
     font-weight: 500;
     cursor: pointer;
     line-height: 24px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     color: #000000;
   }
 
@@ -11985,8 +12054,7 @@ ul.track-steps {
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     align-items: center;
     color: #000000;
     display: flex;
@@ -12054,16 +12122,14 @@ ul.track-steps {
     line-height: 20px;
     font-size: 12px;
     font-weight: normal;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
   }
 
   .bocubqcvb1checkout-window {
     line-height: 20px;
     font-size: 12px;
     font-weight: normal;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     color: #000000;
   }
 
@@ -12072,8 +12138,7 @@ ul.track-steps {
     line-height: 20px;
     font-size: 12px;
     font-weight: normal;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
   }
 
   .alaklhcheckout-window {
@@ -12105,8 +12170,7 @@ ul.track-steps {
     line-height: 20px;
     font-size: 16px;
     font-weight: 500;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     cursor: pointer;
     -webkit-box-align: center;
     align-items: center;
@@ -12119,7 +12183,7 @@ ul.track-steps {
     box-sizing: border-box;
   }
 
-  .mimjepmkmlmmcheckout-desk {
+  .mimjepmkmlmmcheckout-desk, .save-my-details {
     border-bottom: 2px solid rgb(238, 238, 238);
     padding-left: 0px;
     padding-right: 0px;
@@ -12133,11 +12197,6 @@ ul.track-steps {
     border: none;
     flex: 1 1;
     height: 0px;
-  }
-
-  .almycheckout-desk {
-    display: flex;
-    justify-content: space-evenly;
   }
 
   .alh2amenc9jdundersavefastercheckout {
@@ -12218,8 +12277,7 @@ ul.track-steps {
     font-weight: 500;
     cursor: pointer;
     line-height: 24px;
-    font-family: system-ui, "Helvetica Neue", Helvetica, Arial,
-      sans-serif;
+    font-family: var(--font-family);
     color: #000000;
   }
 
@@ -12267,7 +12325,7 @@ ul.track-steps {
     font-size: 20px;
     margin-bottom: 20px;
     font-weight: unset;
-    font-family: sans-serif;
+    font-family: var(--font-family);
   }
 
   /* Review system */
@@ -12542,7 +12600,7 @@ ul.track-steps {
   .account-component > h1{
     font-size: 30px;
     font-weight: 700;
-    font-family: "Gill Sans", Impact, sans-serif;
+    font-family: var(--font-family);
   }
 
   .security-detail {
@@ -12605,6 +12663,101 @@ ul.track-steps {
   .navbar {
     max-width: 100vw;
   }
+
+  .header-order-type {
+    width: 100%;
+  }
+  
+  .items-list-nested-list {
+    width: 100%;
+  }
+
+  .top-bar {
+    /* margin-top: 50px; */
+  }
+
+  .header {
+    height: 33vh;
+  }
+
+  .modal-lg {
+    max-width: 100%;
+    width: 100%;
+    padding: 10px;
+  }
+
+  .checkout-cross-btn {
+    right: 13px;
+    bottom: 0px;
+  }
+
+  .at-first-cross-btn{
+    right: 13px;
+    bottom: 0px;
+  }
+
+  .checkout-form {
+    padding: 0px 10px 0px 10px;
+  }
+
+  .custom-form-group{
+    display: block;
+    margin-bottom: 8px;
+  }
+  .checkout-window-form {
+    padding-left: 4px;
+    width: 100%;
+    display: flex;
+  }
+
+  .checkout-group-window-form {
+    padding-left: 4px;
+    width: 100%;
+    display: flex;
+    gap: 11px;
+    margin-left: unset;
+  }
+
+  .save-details {
+    
+    width: 83%;
+    
+  }
+
+  .save-details::before {
+    width: 35px;
+    height: 35px;
+  }
+
+  .chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label::before {
+    width: 35px;
+    height: 35px;
+  }
+
+  .chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label{
+    width: 40%;
+  }
+
+  .add-to-cart-btn-item {
+    font-size: 14px;
+    margin-left: 40px;
+    padding: 9px 12px;
+    min-width: 130px;
+  }
+
+  .item-title-p {
+    font-family:var(--font-family);
+    font-size: 18px;
+    font-weight: 600;
+    line-height: 1.2;
+    overflow: hidden;
+    color: #000;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #989898;
+    transition: all ease-in-out .2s;
+    height: unset;
+  }
 }
 
 @media screen and (max-width: 480px) {
@@ -12636,5 +12789,19 @@ ul.track-steps {
     width: 100%;
     display: block;
   }
+  .header-order-type {
+    width: 100%;
+  }
 
+  .items-list-nested-list {
+    width: 91%;
+  }
+
+  .top-bar {
+    /* margin-top: 50px; */
+  }
+
+  .header {
+    height: 33vh;
+  }
 }

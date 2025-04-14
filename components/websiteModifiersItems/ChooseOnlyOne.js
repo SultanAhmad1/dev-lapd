@@ -1,4 +1,6 @@
+import { BLACK_COLOR, WHITE_COLOR } from "@/global/Axios";
 import { getAmountConvertToFloatWithFixed } from "@/global/Store";
+import moment from "moment";
 import React, { Fragment } from "react";
 
 export default function ChooseOnlyOne({
@@ -8,6 +10,10 @@ export default function ChooseOnlyOne({
   websiteModificationData,
 }) 
 {
+
+  const currentDate = moment()
+
+  
   return(
     <li className={`section${index}`}>
       {/* <hr className="product_hr"></hr> */}
@@ -46,20 +52,23 @@ export default function ChooseOnlyOne({
                     className="product-modifier-item-detail"  
                     style={{
                       marginTop: "8px",
-                      background: secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, 
-                      border: secondItems?.item_select_to_sale && `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`
+                      background: secondItems?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR),
+                      border: secondItems?.item_select_to_sale && `1px solid ${(websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR)}`
                     }}
 
                     onClick={() =>handleRadioInput(modifier?.id,secondItems?.id,secondItems?.title, parseInt(secondItems?.secondary_item_modifiers.length))}
                   >
                 
-                  <label className={`modifier-product-item-name`} style={{ '--before-color': `${secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,}}>
+                  <label 
+                    className={`modifier-product-item-name`} 
+                    style={{ '--before-color': `${secondItems?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || WHITE_COLOR)}`,}}
+                  >
                     <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}`} strokeWidth="2.5" strokeLinejoin="round"/>
+                      <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${secondItems?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR)}`} strokeWidth="2.5" strokeLinejoin="round"/>
                     </svg>
 
                     <div className="spacer _16"></div>
-                    <div className="modifier-product-item-name-one-nested-div-one-nested" style={{color: secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
+                    <div className="modifier-product-item-name-one-nested-div-one-nested" style={{color: secondItems?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR)}}>
                       <span className="modifier-product-item-name-one-nested-div-one-nested-div">
                         {secondItems?.title}
                       </span>
@@ -67,7 +76,7 @@ export default function ChooseOnlyOne({
                         parseInt(secondItems?.price) > parseInt(0) && 
                         <span 
                             className="modifier-group-price" 
-                            style={{color: secondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}
+                            style={{color: secondItems?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR)}}
                           >
                           &pound;{getAmountConvertToFloatWithFixed(secondItems?.price,2)}
                         </span>
@@ -81,7 +90,7 @@ export default function ChooseOnlyOne({
                     <div className="poquickreview-modal">
                       <div className="c8c7cuquickreview-modal">
                         <svg style={{ cursor: "pointer" }} width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                          <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill={`${secondItems?.item_select_to_sale ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor : "#AFAFAF"}`} transform="rotate(90, 12, 12)"></path>
+                          <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill={`${secondItems?.item_select_to_sale ? (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR) : "#AFAFAF"}`} transform="rotate(90, 12, 12)"></path>
                         </svg>
                       </div>
                     </div>

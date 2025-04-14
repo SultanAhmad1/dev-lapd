@@ -6,6 +6,9 @@ import {
   BRAND_SIMPLE_GUID,
   BRAND_GUID,
   axiosPrivate,
+  BLACK_COLOR,
+  WHITE_COLOR,
+  LIGHT_BLACK_COLOR,
 } from "@/global/Axios";
 import {
   find_matching_postcode,
@@ -16,9 +19,20 @@ import {
 import AvailableStore from "@/components/AvailableStore";
 import moment from "moment";
 import { NextResponse } from "next/server";
+import FilterLocationTime from "@/components/FilterLocationTime";
+import { useSearchParams } from "next/navigation";
 
 function SubAtLoadLoadShow({ setLoader }) {
   
+  const searchParams = useSearchParams()
+
+  const locationFiltered = searchParams.get('location')
+  
+  // const locationDetails = locationFiltered.replace(/^"+|"+$/g, '');
+  const locationDetails = locationFiltered ? locationFiltered.replace(/^"+|"+$/g, '') : '';
+
+  // console.log("location details:", locationDetails);
+
   const responseNext = NextResponse.next()
 
   const postCodeRef = useRef(null)
@@ -31,6 +45,12 @@ function SubAtLoadLoadShow({ setLoader }) {
     deliveryMatrix,
     setDeliveryMatrix,
     websiteModificationData,
+    setFilters,
+    isChangePostcodeButtonClicked,
+    handleBoolean,
+    setAtFirstLoad,
+    setCartData,
+   
   } = useContext(HomeContext);
 
   useEffect(() => {
@@ -48,6 +68,13 @@ function SubAtLoadLoadShow({ setLoader }) {
   const [availableStores, setAvailableStores] = useState([]);
 
   const [isStoreAvailable, setIsStoreAvailable] = useState(true);
+
+  
+  const handleFormCross = () => {
+    handleBoolean(false, "isChangePostcodeButtonClicked")
+    handleBoolean(true, "isPlaceOrderButtonClicked")
+    setAtFirstLoad(false)
+  }
 
   function handlePostCode(event) {
 
@@ -69,7 +96,7 @@ function SubAtLoadLoadShow({ setLoader }) {
       setIsGoBtnClickAble(false)
     }
   }
-
+  
   async function fetchPostcodeData() {
     try {
       let filterPostcode = validPostcode.replace(/\s/g, "");
@@ -97,25 +124,74 @@ function SubAtLoadLoadShow({ setLoader }) {
       };
 
       const response = await axiosPrivate.post(`/ukpostcode-website`, data);
+
+      
+      
       const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows;
-      find_matching_postcode(matrix, validPostcode, setDeliveryMatrix);
+      console.log("get the matrixes:", matrix, "valid postcode:", validPostcode, );
+      
+      // find_matching_postcode(matrix, validPostcode, setDeliveryMatrix);
 
       const currentDateTime = moment().format('YYYY-MM-DD HH:mm:ss');
 
       // make cart empty.
       setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[]);
+      setCartData([])
       setLocalStorage(`${BRAND_SIMPLE_GUID}user_postcode_time`, currentDateTime)
       setLocalStorage(`${BRAND_SIMPLE_GUID}address`, response?.data?.data);
       setLocalStorage(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validPostcode)
 
       responseNext.cookies.set("theme","dark")
       setNextCookies("theme", "dark")
+
       responseNext.cookies.set(`${BRAND_SIMPLE_GUID}cart`,[]);
       responseNext.cookies.set(`${BRAND_SIMPLE_GUID}user_postcode_time`, currentDateTime)
       responseNext.cookies.set(`${BRAND_SIMPLE_GUID}address`, response?.data?.data);
       responseNext.cookies.set(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validPostcode)
 
-      setAvailableStores(response.data?.data?.availableStore);
+      const availableStores = response?.data?.data?.availableStore || [];
+      const orderTypeFilters = response?.data?.data?.orderTypeFilters || [];
+
+      if(parseInt(availableStores?.length) === parseInt(0) || parseInt(orderTypeFilters?.length) === parseInt(0))
+      {
+
+        setPostcodeerror("There is no store available.");
+        setIsGoBtnClickAble(false);
+        setPostcode(validPostcode);
+        setTimeout(() => {
+          setLoader(false);
+        }, 1000);
+        
+        return
+      }
+      const availableStoreUpdate = availableStores?.map((store) => {
+        // Find matching locationalStatus from orderTypeFilters
+        const matchingFilters = orderTypeFilters
+          ?.map((filter, filterIndex) => {
+            const matchedLocationalStatus = filter.locationalStatus?.filter(
+              (status) => parseInt(status.id) === parseInt(store.id) && status.isChecked === true
+            );
+      
+            return {
+              ...filter,
+              locationalStatus: matchedLocationalStatus,
+              status: matchedLocationalStatus.length > 0 ? true : false, // Update status based on matched locations,
+              // isClicked: filterIndex === 0 ? true : false,
+              isClicked: false,
+            };
+          })
+          .filter((filter) => filter.locationalStatus.length > 0); // Keep only filters that have matching locations
+      
+        return {
+          ...store,
+          orderType: matchingFilters.length > 0 ? matchingFilters : null, // Attach matched filters or null
+        };
+      });
+      
+      setAvailableStores(availableStoreUpdate);
+
+
+      setFilters(response?.data?.data?.orderTypeFilters)
 
       setIsGoBtnClickAble(false);
       setPostcode(validPostcode);
@@ -126,6 +202,7 @@ function SubAtLoadLoadShow({ setLoader }) {
     } 
     catch (error) 
     {
+      setAvailableStores([])
       if(error?.code === "ERR_NETWORK")
       {
         setPostcodeerror("There is something went wrong!. Please try again.");
@@ -143,6 +220,8 @@ function SubAtLoadLoadShow({ setLoader }) {
     }
   }
 
+  // console.log("delivery matrix:", deliveryMatrix);
+  
   useEffect(() => {
     if (deliveryMatrix !== null) 
     {
@@ -162,16 +241,155 @@ function SubAtLoadLoadShow({ setLoader }) {
     } 
     
     setPostcodeerror("Invalid postcode.")
-  }  
+  } 
+
+  useEffect(() => {
+    if(parseInt(locationDetails?.length) > parseInt(0))
+    {
+      async function fetchQueryParamLocation() {
+        try {
+            setLoader(true)
+          
+          const data = {
+            
+            brand_guid: BRAND_GUID,
+            dayName: dayName,
+            dayNumber: dayNumber,
+            location: locationDetails,
+          };
+    
+          const response = await axiosPrivate.post(`/qr-code-website`, data);
+    
+            console.log("qr response:", response);
+            
+          
+          const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows;
+          console.log("get the matrixes:", matrix, "valid postcode:", validPostcode, );
+          
+          // find_matching_postcode(matrix, validPostcode, setDeliveryMatrix);
+          const availableStores = response?.data?.data?.availableStore || [];
+          const orderTypeFilters = response?.data?.data?.orderTypeFilters || [];
+          
+          const currentDateTime = moment().format('YYYY-MM-DD HH:mm:ss');
+    
+          console.log("available store:",availableStores );
+          
+          // make cart empty.
+          setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[]);
+          setCartData([])
+          setLocalStorage(`${BRAND_SIMPLE_GUID}user_postcode_time`, currentDateTime)
+          setLocalStorage(`${BRAND_SIMPLE_GUID}address`, response?.data?.data);
+          setLocalStorage(`${BRAND_SIMPLE_GUID}user_valid_postcode`, availableStores?.[0].user_postcode)
+    
+          responseNext.cookies.set("theme","dark")
+          setNextCookies("theme", "dark")
+    
+          responseNext.cookies.set(`${BRAND_SIMPLE_GUID}cart`,[]);
+          responseNext.cookies.set(`${BRAND_SIMPLE_GUID}user_postcode_time`, currentDateTime)
+          responseNext.cookies.set(`${BRAND_SIMPLE_GUID}address`, response?.data?.data);
+          responseNext.cookies.set(`${BRAND_SIMPLE_GUID}user_valid_postcode`, availableStores?.[0].user_postcode)
+    
+          
+    
+          if(parseInt(availableStores?.length) === parseInt(0) || parseInt(orderTypeFilters?.length) === parseInt(0))
+          {
+    
+            setPostcodeerror("There is no store available.");
+            setIsGoBtnClickAble(false);
+            setPostcode(validPostcode);
+            setTimeout(() => {
+              setLoader(false);
+            }, 1000);
+            
+            return
+          }
+          const availableStoreUpdate = availableStores?.map((store) => {
+            // Find matching locationalStatus from orderTypeFilters
+            const matchingFilters = orderTypeFilters
+              ?.map((filter, filterIndex) => {
+                const matchedLocationalStatus = filter.locationalStatus?.filter(
+                  (status) => parseInt(status.id) === parseInt(store.id) && status.isChecked === true
+                );
+          
+                return {
+                  ...filter,
+                  locationalStatus: matchedLocationalStatus,
+                  status: matchedLocationalStatus.length > 0 ? true : false, // Update status based on matched locations,
+                  // isClicked: filterIndex === 0 ? true : false,
+                  isClicked: false,
+                };
+              })
+              .filter((filter) => filter.locationalStatus.length > 0); // Keep only filters that have matching locations
+          
+            return {
+              ...store,
+              orderType: matchingFilters.length > 0 ? matchingFilters : null, // Attach matched filters or null
+            };
+          });
+          
+          setAvailableStores(availableStoreUpdate);
+    
+    
+          setFilters(response?.data?.data?.orderTypeFilters)
+    
+          setIsGoBtnClickAble(false);
+          setPostcode(validPostcode);
+          setTimeout(() => {
+            setLoader(false);
+          }, 1000);
+          return responseNext
+        } 
+        catch (error) 
+        {
+          setAvailableStores([])
+          if(error?.code === "ERR_NETWORK")
+          {
+            setPostcodeerror("There is something went wrong!. Please try again.");
+    
+          }
+          else
+          {
+            setPostcodeerror(error?.response?.data?.postcode);
+          }
+          setIsStoreAvailable(true);
+          setIsGoBtnClickAble(false);
+          setTimeout(() => {
+            setLoader(false);
+          }, 1000);
+        }
+      }
+
+      fetchQueryParamLocation()
+    }
+  }, [locationDetails]);
+  
 
   return (
     <div className="modal-delivery-details">
       <div className="modal-delivery-details-level-one-div">
-        <div className="modal-delivery-details-level-one-div-height"></div>
 
-        <div className="modal-delivery-details-level-one-div-dialog">
+        <div className="modal-delivery-details-level-one-div-dialog" style={{ marginTop: "15px"}}>
           <div className="deliver-to-body-content">
-            <h1 className="deliver-to-body-content-h1">Order Food Now</h1>
+            <div>
+              <h1 className="deliver-to-body-content-h1">Order Food Now</h1>
+              {
+                isChangePostcodeButtonClicked &&
+                <button 
+                  class="at-first-cross-btn"
+                  onClick={handleFormCross}
+                >
+                  <div class="cart-close-btn-div">
+                    <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
+                      <path 
+                        d="m19.5831 6.24931-1.8333-1.83329-5.75 5.83328-5.75-5.83328-1.8333 1.83329 5.8333 5.74999-5.8333 5.75 1.8333 1.8333 5.75-5.8333 5.75 5.8333 1.8333-1.8333-5.8333-5.75z" 
+                        fill="#000"
+                      >
+                      </path>
+                    </svg>
+                  </div>
+                </button>
+              }
+            </div>
             <div className="deliver-to-body-content-nested-div-level-one">
 
               <form onSubmit={handleGoBtn}>
@@ -226,11 +444,11 @@ function SubAtLoadLoadShow({ setLoader }) {
                 {
                   isGoBtnClickAble && 
                   <button type="submit" className="deliver-to-done-button" style={{
-                    '--go-btn-background-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, 
-                    '--go-btn-font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor, 
-                    '--go-hover-btn-background-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor, 
-                    '--go-hover-btn-font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor, 
-                    '--go-hover-border': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, 
+                    '--go-btn-background-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR,
+                    '--go-btn-font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR, 
+                    '--go-hover-btn-background-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || LIGHT_BLACK_COLOR,
+                    '--go-hover-btn-font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor || BLACK_COLOR,
+                    '--go-hover-border': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR, 
                   }}>
                     Go
                   </button>
@@ -251,12 +469,12 @@ function SubAtLoadLoadShow({ setLoader }) {
 
             {
               parseInt(availableStores.length) > parseInt(0) && 
-              <AvailableStore {...{availableStores}} />
+              
+                <AvailableStore {...{availableStores, setAvailableStores, validPostcode}} />
             }
           </div>
         </div>
 
-        <div className="modal-delivery-details-level-one-div-height"></div>
       </div>
     </div>
   );

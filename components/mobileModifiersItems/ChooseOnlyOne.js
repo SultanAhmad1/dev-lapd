@@ -1,4 +1,6 @@
+import { BLACK_COLOR, WHITE_COLOR } from "@/global/Axios";
 import { getAmountConvertToFloatWithFixed } from "@/global/Store";
+import moment from "moment";
 import React, { Fragment } from "react";
 
 export default function ChooseOnlyOne({
@@ -11,7 +13,7 @@ export default function ChooseOnlyOne({
 {
 
   return(
-    <li className={`msection${index}`} style={{margin: "10px 0px 10px 0px"}}>
+    <li className={`msection${index}`} style={{margin: "0px 0px 30px 0px"}}>
       <div className="fusingle-productlidiv">
         <div className="modifier-header" onClick={() => handleMobileModifierToggle(modifier?.id)}>
           <div className="modifier-div">
@@ -19,9 +21,9 @@ export default function ChooseOnlyOne({
               
               <div className="bnfrbpfsingle-product">
 
-                <span className="modifier-dropdown-title">
+                <h5 className="modifier-dropdown-title">
                   {modifier?.title}
-                </span>
+                </h5>
 
                 <div className="fzsingle-product">
                   
@@ -111,22 +113,30 @@ export default function ChooseOnlyOne({
                 }
                 return (
                   isItemSuspend === false &&
-                  <div className="alakg6bfsingle-product" style={{background: mobileSecondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, border: mobileSecondItems?.item_select_to_sale && `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`}} key={`${index}.${mobileSecondIndex}`} onClick={() => handleRadioInput(modifier?.id,mobileSecondItems?.id,mobileSecondItems?.title,parseInt(mobileSecondItems ?.secondary_item_modifiers.length))}>
+                  <div 
+                    className="alakg6bfsingle-product" 
+                    style={{
+                      background: mobileSecondItems?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR),
+                      border: mobileSecondItems?.item_select_to_sale && `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || WHITE_COLOR}`
+                    }} 
+                    key={`${index}.${mobileSecondIndex}`} 
+                    onClick={() => handleRadioInput(modifier?.id,mobileSecondItems?.id,mobileSecondItems?.title,parseInt(mobileSecondItems ?.secondary_item_modifiers.length))}
+                  >
                   
                     <label className={`brbsdpdqbkalbfafg6single-productlable`}>
                       
                       <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${mobileSecondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}`} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${mobileSecondItems?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR)}`} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                       </svg>
                       {/* <div className="spacer _16"></div> */}
                       <div className="alamgmgnsingle-product">
-                        <div className="bresdpg4gosingle-product" style={{color: mobileSecondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
+                        <div className="bresdpg4gosingle-product" style={{color: mobileSecondItems?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR)}}>
                           {mobileSecondItems?.title}
                         </div>
                         <div className="spacer _8"></div>
                         {
                           getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && 
-                          <div className="bresbtdqb1bzsingle-productincdecprice" style={{color: mobileSecondItems?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
+                          <div className="bresbtdqb1bzsingle-productincdecprice" style={{color: mobileSecondItems?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR)}}>
                             &pound; {getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}
                           </div>
                         }
@@ -138,7 +148,7 @@ export default function ChooseOnlyOne({
                       <div className="poquickreview-modal">
                         <div className="c8c7cuquickreview-modal">
                           <svg style={{ cursor: "pointer" }} width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                            <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill={`${mobileSecondItems?.item_select_to_sale ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor : "#AFAFAF"}`} transform="rotate(90, 12, 12)"></path>
+                            <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill={`${mobileSecondItems?.item_select_to_sale ? (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR): "#AFAFAF"}`} transform="rotate(90, 12, 12)"></path>
                           </svg>
                         </div>
                       </div>

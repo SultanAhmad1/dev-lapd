@@ -46,6 +46,7 @@ export default function CheckoutDisplay()
     couponDiscountApplied,
     setCouponDiscountApplied,
     websiteModificationData,
+    handleBoolean,
   } = useContext(HomeContext);
   
   const [itemIndividuallyUpdate, setItemIndividuallyUpdate] = useState(false)
@@ -93,15 +94,21 @@ export default function CheckoutDisplay()
 
   async function getOrderAmount(subTotalArgument)
   {
+
     try {
+      const getLocalStorageDetail = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
+
+      const getAvailableStore = getLocalStorageDetail?.display_id
+
       const filterData = {
         endData: moment().format("YYYY-MM-DD"),
         active: 1,
         partner: 2,
         brand: BRAND_GUID,
         postcode: postCodeForOrderAmount,
+        location: getAvailableStore,
       };
-
+      
       const response = await axiosPrivate.post(`/apply-amount-discount`,filterData);
       const amountDiscounts = response?.data?.data?.applyAmountDiscount;
       let workingIndex = 0;
@@ -272,31 +279,32 @@ export default function CheckoutDisplay()
     setLocalStorage(`${BRAND_SIMPLE_GUID}cart`, cartData);
   }
 
-  // const districtPostcode = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`))
-  // const selectedPostcode = districtPostcode?.postcode
-
-  // const userLocation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
-  // const selectedLocation = userLocation?.display_id
 
   const {refetch: deliveryRefetch} = useGetQueryForDeliveryFee('district-delivery-matrix-data',`/district-delivery-matrix/${selectedLocation}/${selectedPostcode}`,onDeliverySuccess, onDeliveryError)
 
   
   useEffect(() => {
    
-    if(parseInt(cartData?.length) > parseInt(0))
-    {
-      const districtPostcode = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`))
-      setSelectedPostcode(districtPostcode?.postcode)
-      
-      const userLocation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
-      setSelectedLocation(userLocation?.display_id)
+    try {
+      if(parseInt(cartData?.length) > parseInt(0))
+      {
+        const districtPostcode = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`))
+        setSelectedPostcode(districtPostcode?.postcode)
+        
+        const userLocation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
+        setSelectedLocation(userLocation?.display_id)
+      }
+      setItemIndividuallyUpdate(false)
+      // setLoader(false)  
+    } catch (error) {
+      window.alert("There is something went wrong. Please refresh and try again.")
+      return
     }
-    setItemIndividuallyUpdate(false)
-    // setLoader(false)
+    
   }, [cartData]);
 
   useEffect(() => {
-    if(parseInt(selectedLocation.length) > parseInt(0) && parseInt(selectedPostcode.length) > parseInt(0))
+    if(parseInt(selectedLocation?.length) > parseInt(0) && parseInt(selectedPostcode?.length) > parseInt(0))
     {
       deliveryRefetch()
     }
@@ -360,24 +368,30 @@ export default function CheckoutDisplay()
   async function handleFindCouponCode() 
   {
     // setIsAddPromoCodeBtnToggle(!isAddPromoCodeBtnToggle);
-    setLoader(true)
-    const checkCouponCodeIsAlreadyApplied = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}applied_coupon`))
-
-    if(parseInt(checkCouponCodeIsAlreadyApplied.length) > parseInt(0))
-    {
-      const findMatchCouponCode = checkCouponCodeIsAlreadyApplied?.filter((check) => check.code.includes(coupon))
-      if(parseInt(findMatchCouponCode.length) > parseInt(0))
+    try {
+      setLoader(true)
+      const checkCouponCodeIsAlreadyApplied = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}applied_coupon`))
+  
+      if(parseInt(checkCouponCodeIsAlreadyApplied.length) > parseInt(0))
       {
-        setCouponCodeError("Code already applied!")
-        setLoader(false)
-        return
+        const findMatchCouponCode = checkCouponCodeIsAlreadyApplied?.filter((check) => check.code.includes(coupon))
+        if(parseInt(findMatchCouponCode.length) > parseInt(0))
+        {
+          setCouponCodeError("Code already applied!")
+          setLoader(false)
+          return
+        }
+        else if(checkCouponCodeIsAlreadyApplied[0].user_in_conjuction === 0)
+        {
+          setCouponCodeError("You can not use other coupons with previous one!")
+          setLoader(false)
+          return
+        }
       }
-      else if(checkCouponCodeIsAlreadyApplied[0].user_in_conjuction === 0)
-      {
-        setCouponCodeError("You can not use other coupons with previous one!")
-        setLoader(false)
-        return
-      }
+      
+    } catch (error) {
+      window.alert("There is something went wrong. Please refresh and try again.")
+      return
     }
 
     try {
@@ -458,15 +472,24 @@ export default function CheckoutDisplay()
       if(updateCouponToggle?.user_in_conjuction === 0)
       {
         // console.warn("User conjuction 0:", updateCouponToggle?.user_in_conjuction);
-        setCouponDiscountApplied([])
-        setCouponDiscountApplied((prevData) => [...prevData, updateCouponToggle])
+        // setCouponDiscountApplied([])
+
+        const couponDiscountAppliedMerge = [...couponDiscountApplied, updateCouponToggle]
+
+        setCouponDiscountApplied(couponDiscountAppliedMerge)
+        // setCouponDiscountApplied(updateCouponToggle)
       }
       else
       {
         // console.warn("User conjuction 1:", updateCouponToggle?.user_in_conjuction);
-        setCouponDiscountApplied((prevData) => [...prevData, updateCouponToggle])
+        const couponDiscountAppliedMerge = [...couponDiscountApplied, updateCouponToggle]
+        setCouponDiscountApplied(couponDiscountAppliedMerge)
+        // setCouponDiscountApplied(updateCouponToggle)
       }
       
+      setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`, updateCouponToggle)
+
+
       if(updateCouponToggle?.free_delivery === 1)
       {
         setDeliveryFee(0)
@@ -481,7 +504,6 @@ export default function CheckoutDisplay()
       }, 3000);
       setIsCouponCodeApplied(true)
     } catch (error) {
-      console.warn("Coupon data Error:", error);
       setCouponCodeError(error?.response?.data?.message)
     }
   }
@@ -497,7 +519,7 @@ export default function CheckoutDisplay()
   }, [subtotalOrderAmount, deliveryFee, discountValue]);
 
   useEffect(() => {
-    setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`, couponDiscountApplied)
+    // setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`, couponDiscountApplied)
     if(parseInt(couponDiscountApplied.length) > parseInt(0))
     {
       let couponDiscountValue = 0
@@ -542,23 +564,28 @@ export default function CheckoutDisplay()
 
   function handleDeleteCouponCode(id)
   {
-    const removeCoupon = couponDiscountApplied?.filter((filterCoupon) => filterCoupon?.id !== id)
-    setCouponDiscountApplied(removeCoupon)
-
-    const removeFromSessionTooo = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}applied_coupon`))
-    const removeFromSessionToooCoupon = removeFromSessionTooo?.filter((sessionCoupon) => sessionCoupon?.id !== id)
-    setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`,removeFromSessionToooCoupon)
-    if(parseInt(removeCoupon.length) === parseInt(0))
-    {
-      const getTotalOrderValue = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`))
-      getOrderAmount(JSON.parse(getTotalOrderValue))
+    try {
+      const removeCoupon = couponDiscountApplied?.filter((filterCoupon) => filterCoupon?.id !== id)
+      setCouponDiscountApplied(removeCoupon)
+  
+      const removeFromSessionTooo = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}applied_coupon`))
+      const removeFromSessionToooCoupon = removeFromSessionTooo?.filter((sessionCoupon) => sessionCoupon?.id !== id)
+      setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`,removeFromSessionToooCoupon)
+      if(parseInt(removeCoupon.length) === parseInt(0))
+      {
+        const getTotalOrderValue = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`))
+        getOrderAmount(JSON.parse(getTotalOrderValue))
+      }
+      
+    } catch (error) {
+      window.alert("There is something went wrong. Please refresh and try again.")
     }
   }
 
   const isValidHttpsUrl = (url) => {
     return url.startsWith('https://');
   };
-    
+  
   return(
     <div className="display-cart scrollable-container" style={{ maxHeight: '85vh', minHeight: '76vh', overflowY: 'auto'}}>
       {
@@ -573,72 +600,28 @@ export default function CheckoutDisplay()
                 <li className="order-header">
                     <div className="order-header-div">
 
-                    <div className="col-1">Items</div>
-                    <div className="col-2">Price</div>
-                    <div className="col-3"></div>
+                      <div className="col-1">Items</div>
+                      <div className="col-2">Price</div>
+                      <div className="col-3"></div>
 
                     </div>
                 </li>
               </ul>
 
               <ul className="order-detail-ul">
-                {/* <li className="order-detail-li">
-                    <div className="col-1">
-                    
-                        <div className="order-detail-div">
-                            <div className="or-cat-name"><b>1 x </b> Burgers: </div>
-                            <div className="or-pro-name">1 x Nashville Chicken Burger</div>
-                        </div>
-
-                        <div className="order-detail-div">
-                            <div className="or-cat-name"><b>1 x </b> Deal: </div>
-                            <div className="or-pro-name">1 x Make a deal - U</div>
-                        </div>
-
-                        <div className="order-detail-div">
-                            <div className="or-cat-name">Dips:</div>
-                            <div className="or-pro-name">1 x Code 8 hot sauce</div>
-                        </div>
-
-                        <div className="order-detail-div">
-                            <div className="or-cat-name">Desserts:</div>
-                            <div className="or-pro-name">1 x Chocolate Cookie Dough with White Chips</div>
-                        </div>
-
-                        <div className="order-detail-div">
-                            <div className="or-cat-name"></div>
-                            <div className="or-pro-name">1 x Signature Hot Sauce + £1.00</div>
-                        </div>
-
-                        <div className="order-detail-div">
-                            <div className="or-cat-name"></div>
-                            <div className="or-pro-name">Extra Cheese Slice + &pound;0.50</div>
-                        </div>
-
-                        <div className="order-detail-div">
-                            <div className="or-cat-name"></div>
-                            <div className="or-pro-name">No Lettuce</div>
-                        </div>
-
-                        <div className="order-detail-div">
-                            <div className="or-cat-name">Sides:</div>
-                            <div className="or-pro-name">Regular Fries</div>
-                        </div>
-
-                        <div className="order-detail-div">
-                            <div className="or-cat-name">Soft Drinks:</div>
-                            <div className="or-pro-name">Water 500ml</div>
-                        </div>
-
-                    </div>
-
-                    <div className="col-2">£<span className="productPrice0">12.85</span></div>
-                    <div className="col-3 removeProduct" data-index="0"><svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" className="cw-cx-bj-bk-del"><path fillRule="evenodd" clipRule="evenodd" d="M10.667.667V2H14v2H2V2h3.333V.667h5.334zM3.333 5.333h9.334v10H3.333v-10z"></path></svg></div>
-
-                </li> */}
-
                 {
                   cartData?.map((data, index) => {
+
+                    // hasNotExtras
+                    const hasNotExtras = {
+                      ...data,
+                      modifier_group: data?.modifier_group?.filter((findTheExtras) => findTheExtras?.isExtras === false)
+                    };
+                    const hasExtras = {
+                        ...data,
+                        modifier_group: data?.modifier_group?.filter((findTheExtras) => findTheExtras?.isExtras === true)
+                      };
+                    // hasExtras
                     return(
                       <li key={index} className="order-detail-li">
                         {/* <a href={`/${storeName?.toLowerCase()}/${data?.category_slug}/${data?.slug}/edit`}> */}
@@ -652,8 +635,48 @@ export default function CheckoutDisplay()
 
                                 {/* Display Modifiers */}
                                 {
-                                  parseInt(data?.modifier_group?.length) > parseInt(0) &&
-                                  data?.modifier_group?.map((modifier, modifierIndex) => (
+                                  hasNotExtras?.modifier_group?.map((modifier, modifierIndex) => (
+                                    // This condition check the modifier is selected and modifier item length is greater than zero.
+                                    (modifier?.is_modifier_selected && parseInt(modifier?.modifier_secondary_items?.length) > parseInt(0)) &&
+                                    modifier?.modifier_secondary_items?.map((secondItem, secondItemIndex) => {
+                                      return(
+                                        (!secondItem?.default_option && secondItem?.item_select_to_sale) &&
+                                        
+                                        <Fragment>
+                                          <div key={`${index}.${modifierIndex}.${secondItemIndex}`} className="order-detail-div">
+                                            <div className="or-cat-name">{`${modifier?.title} :`}</div>
+
+                                            <div className="or-pro-name">{modifier?.select_single_option > 1 && modifier?.max_permitted >= 1 ? parseInt(secondItem?.counter) + " x ": ""} {secondItem?.title} {parseInt(secondItem?.price) > parseInt(0) ? `+ ${secondItem?.country_price_symbol}${parseFloat(secondItem?.price).toFixed(2)}`: ""}</div>
+                                          </div>
+                                          {
+                                            // Secondary Modifiers with the items
+                                            (parseInt(secondItem?.secondary_item_modifiers?.length) > parseInt(0)) && 
+                                            secondItem?.secondary_item_modifiers?.map((secModifier, secModifierIndex) => {
+                                                return(
+                                                    (secModifier?.is_modifier_selected && parseInt(secModifier?.secondary_items_modifier_items?.length) > parseInt(0)) &&
+
+                                                    secModifier?.secondary_items_modifier_items?.map((secItem, secItemIndex) => {
+                                                        return(
+                                                            secItem?.item_select_to_sale && 
+                                                            <div key={`${index}.${modifierIndex}.${secondItemIndex}.${secModifierIndex}.${secItemIndex}`} className="order-detail-div">
+                                                                <div className="or-cat-name">{secModifier.isExtras ? `${modifier?.title} :` : ""}</div>
+
+                                                                <div className="or-pro-name">{secModifier?.select_single_option > 1 && secModifier?.max_permitted >= 1 ? parseInt(secItem?.counter) + " x ": ""} {secItem?.title} {parseInt(secItem?.price_info) > parseInt(0) ? `+ ${secItem?.country_price_symbol}${parseFloat(secItem?.price_info).toFixed(2)}`: ""}</div>
+                                                            </div>
+                                                        )
+                                                    })
+
+                                                )
+                                            })
+                                          }
+                                        </Fragment>
+                                      )
+                                    })
+                                  ))
+                                }
+
+                                {
+                                  hasExtras?.modifier_group?.map((modifier, modifierIndex) => (
                                     // This condition check the modifier is selected and modifier item length is greater than zero.
                                     (modifier?.is_modifier_selected && parseInt(modifier?.modifier_secondary_items?.length) > parseInt(0)) &&
                                     modifier?.modifier_secondary_items?.map((secondItem, secondItemIndex) => {
@@ -700,6 +723,37 @@ export default function CheckoutDisplay()
                         {/* </a> */}
                       </li>
                     )   
+                  })
+                }
+
+                {
+                  amountDiscountApplied !== null &&
+                    <li className="order-detail-li">
+                      <div className="col-1">
+                        
+                          <div className="order-detail-div">
+                            <div className="or-cat-name"><b>{amountDiscountApplied?.name}</b>: </div>
+                            <div className="or-pro-name">{parseFloat(amountDiscountApplied?.value).toFixed(2)} {amountDiscountApplied?.discount_type === "P" ? "%" : "£"}</div>
+                          </div>
+
+                      </div>
+                    </li>
+                }
+
+                {
+                  couponDiscountApplied?.map((coupon, index) => {
+                    return(
+                      <li key={index} className="order-detail-li">
+                        <div className="col-1">
+                          
+                            <div className="order-detail-div">
+                              <div className="or-cat-name"><b>{coupon?.name}</b>: </div>
+                              <div className="or-pro-name">{parseFloat(coupon?.discount).toFixed(2)} {coupon?.discount_type === "P" ? "%" : "£"}</div>
+                            </div>
+
+                        </div>
+                      </li>
+                    )
                   })
                 }
               </ul>
@@ -757,7 +811,7 @@ export default function CheckoutDisplay()
 
           </div>
           
-          <a
+          {/* <a
             // type="button" 
             className={` ${!isOrderSubtotalLessThanOrderValue ? "checkout-btn-not-clickable" : "checkout-btn"}`} 
             // disabled={!isOrderSubtotalLessThanOrderValue}  onClick={() => route.push('/place-order')} 
@@ -765,7 +819,15 @@ export default function CheckoutDisplay()
             href='/place-order'
           >
               Checkout
-            </a>
+            </a> */}
+          <button
+            type="button" 
+            className={` ${!isOrderSubtotalLessThanOrderValue ? "checkout-btn-not-clickable" : "checkout-btn"}`} 
+            aria-disabled={!isOrderSubtotalLessThanOrderValue}
+            onClick={() => handleBoolean(true, "isPlaceOrderButtonClicked")}
+          >
+              Checkout
+            </button>
           <div style={{marginBottom: "50px"}}></div>
 
         </div>

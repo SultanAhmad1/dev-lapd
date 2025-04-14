@@ -1,6 +1,7 @@
 "use client";
 
 import { NextResponse } from "next/server";
+import { BRAND_SIMPLE_GUID } from "./Axios";
 
 let storeName = "LAPD"
 let isUserEnteredPostcode = false
@@ -76,6 +77,12 @@ export function getSelectedItemUUID(itemUUID)
     return itemUUID
 }
 
+
+export function setLocalStorage(keyName,data)
+{
+    return window.localStorage.setItem(`${keyName}`,JSON.stringify(data))
+}
+
 export function find_matching_postcode(matrixArgument, postcodeArgument, setState)
 {
     var postcode = postcodeArgument.toString();
@@ -119,6 +126,8 @@ export function find_matching_postcode(matrixArgument, postcodeArgument, setStat
         })[0];
     } 
 
+    console.log("final matched postcode:", finalMatch, "matchingPostcodes :", matchingPostcodes);
+    setLocalStorage(`${BRAND_SIMPLE_GUID}delivery_matrix`,finalMatch)
     setState(finalMatch)
 }
 
@@ -132,10 +141,6 @@ export function getAmountConvertToFloatWithFixed(amount, number)
     return parseFloat(amount).toFixed(number)
 }
 
-export function setLocalStorage(keyName,data)
-{
-    return window.localStorage.setItem(`${keyName}`,JSON.stringify(data))
-}
 
 export function setNextCookies(key, value)
 {
@@ -148,24 +153,39 @@ export function setSessionStorage(keyName,data)
     return window.localStorage.setItem(`${keyName}`, JSON.stringify(data))
 }
 
+// export function validatePhoneNumber(phoneNumber) {
+//     var res = phoneNumber.charAt(0);
+//     if(parseFloat(res) == 0){
+//         var phoneNumberPattern = /^\(?(\d{4})\)?[- ]?(\d{3})[- ]?(\d{4})$/;  
+//     }else if(res == '+'){
+//         if(parseFloat(phoneNumber.charAt(1)) == 4){
+//             if(parseFloat(phoneNumber.charAt(2)) == 4){
+//                 var phoneNumberArr = phoneNumber.split('+44');
+//                 phoneNumber = phoneNumberArr[1];
+//                 var phoneNumberPattern = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/;  
+//             }else{
+//                 return false; 
+//             }
+//         }else{
+//             return false; 
+//         }
+//     }else{
+//         return false; 
+//     }
+//     return phoneNumberPattern.test(phoneNumber); 
+// }
+
 export function validatePhoneNumber(phoneNumber) {
-    var res = phoneNumber.charAt(0);
-    if(parseFloat(res) == 0){
-        var phoneNumberPattern = /^\(?(\d{4})\)?[- ]?(\d{3})[- ]?(\d{4})$/;  
-    }else if(res == '+'){
-        if(parseFloat(phoneNumber.charAt(1)) == 4){
-            if(parseFloat(phoneNumber.charAt(2)) == 4){
-                var phoneNumberArr = phoneNumber.split('+44');
-                phoneNumber = phoneNumberArr[1];
-                var phoneNumberPattern = /^\(?(\d{3})\)?[- ]?(\d{3})[- ]?(\d{4})$/;  
-            }else{
-                return false; 
-            }
-        }else{
-            return false; 
-        }
-    }else{
-        return false; 
+    let formattedPhone = phoneNumber.replace(/[^0-9]/g, '');
+
+    // Add '0' if the number doesn't start with it and isn't already prefixed with '+44'
+    if (!phoneNumber.startsWith('0') && !phoneNumber.startsWith('+44')) {
+        formattedPhone = '0' + phoneNumber;
+    } else if (phoneNumber.startsWith('+44')) {
+        // Convert '+44' to '0'
+        formattedPhone = '0' + phoneNumber.slice(3);
     }
-    return phoneNumberPattern.test(phoneNumber); 
+
+    // Return the formatted phone number
+    return formattedPhone;
 }

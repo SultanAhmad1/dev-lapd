@@ -35,7 +35,7 @@ export default function ViewCartMobileBtn()
       setIsTotalGreatherThanMinimum(false)
     })
   }, [cartData])
-    
+  
   return (
     <>
     {
@@ -43,22 +43,54 @@ export default function ViewCartMobileBtn()
       <div className="arcgatchl4h2view-cart">
         <div className="coagatchascgl5cnl6view-cart"></div>
         <div className="coagatchascgl5axl6view-cart"></div>
-        <button className="bllview-cart-btn" onClick={() => setIsCartBtnClicked(true)}>
-          <span 
-            style={{
-              border: "1px solid #fff",
-              width: "30px",
-              height: "30px",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              borderRadius: "5px",
-            }}
-          >{parseInt(cartData?.length)}</span>
-          {/* <span className='mobile-view-cart' style={{backgroundColor: !isTotalGreatherThanMinimum && `${websiteModificationData?.websiteModificationLive?.json_log[0]?.buttonBackgroundColor} !important`}} >Checkout</span> */}
-          <span className='mobile-view-cart' style={{backgroundColor: !isTotalGreatherThanMinimum && `${websiteModificationData?.websiteModificationLive?.json_log[0]?.buttonBackgroundColor}`}} >Checkout</span>
-          <span>&pound;{getAmountConvertToFloatWithFixed(totalordervalue, 2)}</span>
-        </button>
+
+        {
+          // check is there any item in cart then button background should be green
+          parseInt(cartData?.length) > parseInt(0) ?
+          <button className="bllview-cart-btn" onClick={() => setIsCartBtnClicked(true)}>
+            <span 
+              style={{
+                border: "1px solid #fff",
+                width: "30px",
+                height: "30px",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                borderRadius: "5px",
+              }}
+            >{parseInt(cartData?.length)}</span>
+                <span className='mobile-view-cart' style={{backgroundColor: !isTotalGreatherThanMinimum && `${websiteModificationData?.websiteModificationLive?.json_log[0]?.buttonBackgroundColor}`}} >Checkout</span>
+            
+            <span>&pound;{getAmountConvertToFloatWithFixed(totalordervalue, 2)}</span>
+          </button>
+
+          :
+
+            <button className="bllview-cart-btn">
+              <span 
+                style={{
+                  border: "1px solid #fff",
+                  width: "30px",
+                  height: "30px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  borderRadius: "5px",
+                }}
+              >
+                {parseInt(cartData?.length)}
+              </span>
+
+              <span 
+                className='mobile-view-cart' 
+                style={{backgroundColor: "#000", color: "#fff", border: "1px solid #fff"}}
+              >
+                Checkout
+              </span>
+            
+            <span>&pound;{getAmountConvertToFloatWithFixed(totalordervalue, 2)}</span>
+          </button>
+        }
       </div>
     }
     </>

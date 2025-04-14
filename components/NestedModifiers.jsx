@@ -66,8 +66,8 @@ export const NestedModifiers = (props) =>
                                       <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                                       <g 
                                         id="SVGRepo_tracerCarrier" 
-                                        stroke-linecap="round" 
-                                        stroke-linejoin="round"
+                                        strokeLineCap="round" 
+                                        strokeLinejoin="round"
                                       ></g>
                                       
                                       <g id="SVGRepo_iconCarrier"> 

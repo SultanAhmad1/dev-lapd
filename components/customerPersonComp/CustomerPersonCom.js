@@ -4,7 +4,7 @@ import Image from "next/image";
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useCheckAuthMutationHook, useLogoutMutationHook } from "../reactquery/useQueryHook";
 import HomeContext from "@/contexts/HomeContext";
-import { BRAND_SIMPLE_GUID } from "@/global/Axios";
+import { BLACK_COLOR, BRAND_SIMPLE_GUID, HOVER_COLOR, USER_IMAGE, WHITE_COLOR } from "@/global/Axios";
 
 export default function CustomerPersonCom() 
 {
@@ -25,7 +25,7 @@ export default function CustomerPersonCom()
     // Adding event listener when the component mounts
     useEffect(() => {
         const customer = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempCustomer`))
-
+        
         if(customer === undefined && customer === null)
         {
             window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}tempCustomer`);
@@ -109,11 +109,11 @@ export default function CustomerPersonCom()
                                         className="auth-sign" 
                                       
                                         style={{
-                                            '--auth-border-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, 
-                                            '--auth-background-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
-                                            '--auth-font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
-                                            '--auth-hover-background': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor,
-                                            '--auth-hover-color':  websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                                            '--auth-border-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || WHITE_COLOR,
+                                            '--auth-background-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR,
+                                            '--auth-font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR,
+                                            '--auth-hover-background': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || HOVER_COLOR,
+                                            '--auth-hover-color':  websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || WHITE_COLOR,
                                         }}
                                     >
                                         Sign up

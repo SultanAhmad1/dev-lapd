@@ -1,4 +1,6 @@
+import { BLACK_COLOR, WHITE_COLOR } from "@/global/Axios";
 import { getAmountConvertToFloatWithFixed } from "@/global/Store";
+import moment from "moment";
 import React, { Fragment } from "react";
 
 export default function ChooseOnlyOne({
@@ -87,30 +89,30 @@ export default function ChooseOnlyOne({
                                 <div 
                                         className="alakixc5modifier-data" 
                                         style={{
-                                                background: item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor, 
-                                                border: item?.item_select_to_sale && `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`
+                                                background: item?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR), 
+                                                border: item?.item_select_to_sale && `1px solid ${(websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || WHITE_COLOR)}`
                                             }} 
                                         key={`${index}.${itemIndex}`} 
                                         onClick={() => handleModalRadioInput(selectedModifierId,selectedModifierItemId,secondItemModifier?.id,item?.id)}
                                     >
 
-                                    <label className={`chd2cjmodifier-modal-label`} style={{ '--before-color': `${item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`,}}>
+                                    <label className={`chd2cjmodifier-modal-label`} style={{ '--before-color': `${item?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR)}`,}}>
                                         <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}`} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
+                                            <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${item?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR)}`} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
                                         </svg>
 
                                         <div className="spacer _16"></div>
 
                                         <div className="alamdxdvmodifier-modal">
 
-                                            <div className="chic-cj-ckjdmodifier-modal" style={{color: item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
+                                            <div className="chic-cj-ckjdmodifier-modal" style={{color: item?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR)}}>
                                                 {item?.title}
                                             </div>
 
                                             <div className="spacer _8"></div>
                                             {
                                                 getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) && 
-                                                <div className="modifier-group-price" style={{color: item?.item_select_to_sale && websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
+                                                <div className="modifier-group-price" style={{color: item?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR)}}>
                                                     &pound;{parseFloat(item?.price_info).toFixed(2)}
                                                 </div>
                                             }

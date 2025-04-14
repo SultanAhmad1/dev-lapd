@@ -3,7 +3,7 @@ import HomeContext from "@/contexts/HomeContext";
 import { BRAND_SIMPLE_GUID } from "@/global/Axios";
 import React, { useContext } from "react";
 
-export default function MenuNotAvailableModal() 
+export default function MenuNotAvailableModal({errorMessage}) 
 {
     const { setAtFirstLoad, setComingSoon} = useContext(HomeContext)
 
@@ -47,7 +47,8 @@ export default function MenuNotAvailableModal()
                                     <div className="availabe_stores"></div>
                                     
                                     <p style={{ color:" #6e9600",background: "rgb(235 214 124)",textAlign: "center", marginTop: "10px",padding: "10px",fontWeight: "bold"}}>
-                                        Commin Soon at {storeDetail?.store}
+                                        {/* Comming Soon at {storeDetail?.store} */}
+                                        {errorMessage}
                                     </p>
 
                                     <button type="button" className="deliver-to-done-button" onClick={handleClearAll}>Click to try with different postcode.</button>

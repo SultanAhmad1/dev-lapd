@@ -8,6 +8,7 @@ import React, { Fragment} from "react";
 import ChooseOnlyOne from "./mobileModifiersItems/ChooseOnlyOne";
 import ChooseOneItemOneTime from "./mobileModifiersItems/ChooseOneItemOneTime";
 import CounterItem from "./mobileModifiersItems/CounterItem";
+import Image from "next/image";
 
 export const MobileSingleItem = (props) => {
   const {
@@ -32,7 +33,7 @@ export const MobileSingleItem = (props) => {
   const isValidHttpsUrl = (url) => {
     return url.startsWith('https://');
   };
-
+  
   return (
     <div onWheel={handleMScroll}>
       <div style={{width: "1px",height: "0px",padding: "0px",overflow: "hidden",position: "fixed",top: "1px",left: "1px",}}></div>
@@ -66,9 +67,9 @@ export const MobileSingleItem = (props) => {
                         (singleItem?.image_url && singleItem?.image_url !== null) &&
 
                         isValidHttpsUrl(singleItem?.image_url) ?
-                          <img loading="lazy" width={100} height={100} role="presentation" src={singleItem?.image_url} alt={singleItem?.title} className="egbkaeeheisingle-productimg" />
+                          <Image width={100} height={100} role="presentation" src={singleItem?.image_url} alt={singleItem?.title} className="egbkaeeheisingle-productimg" />
                         :
-                          <img loading="lazy" width={100} height={100} role="presentation" src={`${IMAGE_URL_Without_Storage}${singleItem?.image_url}`} alt={singleItem?.title} className="egbkaeeheisingle-productimg"/>
+                          <Image width={100} height={100} role="presentation" src={`${IMAGE_URL_Without_Storage}${singleItem?.image_url}`} alt={singleItem?.title} className="egbkaeeheisingle-productimg"/>
                       }
                       <div className="agasatbdbcajsingle-product"></div>
                     </div>
@@ -245,7 +246,7 @@ export const MobileSingleItem = (props) => {
             </div> */}
             
             <div className="add-to-cart-design">
-              <p style={{fontWeight: "bold", padding: "5px"}}>
+              <p style={{fontWeight: "bold",fontSize: "16px", padding: "9px 0 0 7px"}}>
                 &pound;{getAmountConvertToFloatWithFixed(quantity * itemPrice, 2)}
               </p>
 
@@ -269,7 +270,7 @@ export const MobileSingleItem = (props) => {
                 
                 isAnyModifierHasExtras ? 
                   <button type="button" style={{marginLeft: "20px"}} className="add-to-cart-btn-item" onClick={() => handleMobileAddToCart("next")}>
-                    Next
+                    NEXT
                   </button>
                 :
                   <button type="button" style={{marginLeft: "20px"}} className="add-to-cart-btn-item" onClick={() => handleMobileAddToCart("addToCart")}>

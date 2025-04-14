@@ -5,9 +5,9 @@ import moment from 'moment'
 import { setLocalStorage, setNextCookies, setSessionStorage } from '../global/Store'
 import { BLACK_COLOR, BRAND_SIMPLE_GUID, LIGHT_BLACK_COLOR, WHITE_COLOR } from '../global/Axios'
 
-function FilterLocationTime(props) 
+function FilterLocationTimeEdit(props) 
 {
-    const {isDisplayFromModal} = props
+    const {isDisplayFromModal, orderTypeDetails, storeId, availableStores,setAvailableStores} = props
 
     const {
         selectedFilter,
@@ -21,12 +21,46 @@ function FilterLocationTime(props)
         ordertypeselect, 
         setOrdertypeselect,
         websiteModificationData,
-        setDisplayFilterModal
+        setDisplayFilterModal,
     } = useContext(HomeContext)
-
+    
     const [isHeaderSandwichHover, setIsHeaderSandwichHover] = useState(false);
 
-    const handleOrderType = (id) => {
+    const handleOrderType = (storeId, id) => {
+
+        if(parseInt(orderTypeDetails.length) === parseInt(0))
+        {
+            return
+        }
+        const updateAvailableStores = availableStores?.map((stores) => {
+            if(stores?.location_guid === storeId)
+            {
+                return {
+                    ...stores,
+                    orderType: stores?.orderType?.map((order) => {
+                        if(order?.id === id)
+                        {
+                            return {
+                                ...order,
+                                isClicked: true
+                            }
+                        }
+
+                        return {
+                            ...order,
+                            isClicked: false
+                        }
+                    })
+                }
+            }
+            return stores
+        })
+
+        setAvailableStores(updateAvailableStores)
+
+        const findOrderType = updateAvailableStores?.find((stores) => stores?.id === storeId)
+
+        setFilters(findOrderType?.orderType)
         const updateFilter = filters?.find((findFilter) => findFilter?.id === id && findFilter?.status)
         if(updateFilter)
         {
@@ -43,11 +77,6 @@ function FilterLocationTime(props)
             }
         }
     }
-    
-    useEffect(() => {
-      const jsFilters = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filtersList`))
-      setFilters(jsFilters)
-    }, [isDisplayFromModal]);
     
     // useEffect(() => {
     //     if(isDisplayFromModal)
@@ -79,65 +108,54 @@ function FilterLocationTime(props)
 
                 <div 
                     className="filter-type"
-                    // style={{
-                    //     background: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || LIGHT_BLACK_COLOR,
-                    //     color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR,
-                    //     border: `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || LIGHT_BLACK_COLOR}` 
-                    //     ,
-                    // }}
+                    style={{
+                        background: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || LIGHT_BLACK_COLOR,
+                        color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR,
+                        border: `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || LIGHT_BLACK_COLOR}` 
+                        ,
+                    }}
 
                    
                 >
                     {
-                        filters?.map((filter,index) =>
+                        orderTypeDetails?.map((filter,index) =>
                         {
                             return(
                                 <div 
                                     key={index} 
-                                    className={`akd0afbz-delivery-type ${filter?.id === selectedFilter?.id && "delivery-type-active"}`} 
-                                    onClick={() => handleOrderType(filter?.id)}
+                                    className={`akd0afbz-delivery-type ${filter?.isClicked && "delivery-type-active"}`} 
+                                    onClick={() => handleOrderType(storeId,filter?.id)}
 
                                     style={{
-                                        background: filter?.id === selectedFilter?.id ? 
-                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || LIGHT_BLACK_COLOR
+                                        background: filter?.isClicked ? 
+                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || WHITE_COLOR
                 
                                         : 
-                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || WHITE_COLOR
+                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || LIGHT_BLACK_COLOR
                                         ,
-                                        color: filter?.id === selectedFilter?.id ? 
+                                        color: filter?.isClicked ? 
                                             websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor || WHITE_COLOR
                                         :
                                             websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR
                                         ,
-                                        border: filter?.id === selectedFilter?.id ? 
+                                        border: filter?.isClicked ? 
                                             `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || LIGHT_BLACK_COLOR}` 
                                         : 
                                             `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || LIGHT_BLACK_COLOR}`
                                         ,
-                                        display: "flex"
                                     }}
 
                                 >
-                                    {
-                                        filter?.id === selectedFilter?.id &&
-                                        <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path 
-                                                d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" 
-                                                stroke={`${(websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR)}`} 
-                                                strokeWidth="2.5" 
-                                                strokeLinejoin="round"/>
-                                        </svg>
-                                    }
                                     <div className="algid0amc5-delivery-type">
                                         <div className="chic-cj-ckeeafgmc9gnehclbz g7">
                                             <div className={`algid0amc5-delivery-type ${filter?.status === false && "p8"}`}>
                                                 <div 
                                                     className="chic-cj-ck b1"
                                                     style={{
-                                                        color: filter?.id === selectedFilter?.id ? 
-                                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor || WHITE_COLOR
+                                                        color: filter?.isClicked ? 
+                                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor || BLACK_COLOR
                                                         :
-                                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || BLACK_COLOR
+                                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR
                                                         ,
                                                     }}
                                                 >
@@ -158,4 +176,4 @@ function FilterLocationTime(props)
     )
 }
 
-export default FilterLocationTime
+export default FilterLocationTimeEdit
