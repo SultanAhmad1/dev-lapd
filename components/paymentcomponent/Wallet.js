@@ -5,7 +5,7 @@ import { PaymentRequestButtonElement, useStripe } from '@stripe/react-stripe-js'
 import React, {useState, useEffect} from 'react';
 
 
-const Wallet = (props) => {
+export default function Wallet(props){
 
   const{
     orderTotal,
@@ -98,5 +98,3 @@ const Wallet = (props) => {
     return <PaymentRequestButtonElement options={{paymentRequest}} />
   }
 }
-
-export const WalletMemo = React.memo(Wallet)

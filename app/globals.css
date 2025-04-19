@@ -2070,6 +2070,19 @@ ul {
   flex-wrap: wrap;
 }
 
+.items-list-nested-list {
+  /* grid-column: span 2; */
+  /* position: relative; */
+  /* display: block; */
+  padding: 5px;
+  width: 43%;
+  border: 1px solid #e6e6e6;
+  margin: 0 1% 40px;
+  padding: 15px 15px;
+  background:#ffffff;
+  color: var(--font-color, #000000);
+}
+
 .items-list-nested-list:hover {
   box-shadow: 0px 16px 16px 0px rgba(0, 0, 0, 0.12);
   -webkit-transition: box-shadow 0.3s ease-in-out;
@@ -2080,20 +2093,16 @@ ul {
   color: var(--item-hover-font-color, #000000);
 }
 
+.item-title-p,
+.item-description,
+.item-price-span {
+  color: inherit;
+}
+
 .items-list-nested-list:hover .quick-review-btn {
   opacity: 1;
 }
 
-.items-list-nested-list {
-  /* grid-column: span 2; */
-  /* position: relative; */
-  /* display: block; */
-  padding: 5px;
-  width: 43%;
-  border: 1px solid #e6e6e6;
-  margin: 0 1% 40px;
-  padding: 15px 15px;
-}
 
 .items-nested-div {
   text-decoration: none;
@@ -2157,7 +2166,6 @@ ul {
   font-weight: 600;
   line-height: 1.2;
   overflow: hidden;
-  color: #000;
   margin-bottom: 8px;
   padding-bottom: 8px;
   border-bottom: 1px solid #989898;
@@ -2183,7 +2191,6 @@ ul {
   min-height: inherit;
   font-size: 18px;
   line-height: 21px;
-  color: #808080;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -2207,7 +2214,6 @@ ul {
   min-height: inherit;
   font-size: 18px;
   line-height: 21px;
-  color: #808080;
   overflow: hidden;
   text-overflow: ellipsis;
   display: -webkit-box;
@@ -12751,12 +12757,16 @@ ul.track-steps {
     font-weight: 600;
     line-height: 1.2;
     overflow: hidden;
-    color: #000;
+    color: var(--font-color,#000) ;
     margin-bottom: 8px;
     padding-bottom: 8px;
     border-bottom: 1px solid #989898;
     transition: all ease-in-out .2s;
     height: unset;
+  }
+
+  .item-title-p:hover {
+    color: var(--item-hover-font-color,#000) ;
   }
 }
 

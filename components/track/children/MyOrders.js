@@ -13,8 +13,6 @@ export default function MyOrders({orderLine})
         ...orderLine,
         order_line_modifier_group_products: orderLine?.order_line_modifier_group_products?.filter((isExtras) => parseInt(isExtras?.modifier_group?.is_extras) === parseInt(1))
     };
-   
-    console.log("has Extras:", orderLine);
     
     
     return(

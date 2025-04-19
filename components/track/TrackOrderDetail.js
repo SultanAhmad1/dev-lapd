@@ -185,8 +185,6 @@ export default function TrackOrderDetail()
         return
     }
     
-    console.log("get the track order:", getTrackOrderData);
-    
     return(
         <div className='e5ald0m1m2amc5trackorder-desk'>
             <div className="m3m4m5gim6trackorder-desk">

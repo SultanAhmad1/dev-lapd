@@ -8,7 +8,7 @@ import Cart from "./Cart";
 import Loader from "./modals/Loader";
 import { BRAND_GUID, BRAND_SIMPLE_GUID, DEFAULT_LOCATION, PARTNER_ID } from "@/global/Axios";
 import moment from "moment";
-import { setLocalStorage } from "@/global/Store";
+import { getAmountConvertToFloatWithFixed, setLocalStorage } from "@/global/Store";
 import CustomerPersonal from "./CustomerPersonal";
 import MenuNotAvailableModal from "./modals/MenuNotAvailableModal";
 import PlaceOrderModal from "./modals/PlaceOrderModal";
@@ -32,7 +32,7 @@ export default function CustomLayout({ children })
   
   // FilterLocationTime Component States
   // const [storeGUID, setStoreGUID] = useState(DEFAULT_LOCATION);
-  const [storeGUID, setStoreGUID] = useState(DEFAULT_LOCATION);
+  const [storeGUID, setStoreGUID] = useState(null);
   const [storeName, setStoreName] = useState("");
   const [storeToDayName, setStoreToDayName] = useState("");
   const [storeToDayOpeningTime, setStoreToDayOpeningTime] = useState("");
@@ -103,115 +103,173 @@ export default function CustomLayout({ children })
     isChangePostcodeButtonClicked: false,
   });
   
-  // useEffect(() => {
-  //   if(locationDetails !== null && parseInt(locationDetails?.length) > parseInt(0))
-  //   {
-  //     console.log("use effect:", locationDetails);
-      
-  //     setStoreGUID(locationDetails)
-  //     setAtFirstLoad(false)
-  //   }
-  //   else
-  //   {
-  //     setStoreGUID(DEFAULT_LOCATION)
-  //   }
-  // }, [locationDetails]);
-  
   const handleBoolean = useCallback((newValue, fieldName) => {
     setBooleanObj((prevData) => ({...prevData, [fieldName]: newValue}))
   }, [booleanObj]);
 
   useEffect(() => {
-    
-    const useAuth = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}websiteToken`))
-    if(useAuth !== null)
-    {
-      handleBoolean(true, 'isCustomerVerified')
-    }
+    try {
+      
+      const getQr = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}via_qr`))
 
-    const url = new URL(window.location.href);
-    var pathnameArray = url.pathname.split("/").filter(segment => segment);
-
-    const dayNumber = moment().isoWeekday();
-    
-    // Get the current day name
-    const dayName = moment().format("dddd");
-
-    setDayName(dayName);
-    setDayNumber(dayNumber);
-
-    const afterReloadingGetCouponCode = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}applied_coupon`));
-    
-    const updatedCoupons = [
-      ...couponDiscountApplied,
-      ...(afterReloadingGetCouponCode ? [afterReloadingGetCouponCode] : [])
-    ];
-
-    setCouponDiscountApplied(updatedCoupons);
-
-    const getSelectStore = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`);
-
-    if (getSelectStore === null) 
-    {
-      if (pathnameArray?.[0] === "track-order" || pathnameArray?.[0] === "review-order" || pathnameArray?.[0] === "payment" || pathnameArray?.[0] === "place-order") 
+      if(getQr)
       {
-        setAtFirstLoad(false);
-        setHeaderCartBtnDisplay(false);
-        setHeaderPostcodeBtnDisplay(false);
+        setLocalStorage(`${BRAND_SIMPLE_GUID}via_qr`, parseInt(getQr) === parseInt(1) ? 1 : 0)
+      }
+      else
+      {
+        setLocalStorage(`${BRAND_SIMPLE_GUID}via_qr`,0)
+      }
+
+      const useAuth = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}websiteToken`))
+      if(useAuth !== null)
+      {
+        handleBoolean(true, 'isCustomerVerified')
+      }
+
+      const url = new URL(window.location.href);
+      var pathnameArray = url.pathname.split("/").filter(segment => segment);
+
+      const dayNumber = moment().isoWeekday();
+      
+      // Get the current day name
+      const dayName = moment().format("dddd");
+
+      setDayName(dayName);
+      setDayNumber(dayNumber);
+
+      const afterReloadingGetCouponCode = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}applied_coupon`));
+      
+      
+      if(afterReloadingGetCouponCode && parseInt(afterReloadingGetCouponCode?.length) > parseInt(0))
+      {
+        let totalValue = 0;
+
+        const getCartData = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}cart`));
+
+        for (const total of getCartData) 
+        {
+          totalValue = parseFloat(totalValue) + parseFloat(total?.total_order_amount);
+        }
+
+        
+        let firstCouponAppliedDiscount = 0
+        let howManyTimeCouponApplied = 0
+
+        const updateCoupon = afterReloadingGetCouponCode?.map((coupon) => {
+  
+          if(coupon?.discount_type === "P")
+          {
+            if(parseInt(howManyTimeCouponApplied) === parseInt(1))
+            {
+              const differenceDiscountAndSubtotal = parseFloat(totalValue) - parseFloat(firstCouponAppliedDiscount)
+                              
+              firstCouponAppliedDiscount = getAmountConvertToFloatWithFixed(parseFloat(differenceDiscountAndSubtotal) * (coupon?.value / 100),2)
+            }
+            else
+            {
+              // const differenceDiscountAndSubtotal = parseFloat(totalValue) - parseFloat(discountValue)
+                
+              firstCouponAppliedDiscount = getAmountConvertToFloatWithFixed(parseFloat(totalValue) * (coupon?.value / 100),2)
+            }
+            howManyTimeCouponApplied += 1
+            
+          }
+          else
+          {
+            if(parseInt(howManyTimeCouponApplied) === parseInt(1))
+              {
+                const differenceDiscountAndSubtotal = parseFloat(totalValue) - parseFloat(firstCouponAppliedDiscount)
+                                
+                firstCouponAppliedDiscount = getAmountConvertToFloatWithFixed(parseFloat(differenceDiscountAndSubtotal) - parseFloat(couponData?.value),2)
+              }
+              else
+              {
+                // const differenceDiscountAndSubtotal = parseFloat(subtotalOrderAmount) - parseFloat(discountValue)
+                firstCouponAppliedDiscount = getAmountConvertToFloatWithFixed(parseFloat(totalValue) - parseFloat(couponData?.value),2)
+              }
+
+            howManyTimeCouponApplied += 1
+           
+          }
+  
+          return{
+            ...coupon,
+            discount: firstCouponAppliedDiscount
+          }
+        })
+  
+        setCouponDiscountApplied(updateCoupon)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`, updateCoupon)
+        
+        // setCouponDiscountApplied(afterReloadingGetCouponCode)
+        // setCouponDiscountApplied(updatedCoupons);
+        // setCouponDiscountApplied((prevData) => [
+        //   ...prevData, afterReloadingGetCouponCode
+        // ])
+      }
+
+      const getSelectStore = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`);
+
+      if (getSelectStore === null) 
+      {
+        setStoreGUID(DEFAULT_LOCATION)
+        if (pathnameArray?.[0] === "track-order" || pathnameArray?.[0] === "review-order" || pathnameArray?.[0] === "payment" || pathnameArray?.[0] === "place-order") 
+        {
+          setAtFirstLoad(false);
+          setHeaderCartBtnDisplay(false);
+          setHeaderPostcodeBtnDisplay(false);
+        } 
+        else 
+        {
+       
+          setAtFirstLoad(true)
+          setHeaderCartBtnDisplay(true);
+          setHeaderPostcodeBtnDisplay(true);
+        }
       } 
       else 
       {
-        // if(locationDetails !== null && parseInt(locationDetails?.length) > parseInt(0))
-        // {
-        //   setAtFirstLoad(false);
-        // }
-        // else
-        // {
-          setAtFirstLoad(true)
-        // }
-        setHeaderCartBtnDisplay(true);
-        setHeaderPostcodeBtnDisplay(true);
-      }
-    } 
-    else 
-    {
-      setPostcode(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_valid_postcode`)));
+        setPostcode(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_valid_postcode`)));
 
-      const parseToJSobj = JSON.parse(getSelectStore);
-      // menuRefetch(parseToJSobj === null ? storeGUID : parseToJSobj.display_id);
-      setStoreGUID(parseToJSobj === null ? storeGUID : parseToJSobj.display_id);
-      setStoreName(parseToJSobj.store);
+        const parseToJSobj = JSON.parse(getSelectStore);
+        // menuRefetch(parseToJSobj === null ? storeGUID : parseToJSobj.display_id);
+        setStoreGUID(parseToJSobj === null ? storeGUID : parseToJSobj.display_id);
+        setStoreName(parseToJSobj.store);
 
-      const appliedAmountDiscount = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`));
-      const address = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}address`));
-      const getDeliveryMatrix = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`));
+        const appliedAmountDiscount = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`));
+        const address = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}address`));
+        const getDeliveryMatrix = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`));
+        
+        setAmountDiscountApplied(appliedAmountDiscount);
+        setDeliveryMatrix(getDeliveryMatrix);
+        setPostCodeForOrderAmount(getDeliveryMatrix?.postcode);
 
-      setAmountDiscountApplied(appliedAmountDiscount);
-      setDeliveryMatrix(getDeliveryMatrix);
-      setPostCodeForOrderAmount(getDeliveryMatrix?.postcode);
-
-      const parseToJSobjAvailableStore = address?.availableStore;
-      if (parseInt(parseToJSobjAvailableStore.length) > parseInt(0)) {
-        for (const store of parseToJSobjAvailableStore) {
-          if (parseToJSobj.display_id === store?.location_guid) {
-            setStreet1(store?.user_street1);
-            setStreet2(store?.user_street2);
+        const parseToJSobjAvailableStore = address?.availableStore;
+        if (parseInt(parseToJSobjAvailableStore.length) > parseInt(0)) {
+          for (const store of parseToJSobjAvailableStore) {
+            if (parseToJSobj.display_id === store?.location_guid) {
+              setStreet1(store?.user_street1);
+              setStreet2(store?.user_street2);
+            }
           }
         }
+
+        const cartDataFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}cart`));
+
+        setCartData(cartDataFromLocalStorage === null ? [] : cartDataFromLocalStorage);
+        // if(parseInt(storeGUID.length) > parseInt(0))
+        // {
+          menuRefetch()
+        // }
+        colorRefetch()
       }
-
-      const cartDataFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}cart`));
-
-      setCartData(cartDataFromLocalStorage === null ? [] : cartDataFromLocalStorage);
-      // if(parseInt(storeGUID.length) > parseInt(0))
-      // {
-        menuRefetch()
-      // }
-      colorRefetch()
+       
+    } catch (error) {
+        window.alert("There is something went wrong. Please refresh and try again.")
+        return
     }
   }, []);
-  
-  // console.log("store guid here:", storeGUID);
   
   useEffect(() => {
     if(parseInt(cartData?.length) > parseInt(0))
@@ -224,11 +282,8 @@ export default function CustomLayout({ children })
   {
     setLoader(false)
     const { menu } = data?.data
-
-    // console.log("success:", menu);
     
     const convertToJSobj = menu?.menu_json_log;
-
 
     const dayNumber = moment().day();
     const dateTime = moment().format("HH:mm");
@@ -279,8 +334,6 @@ export default function CustomLayout({ children })
   }
 
   const onMenuError = (error) => {
-    // console.log("Menu error:", error);
-    
     setIsMenuAvailable(false);
     setComingSoon(true)
     setErrorMessage("There is no menu publish for that store yet.")
@@ -291,6 +344,7 @@ export default function CustomLayout({ children })
 
   const onWebsiteModificationSuccess = (data) => {
     setLoader(false)
+    
     if (data?.data?.websiteModificationLive !== null && data?.data?.websiteModificationLive?.json_log?.[0]?.websiteLogoUrl !== null) 
     {
       setBrandLogo(data?.data?.websiteModificationLive?.json_log?.[0]?.websiteLogoUrl);

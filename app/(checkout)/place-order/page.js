@@ -636,20 +636,24 @@ function UserForm() {
       if(parseInt(cartData.length) > parseInt(0))
       {
         const deliveryMatrix = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`))
+        
+        try {
+          let totalOrder = 0
   
-  
-        let totalOrder = 0
-  
-        for (const total of cartData) 
-        {
-          totalOrder = parseFloat(totalOrder) + parseFloat(total?.total_order_amount);
+          for (const total of cartData) 
+          {
+            totalOrder = parseFloat(totalOrder) + parseFloat(total?.total_order_amount);
+          }
+    
+          if(parseFloat(deliveryMatrix?.order_value)?.toFixed(2) > parseFloat(totalOrder)?.toFixed(2))
+          {
+            route.push('/')
+            return  
+          }
+        } catch (error) {
+          window.alert("There is something went wrong. Please refresh and try again.")
         }
-  
-        if(parseFloat(deliveryMatrix?.order_value)?.toFixed(2) > parseFloat(totalOrder)?.toFixed(2))
-        {
-          route.push('/')
-          return  
-        }
+       
       }
       else
       {
@@ -659,7 +663,7 @@ function UserForm() {
   
       setCustomerDetailObj((prevData) => ({...prevData, PayNowBottomError: ""}))
       
-      const subTotalOrderLocal        = JSON.parse(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`))) === null ? null: getAmountConvertToFloatWithFixed(JSON.parse(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`))),2);
+      const subTotalOrderLocal        = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)) === null ? null: getAmountConvertToFloatWithFixed(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)),2);
       const localStorageTotal         = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`)) === null? null: JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`));
       const orderAmountDiscountValue  = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_number`)) === null ? null: JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_number`));
       const orderFilter               = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`));

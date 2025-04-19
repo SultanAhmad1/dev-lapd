@@ -106,20 +106,20 @@ export default function Header(props)
 
                                     style={{
                                         background: isHeaderSandwichHover ? 
-                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || WHITE_COLOR
+                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.activeButtonBackgroundColor || WHITE_COLOR
 
                                         : 
                                             websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || LIGHT_BLACK_COLOR
                                         ,
                                         color: isHeaderSandwichHover ? 
-                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor || BLACK_COLOR
+                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.activeButtonFontColor || BLACK_COLOR
                                         :
                                             websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR
                                         ,
                                         border: isHeaderSandwichHover ? 
                                             `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || LIGHT_BLACK_COLOR}` 
                                         : 
-                                            `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || LIGHT_BLACK_COLOR}`
+                                            `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.activeButtonBackgroundColor || LIGHT_BLACK_COLOR}`
                                         ,
                                     }} 
                                     onMouseEnter={() => setIsHeaderSandwichHover(true)} 

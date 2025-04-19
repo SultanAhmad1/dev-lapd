@@ -270,6 +270,9 @@ export default function PlaceOrderForm({setModalObject, handleBoolean})
         isBySmsClicked: isBySmsClicked,
         isByEmailClicked: isByEmailClicked,
         driverInstruction: customerDetailObj.driverInstruction,
+        street1: street1,
+        street2: street2,
+        postcode: postcode,
       };
   
       setLocalStorage(`${BRAND_SIMPLE_GUID}customer_information`,loginDataToLocationStorage);
@@ -361,16 +364,16 @@ export default function PlaceOrderForm({setModalObject, handleBoolean})
         const data = {
           location_guid: placeOrderGetStoreGUID === null ? storeGUID : placeOrderGetStoreGUID?.display_id,
           brand_guid: BRAND_GUID,
-          day_number: moment().day(),
+          day_number: moment().isoWeekday(),
           partner: PARTNER_ID,
         };
   
         const response = await axiosPrivate.post(`/website-delivery-time`, data);
   
         const { brandExists } = response?.data?.data
-  
+        
         setIsLocationBrandOnline(brandExists)
-        // Write logic if the closing is up or come closer than show information.
+        // Write logic if the closing is up or come closer than show information.brandDeliveryEstimatePartner
         var startTime   = response?.data?.data?.brandDeliveryEstimatePartner?.start_time;
         var endTime     = response?.data?.data?.brandDeliveryEstimatePartner?.end_time;
   
@@ -485,6 +488,9 @@ export default function PlaceOrderForm({setModalObject, handleBoolean})
           firstName: customer?.first_name,
           doorHouseName: filterAddress?.house_no_name !== undefined ? filterAddress?.house_no_name : addressDetail?.doorHouseName,
           driverInstruction: filterAddress?.driver_instructions !== undefined? filterAddress?.driver_instructions : addressDetail?.driverInstruction,
+          street1: street1,
+          street2: street2,
+          postcode: postcode,
         }));
 
       }
@@ -561,6 +567,19 @@ export default function PlaceOrderForm({setModalObject, handleBoolean})
         setIsByEmailClicked(getCustomerInformation?.isByEmailClicked)
         setToggleObjects((prevData) => ({...prevData, isByEmailClicked: getCustomerInformation.isByEmailClicked, isBySmsClicked: getCustomerInformation.isBySmsClicked}))
         setDeliveryTime(getCustomerInformation.deliveryTime);
+      }
+      else
+      {
+        const getStoreHouseName = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}house_no_name`))
+
+        if(getStoreHouseName)
+        {
+          setCustomerDetailObj((prevData) => ({
+            ...prevData, 
+              doorHouseName: getStoreHouseName,
+          }))
+        }
+
       }
     }, []);
   
@@ -671,6 +690,7 @@ export default function PlaceOrderForm({setModalObject, handleBoolean})
       
       if (parseInt(customerDetailObj?.doorHouseName?.length) === parseInt(0) || parseInt(customerDetailObj?.email?.length) === parseInt(0) || parseInt(customerDetailObj?.phone?.length) === parseInt(0) || parseInt(customerDetailObj?.firstName.length) === parseInt(0) ||parseInt(customerDetailObj?.lastName?.length) === parseInt(0)) 
       {
+        setIsPayNowClicked(false)
         setCustomerDetailObj((prevData) => ({...prevData, PayNowBottomError: "Please check * (asterisk) mark field and fill them."}))
         return;
       }
@@ -688,31 +708,34 @@ export default function PlaceOrderForm({setModalObject, handleBoolean})
       //   return
       // }
       
-      if(parseInt(cartData.length) > parseInt(0))
-      {
-        const deliveryMatrix = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`))
+      // just commented the code right now
+      // if(parseInt(cartData.length) > parseInt(0))
+      // {
+      //   const deliveryMatrix = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`))
   
-        let totalOrder = 0
+      //   let totalOrder = 0
   
-        for (const total of cartData) 
-        {
-          totalOrder = parseFloat(totalOrder) + parseFloat(total?.total_order_amount);
-        }
+      //   for (const total of cartData) 
+      //   {
+      //     totalOrder = parseFloat(totalOrder) + parseFloat(total?.total_order_amount);
+      //   }
   
-        if(parseFloat(deliveryMatrix?.order_value)?.toFixed(2) > parseFloat(totalOrder)?.toFixed(2))
-        {
-          route.push('/')
-          return  
-        }
-      }
-      else
-      {
-        route.push('/')
-        return
-      }
+      //   if(parseFloat(deliveryMatrix?.order_value)?.toFixed(2) > parseFloat(totalOrder)?.toFixed(2))
+      //   {
+      //     route.push('/')
+      //     setIsPayNowClicked(false)
+      //     return  
+      //   }
+      // }
+      // else
+      // {
+      //   route.push('/')
+      //   setIsPayNowClicked(false)
+      //   return
+      // }
       setCustomerDetailObj((prevData) => ({...prevData, PayNowBottomError: ""}))
       
-      const subTotalOrderLocal        = JSON.parse(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`))) === null ? null: getAmountConvertToFloatWithFixed(JSON.parse(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`))),2);
+      const subTotalOrderLocal        = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)) === null ? null: getAmountConvertToFloatWithFixed(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)),2);
       const localStorageTotal         = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`)) === null? null: JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`));
       const orderAmountDiscountValue  = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_number`)) === null ? null: JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_number`));
       const orderFilter               = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`));
@@ -734,6 +757,9 @@ export default function PlaceOrderForm({setModalObject, handleBoolean})
         isBySmsClicked: isBySmsClicked,
         isByEmailClicked: isByEmailClicked,
         driverInstruction: customerDetailObj.driverInstruction,
+        street1: street1,
+        street2: street2,
+        postcode: postcode,
       };
   
       setLocalStorage(`${BRAND_SIMPLE_GUID}customer_information`,customerInformationInLocalStorage);
@@ -818,6 +844,8 @@ export default function PlaceOrderForm({setModalObject, handleBoolean})
       //   route.push(`/payment/${data?.data?.data?.order?.external_order_id}`);
       // }
       setErrormessage("There is something went wrong!. Please refresh and try again.")
+      window.alert("There is something went wrong!. Please refresh and try again.")
+      return
     }
   
     const { isLoading: storeLoading, isError: storeError, reset: storeReset, isSuccess: storeSuccess, mutate: storeMutation } = usePostMutationHook('customer-store',`/store-customer-details`,onStoreSuccess, onStoreError)
@@ -847,6 +875,8 @@ export default function PlaceOrderForm({setModalObject, handleBoolean})
       console.error("patch error:", error);
       
       setErrormessage("There is something went wrong!. Please refresh and try again.")
+      window.alert("There is something went wrong!. Please refresh and try again.")
+      return
     }
   
     const {isLoading: patchLoading, isError: postError, isSuccess: postSuccess, reset: postReset, mutate: postMutation} = usePostMutationHook('customer-update',`/update-customer-details`, onPatchSuccess, onPatchError)
@@ -854,15 +884,20 @@ export default function PlaceOrderForm({setModalObject, handleBoolean})
     const loadingState = patchLoading || storeLoading || loader
 
     const handleChangePostcode = () =>
-      {
-        setAtFirstLoad(true)
-        handleBoolean(true,"isChangePostcodeButtonClicked")
-        handleBoolean(false, "isPlaceOrderButtonClicked")
-      }
+    {
+      setAtFirstLoad(true)
+      handleBoolean(true,"isChangePostcodeButtonClicked")
+      handleBoolean(false, "isPlaceOrderButtonClicked")
+    }
     
     const handleOTPInput = (e) => {
       setOtpCodeData(e.target.value)
     }
+
+    const handleStreetAddress = () => {
+
+    }
+
     return(
       <form  
           onSubmit={handlePayNow}
@@ -1138,15 +1173,16 @@ export default function PlaceOrderForm({setModalObject, handleBoolean})
                                       <div className="checkout-window-form">
 
                                           <div className="btautrackorder-postcode-edit" >
-                                              <input type="text" className="strtpostcode" defaultValue={street1} />
+                                              <input type="text" className="strtpostcode" value={street1} onClick={() => handleStreetAddress}/>
 
-                                              <input type="text" className="strtpostcode" defaultValue={street2} />
+                                              <input type="text" className="strtpostcode" value={street2} onClick={() => handleStreetAddress}/>
 
                                               <div className="strtpostcode-btn">
                                                   <input
                                                       type="text"
                                                       className="strtpostcode"
-                                                      defaultValue={postcode}
+                                                      value={postcode}
+                                                      onClick={() => handleStreetAddress}
                                                   />
 
                                                   <button type="button" className="change_postcode_btn" onClick={handleChangePostcode}>
@@ -1481,11 +1517,11 @@ export default function PlaceOrderForm({setModalObject, handleBoolean})
               <button 
                 type="submit" 
                 className="fwbrbocheckout-place-order"
-                style={{
-                    background: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
-                    color: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
-                    border: isHover ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}` : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
-                }}
+                // style={{
+                //     background: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                //     color: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                //     border: isHover ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}` : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
+                // }}
 
                 onMouseEnter={() => setIsHover(true)}
                 onMouseLeave={() => setIsHover(false)}

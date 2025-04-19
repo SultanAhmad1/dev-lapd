@@ -135,11 +135,11 @@ function MobileTopBar()
                                     className={index === 0 ? "active" : ""}
                                     style={{
                                         background: index === 0 ? 
-                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor 
+                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.activeButtonBackgroundColor 
                                         : 
                                             websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
                                         color: index === 0 ? 
-                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor 
+                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.activeButtonFontColor 
                                         : 
                                             websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
                                     }} 

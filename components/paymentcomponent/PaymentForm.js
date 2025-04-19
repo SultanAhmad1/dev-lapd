@@ -4,11 +4,11 @@
 import React, { useContext, useEffect, useState } from 'react';
 
 import moment from 'moment';
-import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { CardElement, PaymentRequestButtonElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { BRAND_SIMPLE_GUID, BRAND_GUID, IMAGE_URL_Without_Storage, axiosPrivate } from '@/global/Axios';
 import HomeContext from '@/contexts/HomeContext';
 import { useRouter } from "next/navigation";
-import { WalletMemo } from './Wallet';
+import Wallet from './Wallet';
 import Loader from '../modals/Loader';
 import { getAmountConvertToFloatWithFixed, setLocalStorage } from '@/global/Store';
 import { ContextCheckApi } from '@/app/layout';
@@ -167,8 +167,6 @@ const PaymentForm = ({orderId}) =>
 
       const response = await axiosPrivate.post(`/send-sms-and-email`, data)
 
-      console.log("payment form: 1");
-      
       setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
       setLocalStorage(`${BRAND_SIMPLE_GUID}order_amount_number`,null)
       // setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`,[])
@@ -185,7 +183,6 @@ const PaymentForm = ({orderId}) =>
     } 
     catch (error) 
     {
-      console.log("payment form: 2");
       window.alert(error?.response?.data?.error)
       setLoader(false)
       setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
@@ -224,73 +221,218 @@ const PaymentForm = ({orderId}) =>
   }
 
   // This submit send request to Database and stripe.
-  const handleSubmit = async (event) => 
-  {
-    event.preventDefault();
-
-    setLoader(true)
-
-    if(isLocationBrandOnline === null)
+    const handleSubmit = async (event) => 
     {
-      return
-    }
-
-    if (!stripe || !elements) 
-    {
-      setLoader(false)
-      return;
-    }
-
-    try 
-    {
-      const cardElement = elements.getElement(CardElement);
-
-      const { token, error,type } = await stripe.createToken(cardElement);
-
-      if (error) 
-      {
-        setPaymentError(error.message);
-        setLoader(false)
-        return
-      } 
-      
+      event.preventDefault();
+      setIsSubmitButtonCLicked(true)
       setLoader(true)
-
-      const response = await axiosPrivate.post('/create-payment-intent', 
-        {
-          order_total: getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) * 100, // replace with your desired amount
-          token: token.id,
-          order: orderId,
-          brand: BRAND_GUID,
-        }
-      );
-
-      const { clientSecret } = response.data;
-
-      const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: cardElement,
-          // billing_details: {
-          //   name: 'John Doe', // replace with user's name
-          // },
-        },
-      });
-
-      if (result.error) 
+  
+      if(isLocationBrandOnline === null)
+      {
+        return
+      }
+  
+      if (!stripe || !elements) 
       {
         setLoader(false)
-        setPaymentError(result.error.message);
-        return
-      } 
-      else 
-      {
-        afterPaymentSavedOrderUpdate(result.paymentIntent)
+        return;
       }
-    } catch (error) {
-      setLoader(false)
-      console.error("Payment form error:",error);
-    }
-  };
+      try 
+      {
+        const cardElement = elements.getElement(CardElement);
+  
+        const { token, error,type } = await stripe.createToken(cardElement);
+  
+        if (error) 
+        {
+          setPaymentError(error.message);
+          setLoader(false)
+          return
+        } 
+        
+        setLoader(true)
+  
+        const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`))
+  
+        const city = getCustomerInformation?.street2?.split(',')[0].trim();
+        const response = await axiosPrivate.post('/create-payment-intent', 
+          {
+            order_total: getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) * 100, // replace with your desired amount
+            token: token.id,
+            order: orderId,
+            brand: BRAND_GUID,
+          }
+        );
+  
+        const { clientSecret } = response.data;
+  
+        const result = await stripe.confirmCardPayment(clientSecret, {
+          payment_method: {
+            card: cardElement,
+            billing_details: {
+              name: `${getCustomerInformation?.firstName} ${getCustomerInformation?.lastName}`,
+              email: getCustomerInformation?.email,
+              address: {
+                line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1} ${getCustomerInformation?.street1}`,
+                city: city,
+                postal_code: getCustomerInformation?.postcode,
+                country: 'GB',
+              },
+            },
+          },
+        });
+  
+        if (result.error) 
+        {
+          setLoader(false)
+          setPaymentError(result.error.message);
+          return
+        } 
+        else 
+        {
+          afterPaymentSavedOrderUpdate(result.paymentIntent)
+        }
+      } catch (error) {
+        setLoader(false)
+        console.error("Payment form error:",error);
+      }
+    };
+  
+  
+    const [paymentRequest, setPaymentRequest] = useState(null);
+  
+    useEffect(() => {
+      if (stripe) 
+      {
+        const orderTotalSimpleForm = parseFloat(totalOrderAmountValue) * 100
+  
+        const pr = stripe.paymentRequest({
+          country: "GB",
+          currency: "gbp",
+          total: {
+            label: 'Total',
+            amount: parseInt(orderTotalSimpleForm),
+          },
+          requestPayerName: true,
+          requestPayerEmail: true,
+          requestShipping: false,
+          requestBillingAddress: true, // ✅ ADD THIS
+        });
+  
+        pr.canMakePayment().then(result => {
+          if (result) 
+          {
+            setPaymentRequest(pr);
+          }
+        });
+  
+        const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`))
+  
+        const city = getCustomerInformation?.street2?.split(',')[0].trim();
+  
+        // pr.on("paymentmethod", async (ev) => {
+        //   try {
+        //     const response = await axiosPrivate.post("/create-payment-intent", {
+        //       order_total: Math.round(parseFloat(totalOrderAmountValue) * 100),
+        //       type: "wallet",
+        //       payment_method: ev.paymentMethod.id,
+        //       order: orderId,
+        //       brand: BRAND_GUID,
+        //       customer_address: ev.billingDetails?.address || {
+        //         line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1} ${getCustomerInformation?.street1}`, // Use actual values if you collect them
+        //         city: city,
+        //         postal_code: getCustomerInformation?.postcode,
+        //         country: 'GB',
+        //       },
+        //     });
+        
+        //     const { clientSecret } = response.data;
+        
+        //     // Finish UI prompt
+        //     ev.complete("success");
+        
+        //     // Let Stripe handle additional steps (if needed)
+        //     // const result = await stripe.confirmCardPayment(clientSecret);
+        //     const result = await stripe.confirmCardPayment(clientSecret, {
+        //       payment_method: {
+        //         billing_details: {
+        //           name: ev.payerName || `${getCustomerInformation?.firstName} ${getCustomerInformation?.lastName}`,  // fallback
+        //           email: ev.payerEmail || getCustomerInformation?.email,
+        //           address: {
+        //             line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1} ${getCustomerInformation?.street1}`, // Use actual values if you collect them
+        //             city: city,
+        //             postal_code: getCustomerInformation?.postcode,
+        //             country: 'GB',
+        //           },
+        //         },
+        //       },
+        //     });
+        
+        //     if (result.error) {
+        //       alert("Payment failed");
+        //     } else {
+        //       afterPaymentSavedOrderUpdate(result.paymentIntent);
+        //     }
+        //   } catch (err) {
+        //     console.error(err);
+        //     ev.complete("fail");
+        //     alert("Payment failed");
+        //   }
+        // });
+        
+  
+        pr.on("paymentmethod", async (ev) => {
+          try {
+            const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`));
+            const city = getCustomerInformation?.street2?.split(',')[0].trim();
+        
+            const customerName = ev.payerName || `${getCustomerInformation?.firstName} ${getCustomerInformation?.lastName}`;
+            const customerEmail = ev.payerEmail || getCustomerInformation?.email;
+        
+            const customerAddress = ev.billingDetails?.address || {
+              line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1}`,
+              city,
+              postal_code: getCustomerInformation?.postcode,
+              country: "GB",
+            };
+        
+            // ✅ Send all billing info to backend
+            const response = await axiosPrivate.post("/create-payment-intent", {
+              order_total: Math.round(parseFloat(totalOrderAmountValue) * 100),
+              type: "wallet",
+              payment_method: ev.paymentMethod.id,
+              order: orderId,
+              brand: BRAND_GUID,
+              billing_details: {
+                name: customerName,
+                email: customerEmail,
+                address: customerAddress,
+              },
+            });
+        
+            const { clientSecret } = response.data;
+        
+            // ✅ Finish wallet UI prompt
+            ev.complete("success");
+        
+            // ✅ Confirm payment with Stripe
+            const result = await stripe.confirmCardPayment(clientSecret); // No payment_method object needed
+        
+            if (result.error) {
+              alert("Payment failed");
+            } else {
+              afterPaymentSavedOrderUpdate(result.paymentIntent);
+            }
+          } catch (err) {
+            console.error(err);
+            ev.complete("fail");
+            alert("Payment failed");
+          }
+        });
+  
+        
+      }
+    }, [stripe, totalOrderAmountValue]);
 
   return(
     <>
@@ -362,7 +504,7 @@ const PaymentForm = ({orderId}) =>
                                 onMouseLeave={() => setIsHover(false)}
                                 disabled={!stripe}
                               >Submit Payment</button>
-                              <WalletMemo 
+                              {/* <Wallet 
                                 {
                                   ...{
                                     setLoader,
@@ -370,7 +512,11 @@ const PaymentForm = ({orderId}) =>
                                   }
                                 }
                                 orderTotal={totalOrderAmountValue}
-                              />
+                              /> */}
+
+                              {paymentRequest && (
+                                <PaymentRequestButtonElement options={{ paymentRequest }} />
+                              )}
                             </>
                           :
                           <button 

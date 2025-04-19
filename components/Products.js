@@ -102,7 +102,7 @@ export default function Products() {
                     category?.items?.length > 0 && 
                     <li key={category.id}  className={`item-lists`}>
                       <section id={`section_${index}`} className="item-title">
-                        <h3 className="item-title-h3" style={{'--category-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.categoryFontColor,}}>
+                        <h3 className="item-title-h3" style={{'--category-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.categoryFontColor}}>
                           {category.title}
                         </h3>
                       </section>
@@ -129,7 +129,10 @@ export default function Products() {
                               isItemSuspend === false &&
                               <li 
                                 ref={scrollContainerRef} 
-                                style={{'--item-hover-background': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.itemHoverBackgroundColor, '--item-hover-font-color':websiteModificationData?.websiteModificationLive?.json_log?.[0]?.itemHoverFontColor}}
+                                style={{
+                                  '--item-hover-background': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.itemHoverBackgroundColor, 
+                                  '--item-hover-font-color':websiteModificationData?.websiteModificationLive?.json_log?.[0]?.itemHoverFontColor
+                                }}
                                 key={itemIndex} 
                                 className="items-list-nested-list" 
                                 onClick={() => handleProductSelect(category?.id, item?.id)}
@@ -139,18 +142,33 @@ export default function Products() {
                                     <div className="items-nested-div-one">
                                       <div className="item-detail-style">
                                         <div className="item-detail">
-                                          <p className="item-title-p">
+                                          <p className="item-title-p"
+                                            style={{
+                                              '--font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.itemFontColor,
+                                              '--item-hover-font-color':websiteModificationData?.websiteModificationLive?.json_log?.[0]?.itemHoverFontColor
+                                            }}
+                                          >
                                             {title}
                                           </p>
 
                                           <div className="item-description-style">
-                                            <p className="item-description">
+                                            <p className="item-description"
+                                              style={{
+                                                '--font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.itemFontColor,
+                                                '--item-hover-font-color':websiteModificationData?.websiteModificationLive?.json_log?.[0]?.itemHoverFontColor
+                                              }}
+                                            >
                                               {description}
                                             </p>
                                           </div>
 
                                           {/* <div className="item-price"> */}
-                                            <span className="item-price-span" >
+                                            <span className="item-price-span" 
+                                              style={{
+                                                '--font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.itemFontColor,
+                                                '--item-hover-font-color':websiteModificationData?.websiteModificationLive?.json_log?.[0]?.itemHoverFontColor
+                                              }}
+                                            >
                                               &pound;{parseFloat(price).toFixed(2)}
                                             </span>
                                           {/* </div> */}
