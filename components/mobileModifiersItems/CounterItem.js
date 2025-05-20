@@ -134,7 +134,7 @@ export default function CounterItem({
                                                 <div className="bresdpg3gnsingle-productincdecheading">{mobileSecondItems?.title}</div>
                                                 <div className="spacer _8"></div>
                                                 {
-                                                getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && 
+                                                // getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && 
                                                 <div className="bresbtdqb1bzsingle-productincdecprice">
                                                     &pound;{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}
                                                 </div>

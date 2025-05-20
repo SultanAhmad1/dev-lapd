@@ -15,7 +15,7 @@ import {
   axiosPrivate,
 } from "../global/Axios";
 import { useRouter } from "next/navigation";
-import { useGetQueryAutoUpdate, useGetQueryForDeliveryFee } from "./reactquery/useQueryHook";
+import { useGetQueryAutoUpdate, useGetQueryForDeliveryFee, usePostMutationHook } from "./reactquery/useQueryHook";
 import { NextResponse } from "next/server";
 
 
@@ -46,7 +46,20 @@ export default function CheckoutDisplay()
     couponDiscountApplied,
     setCouponDiscountApplied,
     websiteModificationData,
+    storeToDayClosingTime,
     handleBoolean,
+    cutOffSchedule,
+    isScheduleIsReady,
+    setIsScheduleIsReady,
+    isScheduleClicked,
+    setIsScheduleClicked,
+
+    scheduleMessage,
+    setScheduleMessage,
+
+    isCheckoutReadyAfterSchedule,
+    setIsCheckoutReadyAfterSchedule,
+
   } = useContext(HomeContext);
   
   const [itemIndividuallyUpdate, setItemIndividuallyUpdate] = useState(false)
@@ -322,13 +335,13 @@ export default function CheckoutDisplay()
         setSelectedLocation(userLocation?.display_id)
       }
       setItemIndividuallyUpdate(false)
-      // setLoader(false)  
+      
     } catch (error) {
-      window.alert("There is something went wrong. Please refresh and try again.")
+      window.alert("There is something went wrong. Please refresh and try again 1.")
       return
     }
     
-  }, [cartData]);
+  }, [cartData, cutOffSchedule]);
 
   useEffect(() => {
     if(parseInt(selectedLocation?.length) > parseInt(0) && parseInt(selectedPostcode?.length) > parseInt(0))
@@ -337,38 +350,6 @@ export default function CheckoutDisplay()
     }
   },[selectedLocation, selectedPostcode]);
 
-  function handlePromoCodeToggle() 
-  {
-    setIsAddPromoCodeBtnToggle(!isAddPromoCodeBtnToggle);
-  }
-  
-  function handleCheckoutBtn() 
-  {
-    setIsCheckOutClicked(true);
-  }
-  
-  function handleAddItems() 
-  {
-    route.push("/");
-    setIsCartBtnClicked(false);
-  }
-
-  function handleDotedBtn(id) 
-  {
-    const updateIsCartModalFlag = cartData?.map((cart, index) => 
-    {
-      if (id === index) 
-      {
-        return {
-          ...cart,
-          is_cart_modal_clicked: !cart?.is_cart_modal_clicked,
-        };
-      }
-      return cart;
-    });
-
-    setCartData(updateIsCartModalFlag);
-  }
 
   function removeCartItem(id) 
   {
@@ -400,6 +381,13 @@ export default function CheckoutDisplay()
     // setIsAddPromoCodeBtnToggle(!isAddPromoCodeBtnToggle);
     try {
       setLoader(true)
+
+      // if (selectedFilter?.id === DELIVERY_ID)
+      // {
+      //   setCouponCodeError("You can apply coupon only for collection orders.")
+      //   setLoader(false)
+      //   return
+      // }
       const checkCouponCodeIsAlreadyApplied = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}applied_coupon`))
   
       if(checkCouponCodeIsAlreadyApplied && parseInt(checkCouponCodeIsAlreadyApplied?.length) > parseInt(0))
@@ -425,7 +413,7 @@ export default function CheckoutDisplay()
       }
       
     } catch (error) {
-      window.alert("There is something went wrong. Please refresh and try again.")
+      window.alert("There is something went wrong. Please refresh and try again 2.")
       return
     }
 
@@ -435,6 +423,7 @@ export default function CheckoutDisplay()
         brand:    BRAND_GUID,
         partner:  PARTNER_ID,
         location: storeGUID,
+        selectedOrderType: selectedFilter?.id,
       };
       const response = await axiosPrivate.post(`/apply-coupon`, data);
       
@@ -455,7 +444,7 @@ export default function CheckoutDisplay()
         {
           if(parseInt(couponData.user_in_conjuction) === parseInt(0))
           {
-            setCouponCodeError("You can not use other coupons with previous one 2!")
+            setCouponCodeError("You can not use other coupons with previous one!")
             setLoader(false)
             return
           }
@@ -726,62 +715,66 @@ export default function CheckoutDisplay()
       setDiscountValue(getAmountConvertToFloatWithFixed(couponDiscountValue,2))
     }
   }, [couponDiscountApplied])
-    
-  // function handleEditItem(findByIndex, storeName, categorySlug, itemSlug) 
-  // {
-  //   setLoader(true)
-  //   setLocalStorage(`${BRAND_SIMPLE_GUID}set_index`, findByIndex);
-  //   setIsCartBtnClicked(false);
-  //   route.push(`/${storeName}/${categorySlug}/${itemSlug}/edit`);
-  //   return
-  // }
 
-  function handleCouponRemoveToggleBtn(indexNumber)
-  {
-    const openCouponToggle = couponDiscountApplied?.map((coupon,index) =>
+  // When click on handleCheckoutClicked button, create new order_guid, with status awaiting, payment_option_awaiting.
+
+  const onStoreSuccess = async (data) => {
+    // first check the order guid id in localStorage if it is null then store information then update them.
+    const responseData = data?.data?.data?.order?.order_total;
+    const { clientSecret, type } = data?.data?.data;
+
+    const orderGUID = data?.data?.data?.order?.external_order_id
+
+    setTimeout(() => {
+      setLoader(false)
+    }, 3000);
+    if (data?.data?.status === "success") 
     {
-      if(parseInt(indexNumber) === parseInt(index))
-      {
-        return{
-          ...coupon,
-          is_coupon_remove: !coupon?.is_coupon_remove
-        }
-      }
-      return coupon
-    })
-    setCouponDiscountApplied(openCouponToggle)
-  }
-
-  function handleDeleteCouponCode(id)
-  {
-    try {
-      const removeCoupon = couponDiscountApplied?.filter((filterCoupon) => filterCoupon?.id !== id)
-      setCouponDiscountApplied(removeCoupon)
-  
-      const removeFromSessionTooo = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}applied_coupon`))
-      const removeFromSessionToooCoupon = removeFromSessionTooo?.filter((sessionCoupon) => sessionCoupon?.id !== id)
-      setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`,removeFromSessionToooCoupon)
-      if(parseInt(removeCoupon.length) === parseInt(0))
-      {
-        const getTotalOrderValue = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`))
-        getOrderAmount(JSON.parse(getTotalOrderValue))
-      }
-      
-    } catch (error) {
-      window.alert("There is something went wrong. Please refresh and try again.")
+      setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,orderGUID);
+      handleBoolean(true, "isPlaceOrderButtonClicked")
     }
+
   }
 
-  const isValidHttpsUrl = (url) => {
-    return url.startsWith('https://');
-  };
-  
+  const onStoreError = (error) => {
+    
+    setTimeout(() => {
+      setLoader(false)
+    }, 3000);
+    // if(error?.response?.data?.status.includes("success"))
+    // {
+    //   route.push(`/payment/${data?.data?.data?.order?.external_order_id}`);
+    // }
+    setErrormessage("There is something went wrong!. Please refresh and try again.")
+    window.alert("There is something went wrong!. Please refresh and try again.")
+    return
+  }
+
+  const { isLoading: storeLoading, isError: storeError, reset: storeReset, isSuccess: storeSuccess, mutate: createOrderMutation } = usePostMutationHook('create-customer-order-guid',`/create-order-guid`,onStoreSuccess, onStoreError)
+
   const handleCheckoutClicked = () => {
+
+    if(isScheduleIsReady && !isScheduleClicked)
+    {
+      return
+    }
+    setLoader(true)
     handleBoolean(true, "isPlaceOrderButtonClicked")
+    // const orderFilter = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`));
+
+    // createOrderMutation({
+    //   store: storeGUID,
+    //   brand: BRAND_GUID,
+    //   filterId:           orderFilter === null ? selectedFilter?.id : orderFilter.id,
+    //   filterName:         orderFilter === null ? selectedFilter?.name : orderFilter.name,
+    // })
   }
 
-  console.log("is Order Subtotal Less Than Order Value", isOrderSubtotalLessThanOrderValue);
-  
+  const handleIsScheduleClicked = () => {
+    setIsScheduleClicked(! isScheduleClicked)
+    setIsCheckoutReadyAfterSchedule(! isCheckoutReadyAfterSchedule)
+  }
+
   return(
     <div className="display-cart scrollable-container" style={{ maxHeight: '75vh', minHeight: '60vh', overflowY: 'auto'}}>
       {
@@ -1020,14 +1013,61 @@ export default function CheckoutDisplay()
           >
               Checkout
             </a> */}
-          <button
-            type="button" 
-            className={` ${!isOrderSubtotalLessThanOrderValue ? "checkout-btn-not-clickable" : "checkout-btn"}`} 
-            aria-disabled={!isOrderSubtotalLessThanOrderValue}
-            onClick={handleCheckoutClicked}
-          >
-              Checkout
-            </button>
+          {/* 
+            1.-) First check the, order is delivery.
+              and store is not open yet,
+              then show today delivery time details with schedule.
+            2.-) If order is collection then perform same way,
+              and store is not open yet,
+              then show today collection details with schedule.
+            3.-) if someone click on schedule then allow to click on checkout button.
+            4.-) When the current time is between the store open and close time. 
+            then
+              Store is closed, you can choose schedule, next day with time details.
+          */}
+          {
+            isScheduleIsReady &&
+            
+              <div>
+                <label className={`modifier-product-item-name-checkbox`}>
+                  <div style={{border: "1px solid red"}} onClick={handleIsScheduleClicked}>
+                    <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${isScheduleClicked ? "red" : ""}`} strokeWidth="2.5" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                    <div className="spacer _16"></div>
+                    <div className="modifier-product-item-name-one-nested-div-one-nested">
+                        <div className="modifier-product-item-name-one-nested-div-one-nested-div" style={{color: "red", marginLeft: '10px', marginBottom: "20px"}}>
+                            {/* {scheduleMessage} */}
+                            <h6>We are currently closed. </h6>
+                            <p>To schedule your order for &lt;&lt; {scheduleMessage} &gt;&gt;, go to checkout</p>
+                        </div>
+                    </div>
+                </label>
+              </div>
+          }
+
+          {
+            // !isCheckoutReadyAfterSchedule && (
+            !isOrderSubtotalLessThanOrderValue ?
+              <button
+                type="button" 
+                className={`checkout-btn-not-clickable`} 
+              >
+                  Checkout
+                </button>
+
+            :
+              <button
+                type="button" 
+                className={`checkout-btn`} 
+                aria-disabled={!isOrderSubtotalLessThanOrderValue}
+                onClick={handleCheckoutClicked}
+              >
+                Checkout
+              </button>
+            // )
+          }
           <div style={{marginBottom: "50px"}}></div>
 
         </div>

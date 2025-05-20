@@ -124,7 +124,7 @@ export default function ChooseOneItemOneTime({
                           </div>
                           <div className="spacer _8"></div>
                           {
-                            getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && 
+                            // getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && 
                             <div className="bresbtdqb1bzsingle-productincdecprice" style={{color: mobileSecondItems?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR)}}>
                               {
                                 mobileSecondItems?.country_price_symbol
@@ -157,7 +157,7 @@ export default function ChooseOneItemOneTime({
                           </div>
                           <div className="spacer _8"></div>
                           {
-                            getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && 
+                            // getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && 
                             <div className="bresbtdqb1bzsingle-productincdecprice">
                               &pound; {getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}
                             </div>

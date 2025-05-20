@@ -5,7 +5,7 @@ import React, { useContext, useEffect, useState } from 'react';
 
 import moment from 'moment';
 import { CardElement, PaymentRequestButtonElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { BRAND_SIMPLE_GUID, BRAND_GUID, IMAGE_URL_Without_Storage, axiosPrivate } from '@/global/Axios';
+import { BRAND_SIMPLE_GUID, BRAND_GUID, IMAGE_URL_Without_Storage, axiosPrivate, DELIVERY_ID } from '@/global/Axios';
 import HomeContext from '@/contexts/HomeContext';
 import { useRouter } from "next/navigation";
 import Wallet from './Wallet';
@@ -178,12 +178,22 @@ const ModalPaymentForm = ({orderId}) =>
       window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
       window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
       window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
-      
-      // setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,null)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
       setCartData([])
+
       setLoader(true)
       // if(response?.data?.status === "success")
       // {
+      const getFilterFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`))
+      if(getFilterFromLocalStorage)
+      {
+        if(getFilterFromLocalStorage.id !== DELIVERY_ID)
+        {
+          router.push(`/thank-you/${orderId}`)
+          return
+        }
+      }
+
         router.push(`/track-order/${orderId}`)
         
       // }
@@ -198,7 +208,18 @@ const ModalPaymentForm = ({orderId}) =>
       window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
       window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
       window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
       setCartData([])
+
+      const getFilterFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`))
+      if(getFilterFromLocalStorage)
+      {
+        if(getFilterFromLocalStorage.id !== DELIVERY_ID)
+        {
+          router.push(`/thank-you/${orderId}`)
+          return
+        }
+      }
       router.push(`/track-order/${orderId}`)
     }
   }
@@ -324,10 +345,11 @@ const ModalPaymentForm = ({orderId}) =>
           label: 'Total',
           amount: parseInt(orderTotalSimpleForm),
         },
-        requestPayerName: true,
-        requestPayerEmail: true,
-        requestShipping: false,
-        requestBillingAddress: true, // ✅ ADD THIS
+        requestPayerName: true, //👈 request wallet to send me customer name,
+        requestPayerEmail: true, //👈 request wallet to send me email address,
+        requestShipping: false, // 👈 this is the key to get physical address
+        requestBillingAddress: true, //👈 ✅ ADD THIS
+        requestPayerPhone: true,
       });
 
       pr.canMakePayment().then(result => {
@@ -340,66 +362,17 @@ const ModalPaymentForm = ({orderId}) =>
       const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`))
 
       const city = getCustomerInformation?.street2?.split(',')[0].trim();
-
-      // pr.on("paymentmethod", async (ev) => {
-      //   try {
-      //     const response = await axiosPrivate.post("/create-payment-intent", {
-      //       order_total: Math.round(parseFloat(totalOrderAmountValue) * 100),
-      //       type: "wallet",
-      //       payment_method: ev.paymentMethod.id,
-      //       order: orderId,
-      //       brand: BRAND_GUID,
-      //       customer_address: ev.billingDetails?.address || {
-      //         line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1} ${getCustomerInformation?.street1}`, // Use actual values if you collect them
-      //         city: city,
-      //         postal_code: getCustomerInformation?.postcode,
-      //         country: 'GB',
-      //       },
-      //     });
-      
-      //     const { clientSecret } = response.data;
-      
-      //     // Finish UI prompt
-      //     ev.complete("success");
-      
-      //     // Let Stripe handle additional steps (if needed)
-      //     // const result = await stripe.confirmCardPayment(clientSecret);
-      //     const result = await stripe.confirmCardPayment(clientSecret, {
-      //       payment_method: {
-      //         billing_details: {
-      //           name: ev.payerName || `${getCustomerInformation?.firstName} ${getCustomerInformation?.lastName}`,  // fallback
-      //           email: ev.payerEmail || getCustomerInformation?.email,
-      //           address: {
-      //             line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1} ${getCustomerInformation?.street1}`, // Use actual values if you collect them
-      //             city: city,
-      //             postal_code: getCustomerInformation?.postcode,
-      //             country: 'GB',
-      //           },
-      //         },
-      //       },
-      //     });
-      
-      //     if (result.error) {
-      //       alert("Payment failed");
-      //     } else {
-      //       afterPaymentSavedOrderUpdate(result.paymentIntent);
-      //     }
-      //   } catch (err) {
-      //     console.error(err);
-      //     ev.complete("fail");
-      //     alert("Payment failed");
-      //   }
-      // });
       
 
       pr.on("paymentmethod", async (ev) => {
         try {
           const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`));
           const city = getCustomerInformation?.street2?.split(',')[0].trim();
-      
+          
           const customerName = ev.payerName || `${getCustomerInformation?.firstName} ${getCustomerInformation?.lastName}`;
           const customerEmail = ev.payerEmail || getCustomerInformation?.email;
-      
+          const customerPhone = ev.payerPhone
+          
           const customerAddress = ev.billingDetails?.address || {
             line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1}`,
             city,
@@ -418,6 +391,8 @@ const ModalPaymentForm = ({orderId}) =>
               name: customerName,
               email: customerEmail,
               address: customerAddress,
+              telephone: customerPhone,
+              
             },
           });
       

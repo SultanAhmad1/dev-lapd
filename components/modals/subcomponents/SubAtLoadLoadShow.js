@@ -92,7 +92,7 @@ function SubAtLoadLoadShow({ setLoader }) {
       setIsGoBtnClickAble(false)
     }
   }
-  
+
   async function fetchPostcodeData() {
     try {
       let filterPostcode = validPostcode.replace(/\s/g, "");
@@ -121,6 +121,7 @@ function SubAtLoadLoadShow({ setLoader }) {
 
       const response = await axiosPrivate.post(`/ukpostcode-website`, data);
       
+      console.log("uk postcode website:", response);
       
       const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows;
 
@@ -128,7 +129,34 @@ function SubAtLoadLoadShow({ setLoader }) {
 
       const isViaQr = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}via_qr`))
 
+      const availableStores = response?.data?.data?.availableStore || [];
+      const orderTypeFilters = response?.data?.data?.orderTypeFilters || [];
+
       // make cart empty.
+      // now make sure store is selected, and matched with already selected store. isChangePostcodeButtonClicked
+      if(isChangePostcodeButtonClicked)
+      {
+        const userSelectedStore = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
+        if(userSelectedStore)
+        {
+          const filterStore = availableStores.find((store) => store.location_guid === userSelectedStore.display_id)
+  
+          if(filterStore)
+          {
+            setLocalStorage(`${BRAND_SIMPLE_GUID}user_postcode_time`, currentDateTime)
+            setLocalStorage(`${BRAND_SIMPLE_GUID}address`, response?.data?.data);    
+            setLocalStorage(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validPostcode)
+  
+            responseNext.cookies.set(`${BRAND_SIMPLE_GUID}user_postcode_time`, currentDateTime)
+            responseNext.cookies.set(`${BRAND_SIMPLE_GUID}address`, response?.data?.data)
+            responseNext.cookies.set(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validPostcode)
+            setAtFirstLoad(false)
+            setLoader(false)
+            return
+          }
+        }
+      }
+
       if((isViaQr !== null && isViaQr !== undefined) && parseInt(isViaQr) === parseInt(0))
       {
         
@@ -147,16 +175,11 @@ function SubAtLoadLoadShow({ setLoader }) {
         responseNext.cookies.set(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validPostcode)
       }
 
-      const availableStores = response?.data?.data?.availableStore || [];
-      const orderTypeFilters = response?.data?.data?.orderTypeFilters || [];
-
       setFilters(response?.data?.data?.orderTypeFilters)
 
       setIsGoBtnClickAble(false);
       setPostcode(validPostcode);
 
-      
-      
       if((isViaQr !== null && isViaQr !== undefined) && parseInt(isViaQr) === parseInt(0))
       {
         if(parseInt(availableStores?.length) === parseInt(0) || parseInt(orderTypeFilters?.length) === parseInt(0))
@@ -252,6 +275,9 @@ function SubAtLoadLoadShow({ setLoader }) {
   } 
 
   useEffect(() => {
+
+    console.log("location details sub at load show:", locationDetails);
+    
     if(parseInt(locationDetails?.length) > parseInt(0))
     {
       setLocalStorage(`${BRAND_SIMPLE_GUID}via_qr`,1)
@@ -295,8 +321,6 @@ function SubAtLoadLoadShow({ setLoader }) {
           responseNext.cookies.set(`${BRAND_SIMPLE_GUID}user_postcode_time`, currentDateTime)
           responseNext.cookies.set(`${BRAND_SIMPLE_GUID}address`, response?.data?.data);
           responseNext.cookies.set(`${BRAND_SIMPLE_GUID}user_valid_postcode`, availableStores?.[0].user_postcode)
-    
-          
     
           if(parseInt(availableStores?.length) === parseInt(0) || parseInt(orderTypeFilters?.length) === parseInt(0))
           {

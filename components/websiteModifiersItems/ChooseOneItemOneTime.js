@@ -72,13 +72,13 @@ export default function ChooseOneItemOneTime({
                                 </div>
                                 <div className="spacer _8"></div>
                                 {
-                                    getAmountConvertToFloatWithFixed(secondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && 
+                                    // getAmountConvertToFloatWithFixed(secondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) &&
                                     <div 
-                                            className="modifier-group-price" 
-                                            style={{
-                                                color: secondItems?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR)
-                                            }}
-                                        >
+                                        className="modifier-group-price" 
+                                        style={{
+                                            color: secondItems?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR)
+                                        }}
+                                    >
                                         &pound;{getAmountConvertToFloatWithFixed(secondItems?.price,2)}
                                     </div>
                                 }
@@ -98,9 +98,9 @@ export default function ChooseOneItemOneTime({
                                     </div>
                                     <div className="spacer _8"></div>
                                     {
-                                        getAmountConvertToFloatWithFixed(secondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && (
+                                        // getAmountConvertToFloatWithFixed(secondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && 
                                         <div className="modifier-group-price">&pound;{parseFloat(secondItems?.price).toFixed(2)}</div>
-                                    )}
+                                    }
                                 </div>
                             </label>
                         </div>

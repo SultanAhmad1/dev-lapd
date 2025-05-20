@@ -73,7 +73,7 @@ export default function ChooseOnlyOne({
                         {secondItems?.title}
                       </span>
                       {
-                        parseInt(secondItems?.price) > parseInt(0) && 
+                        // getAmountConvertToFloatWithFixed(secondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) &&
                         <span 
                             className="modifier-group-price" 
                             style={{color: secondItems?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR)}}

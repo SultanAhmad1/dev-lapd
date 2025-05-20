@@ -4,7 +4,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 
 import moment from 'moment';
-import { CardElement, PaymentRequestButtonElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { CardCvcElement, CardElement, CardExpiryElement, CardNumberElement, PaymentRequestButtonElement, useElements, useStripe } from '@stripe/react-stripe-js';
 import { BRAND_SIMPLE_GUID, BRAND_GUID, IMAGE_URL_Without_Storage, axiosPrivate } from '@/global/Axios';
 import HomeContext from '@/contexts/HomeContext';
 import { useRouter } from "next/navigation";
@@ -168,33 +168,38 @@ const PaymentForm = ({orderId}) =>
       const response = await axiosPrivate.post(`/send-sms-and-email`, data)
 
       setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
-      setLocalStorage(`${BRAND_SIMPLE_GUID}order_amount_number`,null)
-      // setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`,[])
-      setLocalStorage(`${BRAND_SIMPLE_GUID}customer_information`,null)
-      setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,null)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
       setCartData([])
-      setLoader(false)
-      // if(response?.data?.status === "success")
-      // {
-        router.push(`/track-order/${orderId}`)
-        
-      // }
 
+      setLoader(false)
+      router.push(`/track-order/${orderId}`)
     } 
     catch (error) 
     {
       window.alert(error?.response?.data?.error)
       setLoader(false)
+      
       setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
-      setLocalStorage(`${BRAND_SIMPLE_GUID}order_amount_number`,null)
-      // setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`,[])
-      setLocalStorage(`${BRAND_SIMPLE_GUID}customer_information`,null)
-      setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,null)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+      setCartData([])
+
       setCartData([])
       router.push(`/track-order/${orderId}`)
     }
   }
 
+  const [isSubmitButtonCLicked, setIsSubmitButtonCLicked] = useState(false);
+  
   // This method will hit when payment successfully done, to send sms and email to user.
   const afterPaymentSavedOrderUpdate = async (paymentIntent) =>
   {
@@ -221,218 +226,185 @@ const PaymentForm = ({orderId}) =>
   }
 
   // This submit send request to Database and stripe.
-    const handleSubmit = async (event) => 
+  const handleSubmit = async (event) => 
+  {
+    event.preventDefault();
+    setIsSubmitButtonCLicked(true)
+    setLoader(true)
+
+    if(isLocationBrandOnline === null)
     {
-      event.preventDefault();
-      setIsSubmitButtonCLicked(true)
-      setLoader(true)
-  
-      if(isLocationBrandOnline === null)
+      setIsSubmitButtonCLicked(false)
+      return
+    }
+
+    if (!stripe || !elements) 
+    {
+      setIsSubmitButtonCLicked(false)
+      setLoader(false)
+      return;
+    }
+    try 
+    {
+      // const cardElement = elements.getElement(CardElement);\
+      const cardElement = elements.getElement(CardNumberElement);
+
+      const { token, error,type } = await stripe.createToken(cardElement);
+
+      if (error) 
       {
-        return
-      }
-  
-      if (!stripe || !elements) 
-      {
+        setIsSubmitButtonCLicked(false)
+        setPaymentError(error.message);
         setLoader(false)
-        return;
-      }
-      try 
-      {
-        const cardElement = elements.getElement(CardElement);
-  
-        const { token, error,type } = await stripe.createToken(cardElement);
-  
-        if (error) 
+        return
+      } 
+      
+      setLoader(true)
+
+      const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`))
+
+      const city = getCustomerInformation?.street2?.split(',')[0].trim();
+      const response = await axiosPrivate.post('/create-payment-intent', 
         {
-          setPaymentError(error.message);
-          setLoader(false)
-          return
-        } 
-        
-        setLoader(true)
-  
-        const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`))
-  
-        const city = getCustomerInformation?.street2?.split(',')[0].trim();
-        const response = await axiosPrivate.post('/create-payment-intent', 
-          {
-            order_total: getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) * 100, // replace with your desired amount
-            token: token.id,
-            order: orderId,
-            brand: BRAND_GUID,
-          }
-        );
-  
-        const { clientSecret } = response.data;
-  
-        const result = await stripe.confirmCardPayment(clientSecret, {
-          payment_method: {
-            card: cardElement,
-            billing_details: {
-              name: `${getCustomerInformation?.firstName} ${getCustomerInformation?.lastName}`,
-              email: getCustomerInformation?.email,
-              address: {
-                line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1} ${getCustomerInformation?.street1}`,
-                city: city,
-                postal_code: getCustomerInformation?.postcode,
-                country: 'GB',
-              },
+          order_total: getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) * 100, // replace with your desired amount
+          token: token.id,
+          order: orderId,
+          brand: BRAND_GUID,
+        }
+      );
+
+      const { clientSecret } = response.data;
+
+      const result = await stripe.confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: cardElement,
+          billing_details: {
+            name: `${getCustomerInformation?.firstName} ${getCustomerInformation?.lastName}`,
+            email: getCustomerInformation?.email,
+            address: {
+              line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1} ${getCustomerInformation?.street1}`,
+              city: city,
+              postal_code: getCustomerInformation?.postcode,
+              country: 'GB',
             },
           },
-        });
-  
-        if (result.error) 
-        {
-          setLoader(false)
-          setPaymentError(result.error.message);
-          return
-        } 
-        else 
-        {
-          afterPaymentSavedOrderUpdate(result.paymentIntent)
-        }
-      } catch (error) {
-        setLoader(false)
-        console.error("Payment form error:",error);
-      }
-    };
-  
-  
-    const [paymentRequest, setPaymentRequest] = useState(null);
-  
-    useEffect(() => {
-      if (stripe) 
+        },
+      });
+      setIsSubmitButtonCLicked(false)
+      if (result.error) 
       {
-        const orderTotalSimpleForm = parseFloat(totalOrderAmountValue) * 100
-  
-        const pr = stripe.paymentRequest({
-          country: "GB",
-          currency: "gbp",
-          total: {
-            label: 'Total',
-            amount: parseInt(orderTotalSimpleForm),
-          },
-          requestPayerName: true,
-          requestPayerEmail: true,
-          requestShipping: false,
-          requestBillingAddress: true, // ✅ ADD THIS
-        });
-  
-        pr.canMakePayment().then(result => {
-          if (result) 
-          {
-            setPaymentRequest(pr);
-          }
-        });
-  
-        const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`))
-  
-        const city = getCustomerInformation?.street2?.split(',')[0].trim();
-  
-        // pr.on("paymentmethod", async (ev) => {
-        //   try {
-        //     const response = await axiosPrivate.post("/create-payment-intent", {
-        //       order_total: Math.round(parseFloat(totalOrderAmountValue) * 100),
-        //       type: "wallet",
-        //       payment_method: ev.paymentMethod.id,
-        //       order: orderId,
-        //       brand: BRAND_GUID,
-        //       customer_address: ev.billingDetails?.address || {
-        //         line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1} ${getCustomerInformation?.street1}`, // Use actual values if you collect them
-        //         city: city,
-        //         postal_code: getCustomerInformation?.postcode,
-        //         country: 'GB',
-        //       },
-        //     });
-        
-        //     const { clientSecret } = response.data;
-        
-        //     // Finish UI prompt
-        //     ev.complete("success");
-        
-        //     // Let Stripe handle additional steps (if needed)
-        //     // const result = await stripe.confirmCardPayment(clientSecret);
-        //     const result = await stripe.confirmCardPayment(clientSecret, {
-        //       payment_method: {
-        //         billing_details: {
-        //           name: ev.payerName || `${getCustomerInformation?.firstName} ${getCustomerInformation?.lastName}`,  // fallback
-        //           email: ev.payerEmail || getCustomerInformation?.email,
-        //           address: {
-        //             line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1} ${getCustomerInformation?.street1}`, // Use actual values if you collect them
-        //             city: city,
-        //             postal_code: getCustomerInformation?.postcode,
-        //             country: 'GB',
-        //           },
-        //         },
-        //       },
-        //     });
-        
-        //     if (result.error) {
-        //       alert("Payment failed");
-        //     } else {
-        //       afterPaymentSavedOrderUpdate(result.paymentIntent);
-        //     }
-        //   } catch (err) {
-        //     console.error(err);
-        //     ev.complete("fail");
-        //     alert("Payment failed");
-        //   }
-        // });
-        
-  
-        pr.on("paymentmethod", async (ev) => {
-          try {
-            const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`));
-            const city = getCustomerInformation?.street2?.split(',')[0].trim();
-        
-            const customerName = ev.payerName || `${getCustomerInformation?.firstName} ${getCustomerInformation?.lastName}`;
-            const customerEmail = ev.payerEmail || getCustomerInformation?.email;
-        
-            const customerAddress = ev.billingDetails?.address || {
-              line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1}`,
-              city,
-              postal_code: getCustomerInformation?.postcode,
-              country: "GB",
-            };
-        
-            // ✅ Send all billing info to backend
-            const response = await axiosPrivate.post("/create-payment-intent", {
-              order_total: Math.round(parseFloat(totalOrderAmountValue) * 100),
-              type: "wallet",
-              payment_method: ev.paymentMethod.id,
-              order: orderId,
-              brand: BRAND_GUID,
-              billing_details: {
-                name: customerName,
-                email: customerEmail,
-                address: customerAddress,
-              },
-            });
-        
-            const { clientSecret } = response.data;
-        
-            // ✅ Finish wallet UI prompt
-            ev.complete("success");
-        
-            // ✅ Confirm payment with Stripe
-            const result = await stripe.confirmCardPayment(clientSecret); // No payment_method object needed
-        
-            if (result.error) {
-              alert("Payment failed");
-            } else {
-              afterPaymentSavedOrderUpdate(result.paymentIntent);
-            }
-          } catch (err) {
-            console.error(err);
-            ev.complete("fail");
-            alert("Payment failed");
-          }
-        });
-  
-        
+        setLoader(false)
+        setPaymentError(result.error.message);
+        return
+      } 
+      else 
+      {
+        afterPaymentSavedOrderUpdate(result.paymentIntent)
       }
-    }, [stripe, totalOrderAmountValue]);
+    } catch (error) {
+      setIsSubmitButtonCLicked(false)
+      setLoader(false)
+      console.error("Payment form error:",error);
+    }
+  };
+  
+  const [paymentRequest, setPaymentRequest] = useState(null);
+
+  useEffect(() => {
+    if (stripe) 
+    {
+      const orderTotalSimpleForm = parseFloat(totalOrderAmountValue) * 100
+
+      const pr = stripe.paymentRequest({
+        country: "GB",
+        currency: "gbp",
+        total: {
+          label: 'Total',
+          amount: parseInt(orderTotalSimpleForm),
+        },
+        requestPayerName: true,
+        requestPayerEmail: true,
+        requestShipping: false,
+        requestBillingAddress: true, // ✅ ADD THIS
+      });
+
+      pr.canMakePayment().then(result => {
+        if (result) 
+        {
+          setPaymentRequest(pr);
+        }
+      });
+
+      const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`))
+
+      const city = getCustomerInformation?.street2?.split(',')[0].trim();
+
+      pr.on("paymentmethod", async (ev) => {
+        try {
+          const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`));
+          const city = getCustomerInformation?.street2?.split(',')[0].trim();
+      
+          const customerName = ev.payerName || `${getCustomerInformation?.firstName} ${getCustomerInformation?.lastName}`;
+          const customerEmail = ev.payerEmail || getCustomerInformation?.email;
+      
+          const customerAddress = ev.billingDetails?.address || {
+            line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1}`,
+            city,
+            postal_code: getCustomerInformation?.postcode,
+            country: "GB",
+          };
+      
+          // ✅ Send all billing info to backend
+          const response = await axiosPrivate.post("/create-payment-intent", {
+            order_total: Math.round(parseFloat(totalOrderAmountValue) * 100),
+            type: "wallet",
+            payment_method: ev.paymentMethod.id,
+            order: orderId,
+            brand: BRAND_GUID,
+            billing_details: {
+              name: customerName,
+              email: customerEmail,
+              address: customerAddress,
+            },
+          });
+      
+          const { clientSecret } = response.data;
+      
+          // ✅ Finish wallet UI prompt
+          ev.complete("success");
+      
+          // ✅ Confirm payment with Stripe
+          const result = await stripe.confirmCardPayment(clientSecret); // No payment_method object needed
+      
+          if (result.error) {
+            alert("Payment failed");
+          } else {
+            afterPaymentSavedOrderUpdate(result.paymentIntent);
+          }
+        } catch (err) {
+          console.error(err);
+          ev.complete("fail");
+          alert("Payment failed");
+        }
+      });
+
+      
+    }
+  }, [stripe, totalOrderAmountValue]);
+
+  const handleCardNumberChange = (event) => {
+    if (event.complete) {
+      const expiryElement = elements?.getElement(CardExpiryElement)
+      expiryElement?.focus()
+    }
+  }
+
+  const handleCardExpiryChange = (event) => {
+    if (event.complete) {
+      const cvcElement = elements?.getElement(CardCvcElement)
+      cvcElement?.focus()
+    }
+  }
 
   return(
     <>
@@ -451,12 +423,7 @@ const PaymentForm = ({orderId}) =>
 
                       <hr className='edfhmthtpayment-desk'></hr>
                       <div className='mimjepmkmlmmpayment-desk'>
-                        <h3 className="eik5ekk6payment-desk">
-                          <span className="d1payment-desk-span">Payment</span>
-                        </h3>
                         <div className='d1g1payment-desk'>
-                        
-                          
                           {
                             isLocationBrandOnline !== null &&
                             <>
@@ -471,8 +438,20 @@ const PaymentForm = ({orderId}) =>
                                   <span className="chd2cjd3b1payment-desk">Credit or debit card</span>
                                 </div>
                               </a>
-                              <div className="btaupayment-window">
-                                <CardElement options={{hidePostalCode: true, style: { base: { fontSize: '16px', color: '#424770', '::placeholder': { color: '#aab7c4' } } } }} />
+                              <div className="btaupayment-window" style={{ display: "flex", justifyContent: "space-between"}}>
+                                {/* <CardElement options={{hidePostalCode: true, style: { base: { fontSize: '16px', color: '#424770', '::placeholder': { color: '#aab7c4' } } } }} /> */}
+                                <div className="card-number">
+                                  <CardNumberElement  onChange={handleCardNumberChange} options={{hidePostalCode: true, style: { base: {fontSize: '16px', color: '#424770', '::placeholder': { color: '#aab7c4' } } } }} />
+                                </div>
+
+                                <div className="card-expiry">
+                                  <CardExpiryElement onChange={handleCardExpiryChange} options={{hidePostalCode: true, style: { base: {fontSize: '16px', color: '#424770', '::placeholder': { color: '#aab7c4' } } } }} />
+                                </div>
+
+                                <div className="card-cvc">
+                                  <CardCvcElement options={{hidePostalCode: true, style: { base: {fontSize: '16px', color: '#424770', '::placeholder': { color: '#aab7c4' } } } }} />
+                                </div>
+
                                 {paymentError && <div style={{background: "#ed5858", color: "white", padding: "12px", borderRadius: "1px", marginTop: "10px"}}>{paymentError}</div>}
                               </div>
                             </>
@@ -490,20 +469,16 @@ const PaymentForm = ({orderId}) =>
                         {
                           isLocationBrandOnline !== null ?
                             <>
-                              <button 
-                                type='submit' 
-                                className="h7brboe1payment-btn" 
-                                // style={{
-                                //   background: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
-                                //   color: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
-                                //   border: isHover ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}` : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
-                                //   marginBottom: "10px"
-                                // }}
-        
-                                onMouseEnter={() => setIsHover(true)}
-                                onMouseLeave={() => setIsHover(false)}
-                                disabled={!stripe}
-                              >Submit Payment</button>
+                              {
+                                !isSubmitButtonCLicked &&
+                                <button 
+                                  type='submit' 
+                                  className="h7brboe1payment-btn" 
+                                  onMouseEnter={() => setIsHover(true)}
+                                  onMouseLeave={() => setIsHover(false)}
+                                  disabled={!stripe}
+                                >Submit Payment</button>
+                              }
                               {/* <Wallet 
                                 {
                                   ...{
@@ -520,15 +495,8 @@ const PaymentForm = ({orderId}) =>
                             </>
                           :
                           <button 
-                            type='submit' 
-                            className="h7brboe1payment-btn" 
-                            // style={{background: "rgb(125,125,125)",marginBottom: "10px"}} 
-                            style={{
-                              background: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
-                              color: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
-                              border: isHover ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}` : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
-                              marginBottom: "10px"
-                            }}
+                            type='button' 
+                          
     
                             onMouseEnter={() => setIsHover(true)}
                             onMouseLeave={() => setIsHover(false)}
