@@ -3,21 +3,13 @@ import HomeContext from "@/contexts/HomeContext";
 import { axiosPrivate, BLACK_COLOR, BRAND_GUID, BRAND_SIMPLE_GUID, DELIVERY_ID, LIGHT_BLACK_COLOR, PARTNER_ID, WHITE_COLOR } from "@/global/Axios";
 import { find_matching_postcode, setLocalStorage } from "@/global/Store";
 import React, { Fragment, useContext, useEffect } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useRouter } from "next/navigation";
 import moment from "moment";
 import FilterLocationTime from "./FilterLocationTime";
 import FilterLocationTimeEdit from "./FilterLocationTimeEdit";
 
-export default function AvailableStore({availableStores, setAvailableStores,validPostcode}) 
+export default function AvailableStore({availableStores, setAvailableStores,validPostcode, locationDetails}) 
 {
-
-  const searchParams = useSearchParams()
-  
-  const locationFiltered = searchParams.get('location')
-  
-  const locationDetails = locationFiltered ? locationFiltered.replace(/^"+|"+$/g, '') : '';
-
-  // console.log("location details:", locationDetails);
 
   const {
     setDayOpeningClosingTime,
@@ -259,8 +251,6 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
 
     const findDeliveryMatrix = availableStores?.find((stores) => stores?.location_guid === storeId)
 
-    console.log("valid postcode :", validPostcode);
-    
     find_matching_postcode(findDeliveryMatrix?.deliveryMatrixes?.delivery_matrix_rows, validPostcode, setDeliveryMatrix);
 
     handleLocationSelect(findAvailableStores?.location_guid, findAvailableStores?.location_name, findAvailableStores?.telephone)
@@ -269,12 +259,11 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
   useEffect(() => {
     if(parseInt(locationDetails?.length) > parseInt(0))
     {
+      setLocalStorage(`${BRAND_SIMPLE_GUID}via_qr`, 1)
       handleOrderType(availableStores?.[0]?.location_guid, "9BDF79F9-BD1E-4C77-A9E1-238DB7A59DC5")
     }
   }, [locationDetails]);
-  
 
-  console.log("available store:", availableStores);
   
   return(
     <>

@@ -119,7 +119,7 @@ export default function CounterItem({
                                                     </div>
                                                     <div className="spacer _8"></div>
                                                     {
-                                                        getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) && 
+                                                        // getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) && 
                                                         <div className="modifier-group-price">
                                                             &pound;{parseFloat(item?.price_info).toFixed(2)}
                                                         </div>

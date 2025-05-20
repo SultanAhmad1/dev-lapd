@@ -111,7 +111,7 @@ export default function ChooseOnlyOne({
 
                                             <div className="spacer _8"></div>
                                             {
-                                                getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) && 
+                                                // getAmountConvertToFloatWithFixed(item?.price_info,2) > getAmountConvertToFloatWithFixed(0,2) && 
                                                 <div className="modifier-group-price" style={{color: item?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR)}}>
                                                     &pound;{parseFloat(item?.price_info).toFixed(2)}
                                                 </div>

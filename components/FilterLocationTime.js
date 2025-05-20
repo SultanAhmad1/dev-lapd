@@ -99,20 +99,20 @@ function FilterLocationTime(props)
 
                                     style={{
                                         background: filter?.id === selectedFilter?.id ? 
-                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || LIGHT_BLACK_COLOR
+                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.activeButtonBackgroundColor || LIGHT_BLACK_COLOR
                 
                                         : 
                                             websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || WHITE_COLOR
                                         ,
                                         color: filter?.id === selectedFilter?.id ? 
-                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor || WHITE_COLOR
+                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.activeButtonFontColor || WHITE_COLOR
                                         :
                                             websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR
                                         ,
                                         border: filter?.id === selectedFilter?.id ? 
-                                            `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || LIGHT_BLACK_COLOR}` 
+                                            `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.activeButtonBackgroundColor || LIGHT_BLACK_COLOR}` 
                                         : 
-                                            `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || LIGHT_BLACK_COLOR}`
+                                            `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || LIGHT_BLACK_COLOR}`
                                         ,
                                         display: "flex"
                                     }}
@@ -123,7 +123,7 @@ function FilterLocationTime(props)
                                         <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                             <path 
                                                 d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" 
-                                                stroke={`${(websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR)}`} 
+                                                stroke={`${(filter?.id === selectedFilter?.id ? (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.activeButtonFontColor || WHITE_COLOR) : (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR))}`} 
                                                 strokeWidth="2.5" 
                                                 strokeLinejoin="round"/>
                                         </svg>
@@ -135,7 +135,7 @@ function FilterLocationTime(props)
                                                     className="chic-cj-ck b1"
                                                     style={{
                                                         color: filter?.id === selectedFilter?.id ? 
-                                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor || WHITE_COLOR
+                                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.activeButtonFontColor || WHITE_COLOR
                                                         :
                                                             websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || BLACK_COLOR
                                                         ,

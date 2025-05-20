@@ -15,7 +15,7 @@ import {
   axiosPrivate,
 } from "../global/Axios";
 import { useRouter } from "next/navigation";
-import { useGetQueryAutoUpdate, useGetQueryForDeliveryFee } from "./reactquery/useQueryHook";
+import { useGetQueryAutoUpdate, useGetQueryForDeliveryFee, usePostMutationHook } from "./reactquery/useQueryHook";
 import { NextResponse } from "next/server";
 
 
@@ -46,7 +46,20 @@ export default function CheckoutDisplay()
     couponDiscountApplied,
     setCouponDiscountApplied,
     websiteModificationData,
+    storeToDayClosingTime,
     handleBoolean,
+    cutOffSchedule,
+    isScheduleIsReady,
+    setIsScheduleIsReady,
+    isScheduleClicked,
+    setIsScheduleClicked,
+
+    scheduleMessage,
+    setScheduleMessage,
+
+    isCheckoutReadyAfterSchedule,
+    setIsCheckoutReadyAfterSchedule,
+
   } = useContext(HomeContext);
   
   const [itemIndividuallyUpdate, setItemIndividuallyUpdate] = useState(false)
@@ -98,18 +111,40 @@ export default function CheckoutDisplay()
     try {
       const getLocalStorageDetail = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
 
+      const getPostCode = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_valid_postcode`))
+
       const getAvailableStore = getLocalStorageDetail?.display_id
+
+      let filterPostcode = postCodeForOrderAmount
+
+      
+      let grabPostcodeOutWard = "";
+      if (getPostCode && parseInt(getPostCode.length) === parseInt(7)) 
+      {
+        filterPostcode = getPostCode.replace(/\s/g, "");
+        grabPostcodeOutWard = filterPostcode.substring(0, 4);
+      } 
+      else if (getPostCode && parseInt(getPostCode.length) === parseInt(6)) 
+      {
+        filterPostcode = getPostCode.replace(/\s/g, "");
+        grabPostcodeOutWard = filterPostcode.substring(0, 3);
+      } 
+      else 
+      {
+        grabPostcodeOutWard = filterPostcode.substring(0, 2);
+      }
 
       const filterData = {
         endData: moment().format("YYYY-MM-DD"),
         active: 1,
         partner: 2,
         brand: BRAND_GUID,
-        postcode: postCodeForOrderAmount,
+        postcode: grabPostcodeOutWard,
         location: getAvailableStore,
       };
       
       const response = await axiosPrivate.post(`/apply-amount-discount`,filterData);
+      
       const amountDiscounts = response?.data?.data?.applyAmountDiscount;
       let workingIndex = 0;
 
@@ -186,17 +221,21 @@ export default function CheckoutDisplay()
   const onDeliveryError = (error) => {}
 
   const onDeliverySuccess = (data) => {
-
+    
     const {deliveryMatrix} = data?.data
     
+    if(deliveryMatrix && deliveryMatrix?.delivery_matrix_rows)
+    {
+      setLocalStorage(`${BRAND_SIMPLE_GUID}delivery_matrix`,deliveryMatrix?.delivery_matrix_rows?.[0])
+    }
     const selectedMatrix = deliveryMatrix?.delivery_matrix_rows?.[0]
     let totalValue = 0;
-
+    
     for (const total of cartData) 
     {
       totalValue = parseFloat(totalValue) + parseFloat(total?.total_order_amount);
     }
-    setLocalStorage(`${BRAND_SIMPLE_GUID}sub_order_total_local`,JSON.stringify(getAmountConvertToFloatWithFixed(totalValue, 2)));
+    setLocalStorage(`${BRAND_SIMPLE_GUID}sub_order_total_local`,getAmountConvertToFloatWithFixed(totalValue, 2));
     setSubtotalOrderAmount(getAmountConvertToFloatWithFixed(totalValue, 2));
     
     if (selectedFilter?.id === DELIVERY_ID) 
@@ -256,7 +295,7 @@ export default function CheckoutDisplay()
         const textMessage = (
           // <span style={{color: "red",background: "#eda7a7",textAlign: "center",padding: "10px",}}>
           <span style={{color: "red"}}>
-            Minimum order is <strong>&pound;{getAmountConvertToFloatWithFixed(selectedMatrix.order_value,2)}</strong> to your postcode
+            Minimum order is <strong>&pound;{getAmountConvertToFloatWithFixed(selectedMatrix?.order_value,2)}</strong> to your postcode
           </span>
         );
         setDeliveryMessage(textMessage);
@@ -272,7 +311,8 @@ export default function CheckoutDisplay()
     }
 
     setTotalOrderAmount(getAmountConvertToFloatWithFixed(totalValue, 2));
-    if(parseInt(couponDiscountApplied.length) == parseInt(0))
+    
+    if(couponDiscountApplied && parseInt(couponDiscountApplied.length) == parseInt(0))
     {
       getOrderAmount(getAmountConvertToFloatWithFixed(totalValue, 2));
     }
@@ -295,13 +335,13 @@ export default function CheckoutDisplay()
         setSelectedLocation(userLocation?.display_id)
       }
       setItemIndividuallyUpdate(false)
-      // setLoader(false)  
+      
     } catch (error) {
-      window.alert("There is something went wrong. Please refresh and try again.")
+      window.alert("There is something went wrong. Please refresh and try again 1.")
       return
     }
     
-  }, [cartData]);
+  }, [cartData, cutOffSchedule]);
 
   useEffect(() => {
     if(parseInt(selectedLocation?.length) > parseInt(0) && parseInt(selectedPostcode?.length) > parseInt(0))
@@ -310,45 +350,16 @@ export default function CheckoutDisplay()
     }
   },[selectedLocation, selectedPostcode]);
 
-  function handlePromoCodeToggle() 
-  {
-    setIsAddPromoCodeBtnToggle(!isAddPromoCodeBtnToggle);
-  }
-  
-  function handleCheckoutBtn() 
-  {
-    setIsCheckOutClicked(true);
-  }
-  
-  function handleAddItems() 
-  {
-    route.push("/");
-    setIsCartBtnClicked(false);
-  }
 
-  function handleDotedBtn(id) 
-  {
-    const updateIsCartModalFlag = cartData?.map((cart, index) => 
-    {
-      if (id === index) 
-      {
-        return {
-          ...cart,
-          is_cart_modal_clicked: !cart?.is_cart_modal_clicked,
-        };
-      }
-      return cart;
-    });
-
-    setCartData(updateIsCartModalFlag);
-  }
-
-  function removeItem(id) 
+  function removeCartItem(id) 
   {
     const filterItems = cartData?.filter((cart, index) => index !== id);
-    if(parseInt(filterItems.length) === parseInt(0))
+    if(filterItems && parseInt(filterItems.length) === parseInt(0))
     {
-      setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`, [])
+      // setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`, [])
+      // setLocalStorage(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`, [])
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
       setCouponDiscountApplied([])
     }
 
@@ -370,27 +381,39 @@ export default function CheckoutDisplay()
     // setIsAddPromoCodeBtnToggle(!isAddPromoCodeBtnToggle);
     try {
       setLoader(true)
+
+      // if (selectedFilter?.id === DELIVERY_ID)
+      // {
+      //   setCouponCodeError("You can apply coupon only for collection orders.")
+      //   setLoader(false)
+      //   return
+      // }
       const checkCouponCodeIsAlreadyApplied = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}applied_coupon`))
   
-      if(parseInt(checkCouponCodeIsAlreadyApplied.length) > parseInt(0))
+      if(checkCouponCodeIsAlreadyApplied && parseInt(checkCouponCodeIsAlreadyApplied?.length) > parseInt(0))
       {
-        const findMatchCouponCode = checkCouponCodeIsAlreadyApplied?.filter((check) => check.code.includes(coupon))
-        if(parseInt(findMatchCouponCode.length) > parseInt(0))
+        // first check the same coupon is already applied or not
+        const checkTheCouponIsAlreadyApplied = checkCouponCodeIsAlreadyApplied?.filter((check) => check.code.includes(coupon))
+
+        if(checkCouponCodeIsAlreadyApplied && parseInt(checkTheCouponIsAlreadyApplied?.length) > parseInt(0))
         {
           setCouponCodeError("Code already applied!")
           setLoader(false)
-          return
+          return      
         }
-        else if(checkCouponCodeIsAlreadyApplied[0].user_in_conjuction === 0)
+        for(let appliedCoupon of checkCouponCodeIsAlreadyApplied)
         {
-          setCouponCodeError("You can not use other coupons with previous one!")
-          setLoader(false)
-          return
+          if(parseInt(appliedCoupon.user_in_conjuction) === parseInt(0))
+          {
+            setCouponCodeError("You can not use other coupons with previous one!")
+            setLoader(false)
+            return
+          }
         }
       }
       
     } catch (error) {
-      window.alert("There is something went wrong. Please refresh and try again.")
+      window.alert("There is something went wrong. Please refresh and try again 2.")
       return
     }
 
@@ -400,20 +423,13 @@ export default function CheckoutDisplay()
         brand:    BRAND_GUID,
         partner:  PARTNER_ID,
         location: storeGUID,
+        selectedOrderType: selectedFilter?.id,
       };
       const response = await axiosPrivate.post(`/apply-coupon`, data);
-
-      // const updateCouponToggle = response?.data?.data?.coupon?.map((coupon) =>
-      // {
-      //   return{
-      //     ...coupon,
-      //     is_coupon_remove: false
-      //   }
-      // })
       
       if(response?.data?.data?.coupon === null)
       {
-        setCouponCodeError("Coupon has expired")
+        setCouponCodeError("Coupon not found")
         setLoader(false)
         return
       }
@@ -421,18 +437,49 @@ export default function CheckoutDisplay()
 
       const getCouponCodeFromSession = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}applied_coupon`))
       
+      // if conjuction is zero then don't go to next
+      if(getCouponCodeFromSession && parseInt(getCouponCodeFromSession?.length) > parseInt(0))
+      {
+        if(couponData)
+        {
+          if(parseInt(couponData.user_in_conjuction) === parseInt(0))
+          {
+            setCouponCodeError("You can not use other coupons with previous one!")
+            setLoader(false)
+            return
+          }
+        }
+      }
+
+      
       let discountedCoupon = 0;
       if(couponData?.discount_type === "P")
       {
-        if(couponData?.user_in_conjuction === 0)
+        if(parseInt(couponData?.user_in_conjuction) === parseInt(0))
         {
-          discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(subtotalOrderAmount) * (couponData?.value / 100),2)
+          // discountValue
+
+          // check already discount applied and then apply discount on remaining amount
+          if(getCouponCodeFromSession && parseInt(getCouponCodeFromSession?.length) > parseInt(0))
+          {
+            // first get difference of discount and subtotal
+            
+            const differenceDiscountAndSubtotal = parseFloat(subtotalOrderAmount) - parseFloat(discountValue)
+
+            discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(differenceDiscountAndSubtotal) * (couponData?.value / 100),2)
+          }
+          else
+          {
+            discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(subtotalOrderAmount) * (couponData?.value / 100),2)
+          }
         }
         else
         {
-          if(parseInt(getCouponCodeFromSession.length) > parseInt(0))
+          if(getCouponCodeFromSession && parseInt(getCouponCodeFromSession.length) > parseInt(0))
           {
-            discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(totalOrderAmountValue - deliveryFee) * (couponData?.value / 100),2)
+            
+            const differenceDiscountAndSubtotal = parseFloat(subtotalOrderAmount) - parseFloat(discountValue)
+            discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(differenceDiscountAndSubtotal) * (couponData?.value / 100),2)
           }
           else
           {
@@ -442,15 +489,27 @@ export default function CheckoutDisplay()
       }
       else if(couponData?.discount_type === "M")
       {
-        if(couponData?.user_in_conjuction === 0)
+        if(parseInt(couponData?.user_in_conjuction) === parseInt(0))
         {
-          discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(subtotalOrderAmount) - parseFloat(couponData?.value),2)
+          // check already discount applied and then apply discount on remaining amount
+          if(getCouponCodeFromSession && parseInt(getCouponCodeFromSession?.length) > parseInt(0))
+          {
+            // first get difference of discount and subtotal
+            const differenceDiscountAndSubtotal = parseFloat(subtotalOrderAmount) - parseFloat(discountValue)
+            discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(differenceDiscountAndSubtotal) - parseFloat(couponData?.value),2)
+          }
+          else
+          {
+            discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(subtotalOrderAmount) - parseFloat(couponData?.value),2)
+          }
         }
         else
         {
-          if(parseInt(getCouponCodeFromSession.length) > parseInt(0))
+          if(getCouponCodeFromSession && parseInt(getCouponCodeFromSession.length) > parseInt(0))
           {
-            discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(totalOrderAmountValue - deliveryFee) - (couponData?.value),2)
+            // first get difference of discount and subtotal
+            const differenceDiscountAndSubtotal = parseFloat(subtotalOrderAmount) - parseFloat(discountValue)
+            discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(differenceDiscountAndSubtotal) - parseFloat(couponData?.value),2)
           }
           else
           {
@@ -469,31 +528,98 @@ export default function CheckoutDisplay()
         discount: discountedCoupon
       }
 
-      if(updateCouponToggle?.user_in_conjuction === 0)
-      {
-        // console.warn("User conjuction 0:", updateCouponToggle?.user_in_conjuction);
-        // setCouponDiscountApplied([])
+      // if(parseInt(updateCouponToggle?.user_in_conjuction) === parseInt(0))
+      // {
+      //   // console.warn("User conjuction 0:", updateCouponToggle?.user_in_conjuction);
+      //   // setCouponDiscountApplied([])setCouponDiscountApplied
 
-        const couponDiscountAppliedMerge = [...couponDiscountApplied, updateCouponToggle]
+      //   // const couponDiscountAppliedMerge = [...couponDiscountApplied, updateCouponToggle]
 
-        setCouponDiscountApplied(couponDiscountAppliedMerge)
-        // setCouponDiscountApplied(updateCouponToggle)
-      }
-      else
-      {
-        // console.warn("User conjuction 1:", updateCouponToggle?.user_in_conjuction);
-        const couponDiscountAppliedMerge = [...couponDiscountApplied, updateCouponToggle]
-        setCouponDiscountApplied(couponDiscountAppliedMerge)
-        // setCouponDiscountApplied(updateCouponToggle)
-      }
+      //   // setCouponDiscountApplied(couponDiscountAppliedMerge)
+        setCouponDiscountApplied((prev) => [...prev, updateCouponToggle]);
+        
+        if(getCouponCodeFromSession && parseInt(getCouponCodeFromSession?.length) > parseInt(0))
+        {
+          const updateLocalStorageCoupon = [...getCouponCodeFromSession, updateCouponToggle]
+          setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`, updateLocalStorageCoupon)
+        }
+        else
+        {
+
+          // Ensure it's an array (wrap it if it's not already)
+          const updateCouponArray = [updateCouponToggle];
+
+          // Save to localStorage as a JSON string
+          setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`, updateCouponArray)
+
+        }
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+        setAmountDiscountMessage("")
+
+        setIsOrderSubtotalLessThanOrderValue(false)
+      //  // setCouponDiscountApplied(updateCouponToggle)
+      // }
+      // else
+      // {
+      //   // console.warn("User conjuction 1:", updateCouponToggle?.user_in_conjuction);
+      //   // const couponDiscountAppliedMerge = [...couponDiscountApplied, updateCouponToggle]
+      //   // setCouponDiscountApplied(couponDiscountAppliedMerge)
+      //   setCouponDiscountApplied((prev) => [...prev, updateCouponToggle]);
+      //   // setCouponDiscountApplied(updateCouponToggle)
+      // }
       
-      setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`, updateCouponToggle)
+      // setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`, updateCouponToggle)
 
 
-      if(updateCouponToggle?.free_delivery === 1)
+      if(parseInt(updateCouponToggle?.free_delivery) === parseInt(1))
       {
         setDeliveryFee(0)
+        setDeliveryMessage("Free Delivery")
       }
+      else 
+      {
+        if (selectedFilter?.id === DELIVERY_ID) 
+        {
+          const getDeliveryMatrix = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`))
+          const subTotal = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`))
+
+          if(getDeliveryMatrix && parseInt(getDeliveryMatrix?.delivery_matrix_row_values?.length) > parseInt(0))
+          {
+            if(subTotal)
+            {
+              const findExactDeliveryFee = getDeliveryMatrix?.delivery_matrix_row_values?.find((findDelivery) => parseFloat(findDelivery.min_order_value))
+              for(let deliveryMatrixRowValues of getDeliveryMatrix?.delivery_matrix_row_values)
+              {
+                if (parseFloat(subTotal) >= parseFloat(deliveryMatrixRowValues?.min_order_value)) 
+                {
+                  if (deliveryMatrixRowValues?.above_minimum_order_value === null || deliveryMatrixRowValues?.above_minimum_order_value === 0)  
+                  {
+                    const textMessage = <strong>Free Delivery</strong>;
+                    setDeliveryMessage(textMessage);
+                    const fee = getAmountConvertToFloatWithFixed(0, 2);
+                    setDeliveryFee(fee);
+                  } 
+                  else 
+                  {
+                    const textMessage = <strong>Free Delivery</strong>;
+                    setDeliveryMessage((deliveryMatrixRowValues?.above_minimum_order_value === 0) ? "" : textMessage);
+    
+                    const fee = parseFloat(deliveryMatrixRowValues?.above_minimum_order_value).toFixed(2);
+                    setDeliveryFee(fee);
+                  }
+                }
+              }
+            }
+          }
+        }
+        else
+        {
+          setLocalStorage(`${BRAND_SIMPLE_GUID}delivery_fee`,parseFloat(0).toFixed(2))
+          setDeliveryFee(0)
+          setDeliveryMessage("")
+        }
+      }
+      setCouponCodeError("")
       setAmountDiscountApplied(null)
       setIsAppliedBtnActive(true)
       setCoupon("")
@@ -505,6 +631,8 @@ export default function CheckoutDisplay()
       setIsCouponCodeApplied(true)
     } catch (error) {
       setCouponCodeError(error?.response?.data?.message)
+      window.alert("Please refresh and apply again coupon code.")
+      return
     }
   }
   
@@ -520,80 +648,141 @@ export default function CheckoutDisplay()
 
   useEffect(() => {
     // setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`, couponDiscountApplied)
-    if(parseInt(couponDiscountApplied.length) > parseInt(0))
+    if(couponDiscountApplied && parseInt(couponDiscountApplied.length) > parseInt(0))
     {
+      
       let couponDiscountValue = 0
+      
       for(let couponDiscount of couponDiscountApplied)
       {
         couponDiscountValue += parseFloat(couponDiscount?.discount)
-        if(couponDiscount.free_delivery === 1)
+
+        if(parseInt(couponDiscount.free_delivery) === parseInt(1))
         {
           setDeliveryFee(0)
+          setDeliveryMessage("Free Delivery")
+        }
+        else
+        {
+
+          if (selectedFilter?.id === DELIVERY_ID) 
+            {
+              const getDeliveryMatrix = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`))
+              const subTotal = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`))
+    
+              if(getDeliveryMatrix && parseInt(getDeliveryMatrix?.delivery_matrix_row_values?.length) > parseInt(0))
+              {
+                if(subTotal)
+                {
+                  const findExactDeliveryFee = getDeliveryMatrix?.delivery_matrix_row_values?.find((findDelivery) => parseFloat(findDelivery.min_order_value))
+                  for(let deliveryMatrixRowValues of getDeliveryMatrix?.delivery_matrix_row_values)
+                  {
+                    if (parseFloat(subTotal) >= parseFloat(deliveryMatrixRowValues?.min_order_value)) 
+                    {
+                      if (deliveryMatrixRowValues?.above_minimum_order_value === null || deliveryMatrixRowValues?.above_minimum_order_value === 0)  
+                      {
+                        const textMessage = <strong>Free Delivery</strong>;
+                        setDeliveryMessage(textMessage);
+                        const fee = getAmountConvertToFloatWithFixed(0, 2);
+                        setDeliveryFee(fee);
+                      } 
+                      else 
+                      {
+                        const textMessage = <strong>Free Delivery</strong>;
+                        setDeliveryMessage((deliveryMatrixRowValues?.above_minimum_order_value === 0) ? "" : textMessage);
+        
+                        const fee = parseFloat(deliveryMatrixRowValues?.above_minimum_order_value).toFixed(2);
+                        setDeliveryFee(fee);
+                      }
+                    }
+                  }
+                }
+              }
+          }
+          else
+          {
+            setLocalStorage(`${BRAND_SIMPLE_GUID}delivery_fee`,parseFloat(0).toFixed(2))
+            setDeliveryFee(0)
+            setDeliveryMessage("")
+          }
         }
       }
-      setLocalStorage(`${BRAND_SIMPLE_GUID}order_amount_number`,null)
+      
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+      setAmountDiscountMessage("")
       setAmountDiscountApplied(null)
+      setIsOrderSubtotalLessThanOrderValue(true)
       setDiscountValue(getAmountConvertToFloatWithFixed(couponDiscountValue,2))
     }
   }, [couponDiscountApplied])
-    
-  // function handleEditItem(findByIndex, storeName, categorySlug, itemSlug) 
-  // {
-  //   setLoader(true)
-  //   setLocalStorage(`${BRAND_SIMPLE_GUID}set_index`, findByIndex);
-  //   setIsCartBtnClicked(false);
-  //   route.push(`/${storeName}/${categorySlug}/${itemSlug}/edit`);
-  //   return
-  // }
 
-  function handleCouponRemoveToggleBtn(indexNumber)
-  {
-    const openCouponToggle = couponDiscountApplied?.map((coupon,index) =>
+  // When click on handleCheckoutClicked button, create new order_guid, with status awaiting, payment_option_awaiting.
+
+  const onStoreSuccess = async (data) => {
+    // first check the order guid id in localStorage if it is null then store information then update them.
+    const responseData = data?.data?.data?.order?.order_total;
+    const { clientSecret, type } = data?.data?.data;
+
+    const orderGUID = data?.data?.data?.order?.external_order_id
+
+    setTimeout(() => {
+      setLoader(false)
+    }, 3000);
+    if (data?.data?.status === "success") 
     {
-      if(parseInt(indexNumber) === parseInt(index))
-      {
-        return{
-          ...coupon,
-          is_coupon_remove: !coupon?.is_coupon_remove
-        }
-      }
-      return coupon
-    })
-    setCouponDiscountApplied(openCouponToggle)
-  }
-
-  function handleDeleteCouponCode(id)
-  {
-    try {
-      const removeCoupon = couponDiscountApplied?.filter((filterCoupon) => filterCoupon?.id !== id)
-      setCouponDiscountApplied(removeCoupon)
-  
-      const removeFromSessionTooo = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}applied_coupon`))
-      const removeFromSessionToooCoupon = removeFromSessionTooo?.filter((sessionCoupon) => sessionCoupon?.id !== id)
-      setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`,removeFromSessionToooCoupon)
-      if(parseInt(removeCoupon.length) === parseInt(0))
-      {
-        const getTotalOrderValue = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`))
-        getOrderAmount(JSON.parse(getTotalOrderValue))
-      }
-      
-    } catch (error) {
-      window.alert("There is something went wrong. Please refresh and try again.")
+      setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,orderGUID);
+      handleBoolean(true, "isPlaceOrderButtonClicked")
     }
+
   }
 
-  const isValidHttpsUrl = (url) => {
-    return url.startsWith('https://');
-  };
-  
+  const onStoreError = (error) => {
+    
+    setTimeout(() => {
+      setLoader(false)
+    }, 3000);
+    // if(error?.response?.data?.status.includes("success"))
+    // {
+    //   route.push(`/payment/${data?.data?.data?.order?.external_order_id}`);
+    // }
+    setErrormessage("There is something went wrong!. Please refresh and try again.")
+    window.alert("There is something went wrong!. Please refresh and try again.")
+    return
+  }
+
+  const { isLoading: storeLoading, isError: storeError, reset: storeReset, isSuccess: storeSuccess, mutate: createOrderMutation } = usePostMutationHook('create-customer-order-guid',`/create-order-guid`,onStoreSuccess, onStoreError)
+
+  const handleCheckoutClicked = () => {
+
+    if(isScheduleIsReady && !isScheduleClicked)
+    {
+      return
+    }
+    setLoader(true)
+    handleBoolean(true, "isPlaceOrderButtonClicked")
+    // const orderFilter = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`));
+
+    // createOrderMutation({
+    //   store: storeGUID,
+    //   brand: BRAND_GUID,
+    //   filterId:           orderFilter === null ? selectedFilter?.id : orderFilter.id,
+    //   filterName:         orderFilter === null ? selectedFilter?.name : orderFilter.name,
+    // })
+  }
+
+  const handleIsScheduleClicked = () => {
+    setIsScheduleClicked(! isScheduleClicked)
+    setIsCheckoutReadyAfterSchedule(! isCheckoutReadyAfterSchedule)
+  }
+
   return(
-    <div className="display-cart scrollable-container" style={{ maxHeight: '85vh', minHeight: '76vh', overflowY: 'auto'}}>
+    <div className="display-cart scrollable-container" style={{ maxHeight: '75vh', minHeight: '60vh', overflowY: 'auto'}}>
       {
         cartData?.length > 0 &&
         <div className="receipt-menu">
           <h5>My Order</h5>
 
-          <div style={{ maxHeight: '60vh', minHeight: '40vh', overflowY: 'auto', marginTop: '0px' }}>
+          <div style={{ maxHeight: '45vh', minHeight: '40vh', overflowY: 'auto', marginTop: '0px' }}>
 
             <div className="column">
               <ul className="order-li-head">
@@ -719,7 +908,7 @@ export default function CheckoutDisplay()
                             </div>
 
                             <div className="col-2" style={{cursor: "pointer"}} onClick={() => route.push(`/${storeName?.toLowerCase()}/${data?.category_slug}/${data?.slug}/edit`)}>&pound;<span className="productPrice0">{parseFloat(data?.total_order_amount).toFixed(2)}</span></div>
-                            <div style={{cursor: "pointer"}} onClick={(() => removeItem(index))} className="col-3 removeProduct" data-index="0"><svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" className="cw-cx-bj-bk-del"><path fillRule="evenodd" clipRule="evenodd" d="M10.667.667V2H14v2H2V2h3.333V.667h5.334zM3.333 5.333h9.334v10H3.333v-10z"></path></svg></div>
+                            <div style={{cursor: "pointer"}} onClick={(() => removeCartItem(index))} className="col-3 removeProduct" data-index="0"><svg aria-hidden="true" focusable="false" viewBox="0 0 16 16" className="cw-cx-bj-bk-del"><path fillRule="evenodd" clipRule="evenodd" d="M10.667.667V2H14v2H2V2h3.333V.667h5.334zM3.333 5.333h9.334v10H3.333v-10z"></path></svg></div>
                         {/* </a> */}
                       </li>
                     )   
@@ -737,6 +926,9 @@ export default function CheckoutDisplay()
                           </div>
 
                       </div>
+
+                      <div className="col-2" >(&pound;<span className="productPrice0">{parseFloat(discountValue).toFixed(2)})</span></div>
+                      <div style={{cursor: "pointer"}} className="col-3 removeProduct" data-index="0"></div>
                     </li>
                 }
 
@@ -748,10 +940,12 @@ export default function CheckoutDisplay()
                           
                             <div className="order-detail-div">
                               <div className="or-cat-name"><b>{coupon?.name}</b>: </div>
-                              <div className="or-pro-name">{parseFloat(coupon?.discount).toFixed(2)} {coupon?.discount_type === "P" ? "%" : "£"}</div>
+                              <div className="or-pro-name">{parseFloat(coupon?.value).toFixed(2)} {coupon?.discount_type === "P" ? "%" : "£"}</div>
                             </div>
 
                         </div>
+                        <div className="col-2" >(&pound;<span className="productPrice0">{parseFloat(coupon?.discount).toFixed(2)})</span></div>
+                        <div style={{cursor: "pointer"}} className="col-3 removeProduct" data-index="0"></div>
                       </li>
                     )
                   })
@@ -763,8 +957,7 @@ export default function CheckoutDisplay()
 
           <div className="coupon-more" style={{marginTop: "2vh"}}>
             <div>
-              {/* <p >Spend &pound;7.15 more to get 10% off.</p> */}
-              <p>{amountDiscountMessage}</p>
+             <p>{amountDiscountMessage && amountDiscountMessage}</p>
             </div>
 
             <div>
@@ -774,7 +967,7 @@ export default function CheckoutDisplay()
               </div>
               {
                 couponCodeError !== "" &&
-                <p style={{color: "red",}}>{couponCodeError}</p>
+                <p style={{color: "red",maxWidth: "18vw"}}>{couponCodeError}</p>
               }
             </div>
           
@@ -820,14 +1013,61 @@ export default function CheckoutDisplay()
           >
               Checkout
             </a> */}
-          <button
-            type="button" 
-            className={` ${!isOrderSubtotalLessThanOrderValue ? "checkout-btn-not-clickable" : "checkout-btn"}`} 
-            aria-disabled={!isOrderSubtotalLessThanOrderValue}
-            onClick={() => handleBoolean(true, "isPlaceOrderButtonClicked")}
-          >
-              Checkout
-            </button>
+          {/* 
+            1.-) First check the, order is delivery.
+              and store is not open yet,
+              then show today delivery time details with schedule.
+            2.-) If order is collection then perform same way,
+              and store is not open yet,
+              then show today collection details with schedule.
+            3.-) if someone click on schedule then allow to click on checkout button.
+            4.-) When the current time is between the store open and close time. 
+            then
+              Store is closed, you can choose schedule, next day with time details.
+          */}
+          {
+            isScheduleIsReady &&
+            
+              <div>
+                <label className={`modifier-product-item-name-checkbox`}>
+                  <div style={{border: "1px solid red"}} onClick={handleIsScheduleClicked}>
+                    <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${isScheduleClicked ? "red" : ""}`} strokeWidth="2.5" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                    <div className="spacer _16"></div>
+                    <div className="modifier-product-item-name-one-nested-div-one-nested">
+                        <div className="modifier-product-item-name-one-nested-div-one-nested-div" style={{color: "red", marginLeft: '10px', marginBottom: "20px"}}>
+                            {/* {scheduleMessage} */}
+                            <h6>We are currently closed. </h6>
+                            <p>To schedule your order for &lt;&lt; {scheduleMessage} &gt;&gt;, go to checkout</p>
+                        </div>
+                    </div>
+                </label>
+              </div>
+          }
+
+          {
+            // !isCheckoutReadyAfterSchedule && (
+            !isOrderSubtotalLessThanOrderValue ?
+              <button
+                type="button" 
+                className={`checkout-btn-not-clickable`} 
+              >
+                  Checkout
+                </button>
+
+            :
+              <button
+                type="button" 
+                className={`checkout-btn`} 
+                aria-disabled={!isOrderSubtotalLessThanOrderValue}
+                onClick={handleCheckoutClicked}
+              >
+                Checkout
+              </button>
+            // )
+          }
           <div style={{marginBottom: "50px"}}></div>
 
         </div>

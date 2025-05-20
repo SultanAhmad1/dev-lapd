@@ -4,13 +4,13 @@
 import React, { useContext, useEffect, useState } from 'react';
 
 import moment from 'moment';
-import { CardElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { BRAND_SIMPLE_GUID, BRAND_GUID, IMAGE_URL_Without_Storage, axiosPrivate } from '@/global/Axios';
+import { CardElement, PaymentRequestButtonElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { BRAND_SIMPLE_GUID, BRAND_GUID, IMAGE_URL_Without_Storage, axiosPrivate, DELIVERY_ID } from '@/global/Axios';
 import HomeContext from '@/contexts/HomeContext';
 import { useRouter } from "next/navigation";
-import { WalletMemo } from './Wallet';
+import Wallet from './Wallet';
 import Loader from '../modals/Loader';
-import { getAmountConvertToFloatWithFixed, setLocalStorage } from '@/global/Store';
+import { country, currency, getAmountConvertToFloatWithFixed, setLocalStorage } from '@/global/Store';
 import { ContextCheckApi } from '@/app/layout';
 // import stripePromise from './stripe';
 
@@ -110,7 +110,7 @@ const ModalPaymentForm = ({orderId}) =>
     const dayNumber = moment().day();
     const dateTime  = moment().format('HH:mm')
     const dayName = moment().format('dddd');
-    setLoader(false)
+    // setLoader(false)
 
     if(dayOpeningClosingTime?.day_of_week?.toLowerCase().includes(dayName.toLowerCase()))
     {
@@ -174,14 +174,26 @@ const ModalPaymentForm = ({orderId}) =>
       const response = await axiosPrivate.post(`/send-sms-and-email`, data)
       
       setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
-      setLocalStorage(`${BRAND_SIMPLE_GUID}order_amount_number`,null)
-      // setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`,[])
-      setLocalStorage(`${BRAND_SIMPLE_GUID}customer_information`,null)
-      setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,null)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
       setCartData([])
-      
+
+      setLoader(true)
       // if(response?.data?.status === "success")
       // {
+      const getFilterFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`))
+      if(getFilterFromLocalStorage)
+      {
+        if(getFilterFromLocalStorage.id !== DELIVERY_ID)
+        {
+          router.push(`/thank-you/${orderId}`)
+          return
+        }
+      }
+
         router.push(`/track-order/${orderId}`)
         
       // }
@@ -189,16 +201,25 @@ const ModalPaymentForm = ({orderId}) =>
     } 
     catch (error) 
     {
-      console.log("modal payment form 1:");
-      
-      window.alert(error?.response?.data?.error)
-      setLoader(false)
+      // window.alert(error?.response?.data?.error)
+      setLoader(true)
       setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
-      setLocalStorage(`${BRAND_SIMPLE_GUID}order_amount_number`,null)
-      // setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`,[])
-      setLocalStorage(`${BRAND_SIMPLE_GUID}customer_information`,null)
-      setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,null)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
       setCartData([])
+
+      const getFilterFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`))
+      if(getFilterFromLocalStorage)
+      {
+        if(getFilterFromLocalStorage.id !== DELIVERY_ID)
+        {
+          router.push(`/thank-you/${orderId}`)
+          return
+        }
+      }
       router.push(`/track-order/${orderId}`)
     }
   }
@@ -248,7 +269,6 @@ const ModalPaymentForm = ({orderId}) =>
       setLoader(false)
       return;
     }
-
     try 
     {
       const cardElement = elements.getElement(CardElement);
@@ -264,6 +284,9 @@ const ModalPaymentForm = ({orderId}) =>
       
       setLoader(true)
 
+      const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`))
+
+      const city = getCustomerInformation?.street2?.split(',')[0].trim();
       const response = await axiosPrivate.post('/create-payment-intent', 
         {
           order_total: getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) * 100, // replace with your desired amount
@@ -278,9 +301,16 @@ const ModalPaymentForm = ({orderId}) =>
       const result = await stripe.confirmCardPayment(clientSecret, {
         payment_method: {
           card: cardElement,
-          // billing_details: {
-          //   name: 'John Doe', // replace with user's name
-          // },
+          billing_details: {
+            name: `${getCustomerInformation?.firstName} ${getCustomerInformation?.lastName}`,
+            email: getCustomerInformation?.email,
+            address: {
+              line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1} ${getCustomerInformation?.street1}`,
+              city: city,
+              postal_code: getCustomerInformation?.postcode,
+              country: 'GB',
+            },
+          },
         },
       });
 
@@ -299,6 +329,96 @@ const ModalPaymentForm = ({orderId}) =>
       console.error("Payment form error:",error);
     }
   };
+
+
+  const [paymentRequest, setPaymentRequest] = useState(null);
+
+  useEffect(() => {
+    if (stripe) 
+    {
+      const orderTotalSimpleForm = parseFloat(totalOrderAmountValue) * 100
+
+      const pr = stripe.paymentRequest({
+        country: "GB",
+        currency: "gbp",
+        total: {
+          label: 'Total',
+          amount: parseInt(orderTotalSimpleForm),
+        },
+        requestPayerName: true, //👈 request wallet to send me customer name,
+        requestPayerEmail: true, //👈 request wallet to send me email address,
+        requestShipping: false, // 👈 this is the key to get physical address
+        requestBillingAddress: true, //👈 ✅ ADD THIS
+        requestPayerPhone: true,
+      });
+
+      pr.canMakePayment().then(result => {
+        if (result) 
+        {
+          setPaymentRequest(pr);
+        }
+      });
+
+      const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`))
+
+      const city = getCustomerInformation?.street2?.split(',')[0].trim();
+      
+
+      pr.on("paymentmethod", async (ev) => {
+        try {
+          const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`));
+          const city = getCustomerInformation?.street2?.split(',')[0].trim();
+          
+          const customerName = ev.payerName || `${getCustomerInformation?.firstName} ${getCustomerInformation?.lastName}`;
+          const customerEmail = ev.payerEmail || getCustomerInformation?.email;
+          const customerPhone = ev.payerPhone
+          
+          const customerAddress = ev.billingDetails?.address || {
+            line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1}`,
+            city,
+            postal_code: getCustomerInformation?.postcode,
+            country: "GB",
+          };
+      
+          // ✅ Send all billing info to backend
+          const response = await axiosPrivate.post("/create-payment-intent", {
+            order_total: Math.round(parseFloat(totalOrderAmountValue) * 100),
+            type: "wallet",
+            payment_method: ev.paymentMethod.id,
+            order: orderId,
+            brand: BRAND_GUID,
+            billing_details: {
+              name: customerName,
+              email: customerEmail,
+              address: customerAddress,
+              telephone: customerPhone,
+              
+            },
+          });
+      
+          const { clientSecret } = response.data;
+      
+          // ✅ Finish wallet UI prompt
+          ev.complete("success");
+      
+          // ✅ Confirm payment with Stripe
+          const result = await stripe.confirmCardPayment(clientSecret); // No payment_method object needed
+      
+          if (result.error) {
+            alert("Payment failed");
+          } else {
+            afterPaymentSavedOrderUpdate(result.paymentIntent);
+          }
+        } catch (err) {
+          console.error(err);
+          ev.complete("fail");
+          alert("Payment failed");
+        }
+      });
+
+      
+    }
+  }, [stripe, totalOrderAmountValue]);
 
   return(
     <>
@@ -365,7 +485,7 @@ const ModalPaymentForm = ({orderId}) =>
                                   "Submit Payment"
                               }
                             </button>
-                            <WalletMemo 
+                            {/* <Wallet 
                             {
                                 ...{
                                 setLoader,
@@ -373,7 +493,11 @@ const ModalPaymentForm = ({orderId}) =>
                                 }
                             }
                             orderTotal={totalOrderAmountValue}
-                            />
+                            /> */}
+
+                          {paymentRequest && (
+                            <PaymentRequestButtonElement options={{ paymentRequest }} />
+                          )}
                         </>
                         :
                         <button 

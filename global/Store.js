@@ -126,7 +126,6 @@ export function find_matching_postcode(matrixArgument, postcodeArgument, setStat
         })[0];
     } 
 
-    console.log("final matched postcode:", finalMatch, "matchingPostcodes :", matchingPostcodes);
     setLocalStorage(`${BRAND_SIMPLE_GUID}delivery_matrix`,finalMatch)
     setState(finalMatch)
 }

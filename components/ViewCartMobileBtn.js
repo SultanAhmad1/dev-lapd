@@ -13,7 +13,9 @@ export default function ViewCartMobileBtn()
   const [isTotalGreatherThanMinimum, setIsTotalGreatherThanMinimum] = useState(false);
   
   useEffect(() => {
-    
+    try {
+      
+  
     let totalValue = 0
     if(parseInt(cartData?.length) > parseInt(0))
     {
@@ -34,7 +36,13 @@ export default function ViewCartMobileBtn()
       setTotalordervalue(0)
       setIsTotalGreatherThanMinimum(false)
     })
+
+    } catch (error) {
+      window.alert("There is something went wrong. Please refresh and try again.")      
+      return
+    }
   }, [cartData])
+  
   
   return (
     <>
@@ -46,7 +54,7 @@ export default function ViewCartMobileBtn()
 
         {
           // check is there any item in cart then button background should be green
-          parseInt(cartData?.length) > parseInt(0) ?
+          parseInt(cartData.length) > parseInt(0) ?
           <button className="bllview-cart-btn" onClick={() => setIsCartBtnClicked(true)}>
             <span 
               style={{
@@ -59,7 +67,8 @@ export default function ViewCartMobileBtn()
                 borderRadius: "5px",
               }}
             >{parseInt(cartData?.length)}</span>
-                <span className='mobile-view-cart' style={{backgroundColor: !isTotalGreatherThanMinimum && `${websiteModificationData?.websiteModificationLive?.json_log[0]?.buttonBackgroundColor}`}} >Checkout</span>
+                {/* <span className='mobile-view-cart' style={{backgroundColor: !isTotalGreatherThanMinimum && `${websiteModificationData?.websiteModificationLive?.json_log[0]?.buttonBackgroundColor}`}} >Checkout</span> */}
+                <span className='mobile-view-cart' >Checkout</span>
             
             <span>&pound;{getAmountConvertToFloatWithFixed(totalordervalue, 2)}</span>
           </button>

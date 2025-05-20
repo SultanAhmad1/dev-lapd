@@ -498,6 +498,8 @@ export default function DisplaySingleItem({params})
             // const getFilterItem = parseCart?.find((cart, index) => index === JSON.parse(getIndex));
             const getFilterItem = parseCart?.find(cartItem => cartItem?.slug?.includes(params?.product))
             
+            const findAnyExtras = getFilterItem?.modifier_group?.filter((extras) => extras?.isExtras)
+            
             setIsCartBtnClicked(false)
 
             setDisplaySingleItemObject((prevData) => {
@@ -506,6 +508,7 @@ export default function DisplaySingleItem({params})
                     singleItem: getFilterItem,
                     quantity: getFilterItem?.quantity,
                     itemPrice: getFilterItem?.total_order_amount / getFilterItem?.quantity,
+                    isAnyModifierHasExtras: (findAnyExtras && parseInt(findAnyExtras?.length) > parseInt(0)) ? true : false
                 }
             })
             return
@@ -1974,7 +1977,8 @@ export default function DisplaySingleItem({params})
                     };
     
                     setCartData((prevData) => [...prevData, addTotalAmount]);
-                    router.push("/");
+                    // router.push("/");
+                    window.location.href = "/";
                     // setIsCartBtnClicked(true);
                     setIsCartBtnClicked(false);
                 }
@@ -2041,7 +2045,6 @@ export default function DisplaySingleItem({params})
                     }
                 })
             }
-
           
         }
     }, [singleItem, optionNumber,cartData, isCartBtnClicked,quantity]);    
@@ -2137,7 +2140,8 @@ export default function DisplaySingleItem({params})
                         is_cart_modal_clicked: false,
                     };
                     setCartData((prevData) => [...prevData, addTotalAmount]);
-                    router.push("/");
+                    // router.push("/");
+                    window.location.href = "/";
                     // setIsCartBtnClicked(true);
                     setIsCartBtnClicked(false);
                 }

@@ -6,17 +6,33 @@ import HomeContext from "@/contexts/HomeContext";
 import AtLoadModalShow from "./modals/AtLoadModalShow";
 import Cart from "./Cart";
 import Loader from "./modals/Loader";
-import { BRAND_GUID, BRAND_SIMPLE_GUID, DEFAULT_LOCATION, PARTNER_ID } from "@/global/Axios";
+import { axiosPrivate, BRAND_GUID, BRAND_SIMPLE_GUID, DEFAULT_LOCATION, DELIVERY_ID, PARTNER_ID } from "@/global/Axios";
 import moment from "moment";
-import { setLocalStorage } from "@/global/Store";
+import { getAmountConvertToFloatWithFixed, setLocalStorage } from "@/global/Store";
 import CustomerPersonal from "./CustomerPersonal";
 import MenuNotAvailableModal from "./modals/MenuNotAvailableModal";
 import PlaceOrderModal from "./modals/PlaceOrderModal";
+import StoreClosedModal from "./modals/StoreClosedModal";
 import { useSearchParams } from "next/navigation";
 
 export default function CustomLayout({ children }) 
 {
+  const searchParams = useSearchParams()
   
+  const customLayoutLocationFiltered = searchParams.get('location')
+  
+  const customerLocationDetails = customLayoutLocationFiltered ? customLayoutLocationFiltered.replace(/^"+|"+$/g, '') : '';
+
+  // This block of code, will help in-case of customer used our site before qr-code,
+  // Mean already type postcode selected store, order type collection or delivery.
+  // but suddenly scan qr-code for collection order inside the store.
+  // This block of code will help, to switch.
+  useEffect(() => {
+    if(parseInt(customerLocationDetails.length) > parseInt(0))
+    {
+      window.localStorage.clear()
+    }
+  }, [customerLocationDetails]);
   
   const [loader, setLoader] = useState(true);
 
@@ -32,11 +48,23 @@ export default function CustomLayout({ children })
   
   // FilterLocationTime Component States
   // const [storeGUID, setStoreGUID] = useState(DEFAULT_LOCATION);
-  const [storeGUID, setStoreGUID] = useState(DEFAULT_LOCATION);
+  const [storeGUID, setStoreGUID] = useState(null);
   const [storeName, setStoreName] = useState("");
   const [storeToDayName, setStoreToDayName] = useState("");
   const [storeToDayOpeningTime, setStoreToDayOpeningTime] = useState("");
   const [storeToDayClosingTime, setStoreToDayClosingTime] = useState("");
+
+  const [isScheduleIsReady, setIsScheduleIsReady] = useState(false);
+  const [isScheduleClicked, setIsScheduleClicked] = useState(false);
+  
+  const [scheduleMessage, setScheduleMessage] = useState("");
+  // 0 for neutral, 1 for today, 2 for next day.
+  const [isScheduleForToday, setIsScheduleForToday] = useState(0);
+  const [scheduleTime, setScheduleTime] = useState("");
+  
+  
+
+  const [cutOffSchedule, setCutOffSchedule] = useState(null);
 
   const [isCartBtnClicked, setIsCartBtnClicked] = useState(false);
 
@@ -95,6 +123,8 @@ export default function CustomLayout({ children })
   const [amountDiscountApplied, setAmountDiscountApplied] = useState(null);
   const [couponDiscountApplied, setCouponDiscountApplied] = useState([]);
   
+  const [isCheckoutReadyAfterSchedule, setIsCheckoutReadyAfterSchedule] = useState(false);
+
   const [booleanObj, setBooleanObj] = useState({
     isCustomerCanvasOpen: false,
     isCustomerVerified: false,
@@ -103,115 +133,172 @@ export default function CustomLayout({ children })
     isChangePostcodeButtonClicked: false,
   });
   
-  // useEffect(() => {
-  //   if(locationDetails !== null && parseInt(locationDetails?.length) > parseInt(0))
-  //   {
-  //     console.log("use effect:", locationDetails);
-      
-  //     setStoreGUID(locationDetails)
-  //     setAtFirstLoad(false)
-  //   }
-  //   else
-  //   {
-  //     setStoreGUID(DEFAULT_LOCATION)
-  //   }
-  // }, [locationDetails]);
-  
   const handleBoolean = useCallback((newValue, fieldName) => {
     setBooleanObj((prevData) => ({...prevData, [fieldName]: newValue}))
   }, [booleanObj]);
 
   useEffect(() => {
-    
-    const useAuth = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}websiteToken`))
-    if(useAuth !== null)
-    {
-      handleBoolean(true, 'isCustomerVerified')
-    }
+    try {
+      
+      const getQr = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}via_qr`))
 
-    const url = new URL(window.location.href);
-    var pathnameArray = url.pathname.split("/").filter(segment => segment);
-
-    const dayNumber = moment().isoWeekday();
-    
-    // Get the current day name
-    const dayName = moment().format("dddd");
-
-    setDayName(dayName);
-    setDayNumber(dayNumber);
-
-    const afterReloadingGetCouponCode = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}applied_coupon`));
-    
-    const updatedCoupons = [
-      ...couponDiscountApplied,
-      ...(afterReloadingGetCouponCode ? [afterReloadingGetCouponCode] : [])
-    ];
-
-    setCouponDiscountApplied(updatedCoupons);
-
-    const getSelectStore = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`);
-
-    if (getSelectStore === null) 
-    {
-      if (pathnameArray?.[0] === "track-order" || pathnameArray?.[0] === "review-order" || pathnameArray?.[0] === "payment" || pathnameArray?.[0] === "place-order") 
+      if(getQr)
       {
-        setAtFirstLoad(false);
-        setHeaderCartBtnDisplay(false);
-        setHeaderPostcodeBtnDisplay(false);
+        setLocalStorage(`${BRAND_SIMPLE_GUID}via_qr`, parseInt(getQr) === parseInt(1) ? 1 : 0)
+      }
+      else
+      {
+        setLocalStorage(`${BRAND_SIMPLE_GUID}via_qr`,0)
+      }
+
+      const useAuth = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}websiteToken`))
+      if(useAuth !== null)
+      {
+        handleBoolean(true, 'isCustomerVerified')
+      }
+
+      const url = new URL(window.location.href);
+      var pathnameArray = url.pathname.split("/").filter(segment => segment);
+
+      const dayNumber = moment().isoWeekday();
+      
+      // Get the current day name
+      const dayName = moment().format("dddd");
+
+      setDayName(dayName);
+      setDayNumber(dayNumber);
+
+      const afterReloadingGetCouponCode = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}applied_coupon`));
+      
+      if(afterReloadingGetCouponCode && parseInt(afterReloadingGetCouponCode?.length) > parseInt(0))
+      {
+        let totalValue = 0;
+
+        const getCartData = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}cart`));
+
+        for (const total of getCartData) 
+        {
+          totalValue = parseFloat(totalValue) + parseFloat(total?.total_order_amount);
+        }
+
+        
+        let firstCouponAppliedDiscount = 0
+        let howManyTimeCouponApplied = 0
+
+        const updateCoupon = afterReloadingGetCouponCode?.map((coupon) => {
+  
+          if(coupon?.discount_type === "P")
+          {
+            if(parseInt(howManyTimeCouponApplied) === parseInt(1))
+            {
+              const differenceDiscountAndSubtotal = parseFloat(totalValue) - parseFloat(firstCouponAppliedDiscount)
+                              
+              firstCouponAppliedDiscount = getAmountConvertToFloatWithFixed(parseFloat(differenceDiscountAndSubtotal) * (coupon?.value / 100),2)
+            }
+            else
+            {
+              // const differenceDiscountAndSubtotal = parseFloat(totalValue) - parseFloat(discountValue)
+                
+              firstCouponAppliedDiscount = getAmountConvertToFloatWithFixed(parseFloat(totalValue) * (coupon?.value / 100),2)
+            }
+            howManyTimeCouponApplied += 1
+            
+          }
+          else
+          {
+            if(parseInt(howManyTimeCouponApplied) === parseInt(1))
+              {
+                const differenceDiscountAndSubtotal = parseFloat(totalValue) - parseFloat(firstCouponAppliedDiscount)
+                                
+                firstCouponAppliedDiscount = getAmountConvertToFloatWithFixed(parseFloat(differenceDiscountAndSubtotal) - parseFloat(couponData?.value),2)
+              }
+              else
+              {
+                // const differenceDiscountAndSubtotal = parseFloat(subtotalOrderAmount) - parseFloat(discountValue)
+                firstCouponAppliedDiscount = getAmountConvertToFloatWithFixed(parseFloat(totalValue) - parseFloat(couponData?.value),2)
+              }
+
+            howManyTimeCouponApplied += 1
+           
+          }
+  
+          return{
+            ...coupon,
+            discount: firstCouponAppliedDiscount
+          }
+        })
+  
+        setCouponDiscountApplied(updateCoupon)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`, updateCoupon)
+        
+        // setCouponDiscountApplied(afterReloadingGetCouponCode)
+        // setCouponDiscountApplied(updatedCoupons);
+        // setCouponDiscountApplied((prevData) => [
+        //   ...prevData, afterReloadingGetCouponCode
+        // ])
+      }
+
+      const getSelectStore = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`);
+
+      if (getSelectStore === null) 
+      {
+        setStoreGUID(DEFAULT_LOCATION)
+        if (pathnameArray?.[0] === "track-order" || pathnameArray?.[0] === "review-order" || pathnameArray?.[0] === "payment" || pathnameArray?.[0] === "place-order") 
+        {
+          setAtFirstLoad(false);
+          setHeaderCartBtnDisplay(false);
+          setHeaderPostcodeBtnDisplay(false);
+        } 
+        else 
+        {
+       
+          setAtFirstLoad(true)
+          setHeaderCartBtnDisplay(true);
+          setHeaderPostcodeBtnDisplay(true);
+        }
       } 
       else 
       {
-        // if(locationDetails !== null && parseInt(locationDetails?.length) > parseInt(0))
-        // {
-        //   setAtFirstLoad(false);
-        // }
-        // else
-        // {
-          setAtFirstLoad(true)
-        // }
-        setHeaderCartBtnDisplay(true);
-        setHeaderPostcodeBtnDisplay(true);
-      }
-    } 
-    else 
-    {
-      setPostcode(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_valid_postcode`)));
+        setPostcode(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_valid_postcode`)));
 
-      const parseToJSobj = JSON.parse(getSelectStore);
-      // menuRefetch(parseToJSobj === null ? storeGUID : parseToJSobj.display_id);
-      setStoreGUID(parseToJSobj === null ? storeGUID : parseToJSobj.display_id);
-      setStoreName(parseToJSobj.store);
+        const parseToJSobj = JSON.parse(getSelectStore);
+        // menuRefetch(parseToJSobj === null ? storeGUID : parseToJSobj.display_id);
+        setStoreGUID(parseToJSobj === null ? storeGUID : parseToJSobj.display_id);
+        setStoreName(parseToJSobj.store);
 
-      const appliedAmountDiscount = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`));
-      const address = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}address`));
-      const getDeliveryMatrix = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`));
+        const appliedAmountDiscount = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`));
+        const address = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}address`));
+        const getDeliveryMatrix = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`));
+        
+        setAmountDiscountApplied(appliedAmountDiscount);
+        setDeliveryMatrix(getDeliveryMatrix);
+        setPostCodeForOrderAmount(getDeliveryMatrix?.postcode);
 
-      setAmountDiscountApplied(appliedAmountDiscount);
-      setDeliveryMatrix(getDeliveryMatrix);
-      setPostCodeForOrderAmount(getDeliveryMatrix?.postcode);
-
-      const parseToJSobjAvailableStore = address?.availableStore;
-      if (parseInt(parseToJSobjAvailableStore.length) > parseInt(0)) {
-        for (const store of parseToJSobjAvailableStore) {
-          if (parseToJSobj.display_id === store?.location_guid) {
-            setStreet1(store?.user_street1);
-            setStreet2(store?.user_street2);
+        const parseToJSobjAvailableStore = address?.availableStore;
+        if (parseInt(parseToJSobjAvailableStore.length) > parseInt(0)) {
+          for (const store of parseToJSobjAvailableStore) {
+            if (parseToJSobj.display_id === store?.location_guid) {
+              setStreet1(store?.user_street1);
+              setStreet2(store?.user_street2);
+            }
           }
         }
+
+        const cartDataFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}cart`));
+
+        setCartData(cartDataFromLocalStorage === null ? [] : cartDataFromLocalStorage);
+        // if(parseInt(storeGUID.length) > parseInt(0))
+        // {
+          menuRefetch()
+        // }
+        colorRefetch()
       }
-
-      const cartDataFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}cart`));
-
-      setCartData(cartDataFromLocalStorage === null ? [] : cartDataFromLocalStorage);
-      // if(parseInt(storeGUID.length) > parseInt(0))
-      // {
-        menuRefetch()
-      // }
-      colorRefetch()
+       
+    } catch (error) {
+        window.alert("There is something went wrong. Please refresh and try again.")
+        return
     }
   }, []);
-  
-  // console.log("store guid here:", storeGUID);
   
   useEffect(() => {
     if(parseInt(cartData?.length) > parseInt(0))
@@ -224,36 +311,248 @@ export default function CustomLayout({ children })
   {
     setLoader(false)
     const { menu } = data?.data
-
-    // console.log("success:", menu);
     
     const convertToJSobj = menu?.menu_json_log;
 
+    if (convertToJSobj?.menus) {
+      const getDay = JSON.parse(convertToJSobj.menus);
+      const dayName = moment().format("dddd").toLowerCase();
+    
+      // 1) Find today’s availability entry
+      const findToday = getDay?.[0]?.service_availability?.find(day =>
+        day.day_of_week.toLowerCase().includes(dayName)
+      );
+    
+      const dayNumber = moment().day();
+      const dateTime = moment().format("HH:mm");
+      // const findToday = getDay?.[0]?.service_availability?.find((dayInformation) => dayInformation.day_of_week === moment().format("dddd").toLowerCase());
 
-    const dayNumber = moment().day();
-    const dateTime = moment().format("HH:mm");
-    const dayName = moment().format("dddd");
-
-    const currentDay = convertToJSobj?.menus?.[0]?.service_availability?.find((day) => day?.day_of_week?.toLowerCase().includes(dayName.toLowerCase()));
-
-    setDayOpeningClosingTime(currentDay);
-    // if (currentDay) 
-    // {
-    //   const timePeriods = currentDay?.time_periods;
-    //   if (timePeriods) 
-    //   {
-    //     if (timePeriods?.[0]?.start_time >= dateTime && dateTime <= timePeriods?.[0]?.end_time) 
-    //     {
-    //       setIsTimeToClosed(true);
-    //       setAtFirstLoad(false);
-    //     }
-    //     else{
-    //       setIsTimeToClosed(false)
+      if (!findToday) {
+        // No service today
+        
+        return;
+      }
           
-    //       setAtFirstLoad((atFirstLoad === false) ? false : true);
-    //     }
-    //   }
-    // }
+          
+      const period = findToday.time_periods?.[0];
+      if (!period) {
+        // No defined time slot
+        // setAtFirstLoad(false);
+        // setIsTimeToClosed(true);
+        return;
+      }
+          
+      // 2) Build Moments for start/end **today** at those clock times:
+      const now = moment(); // full date and time now
+
+      const [startHour, startMinute] = period.start_time.split(":").map(Number);
+      const [endHour, endMinute] = period.end_time.split(":").map(Number);
+
+      let startTime = moment(now).set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
+      let endTime = moment(now).set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
+
+      const isBeforeStart = now.isBefore(startTime)
+      
+      const isAfterClose = now.isBefore(endTime)
+
+      const getNextDayDetail = getDay?.[0]?.service_availability?.find((dayInformation) => dayInformation.day_of_week === moment().add(1, 'days').format("dddd").toLowerCase());
+      
+      const minsUntilClose = endTime.diff(now, "minutes");
+
+      const getFilter = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`))
+      
+      if(isBeforeStart)
+      {
+        const getTodayDetails = getDay?.[0]?.service_availability?.find((dayInformation) => {
+          return dayInformation.day_of_week === moment().format("dddd").toLowerCase();
+        });
+        
+        if (getTodayDetails) {
+          const newDeliveryOrCollection = getTodayDetails.time_periods?.[0];
+        
+          if (newDeliveryOrCollection?.start_time && newDeliveryOrCollection?.time_to != null) {
+            // const nextDayStartTime = moment(newDeliveryOrCollection.start_time, 'HH:mm');
+            // const updatedTime = nextDayStartTime.clone().add(newDeliveryOrCollection.time_to, 'minutes');
+            const today = moment().format('YYYY-MM-DD'); // Get today's date
+            const startTime = newDeliveryOrCollection.start_time; // e.g., "14:00"
+            const timeToAdd = newDeliveryOrCollection.time_to; // e.g., 30
+
+            // Combine date and time, then add minutes
+            const todayStartTime = moment(`${today} ${startTime}`, 'YYYY-MM-DD HH:mm');
+            const updatedTime = todayStartTime.add(timeToAdd, 'minutes');
+
+            // Set only the time part
+            setScheduleTime(updatedTime.format('YYYY-MM-DD HH:mm:ss'));
+
+          }
+          else
+          {
+            const today = moment().format('YYYY-MM-DD'); // Get today's date
+            const startTime = newDeliveryOrCollection.start_time; // e.g., "14:00"
+            const timeToAdd = newDeliveryOrCollection.time_from;
+
+            // Combine date and time, then add minutes
+            const todayStartTime = moment(`${today} ${startTime}`, 'YYYY-MM-DD HH:mm');
+            const updatedTime = todayStartTime.add(timeToAdd, 'minutes');
+            // Set only the time part
+            setScheduleTime(updatedTime.format('YYYY-MM-DD HH:mm:ss'))
+          }
+        }
+
+        setIsScheduleIsReady(true)
+        setIsScheduleForToday(1)
+        setIsCheckoutReadyAfterSchedule(true)
+        setScheduleMessage("later today")
+        
+      }
+      else if(! isAfterClose)
+      {
+        const getNextDayDetail = getDay?.[0]?.service_availability?.find((dayInformation) => {
+          return dayInformation.day_of_week === moment().add(1, 'days').format("dddd").toLowerCase();
+        });
+        
+        if (getNextDayDetail) {
+          const newDeliveryOrCollection = getNextDayDetail.time_periods?.[0];
+        
+          if (newDeliveryOrCollection?.start_time && newDeliveryOrCollection?.time_to != null) {
+            // const nextDayStartTime = moment(newDeliveryOrCollection.start_time, 'HH:mm');
+            // const updatedTime = nextDayStartTime.clone().add(newDeliveryOrCollection.time_to, 'minutes');
+        
+            const nextDay = moment().add(1, 'days').format('YYYY-MM-DD'); // Get next day's date
+            const startTime = newDeliveryOrCollection.start_time; // e.g., "14:00"
+            const timeToAdd = newDeliveryOrCollection.time_to; // e.g., 30
+
+            // Combine date and time, then add minutes
+            const todayStartTime = moment(`${nextDay} ${startTime}`, 'YYYY-MM-DD HH:mm');
+            const updatedTime = todayStartTime.add(timeToAdd, 'minutes');
+            // Set only the time part
+            setScheduleTime(updatedTime.format('YYYY-MM-DD HH:mm:ss'));
+
+          }
+          else
+          {
+            const nextDay = moment().add(1, 'days').format('YYYY-MM-DD'); // Get next day's date
+            const startTime = newDeliveryOrCollection.start_time; // e.g., "14:00"
+            const timeToAdd = newDeliveryOrCollection.time_from; // e.g., 30
+
+            // Combine date and time, then add minutes
+            const todayStartTime = moment(`${nextDay} ${startTime}`, 'YYYY-MM-DD HH:mm');
+            const updatedTime = todayStartTime.add(timeToAdd, 'minutes');
+            // Set only the time part
+            setScheduleTime(updatedTime.format('YYYY-MM-DD HH:mm:ss'));
+
+          }
+        }
+
+        setIsScheduleIsReady(true)
+        setIsScheduleForToday(2)
+        setIsCheckoutReadyAfterSchedule(true)
+        setScheduleMessage(getNextDayDetail.day_of_week)
+      }
+      else if(getFilter.id === DELIVERY_ID)
+      {
+        if(parseInt(minsUntilClose) <= parseInt(period.delivery_cut_off))
+        {
+          if(parseInt(getNextDayDetail.time_periods?.[0]?.is_delivery_schedule) === parseInt(1))
+          {
+            const getNextDayDetail = getDay?.[0]?.service_availability?.find((dayInformation) => {
+              return dayInformation.day_of_week === moment().add(1, 'days').format("dddd").toLowerCase();
+            });
+            
+            if (getNextDayDetail) {
+              const newDeliveryOrCollection = getNextDayDetail.time_periods?.[0];
+            
+              if (newDeliveryOrCollection?.start_time && newDeliveryOrCollection?.time_to != null) {
+                const nextDay = moment().add(1, 'days').format('YYYY-MM-DD'); // Get next day's date
+                const startTime = newDeliveryOrCollection.start_time; // e.g., "14:00"
+                const timeToAdd = newDeliveryOrCollection.time_to; // e.g., 30
+    
+                // Combine date and time, then add minutes
+                const todayStartTime = moment(`${nextDay} ${startTime}`, 'YYYY-MM-DD HH:mm');
+                const updatedTime = todayStartTime.add(timeToAdd, 'minutes');
+                // Set only the time part
+                setScheduleTime(updatedTime.format('YYYY-MM-DD HH:mm:ss'));
+              }
+              else
+              {
+                const nextDay = moment().add(1, 'days').format('YYYY-MM-DD'); // Get next day's date
+                const startTime = newDeliveryOrCollection.start_time; // e.g., "14:00"
+                const timeToAdd = newDeliveryOrCollection.time_from; // e.g., 30
+    
+                // Combine date and time, then add minutes
+                const todayStartTime = moment(`${nextDay} ${startTime}`, 'YYYY-MM-DD HH:mm');
+                const updatedTime = todayStartTime.add(timeToAdd, 'minutes');
+                // Set only the time part
+                setScheduleTime(updatedTime.format('YYYY-MM-DD HH:mm:ss'));
+              }
+            }
+
+            setIsScheduleForToday(2)
+            setIsScheduleIsReady(true)
+            setIsCheckoutReadyAfterSchedule(true)
+            setScheduleMessage(getNextDayDetail.day_of_week)
+          }
+          else
+          {
+            setIsScheduleForToday(0)
+            setIsScheduleIsReady(false)
+            setIsCheckoutReadyAfterSchedule(false)
+            setScheduleMessage("")
+            setScheduleTime("")
+          }
+        }
+      }
+      else {
+        if(parseInt(minsUntilClose) <= parseInt(period.collection_cut_off))
+        {
+          if(parseInt(getNextDayDetail.time_periods?.[0]?.is_delivery_schedule) === parseInt(1))
+          {
+            const getNextDayDetail = getDay?.[0]?.service_availability?.find((dayInformation) => {
+              return dayInformation.day_of_week === moment().add(1, 'days').format("dddd").toLowerCase();
+            });
+            
+            if (getNextDayDetail) {
+              const newDeliveryOrCollection = getNextDayDetail.time_periods?.[0];
+            
+              if (newDeliveryOrCollection?.start_time && newDeliveryOrCollection?.time_to != null) {
+                const nextDay = moment().add(1, 'days').format('YYYY-MM-DD'); // Get next day's date
+                const startTime = newDeliveryOrCollection.start_time; // e.g., "14:00"
+                const timeToAdd = newDeliveryOrCollection.time_to; // e.g., 30
+    
+                // Combine date and time, then add minutes
+                const todayStartTime = moment(`${nextDay} ${startTime}`, 'YYYY-MM-DD HH:mm');
+                const updatedTime = todayStartTime.add(timeToAdd, 'minutes');
+                // Set only the time part
+                setScheduleTime(updatedTime);
+              }
+              else
+              {
+                const nextDay = moment().add(1, 'days').format('YYYY-MM-DD'); // Get next day's date
+                const startTime = newDeliveryOrCollection.start_time; // e.g., "14:00"
+                const timeToAdd = newDeliveryOrCollection.time_from; // e.g., 30
+    
+                // Combine date and time, then add minutes
+                const todayStartTime = moment(`${nextDay} ${startTime}`, 'YYYY-MM-DD HH:mm');
+                const updatedTime = todayStartTime.add(timeToAdd, 'minutes');
+                // Set only the time part
+                setScheduleTime(updatedTime);
+              }
+            }
+
+            setIsScheduleForToday(2)
+            setIsScheduleIsReady(true)
+            setScheduleMessage(getNextDayDetail.day_of_week)
+          }
+          else
+          {
+            setIsScheduleForToday(0)
+            setIsScheduleIsReady(false)
+            setScheduleMessage("")
+            setScheduleTime("")
+          }
+        }
+      }
+    }
 
     setMenu(convertToJSobj);
 
@@ -272,15 +571,18 @@ export default function CustomLayout({ children })
     const menuToParse = JSON.parse(convertToJSobj.menus)
 
     const getdayInformation = menuToParse?.[0].service_availability?.find((dayInformation) => dayInformation.day_of_week === moment().format("dddd").toLowerCase());
+    const getNextDayInformation = menuToParse?.[0].service_availability?.find((dayInformation) => dayInformation.day_of_week === moment().add(1, 'days').format("dddd").toLowerCase());
+
     setStoreToDayName(moment().format("dddd"));
     
     setStoreToDayOpeningTime(getdayInformation?.time_periods?.[0].start_time);
     setStoreToDayClosingTime(getdayInformation?.time_periods?.[0].end_time);
-  }
 
-  const onMenuError = (error) => {
-    // console.log("Menu error:", error);
+    const mergedDayInfo = [getdayInformation, getNextDayInformation].filter(Boolean);
+    setCutOffSchedule(mergedDayInfo)
     
+  }
+  const onMenuError = (error) => {
     setIsMenuAvailable(false);
     setComingSoon(true)
     setErrorMessage("There is no menu publish for that store yet.")
@@ -291,6 +593,7 @@ export default function CustomLayout({ children })
 
   const onWebsiteModificationSuccess = (data) => {
     setLoader(false)
+    
     if (data?.data?.websiteModificationLive !== null && data?.data?.websiteModificationLive?.json_log?.[0]?.websiteLogoUrl !== null) 
     {
       setBrandLogo(data?.data?.websiteModificationLive?.json_log?.[0]?.websiteLogoUrl);
@@ -304,32 +607,12 @@ export default function CustomLayout({ children })
 
   const { isLoading, isError, refetch: colorRefetch} = useGetQueryAutoUpdate('website-color', `/website-modification-detail/${BRAND_GUID}/${PARTNER_ID}`, onWebsiteModificationSuccess, onWebsiteModificationError, true)
 
-  // useEffect(() => {
-  //   if(booleanObj?.isCustomerVerified === false)
-  //   {
-  //     /**
-  //      * all the localStorage clear when 
-  //      */
-      
-  //     // Set a timeout to clear localStorage after 20 minutes (20 * 60 * 1000 milliseconds)
-  //     const timeoutId = setTimeout(() => {
-  //       // Clear all items in localStorage
-  //       localStorage.clear();
-  //       window.location.reload(true);
-  //       setTimeout(() => {setLoader(false);}, 2000);
-  //     }, 30 * 60 * 1000); 
-
-  //     // Clear the timeout if the component is unmounted before 20 minutes
-  //     return () => clearTimeout(timeoutId);
-  //   }
-  // });
   const [countMinutes, setCountMinutes] = useState(0);
   
   useEffect(() => {
     if(booleanObj?.isCustomerVerified === false)
     {
       const userSelectedTime = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_postcode_time`))
-
       if(userSelectedTime)
       {
         const firstDateString = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -339,14 +622,65 @@ export default function CustomLayout({ children })
         const differenceMinutes = firstDate?.diff(userSelectedTime, 'minutes')
 
         setCountMinutes(differenceMinutes)
-        if(differenceMinutes >= 60)
+        if(differenceMinutes >= 1)
         {
-          localStorage.clear();
+          window.localStorage.clear();
           window.location.reload(true);
         }
       }
     }
-  },[countMinutes]);
+  },[countMinutes, booleanObj]);
+  
+  useEffect(() => {
+    // setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,"DFDE9B90-2A7B-4429-802C-EDF27A2AEB14")
+    const checkOrderGuidExistsIsPaidStatusAwaiting = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_guid`));
+
+    if(checkOrderGuidExistsIsPaidStatusAwaiting)
+    {
+      async function checkOrderGuidIsPaidAndStatusIsAwaiting() {
+        try {
+          
+          const getResponse = await axiosPrivate.get(`website-order-track/${checkOrderGuidExistsIsPaidStatusAwaiting}`)
+
+          // now check the existing order is make via qr code, or direct.
+
+          const filterResponse = getResponse.data.data
+          if(!filterResponse)
+          {
+            return
+          }
+          
+          const checkViaQr = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}via_qr`))
+          
+          if(checkViaQr && parseInt(checkViaQr) > parseInt(0))
+          {
+            window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
+            setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
+            window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
+            window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+            window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+            window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
+            window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+            setCartData([])
+            window.location.href = `/thank-you/${filterResponse?.external_order_id}`
+            return
+          }
+          window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
+          setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
+          window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
+          window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+          window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+          window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
+          window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+          setCartData([])
+          window.location.href = `/track-order/${filterResponse?.external_order_id}`
+        } catch (error) {
+        }
+      }
+
+      checkOrderGuidIsPaidAndStatusIsAwaiting()
+    }
+  });
 
   // Context Data
   const contextData = {
@@ -395,6 +729,25 @@ export default function CustomLayout({ children })
 
     booleanObj,
     comingSoon,
+    cutOffSchedule,
+
+    isCheckoutReadyAfterSchedule, 
+    setIsCheckoutReadyAfterSchedule,
+    isScheduleForToday,
+
+    isScheduleIsReady,
+    setIsScheduleIsReady,
+
+    isScheduleClicked,
+    setIsScheduleClicked,
+
+    scheduleMessage,
+    setScheduleMessage,
+
+    isScheduleForToday,
+    setIsScheduleForToday,
+    scheduleTime,
+    setScheduleTime,
 
     setComingSoon,
     setErrorMessage,
@@ -462,7 +815,7 @@ export default function CustomLayout({ children })
       {isCartBtnClicked && <Cart />}
       {booleanObj.isPlaceOrderButtonClicked && <PlaceOrderModal />}
       {/* {isDeliveryBtnClicked && <DeliveryModal />} */}
-      {/* {isTimeToClosed && <StoreClosedModal />} */}
+      {isTimeToClosed && <StoreClosedModal />}
 
       {/* <OtpVerifyModal /> */}
       {loaderState && <Loader loader={loaderState}/>}

@@ -60,41 +60,9 @@ export default function TrackOrderDetail()
     
     const [orderhash, setOrderhash] = useState("")
    
-    // useEffect(() => 
-    // {
-    //     const getTrackOrderDetails = async () =>
-    //     {
-    //         try 
-    //         {
-    //             const data = {
-    //                 guid: stringToArray?.[1],
-    //             }   
-    //             const response = await axiosPrivate.post(`/website-track-order`,data)
-                
-                
-    //             setBrand(response?.data?.data?.trackOrder?.brand)
-    //             setLocation(response?.data?.data?.trackOrder?.location)
-    //             setAddress(response?.data?.data?.trackOrder?.address)
-    //             setOrderhash(response?.data?.data?.trackOrder?.order_hash)
-    //             setTrackorders(response?.data?.data?.trackOrder)
-    
-    //             setDiscountamount((response?.data?.data?.trackOrder?.order_amount_discounts === null) ? 0 : response?.data?.data?.trackOrder?.order_amount_discounts?.amount_discount_applied)
-    //             setTimeout(() => {
-    //                 setLoader(!loader)
-    //             }, 3000);
-    //         } 
-    //         catch (error) 
-    //         {
-    //             setTimeout(() => {
-    //                 setLoader(!loader)
-    //             }, 3000);
-    //         }
-    //     }
-    //     getTrackOrderDetails()
-    // }, [])
     
     const onGetError = (error) => {
-        // window.alert("There is something went wrong!. Please refresh and try again.")
+        window.alert("There is something went wrong!. Please refresh and try again.", error)
     }
 
     const onGetSuccess = (data) => {
@@ -184,8 +152,6 @@ export default function TrackOrderDetail()
         reset()
         return
     }
-    
-    console.log("get the track order:", getTrackOrderData);
     
     return(
         <div className='e5ald0m1m2amc5trackorder-desk'>
