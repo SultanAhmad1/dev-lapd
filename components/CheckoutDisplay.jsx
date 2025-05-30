@@ -222,7 +222,7 @@ export default function CheckoutDisplay()
 
   const onDeliverySuccess = (data) => {
     
-    const {deliveryMatrix} = data?.data
+    const {deliveryMatrix, collectionMatrix} = data?.data
     
     if(deliveryMatrix && deliveryMatrix?.delivery_matrix_rows)
     {
@@ -295,7 +295,7 @@ export default function CheckoutDisplay()
         const textMessage = (
           // <span style={{color: "red",background: "#eda7a7",textAlign: "center",padding: "10px",}}>
           <span style={{color: "red"}}>
-            Minimum order is <strong>&pound;{getAmountConvertToFloatWithFixed(selectedMatrix?.order_value,2)}</strong> to your postcode
+            Minimum order is <strong>&pound;{getAmountConvertToFloatWithFixed(selectedMatrix?.order_value,2)}</strong> to your postcode.
           </span>
         );
         setDeliveryMessage(textMessage);
@@ -308,6 +308,72 @@ export default function CheckoutDisplay()
     {
       setDeliveryFee(0);
       setIsOrderSubtotalLessThanOrderValue(true);
+
+      const selectedCollectionMatrix = collectionMatrix.collection_matrix_rows?.[0]
+
+      if (parseFloat(totalValue) >= parseFloat(selectedCollectionMatrix?.collection_order_value))
+      {
+        if (selectedCollectionMatrix?.collection_above_order_value === null || selectedCollectionMatrix?.collection_above_order_value === 0)
+        {
+          // const textMessage = <strong>Free Collection</strong>;
+          // setDeliveryMessage(textMessage);
+          const fee = getAmountConvertToFloatWithFixed(0, 2);
+          setDeliveryFee(fee);
+        } 
+        else 
+        {
+          setDeliveryMessage("");
+          const fee = getAmountConvertToFloatWithFixed(selectedCollectionMatrix?.collection_above_order_value,2);
+          setDeliveryFee(fee);
+          setIsOrderSubtotalLessThanOrderValue(true)
+        }
+
+        if (parseInt(selectedCollectionMatrix?.collection_matrix_row_values?.length) > parseInt(0)) 
+        {
+          for (const deliveryMatrixRowValues of selectedCollectionMatrix?.collection_matrix_row_values) 
+          {
+            // Min order value is greater than totalValue then.
+            if (parseFloat(totalValue) >= parseFloat(deliveryMatrixRowValues?.collection_min_order_value)) 
+            {
+              if (deliveryMatrixRowValues?.collection_above_minimum_order_value === null || deliveryMatrixRowValues?.collection_above_minimum_order_value === 0)  
+              {
+                // const textMessage = <strong>Free Collection</strong>;
+                // setDeliveryMessage(textMessage);
+                const fee = getAmountConvertToFloatWithFixed(0, 2);
+                setDeliveryFee(fee);
+              } 
+              else 
+              {
+                // const textMessage = <strong>Free Collection</strong>;
+                // setDeliveryMessage((deliveryMatrixRowValues?.collection_above_minimum_order_value === 0) ? "" : textMessage);
+
+                const fee = parseFloat(deliveryMatrixRowValues?.collection_above_minimum_order_value).toFixed(2);
+                setDeliveryFee(fee);
+              }
+            } 
+            // else 
+            // {
+            //   const getDifference = parseFloat(deliveryMatrixRowValues?.min_order_value) - parseFloat(totalValue);
+            //   const textMessage = (<span> Spend &nbsp; <strong>&pound;{parseFloat(getDifference).toFixed(2)}</strong> &nbsp; more to get &nbsp;  <strong>Free Delivery</strong></span>);
+            //   setDeliveryMessage(textMessage);
+
+            //   const fee = getAmountConvertToFloatWithFixed(deliveryMatrixRowValues?.below_minimum_order_value === null ? deliveryMatrixRowValues?.above_minimum_order_value : deliveryMatrixRowValues?.below_minimum_order_value,2);
+            //   setDeliveryFee(fee);
+            // }
+          }
+        }
+      } else {
+        const textMessage = (
+          // <span style={{color: "red",background: "#eda7a7",textAlign: "center",padding: "10px",}}>
+          <span style={{color: "red"}}>
+            Minimum order is <strong>&pound;{getAmountConvertToFloatWithFixed(selectedCollectionMatrix?.collection_order_value,2)}</strong> for collection.
+          </span>
+        );
+        setDeliveryMessage(textMessage);
+        const fee = getAmountConvertToFloatWithFixed(selectedCollectionMatrix?.collection_below_order_value === null ? selectedCollectionMatrix?.collection_above_order_value : selectedCollectionMatrix?.collection_below_order_value,2);
+        setDeliveryFee(fee);
+        setIsOrderSubtotalLessThanOrderValue(false);
+      }
     }
 
     setTotalOrderAmount(getAmountConvertToFloatWithFixed(totalValue, 2));
@@ -319,9 +385,14 @@ export default function CheckoutDisplay()
     setLocalStorage(`${BRAND_SIMPLE_GUID}cart`, cartData);
   }
 
-
-  const {refetch: deliveryRefetch} = useGetQueryForDeliveryFee('district-delivery-matrix-data',`/district-delivery-matrix/${selectedLocation}/${selectedPostcode}`,onDeliverySuccess, onDeliveryError)
-
+  const {
+    refetch: deliveryRefetch
+  } = useGetQueryForDeliveryFee(
+    'district-delivery-matrix-data',
+    `/district-delivery-matrix/${selectedLocation}/${selectedPostcode}`,
+    onDeliverySuccess, 
+    onDeliveryError
+  )
   
   useEffect(() => {
    
@@ -754,10 +825,11 @@ export default function CheckoutDisplay()
 
   const handleCheckoutClicked = () => {
 
-    if(isScheduleIsReady && !isScheduleClicked)
-    {
-      return
-    }
+    // if(isScheduleIsReady && !isScheduleClicked)
+    // {
+    //   return
+    // }
+    setIsScheduleClicked(isScheduleIsReady)
     setLoader(true)
     handleBoolean(true, "isPlaceOrderButtonClicked")
     // const orderFilter = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`));
@@ -1030,19 +1102,18 @@ export default function CheckoutDisplay()
             
               <div>
                 <label className={`modifier-product-item-name-checkbox`}>
-                  <div style={{border: "1px solid red"}} onClick={handleIsScheduleClicked}>
+                  {/* <div style={{border: "1px solid red"}} onClick={handleIsScheduleClicked}>
                     <svg width="20px" height="20px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                       <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${isScheduleClicked ? "red" : ""}`} strokeWidth="2.5" strokeLinejoin="round"/>
                     </svg>
-                  </div>
-                    <div className="spacer _16"></div>
-                    <div className="modifier-product-item-name-one-nested-div-one-nested">
-                        <div className="modifier-product-item-name-one-nested-div-one-nested-div" style={{color: "red", marginLeft: '10px', marginBottom: "20px"}}>
-                            {/* {scheduleMessage} */}
-                            <h6>We are currently closed. </h6>
-                            <p>To schedule your order for &lt;&lt; {scheduleMessage} &gt;&gt;, go to checkout</p>
-                        </div>
+                  </div> */}
+                  <div className="spacer _16"></div>
+                  <div className="modifier-product-item-name-one-nested-div-one-nested">
+                    <div className="modifier-product-item-name-one-nested-div-one-nested-div" style={{color: "red", marginLeft: '10px', marginBottom: "20px"}}>
+                      {/* {scheduleMessage} */}
+                      <p style={{fontSize: "15px"}}>To schedule your order for {scheduleMessage}, go to checkout.</p>
                     </div>
+                  </div>
                 </label>
               </div>
           }

@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useGetQueryAutoUpdate } from "../reactquery/useQueryHook";
 import { usePathname } from "next/navigation";
 
@@ -10,6 +10,16 @@ export default function ThankYouDetail()
     const stringToArray = router?.split('/').filter(segment => segment)
 
     const [getTrackOrderData, setGetTrackOrderData] = useState(null);
+
+    useEffect(() => {
+        const handleBeforeUnload = (e) => {
+            e.preventDefault();
+            e.returnValue = "";
+        };
+
+        window.addEventListener("beforeunload", handleBeforeUnload);
+        return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+    }, []);
 
     const onGetError = (error) => {
         // window.alert("There is something went wrong!. Please refresh and try again.")

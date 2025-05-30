@@ -1986,7 +1986,7 @@ export default function DisplaySingleItem({params})
             }
             else if(action === "next")
             {
-                let countMinForIsExtrasTrue = 0; // optionNumber 1, 
+                let countMinForIsExtrasTrue = 0; // optionNumber 1, isAnyModifierHasExtras optionNumber
                 for (const minPermit of singleItem?.modifier_group) {
                     if(minPermit?.isExtras === false)
                     {
@@ -2045,7 +2045,16 @@ export default function DisplaySingleItem({params})
                     }
                 })
             }
-          
+            else if(action === "back")
+            {
+                setDisplaySingleItemObject((prevData) => {
+                    return{
+                        ...prevData,
+                        optionNumber: 1,
+                        isAnyModifierHasExtras: true,
+                    }
+                })
+            }
         }
     }, [singleItem, optionNumber,cartData, isCartBtnClicked,quantity]);    
     
@@ -2253,6 +2262,15 @@ export default function DisplaySingleItem({params})
                         ...prevData,
                         optionNumber: 2,
                         isAnyModifierHasExtras: false,
+                    }
+                })
+            }else if(action === "back")
+            {
+                setDisplaySingleItemObject((prevData) => {
+                    return{
+                        ...prevData,
+                        optionNumber: 1,
+                        isAnyModifierHasExtras: true,
                     }
                 })
             }

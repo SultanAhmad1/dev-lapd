@@ -258,9 +258,23 @@ export const WebsiteSingleItem = (props) => {
                         NEXT
                       </button>
                     :
-                      <button type="button" style={{marginLeft: "10px"}} className="add-to-cart-btn-item" onClick={() => handleAddOrNextClickedToCart("addToCart")}>
-                        ADD TO CART
-                      </button>
+                      <Fragment>
+                        {
+                          optionNumber === 2 &&
+                          <button 
+                            type="button" 
+                            class="add-to-cart-back-btn-click" 
+                            style={{marginLeft: "10px",minWidth: "100px"}} 
+                            onClick={() => handleAddOrNextClickedToCart("back")}
+                          >
+                            Back
+                          </button>
+                        }
+                        <button type="button" style={{marginLeft: "10px"}} className="add-to-cart-btn-item" onClick={() => handleAddOrNextClickedToCart("addToCart")}>
+                          ADD TO CART
+                        </button>
+
+                      </Fragment>
                   }
                 </div>
 

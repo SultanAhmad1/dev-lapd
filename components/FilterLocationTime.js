@@ -41,6 +41,7 @@ function FilterLocationTime(props)
                     setDisplayFilterModal(false)
                 }, 3000);
             }
+            window.location.href = '/'
         }
     }
     

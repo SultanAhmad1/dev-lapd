@@ -314,6 +314,19 @@ export default function CustomLayout({ children })
     
     const convertToJSobj = menu?.menu_json_log;
 
+    const menuToParse = JSON.parse(convertToJSobj.menus)
+
+    const getdayInformation = menuToParse?.[0].service_availability?.find((dayInformation) => dayInformation.day_of_week === moment().format("dddd").toLowerCase());
+    const getNextDayInformation = menuToParse?.[0].service_availability?.find((dayInformation) => dayInformation.day_of_week === moment().add(1, 'days').format("dddd").toLowerCase());
+
+    setStoreToDayName(moment().format("dddd"));
+    
+    setStoreToDayOpeningTime(getdayInformation?.time_periods?.[0].start_time);
+    setStoreToDayClosingTime(getdayInformation?.time_periods?.[0].end_time);
+
+    const mergedDayInfo = [getdayInformation, getNextDayInformation].filter(Boolean);
+    setCutOffSchedule(mergedDayInfo)
+
     if (convertToJSobj?.menus) {
       const getDay = JSON.parse(convertToJSobj.menus);
       const dayName = moment().format("dddd").toLowerCase();
@@ -370,6 +383,8 @@ export default function CustomLayout({ children })
         if (getTodayDetails) {
           const newDeliveryOrCollection = getTodayDetails.time_periods?.[0];
         
+          // first check the order type is delivery or collection.
+
           if (newDeliveryOrCollection?.start_time && newDeliveryOrCollection?.time_to != null) {
             // const nextDayStartTime = moment(newDeliveryOrCollection.start_time, 'HH:mm');
             // const updatedTime = nextDayStartTime.clone().add(newDeliveryOrCollection.time_to, 'minutes');
@@ -379,11 +394,21 @@ export default function CustomLayout({ children })
 
             // Combine date and time, then add minutes
             const todayStartTime = moment(`${today} ${startTime}`, 'YYYY-MM-DD HH:mm');
-            const updatedTime = todayStartTime.add(timeToAdd, 'minutes');
+            
+            const getFilter = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`))
 
-            // Set only the time part
-            setScheduleTime(updatedTime.format('YYYY-MM-DD HH:mm:ss'));
-
+            if(getFilter && getFilter?.id === DELIVERY_ID)
+            {
+              const updatedTime = todayStartTime.add(timeToAdd, 'minutes');
+              // Set only the time part
+              setScheduleTime(updatedTime.format('YYYY-MM-DD HH:mm:ss'));
+            }
+            else
+            {
+              const updatedTime = todayStartTime.add(newDeliveryOrCollection.collection_after_opening_from, 'minutes');
+              // Set only the time part
+              setScheduleTime(updatedTime.format('YYYY-MM-DD HH:mm:ss'));
+            }
           }
           else
           {
@@ -393,9 +418,20 @@ export default function CustomLayout({ children })
 
             // Combine date and time, then add minutes
             const todayStartTime = moment(`${today} ${startTime}`, 'YYYY-MM-DD HH:mm');
-            const updatedTime = todayStartTime.add(timeToAdd, 'minutes');
-            // Set only the time part
-            setScheduleTime(updatedTime.format('YYYY-MM-DD HH:mm:ss'))
+            const getFilter = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`))
+            
+            if(getFilter && getFilter?.id === DELIVERY_ID)
+            {
+              const updatedTime = todayStartTime.add(timeToAdd, 'minutes');
+              // Set only the time part
+              setScheduleTime(updatedTime.format('YYYY-MM-DD HH:mm:ss'))
+            }
+            else
+            {
+              const updatedTime = todayStartTime.add(newDeliveryOrCollection.collection_after_opening_from, 'minutes');
+              // Set only the time part
+              setScheduleTime(updatedTime.format('YYYY-MM-DD HH:mm:ss'))
+            }
           }
         }
 
@@ -411,9 +447,11 @@ export default function CustomLayout({ children })
           return dayInformation.day_of_week === moment().add(1, 'days').format("dddd").toLowerCase();
         });
         
+        console.log("next day details 2:", getNextDayDetail);
         if (getNextDayDetail) {
           const newDeliveryOrCollection = getNextDayDetail.time_periods?.[0];
-        
+          setStoreToDayClosingTime(newDeliveryOrCollection?.end_time);
+
           if (newDeliveryOrCollection?.start_time && newDeliveryOrCollection?.time_to != null) {
             // const nextDayStartTime = moment(newDeliveryOrCollection.start_time, 'HH:mm');
             // const updatedTime = nextDayStartTime.clone().add(newDeliveryOrCollection.time_to, 'minutes');
@@ -427,7 +465,7 @@ export default function CustomLayout({ children })
             const updatedTime = todayStartTime.add(timeToAdd, 'minutes');
             // Set only the time part
             setScheduleTime(updatedTime.format('YYYY-MM-DD HH:mm:ss'));
-
+            
           }
           else
           {
@@ -449,7 +487,7 @@ export default function CustomLayout({ children })
         setIsCheckoutReadyAfterSchedule(true)
         setScheduleMessage(getNextDayDetail.day_of_week)
       }
-      else if(getFilter.id === DELIVERY_ID)
+      else if(getFilter?.id === DELIVERY_ID)
       {
         if(parseInt(minsUntilClose) <= parseInt(period.delivery_cut_off))
         {
@@ -458,7 +496,7 @@ export default function CustomLayout({ children })
             const getNextDayDetail = getDay?.[0]?.service_availability?.find((dayInformation) => {
               return dayInformation.day_of_week === moment().add(1, 'days').format("dddd").toLowerCase();
             });
-            
+            console.log("next day details 3:", getNextDayDetail);
             if (getNextDayDetail) {
               const newDeliveryOrCollection = getNextDayDetail.time_periods?.[0];
             
@@ -491,6 +529,7 @@ export default function CustomLayout({ children })
             setIsScheduleIsReady(true)
             setIsCheckoutReadyAfterSchedule(true)
             setScheduleMessage(getNextDayDetail.day_of_week)
+            setStoreToDayClosingTime(newDeliveryOrCollection?.end_time);
           }
           else
           {
@@ -510,6 +549,7 @@ export default function CustomLayout({ children })
             const getNextDayDetail = getDay?.[0]?.service_availability?.find((dayInformation) => {
               return dayInformation.day_of_week === moment().add(1, 'days').format("dddd").toLowerCase();
             });
+            console.log("next day details 4:", getNextDayDetail);
             
             if (getNextDayDetail) {
               const newDeliveryOrCollection = getNextDayDetail.time_periods?.[0];
@@ -538,10 +578,11 @@ export default function CustomLayout({ children })
                 setScheduleTime(updatedTime);
               }
             }
-
+            
             setIsScheduleForToday(2)
             setIsScheduleIsReady(true)
             setScheduleMessage(getNextDayDetail.day_of_week)
+            setStoreToDayClosingTime(newDeliveryOrCollection?.end_time);
           }
           else
           {
@@ -567,20 +608,6 @@ export default function CustomLayout({ children })
 
     setNavigationCategories(convertToJSobj?.categories);
     setNavMobileIndex(0);
-
-    const menuToParse = JSON.parse(convertToJSobj.menus)
-
-    const getdayInformation = menuToParse?.[0].service_availability?.find((dayInformation) => dayInformation.day_of_week === moment().format("dddd").toLowerCase());
-    const getNextDayInformation = menuToParse?.[0].service_availability?.find((dayInformation) => dayInformation.day_of_week === moment().add(1, 'days').format("dddd").toLowerCase());
-
-    setStoreToDayName(moment().format("dddd"));
-    
-    setStoreToDayOpeningTime(getdayInformation?.time_periods?.[0].start_time);
-    setStoreToDayClosingTime(getdayInformation?.time_periods?.[0].end_time);
-
-    const mergedDayInfo = [getdayInformation, getNextDayInformation].filter(Boolean);
-    setCutOffSchedule(mergedDayInfo)
-    
   }
   const onMenuError = (error) => {
     setIsMenuAvailable(false);
@@ -622,7 +649,7 @@ export default function CustomLayout({ children })
         const differenceMinutes = firstDate?.diff(userSelectedTime, 'minutes')
 
         setCountMinutes(differenceMinutes)
-        if(differenceMinutes >= 1)
+        if(differenceMinutes >= 30)
         {
           window.localStorage.clear();
           window.location.reload(true);
@@ -641,8 +668,6 @@ export default function CustomLayout({ children })
         try {
           
           const getResponse = await axiosPrivate.get(`website-order-track/${checkOrderGuidExistsIsPaidStatusAwaiting}`)
-
-          // now check the existing order is make via qr code, or direct.
 
           const filterResponse = getResponse.data.data
           if(!filterResponse)
@@ -815,7 +840,7 @@ export default function CustomLayout({ children })
       {isCartBtnClicked && <Cart />}
       {booleanObj.isPlaceOrderButtonClicked && <PlaceOrderModal />}
       {/* {isDeliveryBtnClicked && <DeliveryModal />} */}
-      {isTimeToClosed && <StoreClosedModal />}
+      {/* {isTimeToClosed && <StoreClosedModal />} */}
 
       {/* <OtpVerifyModal /> */}
       {loaderState && <Loader loader={loaderState}/>}
