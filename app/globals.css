@@ -14,6 +14,8 @@
   --cartBtnColor: #45b70c;
   --cartBtnHover: #5def13;
   --addToCart: #009000;
+  --addToBackBtnClicked: #bbbbbb;
+  --addToBackBtnFontColor: #fff;
   --font-family: "futura-pt-bold", Arial, Tahoma, sans-serif;
 }
 .body-tag {
@@ -3189,15 +3191,26 @@ input {
   font-size: 20px;
   font-weight: bold;
   background: var(--addToCart);
-  padding: 14px 9px;
+  padding: 12px 9px;
   color: #ffffff;
   font-family: "futura-pt-bold", Arial, Tahoma, sans-serif;
   /* cursor: pointer; */
   /* align-items: center; */
-  min-width: 180px;
+  min-width: 160px;
   /* display: flex
 ; */
   /* box-sizing: border-box;*/
+}
+
+.add-to-cart-back-btn-click {
+  border-radius: 8px;
+  font-size: 20px;
+  font-weight: bold;
+  background: var(--addToBackBtnClicked);
+  padding: 12px 9px;
+  color: var(--addToBackBtnFontColor);
+  font-family: "futura-pt-bold", Arial, Tahoma, sans-serif;
+  min-width: 50px;
 }
 
 .add-cart-span {
@@ -12781,6 +12794,12 @@ ul.track-steps {
     margin-left: 40px;
     padding: 9px 12px;
     min-width: 130px;
+  }
+
+  .add-to-cart-back-btn-click {
+    font-size: 14px;
+    padding: 9px 12px;
+    min-width: 54px;
   }
 
   .item-title-p {

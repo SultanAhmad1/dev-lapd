@@ -273,9 +273,21 @@ export const MobileSingleItem = (props) => {
                     NEXT
                   </button>
                 :
-                  <button type="button" style={{marginLeft: "20px"}} className="add-to-cart-btn-item" onClick={() => handleMobileAddToCart("addToCart")}>
-                    ADD TO CART
-                  </button>
+                  <Fragment>
+                    {
+                      optionNumber === 2 &&
+                      <button 
+                        type="button" 
+                        class="add-to-cart-back-btn-click" 
+                        onClick={() => handleMobileAddToCart("back")}
+                      >
+                        Back
+                      </button>
+                    }
+                    <button type="button" style={{marginLeft: "1px"}} className="add-to-cart-btn-item" onClick={() => handleMobileAddToCart("addToCart")}>
+                      ADD TO CART
+                    </button>
+                  </Fragment>
               }
           
             </div>

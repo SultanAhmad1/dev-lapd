@@ -411,6 +411,10 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
   
         var timeForm    = response?.data?.data?.brandDeliveryEstimatePartner?.time_from;
         var deliveryTo  = response?.data?.data?.brandDeliveryEstimatePartner?.time_to;
+
+        console.log("response data is here:", response);
+        
+        var collectionAfter = response?.data?.data?.brandDeliveryEstimatePartner?.collection_after_opening_from;
         var d = new Date();
         var months = [
           "January",
@@ -449,11 +453,11 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
         }
         var current_date = new Date();
         // Changed to brand closing time + max delivery time at 4/6/2021
-  
-        if (Date.parse(time_to) < Date.parse(current_date)) {
-          setIsTimeToClosed(true);
-          return;
-        }
+        
+        // if (Date.parse(time_to) < Date.parse(current_date)) {
+        //   setIsTimeToClosed(true);
+        //   return;
+        // }
         time_to.setMinutes(time_to.getMinutes() + parseInt(deliveryTo) - 1);
         let end_time = new Date(time_to);
   
@@ -473,18 +477,31 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
           start_time = start_time.split(":")[0] + ":" + start_time.split(":")[1] + "0";
         }
   
-        if (parseFloat(start_time.split(":")[1]) == 60) {
-          var temp_time = start_time.split(":")[0] + ":59";
-        } else {
-          var temp_time = start_time;
+        if(selectedFilter.id === DELIVERY_ID)
+        {
+          if (parseFloat(start_time.split(":")[1]) == 60) {
+            var temp_time = start_time.split(":")[0] + ":59";
+            
+          } else {
+            var temp_time = start_time;
+          }
         }
+        else
+        {
+          const today = moment().format("YYYY-MM-DD HH:mm:ss");
+          
+          const todayTime = moment(today, 'YYYY-MM-DD HH:mm:ss');
+          const formatTime = todayTime.add(collectionAfter, 'minutes');
+          var temp_time = moment(formatTime).format("HH:mm");
+        }
+
         // temp_time = tConvert(temp_time);
-        
-        setDeliveryTime(temp_time);
-        
         if(parseInt(isScheduleForToday) > parseInt(0))
         {
-          setDeliveryTime(moment(scheduleTime, "HH:mm").format("HH:mm"))
+          setDeliveryTime(moment(scheduleTime).format("HH:mm"))
+        }else
+        {
+          setDeliveryTime(temp_time);
         }
   
         setOpeningTime(temp_time);
@@ -648,13 +665,14 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
           }
         }
       }
-      else if(isScheduleClicked === false)
-      {
-        handleObject(2,"sectionNumber")
-        handleObject(true, "isNextButtonReadyToClicked")
-      }
+      // else if(isScheduleClicked === false)
+      // {
+      //   handleObject(2,"sectionNumber")
+      //   handleObject(true, "isNextButtonReadyToClicked")
+      // }
       else
       {
+        // handleObject(1,"sectionNumber")
         handleObject(true, "isNextButtonReadyToClicked")
       }
     }, [sectionNumber, customerDetailObj?.doorHouseName, street1, street2, postcode, selectedFilter,isScheduleClicked]);
@@ -973,7 +991,7 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
         
         
         orderAmountDiscount_guid: orderAmountDiscountValue,
-        is_schedule_order: parseInt(isScheduleForToday) > parseInt(0) ? true : false,
+        is_schedule_order: isScheduleForToday,
         delivery_estimate_time: (parseInt(isScheduleForToday) > parseInt(0) ? scheduleTime : updatedDeliveryTime._i),
         
         // delivery_estimate_time: moment(deliveryTime, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
@@ -1003,7 +1021,7 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
       // first check the order guid id in localStorage if it is null then store information then update them.
       const responseData = data?.data?.data?.order?.order_total;
       const { clientSecret, type } = data?.data?.data;
-
+      
       const orderGUID = data?.data?.data?.order?.external_order_id
 
       setIsPayNowClicked(false)
@@ -1089,6 +1107,8 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
           alert("Payment failed");
         }
       }
+
+      handleBoolean(false, "isPlaceOrderButtonClicked")
     }
   
     const onStoreError = (error) => {
@@ -1104,19 +1124,25 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
       return
     }
   
-    const { isLoading: storeLoading, isError: storeError, reset: storeReset, isSuccess: storeSuccess, mutate: storeMutation } = usePostMutationHook('customer-store',`/store-customer-details`,onStoreSuccess, onStoreError)
+    const { 
+      isLoading: storeLoading, 
+      isError: storeError, 
+      reset: storeReset, 
+      isSuccess: storeSuccess, 
+      mutate: storeMutation 
+    } = usePostMutationHook('customer-store',`/store-customer-details`,onStoreSuccess, onStoreError)
 
     const onPatchSuccess = async (data) => {
       const responseData = data?.data?.data?.order?.order_total;
       setIsPayNowClicked(false)
-
+      
+      handleBoolean(false, "isPlaceOrderButtonClicked")
       const { clientSecret, type } = data?.data?.data;
       
       const orderGUID = data?.data?.data?.order?.external_order_id
       setIsPayNowClicked(false)
       if (data?.data?.status === "success") 
       {
-        
         setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,orderGUID);
         // if (parseFloat(responseData) === parseFloat(0.0)) 
         // {
@@ -1209,7 +1235,13 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
       return
     }
   
-    const {isLoading: patchLoading, isError: postError, isSuccess: postSuccess, reset: postReset, mutate: postMutation} = usePostMutationHook('customer-update',`/update-customer-details`, onPatchSuccess, onPatchError)
+    const {
+      isLoading: patchLoading, 
+      isError: postError, 
+      isSuccess: postSuccess, 
+      reset: postReset, 
+      mutate: postMutation
+    } = usePostMutationHook('customer-update',`/update-customer-details`, onPatchSuccess, onPatchError)
   
     const loadingState = patchLoading || storeLoading || loader
 
@@ -1280,6 +1312,8 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
         cvcElement?.focus()
       }
     }
+
+    console.log("store closing time:", storeToDayClosingTime, "delivery time", deliveryTime);
 
     return(
       <Fragment>
@@ -1689,11 +1723,14 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
                               {
                                 isScheduleClicked ?
                                   (selectedFilter.id === DELIVERY_ID) ?
-                                    "Schedule Delivery time"
+                                    "Schedule delivery time"
                                   :
-                                  "Schedule Collection time"
+                                  "Schedule collection time"
                                 :
-                                  "Estimated Delivery time"
+                                (selectedFilter.id === DELIVERY_ID) ?
+                                  "Estimated delivery time"  
+                                :
+                                  "Estimated collection time"
                               }
                               {
                                 !toggleObjects?.isPhoneinputToggle && 

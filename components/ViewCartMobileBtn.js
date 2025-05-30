@@ -9,6 +9,7 @@ export default function ViewCartMobileBtn()
   const {isCartBtnClicked, setIsCartBtnClicked, cartData, websiteModificationData} = useContext(HomeContext)
 
   const [totalordervalue, setTotalordervalue] = useState(0)
+  const [countTotalItems, setCountTotalItems] = useState(0);
 
   const [isTotalGreatherThanMinimum, setIsTotalGreatherThanMinimum] = useState(false);
   
@@ -17,12 +18,17 @@ export default function ViewCartMobileBtn()
       
   
     let totalValue = 0
+    let totalQuantity = 0
+
     if(parseInt(cartData?.length) > parseInt(0))
     {
       for(const total of cartData)
       {
+        totalQuantity += total.quantity
         totalValue = parseFloat(totalValue) + parseFloat(total?.total_order_amount)
       }
+      
+      setCountTotalItems(totalQuantity)
       setTotalordervalue(totalValue)
     }
     const deliveryMatrix = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`))
@@ -42,7 +48,6 @@ export default function ViewCartMobileBtn()
       return
     }
   }, [cartData])
-  
   
   return (
     <>
@@ -66,7 +71,7 @@ export default function ViewCartMobileBtn()
                 justifyContent: "center",
                 borderRadius: "5px",
               }}
-            >{parseInt(cartData?.length)}</span>
+            >{parseInt(countTotalItems)}</span>
                 {/* <span className='mobile-view-cart' style={{backgroundColor: !isTotalGreatherThanMinimum && `${websiteModificationData?.websiteModificationLive?.json_log[0]?.buttonBackgroundColor}`}} >Checkout</span> */}
                 <span className='mobile-view-cart' >Checkout</span>
             
@@ -87,7 +92,7 @@ export default function ViewCartMobileBtn()
                   borderRadius: "5px",
                 }}
               >
-                {parseInt(cartData?.length)}
+                {parseInt(countTotalItems)}
               </span>
 
               <span 

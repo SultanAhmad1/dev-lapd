@@ -70,9 +70,9 @@ export default function Header(props)
                     <a href="/">
                         {
                             brandLogo !== null ?
-                                <img loading="lazy" src={IMAGE_URL_Without_Storage+''+brandLogo} width={200} height={200} className="brand-logo" alt='Brand Name'/>
+                                <Image src={IMAGE_URL_Without_Storage+''+brandLogo} width={200} height={200} className="brand-logo" alt='Brand Name'/>
                             :
-                                <img loading="lazy" src={brandLogoPath} width={200} height={200} className="brand-logo" alt='Brand Name'/>
+                                <Image src={brandLogoPath} width={200} height={200} className="brand-logo" alt='Brand Name'/>
                         }
                     </a>
                 </div>

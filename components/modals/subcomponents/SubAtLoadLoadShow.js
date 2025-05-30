@@ -121,8 +121,6 @@ function SubAtLoadLoadShow({ setLoader }) {
 
       const response = await axiosPrivate.post(`/ukpostcode-website`, data);
       
-      console.log("uk postcode website:", response);
-      
       const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows;
 
       const currentDateTime = moment().format('YYYY-MM-DD HH:mm:ss');
@@ -276,8 +274,6 @@ function SubAtLoadLoadShow({ setLoader }) {
 
   useEffect(() => {
 
-    console.log("location details sub at load show:", locationDetails);
-    
     if(parseInt(locationDetails?.length) > parseInt(0))
     {
       setLocalStorage(`${BRAND_SIMPLE_GUID}via_qr`,1)

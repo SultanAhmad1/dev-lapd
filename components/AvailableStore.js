@@ -160,18 +160,9 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
   
    const handleOrderType = (storeId, id) => 
   {
-    
-    // if(parseInt(findAvailableStores?.orderType?.length) === parseInt(0))
-    // {
-    //     return
-    // }
-
     // first check available store delivery matrix matched.
-
     const findStore = availableStores?.find((store) => store?.location_guid === storeId)
-
     //  at first customer selected the delivery 
-
     
     if(findStore && findStore?.orderType?.length > 0)
     {
@@ -192,7 +183,6 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
     }
     else
     {
-      // return error message
       setComingSoon(true)
       setErrorMessage("There must be at least one order type available.")
       return
@@ -201,23 +191,23 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
     const updateAvailableStores = availableStores?.map((stores) => {
       if(stores?.location_guid === storeId)
       {
-          return {
-              ...stores,
-              orderType: stores?.orderType?.map((order) => {
-                  if(order?.id === id)
-                  {
-                      return {
-                          ...order,
-                          isClicked: true
-                      }
-                  }
+        return {
+          ...stores,
+          orderType: stores?.orderType?.map((order) => {
+            if(order?.id === id)
+            {
+              return {
+                ...order,
+                isClicked: true
+              }
+            }
 
-                  return {
-                      ...order,
-                      isClicked: false
-                  }
-              })
-          }
+            return {
+              ...order,
+              isClicked: false
+            }
+          })
+        }
       }
       return stores
     })
@@ -236,17 +226,17 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
     const updateFilter = filters?.find((findFilter) => findFilter?.id === id && findFilter?.status)
     if(updateFilter)
     {
-        setSelectedFilter(updateFilter)
-        setLocalStorage(`${BRAND_SIMPLE_GUID}filter`,updateFilter)
-        setNextCookies(`${BRAND_SIMPLE_GUID}filter`,updateFilter)
-        document.cookie = `${BRAND_SIMPLE_GUID}filter=${updateFilter}`
+      setSelectedFilter(updateFilter)
+      setLocalStorage(`${BRAND_SIMPLE_GUID}filter`,updateFilter)
+      setNextCookies(`${BRAND_SIMPLE_GUID}filter`,updateFilter)
+      document.cookie = `${BRAND_SIMPLE_GUID}filter=${updateFilter}`
 
-        if(isDisplayFromModal)
-        {
-            setTimeout(() => {
-                setDisplayFilterModal(false)
-            }, 3000);
-        }
+      if(isDisplayFromModal)
+      {
+        setTimeout(() => {
+          setDisplayFilterModal(false)
+        }, 3000);
+      }
     }
 
     const findDeliveryMatrix = availableStores?.find((stores) => stores?.location_guid === storeId)

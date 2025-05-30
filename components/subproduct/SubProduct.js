@@ -1,5 +1,6 @@
 "use client";
 import HomeContext from '@/app/contexts/HomeContext'
+import Image from 'next/image';
 import React, { useContext } from 'react'
 
 function SubProduct() {
@@ -50,7 +51,7 @@ function SubProduct() {
 
                                                                     <div className="item-img-style">
                                                                         <div className="lazyload-wrapper">
-                                                                            <img  loading='lazy' className="item-img" src={item?.image_url} alt='Product'></img>
+                                                                            <Image className="item-img" src={item?.image_url} alt='Product'></Image>
                                                                         </div>
                                                                     </div>
                                                                 </div>
