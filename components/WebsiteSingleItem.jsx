@@ -2,10 +2,8 @@
 
 import moment from "moment";
 import { IMAGE_URL_Without_Storage } from "@/global/Axios";
-import {getAmountConvertToFloatWithFixed} from "@/global/Store";
 import Image from "next/image";
 import { Fragment } from "react";
-import Link from "next/link";
 import ChooseOnlyOne from "./websiteModifiersItems/ChooseOnlyOne";
 import ChooseOneItemOneTime from "./websiteModifiersItems/ChooseOneItemOneTime";
 import CounterItem from "./websiteModifiersItems/CounterItem";
@@ -34,8 +32,6 @@ export const WebsiteSingleItem = (props) => {
     return url.startsWith('https://');
   };
   
-  
-  
   return (
     <div className="e5 e6">
       <div className="single-product-level-one-div">
@@ -57,7 +53,7 @@ export const WebsiteSingleItem = (props) => {
           </button>
 
           {
-            (singleItem?.image_url && singleItem?.image_url !== null) &&
+            singleItem?.image_url &&
             <div className="product-img">
               <div className="bz">
                 <div className="product-img-div-one-div">

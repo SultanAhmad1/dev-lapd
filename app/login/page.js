@@ -17,25 +17,3 @@ export default function page()
     )
 }
 
-const validPhoneNumber = (phone) => {
-    if (phone.startsWith('+44')) {
-        return {
-          countryCode: +44,
-          localNumber: phone.substring(3), // Remove the first 3 characters (+44)
-        };
-    }
-    else if(phone.startsWith('0'))
-    {
-        return{
-            countryCode: 0,
-            localNumber: phone.substring(3)
-        }
-    }
-    else if(!phone.startsWith('0') || phone.startsWith('+44'))
-    {
-        return{
-            countryCode: 0,
-            localNumber: phone.substring(3)
-        }
-    }
-}

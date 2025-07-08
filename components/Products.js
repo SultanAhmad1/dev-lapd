@@ -52,31 +52,6 @@ export default function Products() {
       }, 3000);
     }
   }, [loader,setLoader]);
-  
-  const cartItems = [
-    {
-      category: '1 x Burgers:',
-      items: [
-        { name: 'Regular Fries', extraPrice: null },
-        { name: 'Signature Hot Sauce', extraPrice: 1.0 },
-        { name: 'Signature Hot Sauce', extraPrice: 1.0 },
-        { name: 'Signature Hot Sauce', extraPrice: 1.0 },
-        { name: 'Signature Hot Sauce', extraPrice: 1.0 },
-        { name: 'Signature Hot Sauce', extraPrice: 1.0 },
-        { name: 'Signature Hot Sauce', extraPrice: 1.0 },
-        { name: 'Signature Hot Sauce', extraPrice: 1.0 },
-      ],
-      price: 2.24,
-    },
-    {
-      category: '1 x Drinks:',
-      items: [
-        { name: 'Pepsi Max 330ml', extraPrice: null },
-      ],
-      price: 1.99,
-    },
-  ];
-
  
   return (
     <>
@@ -114,8 +89,7 @@ export default function Products() {
                           category?.items?.map((item, itemIndex) => {
                             
                             let isItemSuspend = false;
-
-
+                            
                             if(item?.suspension_info !== null)
                             {
                               if(moment().format('YYYY-MM-DD') <= moment.unix(item?.suspension_info?.suspend_untill).format('YYYY-MM-DD'))

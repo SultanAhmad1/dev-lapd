@@ -1,9 +1,9 @@
 "use client";
 import Image from 'next/image'
 
-import React, { Fragment, useContext, useState } from 'react'
+import React, { Fragment, useContext, useEffect, useState } from 'react'
 import HomeContext from '../contexts/HomeContext'
-import { BLACK_COLOR, brandLogoPath,IMAGE_URL_Without_Storage, LIGHT_BLACK_COLOR, WHITE_COLOR } from '../global/Axios'
+import { BLACK_COLOR, BRAND_SIMPLE_GUID, brandLogoPath,IMAGE_URL_Without_Storage, LIGHT_BLACK_COLOR, WHITE_COLOR } from '../global/Axios'
 import moment from 'moment';
 import FilterLocationTime from './FilterLocationTime';
 import { usePathname } from 'next/navigation';
@@ -52,6 +52,19 @@ export default function Header(props)
 
     const splitToArray = pathName.split("/").filter(segment => segment)
     
+    const [storeAddressDetail, setStoreAddressDetail] = useState("");
+    
+    useEffect(() => {
+      const addressStore = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`);
+
+      if(addressStore)
+      {
+        const storeData = JSON.parse(addressStore);
+        setStoreAddressDetail(storeData?.address || "");
+      }
+    }, [street1, street2]);
+    
+    
     return (
         <header className="header" style={{
             marginTop: "10px"
@@ -80,7 +93,7 @@ export default function Header(props)
                 <div className='logo-location-cart' style={{display: "block",}}>
                     
                     {
-                        (!["track-order", "place-order", "payment"].some(term => splitToArray?.[0]?.includes(term)))
+                        (!["track-order", "place-order", "payment", 'contact-us'].some(term => splitToArray?.[0]?.includes(term)))
                         
                         &&
 
@@ -141,7 +154,8 @@ export default function Header(props)
                                         ></path>
                                     </svg>
 
-                                        {street1} {street2}
+                                        {/* {street1} {street2} */}
+                                        {storeAddressDetail}
                                 </button>
                                 
                                 <div className='store-detail-display'>

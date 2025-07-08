@@ -101,12 +101,14 @@ export default function AddressCreate({handleCreateAddress})
           grabPostcodeOutWard = filterPostcode.substring(0, 2);
         }
   
+        const visitorInfo = JSON.parse(window.localStorage.getItem('userInfo'))
         const ukPostcodeData = {
           postcode: filterPostcode,
           brand_guid: BRAND_GUID,
           dayName: dayName,
           dayNumber: dayNumber,
           outwardString: grabPostcodeOutWard,
+          visitorGUID: visitorInfo.visitorId
         };
         
         ukPostcodeMutate(ukPostcodeData)

@@ -7,12 +7,16 @@ const autoUpdateDataFn = async (url) => {
     return response?.data
 }
 
-export const useGetQueryForDeliveryFee = (key,keepUrl, onSuccess, onError) => {
-  return useQuery([key], () => autoUpdateDataFn(keepUrl),{onSuccess,onError, enabled: false})
+export const useGetQueryForDeliveryFee = (key,keepUrl, onSuccess, onError, isEnabled) => {
+  return useQuery([key], () => autoUpdateDataFn(keepUrl),{onSuccess,onError, enabled: isEnabled})
 }
 
 export const useGetQueryAutoUpdate = (key,keepUrl, onSuccess, onError, isEnabled) => {
-  return useQuery([key], () => autoUpdateDataFn(keepUrl),{onSuccess,onError, enabled: isEnabled})
+  return useQuery([key], () => autoUpdateDataFn(keepUrl),{onSuccess,onError, enabled: isEnabled, refetchOnWindowFocus: false})
+}
+
+export const useGetQueryUpdate = (key,keepUrl, onSuccess, onError) => {
+  return useQuery([key], () => autoUpdateDataFn(keepUrl),{onSuccess,onError, enabled: false})
 }
 
 export const usePostMutationHook = (key,url, onSuccess, onError) => {

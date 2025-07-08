@@ -66,12 +66,15 @@ function PostcodeModal() {
         grabPostcodeOutWard = filterPostcode.substring(0, 2);
       }
       
+      const visitorInfo = JSON.parse(window.localStorage.getItem('userInfo'))
+
       const postcodeData = {
         postcode: updatedValidPostcode,
         brand_guid: BRAND_GUID,
         dayName: dayName,
         dayNumber: dayNumber,
         outwardString: grabPostcodeOutWard,
+        visitorGUID: visitorInfo.visitorId
       }
 
       ukPostcodePostMutation(postcodeData)
@@ -84,7 +87,7 @@ function PostcodeModal() {
   const onUkPostcodeSuccess = (data) => {
     setLoader(false)
     const matrix = data.data?.data?.deliveryMartix?.delivery_matrix_rows;
-
+    
     find_matching_postcode(matrix, updatedValidPostcode, setDeliveryMatrix);
 
     setTempAddress(data?.data?.data);

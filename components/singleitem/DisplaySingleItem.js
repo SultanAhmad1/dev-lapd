@@ -83,10 +83,15 @@ export default function DisplaySingleItem({params})
             setLoader(true)
             const getStoreIDFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`));
 
+            const visitorInfo = JSON.parse(window.localStorage.getItem('userInfo'));
+
             const data = {
                 location: getStoreIDFromLocalStorage !== null ? getStoreIDFromLocalStorage?.display_id : storeGUID,
                 brand: BRAND_GUID,
                 partner: PARTNER_ID,
+                visitorGUID: visitorInfo.visitorId,
+                landingPage: true,
+                orderPage: true,
             };
         
             const response = await axiosPrivate.post(`/menu`, data);
@@ -1844,6 +1849,23 @@ export default function DisplaySingleItem({params})
         }
     });
     
+    async function storeAddToBasketClicked() {
+    try {
+
+        const visitorInfo = JSON.parse(window.localStorage.getItem("userInfo"))
+
+        const data = {
+            visitorGUID: visitorInfo.visitorId
+        }
+
+        const response = await axiosPrivate.post('/store-add-to-basket', data)
+        // console.log("basket success: ",response);
+        
+    } catch (error) {
+        // console.log("basket error:", error);
+            
+    }
+}
     // Website Cart Button
     const handleAddOrNextClickedToCart = useCallback((action) => {
 
@@ -1854,6 +1876,7 @@ export default function DisplaySingleItem({params})
             {
                 let countMinForOption1 = 0; // optionNumber 1, 
                 let countMinForOption2 = 0
+                storeAddToBasketClicked()
                 if(displaySingleItemObject?.optionNumber === 1)
                 {
                     for (const minPermit of singleItem?.modifier_group) {
@@ -1982,7 +2005,6 @@ export default function DisplaySingleItem({params})
                     // setIsCartBtnClicked(true);
                     setIsCartBtnClicked(false);
                 }
-              
             }
             else if(action === "next")
             {
@@ -2083,6 +2105,8 @@ export default function DisplaySingleItem({params})
     
                 let indexArrForScrollOption2 = [];
                 let indexArrForOptionOne = []
+
+                storeAddToBasketClicked()
 
                 if (parseInt(countMinForCart) > parseInt(0)) {
                     const addErrorClassInModifier = {
@@ -2198,7 +2222,7 @@ export default function DisplaySingleItem({params})
                     }
                 }
                 
-
+                
             }
             else if(action === "next")
             {

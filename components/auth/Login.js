@@ -1,17 +1,34 @@
 "use client";
 import HomeContext from "@/contexts/HomeContext";
-import { setLocalStorage, validatePhoneNumber } from "@/global/Store";
+// import { setLocalStorage } from "@/global/Store";
 import React, { Fragment, useCallback, useContext, useEffect, useState } from "react";
-
 
 import { useLoginMutationHook } from "@/components/reactquery/useQueryHook";
 import { BRAND_GUID, BRAND_SIMPLE_GUID, IMAGE_URL_Without_Storage} from "@/global/Axios";
 import ForgetPassword from "../forgetpassword/ForgetPassword";
 import { ContextCheckApi } from "@/app/layout";
 
+
+function validatePhoneNumber(phoneNumber) {
+    let formattedPhone = phoneNumber.replace(/[^0-9]/g, '');
+
+    // Add '0' if the number doesn't start with it and isn't already prefixed with '+44'
+    if (!phoneNumber.startsWith('0') && !phoneNumber.startsWith('+44')) {
+        formattedPhone = '0' + phoneNumber;
+    } else if (phoneNumber.startsWith('+44')) {
+        // Convert '+44' to '0'
+        formattedPhone = '0' + phoneNumber.slice(3);
+    }
+
+    // Return the formatted phone number
+    return formattedPhone;
+}
+
+
 export default function Login() 
 {
-    const { brandLogo , handleBoolean, websiteModificationData} = useContext(HomeContext);
+    const homeContext = useContext(HomeContext) || {};
+    const { brandLogo , handleBoolean, websiteModificationData} = homeContext
 
     const [isHover, setIsHover] = useState(false);
     
@@ -26,7 +43,34 @@ export default function Login()
         isForgetPasswordClicked: false,
     });
     
-    const { setMetaDataToDisplay} = useContext(ContextCheckApi)
+    
+    const contextApi = useContext(ContextCheckApi) || {};
+    const { setMetaDataToDisplay } = contextApi;
+
+    
+    const validPhoneNumber = (phone) => {
+        
+        if (phone.startsWith('+44')) {
+            return {
+            countryCode: +44,
+            localNumber: phone.substring(3), // Remove the first 3 characters (+44)
+            };
+        }
+        else if(phone.startsWith('0'))
+        {
+            return{
+                countryCode: 0,
+                localNumber: phone.substring(3)
+            }
+        }
+        else if(!phone.startsWith('0') || phone.startsWith('+44'))
+        {
+            return{
+                countryCode: 0,
+                localNumber: phone.substring(3)
+            }
+        }
+    }
 
     useEffect(() => {
         if(websiteModificationData)
@@ -83,32 +127,48 @@ export default function Login()
 
             if(validatePhoneNumber(userPhone) !== undefined)
             {
-                const {countryCode, localNumber} = validPhoneNumber(userPhone)
+                // const {countryCode, localNumber} = validPhoneNumber(userPhone)
     
-                sendUserDetails = `0${localNumber}`
+                // let sendUserDetails = `0${localNumber}`
             }
         }
 
-        const storeDetails = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
+        if(typeof window !== "undefined")
+        {
+            const storeDetails = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
             
-        const loginData = {
-            brand: BRAND_GUID,
-            location: storeDetails?.display_id,
-            userEmail: userEmail,
-            userPhone: userPhone,
-            userPassword: userPassword,
+            if(storeDetails)
+            {
+                const loginData = {
+                    brand: BRAND_GUID,
+                    location: storeDetails?.display_id,
+                    userEmail: userEmail,
+                    userPhone: userPhone,
+                    userPassword: userPassword,
+                }
+        
+                loginMutation(loginData)
+                return
+            }
+            window.location.href = "/"
+            return
         }
-
-        loginMutation(loginData)
     }
 
     const onLoginSuccess = (data) => {
-        setLocalStorage(`${BRAND_SIMPLE_GUID}tempCustomer`, data?.data?.data?.customer)
-    
-        setLocalStorage(`${BRAND_SIMPLE_GUID}websiteToken`, data?.data)
-        handleBoolean(true,'isCustomerVerified')
-        window.location.href = "/"
-        return
+        if (typeof window !== "undefined") 
+        {
+            // setLocalStorage(`${BRAND_SIMPLE_GUID}tempCustomer`, data?.data?.data?.customer)
+        
+            // setLocalStorage(`${BRAND_SIMPLE_GUID}websiteToken`, data?.data)
+
+            window.localStorage.setItem(`${BRAND_SIMPLE_GUID}tempCustomer`, data?.data?.data?.customer)
+            window.localStorage.setItem(`${BRAND_SIMPLE_GUID}websiteToken`, data?.data)
+
+            handleBoolean(true,'isCustomerVerified')
+            window.location.href = "/"
+            return
+        }
     }
 
     const onLoginError = (error) => {
@@ -119,17 +179,21 @@ export default function Login()
     const {mutate: loginMutation, isSuccess, isLoading, isError, reset} = useLoginMutationHook('website-login', '/website-login', onLoginSuccess, onLoginError)
 
     useEffect(() => {
-        const confirmedPassword = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}confirmedcode`))
-
-        if(confirmedPassword !== null && confirmedPassword !== undefined)
+        if (typeof window !== "undefined") 
         {
-            if(confirmedPassword)
+            const confirmedPassword = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}confirmedcode`))
+    
+            if(confirmedPassword !== null && confirmedPassword !== undefined)
             {
-                setLoginObj((prevData) => ({...prevData, isForgetPasswordClicked: true}))
-                return
+                if(confirmedPassword)
+                {
+                    setLoginObj((prevData) => ({...prevData, isForgetPasswordClicked: true}))
+                    return
+                }
             }
         }
     }, []);
+
     return(
         <Fragment>
         {
@@ -185,7 +249,7 @@ export default function Login()
                                 onMouseEnter={() => setIsHover(true)} 
                                 onMouseLeave={() => setIsHover(false)} 
                             >
-                            Login my data
+                            Login
                         </button>
                     </div>
                     <a href='/register' className="register-account">Register Account!.</a>

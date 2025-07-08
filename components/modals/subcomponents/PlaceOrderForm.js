@@ -412,7 +412,7 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
         var timeForm    = response?.data?.data?.brandDeliveryEstimatePartner?.time_from;
         var deliveryTo  = response?.data?.data?.brandDeliveryEstimatePartner?.time_to;
 
-        console.log("response data is here:", response);
+        // console.log("response data is here:", response);
         
         var collectionAfter = response?.data?.data?.brandDeliveryEstimatePartner?.collection_after_opening_from;
         var d = new Date();
@@ -822,10 +822,14 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
       try 
       {
         setLoader(true)
+
+        const visitorInfo = JSON.parse(window.localStorage.getItem('userInfo'))
+
         const data = {
           guid: orderId,
           amount_paid: getAmountConvertToFloatWithFixed(paymentIntent.amount / 100,2),
           stripeid: paymentIntent.id,
+          visitorGUID: visitorInfo.visitorId,
         }  
 
         const response = await axiosPrivate.post(`/update-order-after-successfully-payment-save`, data)
@@ -962,6 +966,8 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
   
       const filterAddress = customerTemp?.addresses?.find(address => address?.is_default_address === 1)
 
+      const visitorInfo = JSON.parse(window.localStorage.getItem('userInfo'))
+
       const data = {
         customer:           customerAuth === null ? 0 : customerTemp?.id,
         address:            customerAuth === null ? 0 : filterAddress?.id,
@@ -1007,6 +1013,7 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
         brand: BRAND_GUID,
         type: "card",
         is_paid_via_wallet: 0,
+        visitorGUID: visitorInfo.visitorId
       };
       
       if (orderFromDatabaseGUID !== null) { 
@@ -1075,20 +1082,7 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
       }
       else
       {
-            // ✅ Send all billing info to backend
-          // const response = await axiosPrivate.post("/create-payment-intent", {
-          //     order_total: Math.round(parseFloat(totalOrderAmountValue) * 100),
-          //     type: "wallet",
-          //     payment_method: ev.paymentMethod.id,
-          //     order: orderId,
-          //     brand: BRAND_GUID,
-          //     billing_details: {
-          //       name: customerName,
-          //       email: customerEmail,
-          //       address: customerAddress,
-          //       telephone: customerPhone,
-          //     },
-          // });
+        
         try
         {
           // ✅ Finish wallet UI prompt
@@ -1193,20 +1187,6 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
       }
       else
       {
-        // ✅ Send all billing info to backend
-        // const response = await axiosPrivate.post("/create-payment-intent", {
-        //     order_total: Math.round(parseFloat(totalOrderAmountValue) * 100),
-        //     type: "wallet",
-        //     payment_method: ev.paymentMethod.id,
-        //     order: orderId,
-        //     brand: BRAND_GUID,
-        //     billing_details: {
-        //       name: customerName,
-        //       email: customerEmail,
-        //       address: customerAddress,
-        //       telephone: customerPhone,
-        //     },
-        // });
         try
         {
           // ✅ Finish wallet UI prompt
@@ -1313,7 +1293,7 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
       }
     }
 
-    console.log("store closing time:", storeToDayClosingTime, "delivery time", deliveryTime);
+    // console.log("store closing time:", storeToDayClosingTime, "delivery time", deliveryTime);
 
     return(
       <Fragment>
@@ -1336,7 +1316,7 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
 
                 <div className="mimjepmkmlmmcheckout-desk">
                   {
-                    ((!isCreditCardButtonClicked && parseInt(sectionNumber) === parseInt(1)) || (isCreditCardButtonClicked && parseInt(sectionNumber) === parseInt(2))) &&
+                    (selectedFilter.id === DELIVERY_ID && (!isCreditCardButtonClicked && parseInt(sectionNumber) === parseInt(1)) || (isCreditCardButtonClicked && parseInt(sectionNumber) === parseInt(2))) &&
                     <p style={{ color: "red", fontSize: "600", fontWeight: "bold", marginBottom: "8px"}}>
                       *Fields marked with an asterisk must be filled in to proceed.
                     </p>

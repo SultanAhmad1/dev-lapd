@@ -48,10 +48,16 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
 
   async function fetchMenu(storeGUID) {
     try {
+
+      const visitorInfo = JSON.parse(window.localStorage.getItem('userInfo'))
+
       const data = {
         location: storeGUID,
         brand: BRAND_GUID,
         partner: PARTNER_ID,
+        visitorGUID: visitorInfo.visitorId,
+        landingPage: true,
+        orderPage: false,
       };
 
       const response = await axiosPrivate.post(`/menu`, data);
@@ -118,7 +124,7 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
     }
   }
 
-  function handleLocationSelect(storeGUID, storeName, storeTelephone) 
+  function handleLocationSelect(storeGUID, storeName, storeTelephone, storeEmail, storeAddress) 
   {
     setStoreName(storeName);
     
@@ -140,6 +146,8 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
       display_id: storeGUID,
       store: storeName,
       telephone: storeTelephone,
+      email: storeEmail,
+      address: storeAddress,
     };
     setLocalStorage(`${BRAND_SIMPLE_GUID}user_selected_store`, selectedStoreData);
     route.push("/");
@@ -243,7 +251,7 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
 
     find_matching_postcode(findDeliveryMatrix?.deliveryMatrixes?.delivery_matrix_rows, validPostcode, setDeliveryMatrix);
 
-    handleLocationSelect(findAvailableStores?.location_guid, findAvailableStores?.location_name, findAvailableStores?.telephone)
+    handleLocationSelect(findAvailableStores?.location_guid, findAvailableStores?.location_name, findAvailableStores?.telephone, findAvailableStores?.email, findAvailableStores?.address)
   }
 
   useEffect(() => {
@@ -278,7 +286,7 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
         {
           availableStores?.map((stores, index) => {
             return (
-              <div className="available-stores-show" style={{ cursor: "pointer" }} key={index} onClick={() => handleLocationSelect(stores.location_guid,stores.location_name,stores.telephone)}>
+              <div className="available-stores-show" style={{ cursor: "pointer" }} key={index} onClick={() => handleLocationSelect(stores.location_guid,stores.location_name,stores.telephone, stores.email, stores.address)}>
 
                 <div className="spacer _16"></div>
 

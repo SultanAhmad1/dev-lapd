@@ -205,10 +205,12 @@ const PaymentForm = ({orderId}) =>
   {
     try 
     {
+      const visitorInfo = JSON.parse(window.localStorage.getItem('userInfo'))
       const data = {
         guid: orderId,
         amount_paid: getAmountConvertToFloatWithFixed(paymentIntent.amount / 100,2),
         stripeid: paymentIntent.id,
+        visitorGUID: visitorInfo.visitorId
       }  
 
       const response = await axiosPrivate.post(`/update-order-after-successfully-payment-save`, data)

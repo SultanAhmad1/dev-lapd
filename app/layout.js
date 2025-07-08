@@ -7,6 +7,7 @@ import CustomLayout from "@/components/CustomLayout";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { createContext, useState } from "react";
+import Script from "next/script";
 const inter = Inter({ subsets: ["latin"] });
 // export const metadata = {
 //   title: 'Create Next App',
@@ -21,8 +22,8 @@ export default function RootLayout({ children })
 {
 
   const [metaDataToDisplay, setMetaDataToDisplay] = useState({
-    title: "Your Brand Info",
-    contentData: "Dev lapd food website",
+    title: "LAPD Food Oldham - Fast Food Delivery & Takeaway Near Me",
+    contentData: "Lapd Food is a best online takeaway in Oldham. Get your favourites delivered pizzas, burgers, peri peri chicken, wraps & more. Fast service, local flavours.",
     iconImage: "favicon.ico",
     singleItemsDetails: {
       title: "",
@@ -36,14 +37,51 @@ export default function RootLayout({ children })
   return (
     <ContextCheckApi.Provider value={{ setMetaDataToDisplay}}>
       <html lang="en">
-        <HeadMetaData 
-          title={metaDataToDisplay?.title}
-          content={metaDataToDisplay?.contentData}
-          iconImage={metaDataToDisplay?.iconImage}
-          singleItemsDetails={metaDataToDisplay?.singleItemsDetails}
-        />
+        <head>
+          {/* Google Tag Manager */}
 
+          {/* <Script
+            id="gtm-script"
+            strategy="afterInteractive"
+            dangerouslySetInnerHTML={{
+              __html: `
+                (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+                new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+                j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+                'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+                })(window,document,'script','dataLayer','GTM-MVS5GQH7');
+              `,
+            }}
+          /> */}
+
+          <Script id="gtm-init" strategy="afterInteractive">
+            {`
+              (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+              new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+              j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+              'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+              })(window,document,'script','dataLayer','GTM-MVS5GQH7');
+            `}
+          </Script>
+          {/* End Google Tag Manager */}
+          <HeadMetaData 
+            title={metaDataToDisplay?.title}
+            content={metaDataToDisplay?.contentData}
+            iconImage={metaDataToDisplay?.iconImage}
+            singleItemsDetails={metaDataToDisplay?.singleItemsDetails}
+          />
+        </head>
         <body className="body-tag">
+            {/* Google Tag Manager (noscript) */}
+            <noscript>
+              <iframe 
+                src="https://www.googletagmanager.com/ns.html?id=GTM-MVS5GQH7"
+                height="0" width="0" style={{display:"none",visibility:"hidden"}}
+              ></iframe>
+            </noscript>
+
+            {/* End Google Tag Manager (noscript) */}
+
           <div>
             <QueryClientProvider client={queryClient}>
               <CustomLayout {...{children}}/>
@@ -51,6 +89,7 @@ export default function RootLayout({ children })
             </QueryClientProvider>
           </div>
 
+         
         </body>
         
       </html>

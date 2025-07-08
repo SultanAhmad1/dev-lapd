@@ -48,24 +48,6 @@ const ApplePay = () => {
     }
     pr.on('paymentmethod', async (e) => {
       paymentMethod()
-      // const {error: backendError, clientSecret} = await fetch(
-      //   '/create-payment-intent',
-      //   {
-      //     method: 'POST',
-      //     headers: {
-      //       'Content-Type': 'application/json',
-      //     },
-      //     body: JSON.stringify({
-      //       paymentMethodType: 'card',
-      //       currency: 'usd',
-      //     }),
-      //   }
-      // ).then((r) => r.json());
-
-      // if (backendError) {
-      //   setMessage(backendError.message);
-      //   return;
-      // }
 
       setMessage('Client secret returned');
 
