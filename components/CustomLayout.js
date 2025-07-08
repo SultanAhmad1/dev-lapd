@@ -14,6 +14,7 @@ import MenuNotAvailableModal from "./modals/MenuNotAvailableModal";
 import PlaceOrderModal from "./modals/PlaceOrderModal";
 import StoreClosedModal from "./modals/StoreClosedModal";
 import { useSearchParams } from "next/navigation";
+import { UAParser } from "ua-parser-js";
 
 export default function CustomLayout({ children }) 
 {
@@ -36,6 +37,8 @@ export default function CustomLayout({ children })
   
   const [loader, setLoader] = useState(true);
 
+  const [ipAddressDetails, setIpAddressDetails] = useState(null);
+  
   const [isLocationBrandOnline, setIsLocationBrandOnline] = useState(null);
   
   const [websiteModificationData, setWebsiteModificationData] = useState(null);
@@ -47,8 +50,9 @@ export default function CustomLayout({ children })
   const [headerCartBtnDisplay, setHeaderCartBtnDisplay] = useState(true);
   
   // FilterLocationTime Component States
-  // const [storeGUID, setStoreGUID] = useState(DEFAULT_LOCATION);
   const [storeGUID, setStoreGUID] = useState(null);
+  const [menuRequestBoolean, setMenuRequestBoolean] = useState(true);
+  
   const [storeName, setStoreName] = useState("");
   const [storeToDayName, setStoreToDayName] = useState("");
   const [storeToDayOpeningTime, setStoreToDayOpeningTime] = useState("");
@@ -124,6 +128,9 @@ export default function CustomLayout({ children })
   const [couponDiscountApplied, setCouponDiscountApplied] = useState([]);
   
   const [isCheckoutReadyAfterSchedule, setIsCheckoutReadyAfterSchedule] = useState(false);
+
+  const [selectedPostcode, setSelectedPostcode] = useState("");
+  const [selectedLocation, setSelectedLocation] = useState("");
 
   const [booleanObj, setBooleanObj] = useState({
     isCustomerCanvasOpen: false,
@@ -230,19 +237,16 @@ export default function CustomLayout({ children })
   
         setCouponDiscountApplied(updateCoupon)
         setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`, updateCoupon)
-        
-        // setCouponDiscountApplied(afterReloadingGetCouponCode)
-        // setCouponDiscountApplied(updatedCoupons);
-        // setCouponDiscountApplied((prevData) => [
-        //   ...prevData, afterReloadingGetCouponCode
-        // ])
       }
 
       const getSelectStore = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`);
 
       if (getSelectStore === null) 
       {
-        setStoreGUID(DEFAULT_LOCATION)
+        // setStoreGUID(DEFAULT_LOCATION)
+        setMenuRequestBoolean(true)
+        setSelectedPostcode("")
+        setSelectedLocation("")
         if (pathnameArray?.[0] === "track-order" || pathnameArray?.[0] === "review-order" || pathnameArray?.[0] === "payment" || pathnameArray?.[0] === "place-order") 
         {
           setAtFirstLoad(false);
@@ -259,16 +263,18 @@ export default function CustomLayout({ children })
       } 
       else 
       {
+        setMenuRequestBoolean(true)
         setPostcode(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_valid_postcode`)));
 
         const parseToJSobj = JSON.parse(getSelectStore);
-        // menuRefetch(parseToJSobj === null ? storeGUID : parseToJSobj.display_id);
-        setStoreGUID(parseToJSobj === null ? storeGUID : parseToJSobj.display_id);
         setStoreName(parseToJSobj.store);
 
         const appliedAmountDiscount = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`));
         const address = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}address`));
         const getDeliveryMatrix = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`));
+
+        setSelectedPostcode(getDeliveryMatrix?.postcode)
+        setSelectedLocation(parseToJSobj?.display_id)
         
         setAmountDiscountApplied(appliedAmountDiscount);
         setDeliveryMatrix(getDeliveryMatrix);
@@ -289,16 +295,112 @@ export default function CustomLayout({ children })
         setCartData(cartDataFromLocalStorage === null ? [] : cartDataFromLocalStorage);
         // if(parseInt(storeGUID.length) > parseInt(0))
         // {
-          menuRefetch()
-        // }
-        colorRefetch()
+        setStoreGUID(parseToJSobj === null ? storeGUID : parseToJSobj.display_id);
       }
        
+      // user device details
+      const userInfoLocalStorage = JSON.parse(window.localStorage.getItem('userInfo'))
+      if(! userInfoLocalStorage)
+      {
+        const referrer = document.referrer;
+        const source =
+          referrer.includes("facebook.com") ? "facebook" :
+          referrer.includes("instagram.com") ? "instagram" :
+          referrer.includes("google.") ? "google" :
+          referrer === "" ? "direct" : "other";
+  
+        const parser = new UAParser();
+        const uaResult = parser.getResult();
+  
+        
+        const userInfo = {
+          source,
+          browser: uaResult.browser.name,
+          browserVersion: uaResult.browser.version,
+          os: uaResult.os.name,
+          osVersion: uaResult.os.version,
+          deviceType: uaResult.device.type || "desktop",
+          deviceVendor: uaResult.device.vendor || "unknown",
+          deviceModel: uaResult.device.model || "unknown",
+          ip: ""
+        };
+  
+        fetch("https://ipwho.is/")
+        .then(response => response.json())
+        .then(data => {
+          setIpAddressDetails(data.ip)
+          // userInfo.ip = data.ip;
+              const updatedUser = {
+            ...userInfo,
+            ip: data.ip,
+            country: data.country,
+          };
+          // console.log("Full User Info:", updatedUser);
+          // Save or send to backend
+          localStorage.setItem("userInfo", JSON.stringify(updatedUser));
+        })
+        .catch(err => console.error("Failed to fetch IP info:", err));
+      }
+
     } catch (error) {
         window.alert("There is something went wrong. Please refresh and try again.")
         return
     }
   }, []);
+  
+  useEffect(() => {
+    if(storeGUID !== null && storeGUID !== undefined)
+    {
+      setMenuRequestBoolean(true)
+      menuRefetch()
+      colorRefetch()
+
+    }
+    else{
+      setMenuRequestBoolean(true)
+    }
+
+    if(ipAddressDetails !== null && ipAddressDetails !== undefined)
+    {
+      async function storeUserDetail() {
+        try {
+          
+          const userInfoFromLocal = JSON.parse(window.localStorage.getItem('userInfo'))
+
+          const data = {
+            brandId: BRAND_GUID,
+
+            source: userInfoFromLocal.source,
+            browser: userInfoFromLocal.browser,
+            browserVersion: userInfoFromLocal.browserVersion,
+            os: userInfoFromLocal.os,
+
+            osVersion: userInfoFromLocal.osVersion,
+            deviceType: userInfoFromLocal.deviceType,
+            deviceVendor: userInfoFromLocal.deviceVendor,
+            deviceModel: userInfoFromLocal.deviceModel,
+            ip: userInfoFromLocal.ip,
+            country: userInfoFromLocal.country,
+          }
+          const getResponse = await axiosPrivate.post(`/store-user-device-detail`, data)
+
+          // console.log("user store detail data run:");
+          
+          const filterResponse = getResponse.data.data
+
+          const editUserInfoFromLocal = {
+            ...userInfoFromLocal,
+            visitorId: filterResponse.visitorInfo.visitor_guid
+          }
+          setIpAddressDetails(null)
+          setLocalStorage('userInfo', editUserInfoFromLocal)
+        } catch (error) {
+        }
+      }
+
+      storeUserDetail()
+    }
+  }, [storeGUID, ipAddressDetails]);
   
   useEffect(() => {
     if(parseInt(cartData?.length) > parseInt(0))
@@ -311,6 +413,8 @@ export default function CustomLayout({ children })
   {
     setLoader(false)
     const { menu } = data?.data
+    
+    // console.log("response menu data:", data);
     
     const convertToJSobj = menu?.menu_json_log;
 
@@ -447,7 +551,6 @@ export default function CustomLayout({ children })
           return dayInformation.day_of_week === moment().add(1, 'days').format("dddd").toLowerCase();
         });
         
-        console.log("next day details 2:", getNextDayDetail);
         if (getNextDayDetail) {
           const newDeliveryOrCollection = getNextDayDetail.time_periods?.[0];
           setStoreToDayClosingTime(newDeliveryOrCollection?.end_time);
@@ -496,7 +599,6 @@ export default function CustomLayout({ children })
             const getNextDayDetail = getDay?.[0]?.service_availability?.find((dayInformation) => {
               return dayInformation.day_of_week === moment().add(1, 'days').format("dddd").toLowerCase();
             });
-            console.log("next day details 3:", getNextDayDetail);
             if (getNextDayDetail) {
               const newDeliveryOrCollection = getNextDayDetail.time_periods?.[0];
             
@@ -549,7 +651,6 @@ export default function CustomLayout({ children })
             const getNextDayDetail = getDay?.[0]?.service_availability?.find((dayInformation) => {
               return dayInformation.day_of_week === moment().add(1, 'days').format("dddd").toLowerCase();
             });
-            console.log("next day details 4:", getNextDayDetail);
             
             if (getNextDayDetail) {
               const newDeliveryOrCollection = getNextDayDetail.time_periods?.[0];
@@ -616,7 +717,11 @@ export default function CustomLayout({ children })
     setLoader(false)
   }
 
-  const { isLoading: menuLoading, isError: menuError, refetch: menuRefetch } = useGetQueryAutoUpdate('website-menu', `/menu/${storeGUID}/${BRAND_GUID}`, onMenuSuccess, onMenuError, true)
+  const { 
+    isLoading: menuLoading, 
+    isError: menuError, 
+    refetch: menuRefetch 
+  } = useGetQueryAutoUpdate(['website-menu', storeGUID, BRAND_GUID], `/menu/${storeGUID}/${BRAND_GUID}`, onMenuSuccess, onMenuError, menuRequestBoolean )
 
   const onWebsiteModificationSuccess = (data) => {
     setLoader(false)
@@ -773,7 +878,8 @@ export default function CustomLayout({ children })
     setIsScheduleForToday,
     scheduleTime,
     setScheduleTime,
-
+    selectedPostcode,
+    selectedLocation,
     setComingSoon,
     setErrorMessage,
     handleBoolean,

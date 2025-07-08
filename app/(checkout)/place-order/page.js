@@ -694,6 +694,7 @@ function UserForm() {
   
       const filterAddress = customerTemp?.addresses?.find(address => address?.is_default_address === 1)
   
+      const visitorInfo = JSON.parse(window.localStorage.getItem('userInfo'))
       const data = {
         customer:           customerAuth === null ? 0 : customerTemp?.id,
         address:            customerAuth === null ? 0 : filterAddress?.id,
@@ -730,6 +731,7 @@ function UserForm() {
         coupons:                  couponCodes,
         order_guid:               orderFromDatabaseGUID !== null ? JSON.parse(orderFromDatabaseGUID) : null,
         is_verified:              booleanObj?.isCustomerVerified,
+        visitorGUID: visitorInfo.visitorId
       };
       
       if (orderFromDatabaseGUID !== null) { 

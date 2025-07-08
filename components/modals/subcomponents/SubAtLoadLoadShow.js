@@ -111,15 +111,19 @@ function SubAtLoadLoadShow({ setLoader }) {
         grabPostcodeOutWard = filterPostcode.substring(0, 2);
       }
 
+      const userInfo = JSON.parse(window.localStorage.getItem('userInfo'));
+
       const data = {
         postcode: filterPostcode,
         brand_guid: BRAND_GUID,
         dayName: dayName,
         dayNumber: dayNumber,
         outwardString: grabPostcodeOutWard,
+        visitorGUID: userInfo?.visitorId
       };
 
       const response = await axiosPrivate.post(`/ukpostcode-website`, data);
+
       
       const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows;
 
@@ -130,8 +134,12 @@ function SubAtLoadLoadShow({ setLoader }) {
       const availableStores = response?.data?.data?.availableStore || [];
       const orderTypeFilters = response?.data?.data?.orderTypeFilters || [];
 
+     
       // make cart empty.
       // now make sure store is selected, and matched with already selected store. isChangePostcodeButtonClicked
+
+       setLoader(false)
+      
       if(isChangePostcodeButtonClicked)
       {
         const userSelectedStore = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
@@ -154,7 +162,7 @@ function SubAtLoadLoadShow({ setLoader }) {
           }
         }
       }
-
+      
       if((isViaQr !== null && isViaQr !== undefined) && parseInt(isViaQr) === parseInt(0))
       {
         
@@ -218,7 +226,7 @@ function SubAtLoadLoadShow({ setLoader }) {
         
         setAvailableStores(availableStoreUpdate);
       }
-      else if((isViaQr !== null && isViaQr !== undefined) && parseInt(isViaQr) === parseInt(1))
+      else if((isViaQr !== null && isViaQr !== undefined) && parseInt(isViaQr) === parsefInt(1))
       {
         setAtFirstLoad(false)
         handleBoolean(true, "isPlaceOrderButtonClicked")

@@ -46,12 +46,14 @@ export default function AddressList({handleCreateAddress})
             grabPostcodeOutWard = filterPostcode.substring(0, 2);
           }
     
+          const visitorInfo = JSON.parse(window.localStorage.getItem('userInfo'))
           const data = {
             postcode: filterPostcode,
             brand_guid: BRAND_GUID,
             dayName: dayName,
             dayNumber: dayNumber,
             outwardString: grabPostcodeOutWard,
+            visitorGUID: visitorInfo.visitorId
           };
     
           const response = await axiosPrivate.post(`/ukpostcode-website`, data);

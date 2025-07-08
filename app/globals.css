@@ -194,6 +194,7 @@
   background: #ffffff;
   box-shadow: 0px 3px 6px #00000029;
   height: 24vh;
+  margin-bottom: 1px;
 }
 
 .header-div {
@@ -10003,6 +10004,9 @@ ul.track-steps {
 
 @media only screen and (max-width: 768px)
 {
+  .edit-delivery-location-button {
+    margin-top: 10px;
+  }
   .content-div-level-one {
     max-width: unset;
   }
@@ -12708,7 +12712,7 @@ ul.track-steps {
   }
 
   .store-detail-display {
-    display: none;
+    display: flex;
   }
 
   .navbar {
@@ -12723,12 +12727,13 @@ ul.track-steps {
     width: 100%;
   }
 
-  .top-bar {
-    /* margin-top: 50px; */
-  }
+  /* .top-bar {
+    margin-top: 30px;
+  } */
 
   .header {
-    height: 33vh;
+    height: auto;
+    /* margin-bottom: 40px; */
   }
 
   .modal-lg {
@@ -12888,11 +12893,11 @@ ul.track-steps {
     width: 91%;
   }
 
-  .top-bar {
-    /* margin-top: 50px; */
-  }
+  /* .top-bar {
+    margin-top: 30px;
+  } */
 
   .header {
-    height: 33vh;
+    height: auto;
   }
 }

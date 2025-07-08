@@ -1,8 +1,8 @@
 "use client";
-import React, { Fragment, useContext} from "react";
+import React, { Fragment, useContext, useEffect, useState} from "react";
 import HomeContext from "../contexts/HomeContext";
 import moment from "moment";
-import { brandLogoPath, IMAGE_URL_Without_Storage } from "../global/Axios";
+import { BRAND_SIMPLE_GUID, brandLogoPath, IMAGE_URL_Without_Storage } from "../global/Axios";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -10,6 +10,24 @@ function Footer() {
   const { websiteModificationData, brandLogo } = useContext(HomeContext);
 
   const myColor = "#000000"
+
+  const [locationDetails, setLocationDetails] = useState({
+    telephone: "",
+    email: "",
+  });
+  
+
+  useEffect(() => {
+    const selectedStoreData = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`)
+    if(selectedStoreData){
+      const storeData = JSON.parse(selectedStoreData);
+      setLocationDetails({  
+        telephone: storeData?.telephone || "",
+        email: storeData?.email || "",
+      });
+    }
+  }, [websiteModificationData]);
+  
   return (
     <footer className="footer" style={{'--before-border-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,'--before-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}}>
       <div className="footer-div">
@@ -82,7 +100,7 @@ function Footer() {
             <ul>
               <li>
                 <button type="button" className="footer-brand-conditions-btn" style={{'--condition-btn-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
-                  {websiteModificationData?.brand?.telephone.replace(/^\d/,"+44")}
+                  {locationDetails?.telephone.replace(/^\d/,"+44")}
                 </button>
                 <a className="footer-brand-conditions-btn" style={{wordSpacing: " -0.1em",'--condition-btn-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}} href={websiteModificationData?.brand?.brand_social_links?.[0]?.social_links} target="_blank">
                   @{websiteModificationData?.brand?.name.split(" ").join("").toLowerCase()}
