@@ -3,12 +3,12 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import TrackOrderDetail from "@/components/track/TrackOrderDetail";
 
-function TrackOrder() 
+function TrackOrder({params}) 
 {
     return (
         <>
             <Header />
-            <TrackOrderDetail />
+            <TrackOrderDetail {...{orderId: params?.order}}/>
             <Footer />
         </>
     )

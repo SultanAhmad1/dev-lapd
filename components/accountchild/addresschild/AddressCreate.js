@@ -2,8 +2,8 @@
 import AccountAvailableStore from "@/components/account/AccountAvailableStore";
 import { usePostAfterAuthenticateMutationHook, usePostMutationHook } from "@/components/reactquery/useQueryHook";
 import HomeContext from "@/contexts/HomeContext";
-import { BRAND_GUID, BRAND_SIMPLE_GUID, loginAxios, PARTNER_ID, USER_IMAGE } from "@/global/Axios";
-import { find_matching_postcode, setLocalStorage, setNextCookies } from "@/global/Store";
+import { BRAND_GUID, BRAND_SIMPLE_GUID, DELIVERY_ID, loginAxios, PARTNER_ID, USER_IMAGE } from "@/global/Axios";
+import { find_collection_matching_postcode, find_matching_postcode, setLocalStorage, setNextCookies } from "@/global/Store";
 import moment from "moment";
 import React, { Fragment, useContext, useEffect, useState } from "react";
 
@@ -20,19 +20,11 @@ export default function AddressCreate({handleCreateAddress})
         setStoreToDayName,
         setStoreToDayOpeningTime,
         setStoreToDayClosingTime,
-        setIsMenuAvailable,
-        storeGUID,
-        setStoreGUID,
-        setStoreName,
-        dayName,
-        dayNumber,
-        postcode,
-        setPostcode,
-        setIsGoBtnClicked,
+        setStoreCurrentOrNextDayOpeningTime,
+        setStoreCurrentOrNextDayClosingTime,
         setPostCodeForOrderAmount,
-        setStreet1,
-        setStreet2,
         setComingSoon,
+        setSelectedStoreDetails,
     } = useContext(HomeContext);
 
     const [addressObj, setAddressObj] = useState({
@@ -121,8 +113,20 @@ export default function AddressCreate({handleCreateAddress})
     const onWebsitePostcodeSuccess = (data) => {
         const { deliveryMartix, availableStore } = data?.data?.data
 
-        const matrix = deliveryMartix?.delivery_matrix_rows
-        find_matching_postcode(matrix, addressObj?.typedPostCode, setDeliveryMatrix);
+        const addressListFilter = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`))
+        if(addressListFilter !== null && addressListFilter !== undefined)
+        {
+            if(addressListFilter.id.includes(DELIVERY_ID))
+            {
+                const matrix = deliveryMartix?.delivery_matrix_rows
+                find_matching_postcode(matrix, addressObj?.typedPostCode, setDeliveryMatrix);
+            }
+            else
+            {
+                const matrix = deliveryMartix?.collection_matrix_rows
+                find_collection_matching_postcode(matrix, addressObj?.typedPostCode, setDeliveryMatrix);
+            }
+        }
         setSelectedStores((prevData) => ({...prevData, address: data?.data?.data, validPostcode: addressObj?.postcode}))
 
         setAddressObj((prevData) => ({...prevData, 
@@ -176,12 +180,17 @@ export default function AddressCreate({handleCreateAddress})
         };
         
         setPostCodeForOrderAmount(deliveryMatrix?.postcode);
+
         setLocalStorage(`${BRAND_SIMPLE_GUID}delivery_matrix`,deliveryMatrix);
 
         setLocalStorage(`${BRAND_SIMPLE_GUID}address`, selectedStores?.address);
         setLocalStorage(`${BRAND_SIMPLE_GUID}user_valid_postcode`, selectedStores?.validPostcode);
         setLocalStorage(`${BRAND_SIMPLE_GUID}user_selected_store`, selectedStoreData);
 
+        setSelectedStoreDetails({
+            email: selectedStores?.storeEmail,
+            telephone: selectedStores?.storeTelephone
+        })
         
         authMenuMutate({
             location: selectedStoreData?.display_id,
@@ -257,8 +266,11 @@ export default function AddressCreate({handleCreateAddress})
 
         const getDayInformation = convertToJSobj.menus[0].service_availability?.find((dayInformation) =>dayInformation.day_of_week === moment().format("dddd").toLowerCase());
         setStoreToDayName(moment().format("dddd"));
+
         setStoreToDayOpeningTime(getDayInformation.time_periods[0].start_time);
         setStoreToDayClosingTime(getDayInformation.time_periods[0].end_time);
+        setStoreCurrentOrNextDayClosingTime(getDayInformation.time_periods[0].end_time);
+        setStoreCurrentOrNextDayOpeningTime(getDayInformation.time_periods[0].start_time);
     }
 
     const {mutate: authMenuMutate, isSuccess: authMenuSuccess, reset: authMenuReset} = usePostAfterAuthenticateMutationHook('auth-menu', `/menu-auth`, onAuthMenuSuccess, onAuthError)

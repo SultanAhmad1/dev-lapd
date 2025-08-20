@@ -1,15 +1,15 @@
 'use client';
 
 import Image from "next/image";
-import React, { useContext, useEffect, useRef, useState } from "react";
+import React, { useContext, useEffect, useRef } from "react";
 import { useCheckAuthMutationHook, useLogoutMutationHook } from "../reactquery/useQueryHook";
 import HomeContext from "@/contexts/HomeContext";
-import { BLACK_COLOR, BRAND_SIMPLE_GUID, HOVER_COLOR, USER_IMAGE, WHITE_COLOR } from "@/global/Axios";
+import { BRAND_SIMPLE_GUID, USER_IMAGE } from "@/global/Axios";
 
 export default function CustomerPersonCom() 
 {
     
-    const {booleanObj,handleBoolean,websiteModificationData} = useContext(HomeContext)
+    const {handleBoolean,websiteModificationData} = useContext(HomeContext)
     
     const asideRef = useRef(null);
 
@@ -95,80 +95,108 @@ export default function CustomerPersonCom()
     }
 
     return(
-        <div id="wrapper" className="div-left-canva">
-            <div className="left-canv-level-one-div">
-                <aside className="left-canv-aside" ref={asideRef}>
-                    <nav>
-                        <div data-scene-meta='{"drawer_id":"menu"}' style={{ display: "contents" }}>
-                            {
-                                loginToken === null || loginToken === undefined ?
-                                <div className="canva-auth-buttons">
-                                    <div>
-                                    <a 
-                                        href='/register' 
-                                        className="auth-sign" 
-                                      
-                                        style={{
-                                            '--auth-border-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || WHITE_COLOR,
-                                            '--auth-background-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR,
-                                            '--auth-font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR,
-                                            '--auth-hover-background': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || HOVER_COLOR,
-                                            '--auth-hover-color':  websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || WHITE_COLOR,
-                                        }}
-                                    >
-                                        Sign up
-                                    </a>
-                                    <a href='/login' className="auth-in">
-                                        Log in
-                                    </a>
+        <div id="wrapper" className="fixed inset-0 z-40 bg-black/50">
+            <div className="flex h-full">
+                {/* Aside */}
+                <aside
+                    ref={asideRef}
+                    className="w-72 sm:w-80 bg-white shadow-xl h-full flex flex-col p-4 overflow-y-auto"
+                >
+                    <nav className="flex flex-col gap-4 mt-4">
+                        <div className="flex flex-col gap-4">
+                        {loginToken === null || loginToken === undefined ? 
+                            <div className="flex flex-col gap-2">
+                                <a
+                                    href="/register"
+                                    className="border rounded-lg px-4 py-3 rounded text-center font-medium transition-colors"
+                                    style={{
+                                    borderColor:
+                                        websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                                        ?.buttonBackgroundColor || 'black',
+                                    backgroundColor:
+                                        websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                                        ?.buttonBackgroundColor || 'black',
+                                    color:
+                                        websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                                        ?.buttonColor || 'white',
+                                    }}
+                                >
+                                    Sign up
+                                </a>
+                                <a
+                                    href="/login"
+                                    className="border rounded-lg px-4 py-3 text-center text-gray-800 hover:underline"
+                                >
+                                    Log in
+                                </a>
+                            </div>
+                        : 
+                            <>
+                                {/* User Section */}
+                                <div className="flex flex-col items-center gap-2">
+                                    <Image
+                                        src={USER_IMAGE}
+                                        alt="User"
+                                        width={200}
+                                        height={200}
+                                        className="w-24 h-24 rounded-full object-cover"
+                                    />
+                                    <div className="text-center">
+                                        <div className="font-semibold">
+                                            {loginToken?.data?.customer?.first_name}{' '}
+                                            {loginToken?.data?.customer?.last_name}
+                                        </div>
+                                        <a
+                                            href="/account"
+                                            className="rounded-lg text-blue-600 hover:underline"
+                                        >
+                                            Manage account
+                                        </a>
                                     </div>
                                 </div>
-                            :
-                                <>
-                                    <div className="aside-div-one">
-                                        <Image
-                                            alt="User presentation"
-                                            role="presentation"
-                                            src={USER_IMAGE}
-                                            className="canv-anchor-image-tags"
-                                            width={100}
-                                            height={100}
-                                        />
-                                        <div className="spacer _16"></div>
-                                        <div>
-                                            <div className="canva-user">{loginToken?.data?.customer?.first_name} {loginToken?.data?.customer?.last_name}</div>
-                                            <a href="/account" className="canva-user-anchor">
-                                                Manage account
-                                            </a>
-                                        </div>
-                                    </div>
-                
-                                    <a className="canva-anchor-btn" href="/orders">
-                                        <div className="canva-anchor-btn-div">
-                                            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="canva-anchor-svg">
-                                                <path d="M4.5 2.833v18.333l4.583-2.5 2.917 2.5 2.917-2.5 4.583 2.5V2.833h-15zM16.167 9.5H7.833V7h8.334v2.5z" />
-                                            </svg>
-                                        </div>
-                                        <div className="spacer _16"></div>
-                                        <a href={`/order-history/${loginToken?.data?.customer?.customer_guid}`} className="canva-anchor-text">Order History</a>
-                                    </a>
-                
-                                    <a className="canva-anchor-btn" href="/favorites?fav=true">
-                                        <div className="canva-anchor-btn-div">
-                                            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="canva-anchor-svg">
-                                                <path d="M17 3c-2.2 0-3.8 1.2-5 2.5C10.8 4.3 9.2 3 7 3 3.5 3 1 5.9 1 9.5c0 1.8.7 3.4 2 4.5l9 8.5 9-8.5c1.2-1.2 2-2.7 2-4.5C23 5.9 20.5 3 17 3z"></path>
-                                            </svg>
-                                        </div>
-                                        <div className="spacer _16"></div>
-                                        <div className="canva-anchor-text">Favorites</div>
-                                    </a>
-                                    
-                                    {/* Logout button */}
-                                    <button type="button" disabled={logoutLoading} className="auth-in" style={{marginTop: "50vh", padding: "0rem"}} onClick={handleLogout}>
-                                        Log out
-                                    </button>
-                                </>
-                            }
+
+                                {/* Links */}
+                                <a
+                                    href={`/order-history/${loginToken?.data?.customer?.customer_guid}`}
+                                    className="flex rounded-lg items-center gap-2 px-2 py-2 hover:bg-gray-100 rounded transition-colors"
+                                >
+                                    <svg
+                                        aria-hidden="true"
+                                        focusable="false"
+                                        viewBox="0 0 24 24"
+                                        className="w-5 h-5 text-gray-500"
+                                    >
+                                        <path d="M4.5 2.833v18.333l4.583-2.5 2.917 2.5 2.917-2.5 4.583 2.5V2.833h-15zM16.167 9.5H7.833V7h8.334v2.5z" />
+                                    </svg>
+                                    <span>Order History</span>
+                                </a>
+
+                                <a
+                                    href="/favorites?fav=true"
+                                    className="flex rounded-lg items-center gap-2 px-2 py-2 hover:bg-gray-100 rounded transition-colors"
+                                >
+                                    <svg
+                                        aria-hidden="true"
+                                        focusable="false"
+                                        viewBox="0 0 24 24"
+                                        className="w-5 h-5 text-gray-500"
+                                    >
+                                        <path d="M17 3c-2.2 0-3.8 1.2-5 2.5C10.8 4.3 9.2 3 7 3 3.5 3 1 5.9 1 9.5c0 1.8.7 3.4 2 4.5l9 8.5 9-8.5c1.2-1.2 2-2.7 2-4.5C23 5.9 20.5 3 17 3z"></path>
+                                    </svg>
+                                    <span>Favorites</span>
+                                </a>
+
+                                {/* Logout */}
+                                <button
+                                    type="button"
+                                    disabled={logoutLoading}
+                                    onClick={handleLogout}
+                                    className="mt-auto text-red-600 text-sm hover:underline"
+                                >
+                                    Log out
+                                </button>
+                            </>
+                        }
                         </div>
                     </nav>
                 </aside>

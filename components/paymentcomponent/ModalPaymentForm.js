@@ -3,15 +3,13 @@
 
 import React, { useContext, useEffect, useState } from 'react';
 
-import moment from 'moment';
+import moment from 'moment-timezone';
 import { CardElement, PaymentRequestButtonElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { BRAND_SIMPLE_GUID, BRAND_GUID, IMAGE_URL_Without_Storage, axiosPrivate, DELIVERY_ID } from '@/global/Axios';
+import { BRAND_SIMPLE_GUID, BRAND_GUID, axiosPrivate, DELIVERY_ID } from '@/global/Axios';
 import HomeContext from '@/contexts/HomeContext';
 import { useRouter } from "next/navigation";
-import Wallet from './Wallet';
 import Loader from '../modals/Loader';
-import { country, currency, getAmountConvertToFloatWithFixed, setLocalStorage } from '@/global/Store';
-import { ContextCheckApi } from '@/app/layout';
+import { getAmountConvertToFloatWithFixed, setLocalStorage } from '@/global/Store';
 // import stripePromise from './stripe';
 
 const ModalPaymentForm = ({orderId}) => 
@@ -32,29 +30,8 @@ const ModalPaymentForm = ({orderId}) =>
     loader
   } = useContext(HomeContext)
 
-  const { setMetaDataToDisplay} = useContext(ContextCheckApi)
 
   const [isSubmitButtonCLicked, setIsSubmitButtonCLicked] = useState(false);
-  
-  useEffect(() => {
-    if(websiteModificationData)
-    {
-      const metaHeadingData = {
-        title: websiteModificationData?.brand?.name,
-        contentData: websiteModificationData?.brand?.name,
-        iconImage: IMAGE_URL_Without_Storage+"/"+websiteModificationData?.websiteModificationLive?.json_log?.[0]?.websiteFavicon,
-        singleItemsDetails: {
-          title: "",
-          description: "",
-          itemImage: "",
-          keywords: "",
-          url: ""
-        }
-      }
-      setMetaDataToDisplay(metaHeadingData)
-    }
-  }, [websiteModificationData]);
-
   const [isHover, setIsHover] = useState(false);
   
   // const [loader, setLoader] = useState(true)   
@@ -168,7 +145,8 @@ const ModalPaymentForm = ({orderId}) =>
       const data = {
         guid: orderId,
         url: url,
-        pathname: pathname
+        pathname: pathname,
+        brandGuid: BRAND_GUID,
       } 
 
       const response = await axiosPrivate.post(`/send-sms-and-email`, data)
@@ -234,7 +212,8 @@ const ModalPaymentForm = ({orderId}) =>
         guid: orderId,
         amount_paid: getAmountConvertToFloatWithFixed(paymentIntent.amount / 100,2),
         stripeid: paymentIntent.id,
-        visitorGUID: visitorInfo.visitorId
+        visitorGUID: visitorInfo.visitorId,
+        placed: moment().tz("Europe/London").format("YYYY-MM-DD HH:mm:ss"),
       }  
 
       const response = await axiosPrivate.post(`/update-order-after-successfully-payment-save`, data)
@@ -487,15 +466,6 @@ const ModalPaymentForm = ({orderId}) =>
                                   "Submit Payment"
                               }
                             </button>
-                            {/* <Wallet 
-                            {
-                                ...{
-                                setLoader,
-                                afterPaymentSavedOrderUpdate,
-                                }
-                            }
-                            orderTotal={totalOrderAmountValue}
-                            /> */}
 
                           {paymentRequest && (
                             <PaymentRequestButtonElement options={{ paymentRequest }} />
@@ -609,10 +579,7 @@ const ModalPaymentForm = ({orderId}) =>
             </>
       }
         
-      {
-        loader &&
-        <Loader loader={loader}/>
-      }
+      {loader && <Loader/>}
     </>
 
   )

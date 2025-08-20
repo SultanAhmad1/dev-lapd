@@ -6,26 +6,24 @@ import { useLoginMutationHook, usePostMutationHook } from "@/components/reactque
 import { BRAND_SIMPLE_GUID, BRAND_GUID, IMAGE_URL_Without_Storage, PARTNER_ID, axiosPrivate, DELIVERY_ID } from "@/global/Axios";
 import { getAmountConvertToFloatWithFixed, setLocalStorage, validatePhoneNumber } from "@/global/Store";
 import { listtime, round15 } from "@/global/Time";
-import moment from "moment";
-import { useRouter } from "next/navigation";
+import moment from "moment-timezone";
 import { Fragment, useCallback, useContext, useEffect, useRef, useState } from "react";
-import { CardCvcElement, CardElement, CardExpiryElement, CardNumberElement, PaymentRequestButtonElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import { useMutation } from "@tanstack/react-query";
+import { CardCvcElement, CardExpiryElement, CardNumberElement, useElements, useStripe } from "@stripe/react-stripe-js";
 
-export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNumber,isNextButtonReadyToClicked, isCreditCardButtonClicked, handleObject}) 
+export default function PlaceOrderForm({deliveryTime,setDeliveryTime,due,setDue,customerDetailObj,setCustomerDetailObj,setModalObject, handleBoolean, sectionNumber,isNextButtonReadyToClicked, isCreditCardButtonClicked, handleObject,
+                paymentError,
+                setPaymentError}) 
 {
     const addDoorNumberRef = useRef(null);
-    const router = useRouter()
   
     //   const {isauth, setIsauth} = useContext(AuthContext)
-  
-    const [errormessage, setErrormessage] = useState("");
     const {
+      
+      setPaymentLoader,
       loader,
       setLoader,
       booleanObj,
       dayOpeningClosingTime,
-      isTimeToClosed,
       couponDiscountApplied,
       totalOrderAmountValue,
       setTotalOrderAmountValue,
@@ -50,35 +48,17 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
       isScheduleIsReady,
       isScheduleForToday,
       scheduleTime,
-
-      storeToDayOpeningTime,
-      storeToDayClosingTime,
+      orderGUID,
+      setOrderGuid,
+      storeCurrentOrNextDayOpeningTime,
+      storeCurrentOrNextDayClosingTime,
     } = useContext(HomeContext);
       
+    const stripe = useStripe();
+    const elements = useElements();
+    
+
     const [myCardElement, setMyCardElement] = useState(null);
-    
-    const { setMetaDataToDisplay} = useContext(ContextCheckApi)
-    
-    const [isPayNowClicked, setIsPayNowClicked] = useState(false);
-    
-    useEffect(() => {
-      if(websiteModificationData)
-      {
-        const metaHeadingData = {
-          title: websiteModificationData?.brand?.name,
-          contentData: websiteModificationData?.brand?.name,
-          iconImage: IMAGE_URL_Without_Storage+"/"+websiteModificationData?.websiteModificationLive?.json_log?.[0]?.websiteFavicon,
-          singleItemsDetails: {
-            title: "",
-            description: "",
-            itemImage: "",
-            keywords: "",
-            url: ""
-          }
-        }
-        setMetaDataToDisplay(metaHeadingData)
-      }
-    }, [websiteModificationData]);
       
     const [isHover, setIsHover] = useState(false);
     const [isOTP, setIsOTP] = useState(false);
@@ -113,41 +93,12 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
     const [otpCodeData, setOtpCodeData] = useState(0);
     
     // Get value states
-  
-    const [customerDetailObj, setCustomerDetailObj] = useState({
-      id: 0,
-      email: "",
-      phone: "",
-      password: "",
-      lastName: "",
-      firstName: "",
-      doorHouseName: "",
-      driverInstruction: "",
-      openingTime: "",
-      closingTime: "",
-      deliveryTimeFrom: "",
-      deliveryTimeEnd: "",
-  
-      phoneError: "",
-      PayNowBottomError: "",
-      saveMyDetailsError: "",
-    });
-      
-    const [openingTime, setOpeningTime] = useState("");
-    const [closingTime, setClosingTime] = useState("");
-    const [deliveryTimeFrom, setDeliveryTimeFrom] = useState("");
-    const [deliveryTimeEnd, setDeliveryTimeEnd] = useState("");
-  
-    const [deliveryTime, setDeliveryTime] = useState("");
-    const [due, setDue] = useState("due");
     const [Message, setMessage] = useState("");
   
     // Change Postcode and Address states
     const [deliveryDetailText, setDeliveryDetailText] = useState("Edit");
     const [isPostcodeEditClicked, setIsPostcodeEditClicked] = useState(false);
-  
     
-    const [isChangePostcodeClicked, setIsChangePostcodeClicked] = useState(false);
     const [isSaveFasterDetailsClicked, setIsSaveFasterDetailsClicked] = useState(false);
       
     // Error states
@@ -387,135 +338,6 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
     }
       
     const {mutate: otpMutation, isLoading: otpLoading, isError: otpError, isSuccess: otpSuccess, reset: otpReset} = usePostMutationHook('otpVerified', '/website-otp-verified', onOTPSuccess, onOTPError)
-
-    async function fetchLocationDeliveryEstimate() {
-      // Get the current day name
-      try {
-        const placeOrderGetStoreGUID = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`));
-  
-        const data = {
-          location_guid: placeOrderGetStoreGUID === null ? storeGUID : placeOrderGetStoreGUID?.display_id,
-          brand_guid: BRAND_GUID,
-          day_number: moment().isoWeekday(),
-          partner: PARTNER_ID,
-        };
-  
-        const response = await axiosPrivate.post(`/website-delivery-time`, data);
-  
-        const { brandExists } = response?.data?.data
-        
-        setIsLocationBrandOnline(brandExists)
-        // Write logic if the closing is up or come closer than show information.brandDeliveryEstimatePartner
-        var startTime   = response?.data?.data?.brandDeliveryEstimatePartner?.start_time;
-        var endTime     = response?.data?.data?.brandDeliveryEstimatePartner?.end_time;
-  
-        var timeForm    = response?.data?.data?.brandDeliveryEstimatePartner?.time_from;
-        var deliveryTo  = response?.data?.data?.brandDeliveryEstimatePartner?.time_to;
-
-        // console.log("response data is here:", response);
-        
-        var collectionAfter = response?.data?.data?.brandDeliveryEstimatePartner?.collection_after_opening_from;
-        var d = new Date();
-        var months = [
-          "January",
-          "February",
-          "March",
-          "April",
-          "May",
-          "June",
-          "July",
-          "August",
-          "September",
-          "October",
-          "November",
-          "December",
-        ];
-        if (startTime == "24:00:00") {
-          startTime = "23:59:59";
-        }
-        var time_from_temp = months[d.getMonth()] +" " +d.getDate() +", " +d.getFullYear() +" " +startTime;
-        var time_to_temp   = months[d.getMonth()] +" " +d.getDate() +", " +d.getFullYear() +" " +endTime;
-  
-        var time_from = new Date(time_from_temp);
-        var time_to = new Date(time_to_temp);
-  
-        if (Date.parse(time_from) > Date.parse(d)) 
-        {
-          time_from.setMinutes(time_from.getMinutes() + parseInt(deliveryTo));
-          var start_time = new Date(time_from);
-          start_time = start_time.getHours() + ":" + round15(start_time.getMinutes());
-        } 
-        else 
-        {
-          d.setMinutes(d.getMinutes() + parseInt(deliveryTo));
-          var start_time  = new Date(d);
-          start_time      = start_time.getHours() + ":" + round15(start_time.getMinutes());
-        }
-        var current_date = new Date();
-        // Changed to brand closing time + max delivery time at 4/6/2021
-        
-        // if (Date.parse(time_to) < Date.parse(current_date)) {
-        //   setIsTimeToClosed(true);
-        //   return;
-        // }
-        time_to.setMinutes(time_to.getMinutes() + parseInt(deliveryTo) - 1);
-        let end_time = new Date(time_to);
-  
-        end_time = end_time.getHours() + ":" + end_time.getMinutes();
-        if (start_time == "23:60") 
-        {
-          end_time = start_time;
-        }
-  
-        if (parseFloat(end_time.split(":")[0]) == 0) 
-        {
-          end_time = "23:59";
-        }
-  
-        if (start_time.split(":")[1].length == 1) 
-        {
-          start_time = start_time.split(":")[0] + ":" + start_time.split(":")[1] + "0";
-        }
-  
-        if(selectedFilter.id === DELIVERY_ID)
-        {
-          if (parseFloat(start_time.split(":")[1]) == 60) {
-            var temp_time = start_time.split(":")[0] + ":59";
-            
-          } else {
-            var temp_time = start_time;
-          }
-        }
-        else
-        {
-          const today = moment().format("YYYY-MM-DD HH:mm:ss");
-          
-          const todayTime = moment(today, 'YYYY-MM-DD HH:mm:ss');
-          const formatTime = todayTime.add(collectionAfter, 'minutes');
-          var temp_time = moment(formatTime).format("HH:mm");
-        }
-
-        // temp_time = tConvert(temp_time);
-        if(parseInt(isScheduleForToday) > parseInt(0))
-        {
-          setDeliveryTime(moment(scheduleTime).format("HH:mm"))
-        }else
-        {
-          setDeliveryTime(temp_time);
-        }
-  
-        setOpeningTime(temp_time);
-  
-        // setOpeningTime(response?.data?.data?.brandDeliveryEstimatePartner?.start_time)
-        setClosingTime(response?.data?.data?.brandDeliveryEstimatePartner?.end_time);
-        setDeliveryTimeFrom(response?.data?.data?.brandDeliveryEstimatePartner?.time_from);
-        setDeliveryTimeEnd(response?.data?.data?.brandDeliveryEstimatePartner?.time_to);
-        if (parseInt(listtime.length) > parseInt(0)) {}
-    
-      } catch (error) {
-      
-      }
-    }
         
     useEffect(() => {
       const checkedLogin = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}websiteToken`))
@@ -556,7 +378,7 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
   
       if(checkTheCart === null || checkTheCart === undefined || parseInt(checkTheCart.length) === parseInt(0))
       {
-        setLoader(true)
+        setPaymentLoader(true)
         window.location.reload(true);
         window.location.href = "/"
         return
@@ -597,8 +419,6 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
       setTotalOrderAmountValue(placeOrderLocalStorageTotal === null ? totalOrderAmountValue : getAmountConvertToFloatWithFixed(JSON.parse(placeOrderLocalStorageTotal),2));
   
       setIsCartBtnClicked(false);
-      fetchLocationDeliveryEstimate();
-      
   
       setHeaderCartBtnDisplay(false);
       setHeaderPostcodeBtnDisplay(false);
@@ -620,7 +440,7 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
         setIsBySmsClicked(getCustomerInformation?.isBySmsClicked)
         setIsByEmailClicked(getCustomerInformation?.isByEmailClicked)
         setToggleObjects((prevData) => ({...prevData, isByEmailClicked: getCustomerInformation.isByEmailClicked, isBySmsClicked: getCustomerInformation.isBySmsClicked}))
-        setDeliveryTime(getCustomerInformation.deliveryTime);
+        // setDeliveryTime(getCustomerInformation.deliveryTime);
       }
       else
       {
@@ -759,20 +579,23 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
     // This submit send request to Database and stripe.
     const hitSmsAndEmailCall = async (orderId) =>
     {
+      handleBoolean(false, "isPlaceOrderButtonClicked")
       const url = window.location.origin
       const pathname = "track-order"
-      setLoader(true)
       try 
       {
+        setPaymentLoader(true)
         const data = {
           guid: orderId,
           url: url,
-          pathname: pathname
+          pathname: pathname,
+          brandGuid: BRAND_GUID,
         } 
 
         const response = await axiosPrivate.post(`/send-sms-and-email`, data)
 
         setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
+        setOrderGuid(null)
         window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
         window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
         window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
@@ -780,26 +603,25 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
         window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
         window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
         setCartData([])
-        // setLoader(false)
         // if(response?.data?.status === "success")
         // {
         // first check this is delivery order or collection order.
         if (selectedFilter?.id === DELIVERY_ID)
-          {
-            window.location.href = `/track-order/${orderId}`
-            return
-          }
-          window.location.href = `/thank-you/${orderId}`
+        {
+          window.location.href = `/track-order/${orderId}`
+          return
+        }
+        window.location.href = `/thank-you/${orderId}`
         
         // }
 
       } 
       catch (error) 
       {
-        // window.alert(error?.response?.data?.error)
-        setLoader(false)
+        window.alert(error?.response?.data?.error)
         setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
         window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
+        setOrderGuid(null)
         window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
         window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
         window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
@@ -821,8 +643,7 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
     {
       try 
       {
-        setLoader(true)
-
+        setPaymentLoader(true)
         const visitorInfo = JSON.parse(window.localStorage.getItem('userInfo'))
 
         const data = {
@@ -830,41 +651,72 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
           amount_paid: getAmountConvertToFloatWithFixed(paymentIntent.amount / 100,2),
           stripeid: paymentIntent.id,
           visitorGUID: visitorInfo.visitorId,
+          placed: moment().tz("Europe/London").format("YYYY-MM-DD HH:mm:ss"),
         }  
 
         const response = await axiosPrivate.post(`/update-order-after-successfully-payment-save`, data)
         // Here need to hit sms and email call.
-
-        if(response?.data?.status === "success")
-        {
-          hitSmsAndEmailCall(orderId)
-        }
+        const orderData = response?.data?.data?.order
+        hitSmsAndEmailCall(orderId)
+          
       } 
       catch (error) 
       {
-        setLoader(false)
+        setPaymentLoader(false)
       }
     }
 
     const handleSubmit = async (event) => 
     {
       event.preventDefault();
-
+      
+      setIsPayNowClickAble(false)
       if(!isScheduleClicked && isScheduleIsReady)
       {
         window.alert(`We are currently closed. To schedule your order for << ${scheduleMessage} >>, go to checkout.`)
         window.location.href = "/"
         return
       }
-      setIsPayNowClicked(true)
-      setLoader(true)
       
-      const dayNumber = moment().day();
-      const dateTime = moment().format("HH:mm");
-      const dayName = moment().format("dddd");
       
-      let updatedDeliveryTime = moment(`${moment().format("YYYY-MM-DD")} ${deliveryTime}`,"YYYY-MM-DD HH:mm:ss");
-      
+      setPaymentLoader(true)
+
+
+      let cleanedTime = deliveryTime.replace(/ PM| AM/i, ''); // remove AM/PM (case-insensitive)
+      // Parse the current date
+      let baseDate = moment().format("YYYY-MM-DD");
+
+      // If isScheduleForToday === 2, add 1 day
+      if (isScheduleForToday === 2) {
+        baseDate = moment().add(1, 'day').format("YYYY-MM-DD");
+      }
+
+      // Combine date and time
+      let updatedDeliveryTime = moment(`${baseDate} ${cleanedTime}`, "YYYY-MM-DD HH:mm");
+
+      // Format the final result
+      updatedDeliveryTime = updatedDeliveryTime.format("YYYY-MM-DD HH:mm:ss");
+
+      // let cleanedTime = deliveryTime.replace(/ PM| AM/i, ''); // remove AM/PM
+      // let isPM = /PM/i.test(deliveryTime);
+      // let hour = parseInt(cleanedTime.split(':')[0]);
+
+      // // Adjust hour based on AM/PM
+      // if (isPM && hour !== 12) hour += 12;
+      // if (!isPM && hour === 12) hour = 0;
+
+      // // Build full date-time string
+      // let today = moment();
+      // let fullTime = moment(`${today.format("YYYY-MM-DD")} ${hour}:${cleanedTime.split(':')[1]}`, "YYYY-MM-DD HH:mm");
+
+      // // Optional: Add 1 day if time is between midnight and 5 AM
+      // if (hour >= 0 && hour < 5) {
+      //   fullTime.add(1, 'day');
+      // }
+
+      // let updatedDeliveryTime = fullTime.format("YYYY-MM-DD HH:mm:ss");
+
+
       // const cardElement = elements.getElement(CardElement);
       const cardElementNumber = elements.getElement(CardNumberElement)
       setMyCardElement(cardElementNumber);
@@ -878,7 +730,6 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
 
       // if (error) 
       // {
-      //   setIsPayNowClicked(false)
       //   setPaymentError(error.message);
       //   setLoader(false)
       //   return
@@ -886,23 +737,24 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
       // Use this to generate a token from split fields
       const { token, error } = await stripe.createToken(cardElementNumber);
 
+      
       if (error) {
-        setIsPayNowClicked(false);
+        setIsPayNowClickAble(false);
         setPaymentError(error.message);
-        setLoader(false);
+        setPaymentLoader(false);
         return;
       }
         
       if(isSaveFasterDetailsClicked || isLocationBrandOnline === null)
       {
-        setIsPayNowClicked(false)
-        setLoader(false)
+        setIsPayNowClickAble(false)
+        setPaymentLoader(false)
         return
       }
     
       if (!stripe || !elements) 
       {
-        setLoader(false)
+        setPaymentLoader(false)
         return;
       }
 
@@ -910,7 +762,7 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
       {
         if (parseInt(customerDetailObj?.doorHouseName?.length) === parseInt(0)) 
         {
-          setIsPayNowClicked(false)
+          setIsPayNowClickAble(false)
           setCustomerDetailObj((prevData) => ({...prevData, PayNowBottomError: "Please check * (asterisk) mark field and fill them."}))
           return;
         }
@@ -919,15 +771,12 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
       {
         if (parseInt(customerDetailObj?.email?.length) === parseInt(0) || parseInt(customerDetailObj?.phone?.length) === parseInt(0) || parseInt(customerDetailObj?.firstName.length) === parseInt(0) ||parseInt(customerDetailObj?.lastName?.length) === parseInt(0)) 
         {
-          setIsPayNowClicked(false)
+          setIsPayNowClickAble(false)
           setCustomerDetailObj((prevData) => ({...prevData, PayNowBottomError: "Please check * (asterisk) mark field and fill them."}))
           return;
         }
       }
-
       
-      
-      setLoader(true)
       setCustomerDetailObj((prevData) => ({...prevData, PayNowBottomError: ""}))
         
       const subTotalOrderLocal        = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)) === null ? null: getAmountConvertToFloatWithFixed(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)),2);
@@ -942,7 +791,6 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
   
       let orderFromDatabaseGUID = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_guid`));
       // send card payment details
-    
   
       const customerInformationInLocalStorage = {
         email: customerDetailObj.email,
@@ -988,7 +836,7 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
         partner:            PARTNER_ID,
         total_order:        localStorageTotal === null? getAmountConvertToFloatWithFixed(totalOrderAmountValue, 2): getAmountConvertToFloatWithFixed(JSON.parse(localStorageTotal),2),
         deliveryTime:       deliveryTime,
-        doorHouseName:      customerDetailObj?.doorHouseName,
+        doorHouseName:      customerDetailObj.doorHouseName,
         isBySmsClicked:     isBySmsClicked,
         
         isByEmailClicked:   isByEmailClicked,
@@ -998,12 +846,11 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
         
         orderAmountDiscount_guid: orderAmountDiscountValue,
         is_schedule_order: isScheduleForToday,
-        delivery_estimate_time: (parseInt(isScheduleForToday) > parseInt(0) ? scheduleTime : updatedDeliveryTime._i),
+        delivery_estimate_time: updatedDeliveryTime,
         
-        // delivery_estimate_time: moment(deliveryTime, "YYYY-MM-DD HH:mm:ss").format("YYYY-MM-DD HH:mm:ss"),
         delivery_fee:             deliveryFeeLocalStorage,
         coupons:                  couponCodes,
-        order_guid:               orderFromDatabaseGUID !== null ? orderFromDatabaseGUID : null,
+        order_guid:               orderFromDatabaseGUID ?? orderGUID,
         is_verified:              booleanObj?.isCustomerVerified,
 
         
@@ -1014,10 +861,11 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
         type: "card",
         is_paid_via_wallet: 0,
         visitorGUID: visitorInfo.visitorId
-      };
-      
-      if (orderFromDatabaseGUID !== null) { 
-        postMutation(data) 
+      };      
+
+      setLocalStorage(`${BRAND_SIMPLE_GUID}card_data:`, data)
+      if (orderFromDatabaseGUID ?? orderGUID) { 
+        patchMutation(data) 
         return
       }
   
@@ -1031,9 +879,10 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
       
       const orderGUID = data?.data?.data?.order?.external_order_id
 
-      setIsPayNowClicked(false)
+      setIsPayNowClickAble(false)
       if (data?.data?.status === "success") 
       {
+        setOrderGuid(orderGUID)
         setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,orderGUID);
         // if (parseFloat(responseData) === parseFloat(0.0)) 
         // {
@@ -1069,10 +918,12 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
           },
         });
   
+
         if (result.error) 
         {
-          setLoader(false)
+          setPaymentLoader(false)
           setPaymentError(result.error.message);
+          setIsPayNowClickAble(true)
           return
         } 
         else 
@@ -1090,32 +941,52 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
       
           // ✅ Confirm payment with Stripe
           const result = await stripe.confirmCardPayment(clientSecret); // No payment_method object needed
-      
-          if (result.error) {
-            alert("Payment failed");
+          
+          if (result.error)  {
+            setPaymentLoader(false)
+            setPaymentError(result.error.message);
+            setIsPayNowClickAble(true)
+            return
           } else {
             afterPaymentSavedOrderUpdate(orderGUID, result.paymentIntent);
           }
         } catch (err) {
+          
+          setIsPayNowClickAble(true)
           ev.complete("fail");
-          alert("Payment failed");
+          const errorMessage = err.response.data.error
+          if (errorMessage.toLowerCase().includes("minimum charge amount")) {
+            setPaymentError("Amount is too low for this currency.");
+          }
+          else if (errorMessage.toLowerCase().includes("declined")) {
+              setPaymentError("Your card was declined.");
+          }
+          else if (errorMessage.toLowerCase().includes("insufficient")) {
+            setPaymentError("Your card has insufficient funds.");
+          }
+          else{
+            window.alert("There is something went wrong. Please refresh and try again.")
+          }
         }
       }
-
-      handleBoolean(false, "isPlaceOrderButtonClicked")
     }
   
     const onStoreError = (error) => {
-      console.error("Store error:", error);
-      
-      setIsPayNowClicked(false)
-      // if(error?.response?.data?.status.includes("success"))
-      // {
-      //   route.push(`/payment/${data?.data?.data?.order?.external_order_id}`);
-      // }
-      setErrormessage("There is something went wrong!. Please refresh and try again.")
-      window.alert("There is something went wrong!. Please refresh and try again.")
-      return
+      setPaymentLoader(false)
+      setIsPayNowClickAble(true)
+      const errorMessage = error.response.data.error
+      if (errorMessage.toLowerCase().includes("minimum charge amount")) {
+        setPaymentError("Amount is too low for this currency.");
+      }
+      else if (errorMessage.toLowerCase().includes("declined")) {
+          setPaymentError("Your card was declined.");
+      }
+      else if (errorMessage.toLowerCase().includes("insufficient")) {
+        setPaymentError("Your card has insufficient funds.");
+      }
+      else{
+        window.alert("There is something went wrong. Please refresh and try again.")
+      }
     }
   
     const { 
@@ -1128,61 +999,60 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
 
     const onPatchSuccess = async (data) => {
       const responseData = data?.data?.data?.order?.order_total;
-      setIsPayNowClicked(false)
+      setIsPayNowClickAble(false)
       
-      handleBoolean(false, "isPlaceOrderButtonClicked")
       const { clientSecret, type } = data?.data?.data;
       
       const orderGUID = data?.data?.data?.order?.external_order_id
-      setIsPayNowClicked(false)
       if (data?.data?.status === "success") 
       {
+        setOrderGuid(orderGUID)
         setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,orderGUID);
-        // if (parseFloat(responseData) === parseFloat(0.0)) 
-        // {
-        //   route.push(`/track-order/${orderGUID}`);
-        //   return;
-        // }
-        // handleBoolean(true, "isPayNowClickAble")
         setModalObject((prevData) => ({
             ...prevData, 
             isPaymentReady: true,
             orderGUI: orderGUID
         }))
-        // route.push(`/payment/${orderGUID}`);
       }
 
       if(type === "card")
       {
-        const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`))
-        const city = getCustomerInformation?.street2?.split(',')[0].trim();
-  
-        const result = await stripe.confirmCardPayment(clientSecret, {
-          payment_method: {
-            card: myCardElement,
-            billing_details: {
-              name: `${getCustomerInformation?.firstName} ${getCustomerInformation?.lastName}`,
-              email: getCustomerInformation?.email,
-              address: {
-                line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1} ${getCustomerInformation?.street1}`,
-                city: city,
-                postal_code: getCustomerInformation?.postcode,
-                country: 'GB',
+        try {
+            const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`))
+            const city = getCustomerInformation?.street2?.split(',')[0].trim();
+      
+            const result = await stripe.confirmCardPayment(clientSecret, {
+              payment_method: {
+                card: myCardElement,
+                billing_details: {
+                  name: `${getCustomerInformation?.firstName} ${getCustomerInformation?.lastName}`,
+                  email: getCustomerInformation?.email,
+                  address: {
+                    line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1} ${getCustomerInformation?.street1}`,
+                    city: city,
+                    postal_code: getCustomerInformation?.postcode,
+                    country: 'GB',
+                  },
+                },
               },
-            },
-          },
-        });
-        
-        
-        if (result.error) 
-        {
-          setLoader(false)
-          setPaymentError(result.error.message);
-          return
-        } 
-        else 
-        {
-          afterPaymentSavedOrderUpdate(orderGUID, result.paymentIntent)
+            });
+            
+            
+            if (result?.error) 
+            {
+              setPaymentLoader(false)
+              setPaymentError(result.error.message);
+              
+              setIsPayNowClickAble(true)
+              
+            } 
+            else 
+            {
+              afterPaymentSavedOrderUpdate(orderGUID, result.paymentIntent)
+            }
+          
+        } catch (error) {
+          
         }
       }
       else
@@ -1195,24 +1065,58 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
           // ✅ Confirm payment with Stripe
           const result = await stripe.confirmCardPayment(clientSecret); // No payment_method object needed
       
-          if (result.error) {
-            alert("Payment failed");
+          if (result.error)  {
+            setPaymentLoader(false)
+            setPaymentError(result.error.message);
+            setIsPayNowClickAble(true)
+            return
           } else {
             afterPaymentSavedOrderUpdate(orderGUID, result.paymentIntent);
           }
         } catch (err) {
           ev.complete("fail");
-          alert("Payment failed");
+          const errorMessage = err.response.data.error
+          if (errorMessage.toLowerCase().includes("minimum charge amount")) {
+            setPaymentError("Amount is too low for this currency.");
+          }
+          else if (errorMessage.toLowerCase().includes("declined")) {
+              setPaymentError("Your card was declined.");
+          }
+          else if (errorMessage.toLowerCase().includes("insufficient")) {
+            setPaymentError("Your card has insufficient funds.");
+          }
+          else{
+            window.alert("There is something went wrong. Please refresh and try again.")
+          }
+          
+          setIsPayNowClickAble(true)
         }
       }
     }
   
     const onPatchError = (error) => {
-      console.error("patch error:", error);
-      setIsPayNowClicked(false)
-      setErrormessage("There is something went wrong!. Please refresh and try again.")
-      window.alert("There is something went wrong!. Please refresh and try again.")
-      return
+
+      const errorMessage = error.response.data.error
+      setPaymentLoader(false)
+      setIsPayNowClickAble(true)
+
+      if (errorMessage.toLowerCase().includes("minimum charge amount")) {
+        setPaymentError("Amount is too low for this currency.");
+      }
+      else if (errorMessage.toLowerCase().includes("declined")) {
+          setPaymentError("Your card was declined.");
+      }
+      else if (errorMessage.toLowerCase().includes("insufficient")) {
+        setPaymentError("Your card has insufficient funds.");
+      }
+      else{
+        window.alert("There is something went wrong. Please refresh and try again.")
+      }
+      
+      // setIsPayNowClickAble(true)
+      // set
+      // window.alert("There is something went wrong!. Please refresh and try again.")
+      // return
     }
   
     const {
@@ -1220,14 +1124,18 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
       isError: postError, 
       isSuccess: postSuccess, 
       reset: postReset, 
-      mutate: postMutation
+      mutate: patchMutation
     } = usePostMutationHook('customer-update',`/update-customer-details`, onPatchSuccess, onPatchError)
   
     const loadingState = patchLoading || storeLoading || loader
 
+    const [cardError, setCardError] = useState(null);
+
     const handleChangePostcode = () =>
     {
       setAtFirstLoad(true)
+      setPaymentError(null)
+      setCardError()
       handleBoolean(true,"isChangePostcodeButtonClicked")
       handleBoolean(false, "isPlaceOrderButtonClicked")
     }
@@ -1241,29 +1149,6 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
     }
     
     useEffect(() => {
-      if(websiteModificationData)
-      {
-        const metaHeadingData = {
-          title: websiteModificationData?.brand?.name,
-          contentData: websiteModificationData?.brand?.name,
-          iconImage: IMAGE_URL_Without_Storage+"/"+websiteModificationData?.websiteModificationLive?.json_log?.[0]?.websiteFavicon,
-          singleItemsDetails: {
-            title: "",
-            description: "",
-            itemImage: "",
-            keywords: "",
-            url: ""
-          }
-        }
-        setMetaDataToDisplay(metaHeadingData)
-      }
-    }, [websiteModificationData]);
-  
-    const stripe = useStripe();
-    const elements = useElements();
-    const [paymentError, setPaymentError] = useState(null);
-    
-    useEffect(() => {
       // Set a timeout to clear localStorage after 20 minutes (20 * 60 * 1000 milliseconds)
       const timeoutId = setTimeout(() => {
         // Clear all items in localStorage
@@ -1271,7 +1156,7 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
         window.location.reload(true);
         window.location.href = "/"
         setTimeout(() => {
-          setLoader(false);
+          setPaymentLoader(false);
         }, 3000);
       }, 30 * 60 * 1000); 
 
@@ -1279,6 +1164,8 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
       return () => clearTimeout(timeoutId);
     });
     
+    
+
     const handleCardNumberChange = (event) => {
       if (event.complete) {
         const expiryElement = elements?.getElement(CardExpiryElement)
@@ -1287,30 +1174,26 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
     }
 
     const handleCardExpiryChange = (event) => {
+      if (event.error) {
+        setCardError(event.error.message);
+      } else {
+        setCardError("");
+      }
+
       if (event.complete) {
         const cvcElement = elements?.getElement(CardCvcElement)
         cvcElement?.focus()
       }
     }
 
-    // console.log("store closing time:", storeToDayClosingTime, "delivery time", deliveryTime);
-
     return(
       <Fragment>
         {
           <form  
             onSubmit={handleSubmit}
-            // style={{
-            //     padding: "0px 40px 0px 40px"
-            // }}
             className="checkout-form"
           >
             <div className="hmg1checkout-desk"
-              // style={{
-              //   height: "50vh",
-              //   overflowY: "scroll",
-              //   overflowX: "hidden"
-              // }}
             >
               <div className="hmg1mhb0checkout-desk">
 
@@ -1326,186 +1209,101 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
                     (isCreditCardButtonClicked && parseInt(sectionNumber) === parseInt(2)) &&
 
                     <>
-                      <div className="d1g1checkout-desk" style={{ width: "94%"}}>
-                        <div className="allzc5checkout-desk">
-                          <div className="alamd1g1checkout-desk">
 
-                            <div className="custom-form-group" >
-                              <div className="chd2cjd3b1checkout-desk" style={{fontWeight: "600", fontSize: "18px"}}>
-                                Email Address
-                                <span style={{ color: "red" }}>*</span>
+                      <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2 lg:gap-20 mb-4">
+                        <label
+                          htmlFor="email"
+                          className="w-full lg:w-[20rem] text-md font-semibold text-gray-900"
+                        >
+                          Email Address <span className="text-red-500">*</span>
+                        </label>
 
-                                {
-                                  !toggleObjects?.isEmailInputToggle && 
-                                  <>
-                                      &nbsp; &nbsp; &nbsp; &nbsp; 
-                                      <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                                          <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
-                                              {customerDetailObj?.email}
-                                          </span>
-                                      </p>
-                                  </>
-                                }
-                              </div>
+                        <input
+                          type="email"
+                          id="email"
+                          name="email"
+                          placeholder="Enter email address."
+                          value={customerDetailObj?.email}
+                          ref={addDoorNumberRef} 
+                          onChange={handleInputs}
+                          className={`w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
+                            parseInt(customerDetailObj?.email?.length) > 0
+                              ? "border-green-500 focus:ring-green-300"
+                              : customerDetailObj?.email?.length === 0
+                              ? "border-gray-300 focus:ring-gray-200"
+                              : "border-red-500 focus:ring-red-300"
+                          }`}
+                        />
+                      </div>
+                      
+                      
+                      <div className="flex flex-col lg:flex-row items-start lg:items-start gap-2 lg:gap-20 mb-4">
+                        <label
+                          htmlFor="fullName"
+                          className="w-full lg:w-[20rem] text-md font-semibold text-gray-900"
+                        >
+                          Full Name <span className="text-red-500">*</span>
+                        </label>
 
-                              {
-                                toggleObjects?.isEmailInputToggle && 
-                                <div className="checkout-window-form">
-                                  <input
-                                    required
-                                    type="email"
-                                    name="email"
-                                    ref={addDoorNumberRef} 
-                                    onChange={handleInputs}
-                                    placeholder="Enter email"
-                                    value={customerDetailObj?.email}
-                                    className={`email-checkout ${customerDetailObj?.email ? "parse-success": "parse-erorr"}`}
-                                  />
-                                </div>
-                              }
-                            </div>
-                          
-                          </div>
+                        <div className="w-full flex gap-1">
+                          <input
+                            type="text"
+                            value={customerDetailObj?.firstName}
+                            id="fullName"
+                            name="firstName"
+                            onChange={handleInputs}
+                            placeholder="Enter first name"
+                            className={`w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
+                              parseInt(customerDetailObj?.firstName?.length) > 0
+                                ? "border-green-500 focus:ring-green-300"
+                                : customerDetailObj?.firstName?.length === 0
+                                ? "border-gray-300 focus:ring-gray-200"
+                                : "border-red-500 focus:ring-red-300"
+                            }`}
+                          />
+
+                          <input
+                            type="text"
+                            value={customerDetailObj?.lastName}
+                            name="lastName"
+                            id="fullName"
+                            onChange={handleInputs}
+                            placeholder="Enter last name"
+                            className={`w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
+                              parseInt(customerDetailObj?.lastName?.length) > 0
+                                ? "border-green-500 focus:ring-green-300"
+                                : customerDetailObj?.lastName?.length === 0
+                                ? "border-gray-300 focus:ring-gray-200"
+                                : "border-red-500 focus:ring-red-300"
+                            }`}
+                          />
                         </div>
                       </div>
 
-                        
-                      <div className="d1g1checkout-desk" style={{ width: "94%"}}>
-                        <div className="allzc5checkout-desk">
+                      <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2 lg:gap-20 mb-4">
+                        <label
+                          htmlFor="phone"
+                          className="w-full lg:w-[20rem] text-md font-semibold text-gray-900"
+                        >
+                          Mobile Number <span className="text-red-500">*</span>
+                        </label>
 
-                          <div className="alamd1g1checkout-desk">
-
-                            <div className="custom-form-group">
-                              <div className="chd2cjd3b1checkout-desk" style={{fontWeight: "600", fontSize: "18px"}}>
-                                Full Name <span style={{ color: "red" }}>*</span>
-                                {
-                                  !toggleObjects?.isfirstNameToggle && 
-                                  <>
-                                    &nbsp; &nbsp; &nbps; &nbsp;
-                                    <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                                      <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
-                                          {customerDetailObj?.firstName}
-                                      </span>
-                                    </p>
-                                  </>
-                                }
-                              </div>
-
-                            {
-                              toggleObjects?.isfirstNameToggle && 
-                              <div className="checkout-group-window-form">
-                                <input
-                                  type="text"
-                                  value={customerDetailObj?.firstName}
-                                  name="firstName"
-                                  onChange={handleInputs}
-                                  placeholder="Enter first name"
-                                  style={{ marginBottom: "4px" }}
-                                  className={`full-name-inputs ${parseInt(customerDetailObj?.firstName?.length) > parseInt(0)? "parse-success": "parse-erorr"}`}
-                                />
-                                  <input
-                                  type="text"
-                                  value={customerDetailObj?.lastName}
-                                  name="lastName"
-                                  onChange={handleInputs}
-                                  placeholder="Enter last name"
-                                  style={{ marginBottom: "4px" }}
-                                  className={`full-name-inputs ${parseInt(customerDetailObj?.lastName?.length) > parseInt(0)? "parse-success": "parse-erorr"}`}
-                                />
-                              </div>
-                            }
-                            
-                            </div>
-                              
-                          </div>
-                    
-                        </div>
-                      </div>
-                    
-                      {/* <div className="d1g1checkout-desk" style={{ width: "94%"}}>
-                          <div className="allzc5checkout-desk">
-
-                              <div className="alamd1g1checkout-desk">
-
-                                  <div className="custom-form-group">
-
-                                    <div className="chd2cjd3b1checkout-desk" style={{fontWeight: "600", fontSize: "18px"}}>
-                                      Last Name <span style={{ color: "red" }}>*</span>
-                                      {
-                                      !toggleObjects?.isLastNameToggle && 
-                                      <> 
-                                        &nbsp; &nbsp;&nbsp; &nbsp;
-                                        <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                                          <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
-                                              {customerDetailObj?.lastName}
-                                          </span>
-                                        </p>
-                                      </>
-                                      }
-                                    </div>
-
-                                    {
-                                      toggleObjects?.isLastNameToggle && 
-                                      <div className="checkout-window-form">
-                                        <input
-                                          type="text"
-                                          value={customerDetailObj?.lastName}
-                                          name="lastName"
-                                          onChange={handleInputs}
-                                          placeholder="Enter last name"
-                                          className={`email-checkout ${parseInt(customerDetailObj?.lastName?.length) > parseInt(0)? "parse-success": "parse-error"}`}
-                                        />
-                                      </div>
-                                    }
-
-                              
-                                  </div>
-                                  
-                              </div>
-
-                          </div>
-                      </div> */}
-                                    
-                      <div className="d1g1checkout-desk" style={{ width: "94%"}}>
-
-                        <div className="allzc5checkout-desk">
-
-                          <div className="alamd1g1checkout-desk">
-                            <div className="custom-form-group">
-                              <div className="chd2cjd3b1checkout-desk" style={{fontWeight: "600", fontSize: "18px"}}>
-                                Mobile Number <span style={{ color: "red" }}>*</span>
-                                {
-                                  !toggleObjects?.isPhoneinputToggle && 
-                                  <>
-                                      &nbsp; &nbsp; &nbsp; &nbsp;
-                                      <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                                          <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
-                                          {customerDetailObj?.phone}
-                                          </span>
-                                    </p>
-                                  </>
-                                }
-                              </div>
-
-                              {
-                                toggleObjects?.isPhoneinputToggle && 
-                                <div className="checkout-window-form">
-                                  <input
-                                    type="number"
-                                    name="phone"
-                                    value={customerDetailObj?.phone}
-                                    onWheel={(e) => e.target.blur()}
-                                    onChange={handleInputs}
-                                    placeholder="Enter phone number"
-                                    className={`email-checkout no-spinner ${parseInt(customerDetailObj?.phone?.length) > parseInt(0) ? "parse-success" : "parse-erorr"}`}
-                                  />
-                                </div>
-                              }
-                              
-                            </div>
-                          </div>
-
-                        </div>
+                        <input
+                          type="number"
+                          id="phone"
+                          name="phone"
+                          placeholder="Enter phone number."
+                          value={customerDetailObj?.phone}
+                          onWheel={(e) => e.target.blur()}
+                          onChange={handleInputs}
+                          className={`w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] ${
+                            parseInt(customerDetailObj?.phone?.length) > 0
+                              ? "border-green-500 focus:ring-green-300"
+                              : customerDetailObj?.phone?.length === 0
+                              ? "border-gray-300 focus:ring-gray-200"
+                              : "border-red-500 focus:ring-red-300"
+                          }`}
+                        />
 
                       </div>
                     
@@ -1515,145 +1313,119 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
                   {
                     ((!isCreditCardButtonClicked && parseInt(sectionNumber) === parseInt(1)) && selectedFilter.id === DELIVERY_ID) &&
                     <>
-                      <div className="d1g1checkout-desk" style={{ width: "94%"}}>
-                        <div className="allzc5checkout-desk">
+                      
+                      <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2 lg:gap-20 mb-4">
+                        <label
+                          htmlFor="doorNumber"
+                          className="w-full lg:w-[20rem] text-md font-semibold text-gray-900"
+                        >
+                          Door Number <span className="text-red-500">*</span>
+                        </label>
 
-                          <div className="alamd1g1checkout-desk">
-                            <div className="custom-form-group">
-                              <div className="chd2cjd3b1checkout-desk" style={{fontWeight: "600", fontSize: "18px"}}>
-                                Door Number <span style={{ color: "red" }}>*</span>
-                                {
-                                !toggleObjects?.isPhoneinputToggle && 
-                                <>
-                                  &nbsp; &nbsp; &nbsp; &nbsp;
-                                  <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                                    <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
-                                      {customerDetailObj?.doorHouseName}
-                                    </span>
-                                  </p>
-                                </>
-                                }
-                              </div>
+                        <input
+                          type="text"
+                          id="doorNumber"
+                          name="doorHouseName"
+                          placeholder="Enter door number or name"
+                          value={customerDetailObj?.doorHouseName}
+                          onChange={handleInputs}
+                          className={`w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
+                            parseInt(customerDetailObj?.doorHouseName?.length) > 0
+                              ? "border-green-500 focus:ring-green-300"
+                              : customerDetailObj?.doorHouseName?.length === 0
+                              ? "border-gray-300 focus:ring-gray-200"
+                              : "border-red-500 focus:ring-red-300"
+                          }`}
+                        />
+                      </div>
 
-                              {
-                                toggleObjects?.isPhoneinputToggle && 
-                                <div className="checkout-window-form">
-                                  <input 
-                                    type="text"
-                                    placeholder="Enter door number or name" 
-                                    name="doorHouseName" 
-                                    value={customerDetailObj?.doorHouseName} 
-                                    className={`door_number ${parseInt(customerDetailObj?.doorHouseName?.length) > parseInt(0)? "parse-success": "parse-erorr"}`} 
-                                    onChange={handleInputs}
-                                  />
-                                </div>
-                              }
-                            
-                            </div>
+                      <div className="flex flex-col lg:flex-row items-start lg:items-start gap-2 lg:gap-20 mb-4">
+                        <label
+                          htmlFor="address"
+                          className="w-full lg:w-[20rem] text-md font-semibold text-gray-900"
+                        >
+                          Address <span className="text-red-500">*</span>
+                        </label>
+
+                        <div className="w-full flex flex-col">
+                          <input
+                            type="text"
+                            value={street1}
+                            onClick={() => handleStreetAddress}
+                            className={`w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
+                              parseInt(customerDetailObj?.doorHouseName?.length) > 0
+                                ? "border-green-500 focus:ring-green-300"
+                                : customerDetailObj?.doorHouseName?.length === 0
+                                ? "border-gray-300 focus:ring-gray-200"
+                                : "border-red-500 focus:ring-red-300"
+                            }`}
+                          />
+
+                          <input
+                            type="text"
+                            value={street2}
+                            onClick={() => handleStreetAddress}
+                            className={`w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
+                              parseInt(customerDetailObj?.doorHouseName?.length) > 0
+                                ? "border-green-500 focus:ring-green-300"
+                                : customerDetailObj?.doorHouseName?.length === 0
+                                ? "border-gray-300 focus:ring-gray-200"
+                                : "border-red-500 focus:ring-red-300"
+                            }`}
+                          />
+
+                          <div className="flex">
+                            <input
+                              type="text"
+                              value={postcode}
+                              onClick={() => handleStreetAddress}
+                              className={`w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
+                                parseInt(customerDetailObj?.doorHouseName?.length) > 0
+                                  ? "border-green-500 focus:ring-green-300"
+                                  : customerDetailObj?.doorHouseName?.length === 0
+                                  ? "border-gray-300 focus:ring-gray-200"
+                                  : "border-red-500 focus:ring-red-300"
+                              }`}
+                            />
+
+                            <button
+                              type="button"
+                              onClick={handleChangePostcode}
+                              className="whitespace-nowrap px-4 py-2 text-blue-600 hover:text-blue-800 bg-[#cfcfcfb5] font-medium transition-colors duration-200"
+                            >
+                              Change postcode
+                            </button>
                           </div>
-                            
                         </div>
                       </div>
 
-                      <div className="d1g1checkout-desk" style={{ width: "94%"}}>
-                        <div className="allzc5checkout-desk">
+                      <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2 lg:gap-20 mb-4">
+                        <label
+                          htmlFor="driverInstruction"
+                          className="w-full lg:w-[20rem] text-md font-semibold text-gray-900"
+                        >
+                          Driver Instruction
+                        </label>
 
-                            <div className="alamd1g1checkout-desk">
-                                <div className="custom-form-group">
-                                    <div className="chd2cjd3b1checkout-desk" style={{fontWeight: "600", fontSize: "18px"}}>
-                                        Address <span style={{ color: "red" }}>*</span>
-                                        {
-                                        !toggleObjects?.isPhoneinputToggle && 
-                                        <>
-                                          &nbsp; &nbsp; &nbsp; &nbsp;
-                                          <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk">
-                                              <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
-                                                  {customerDetailObj?.doorHouseName}
-                                              </span>
-                                          </p>
-                                        </>
-                                        }
-                                    </div>
-
-                                    {
-                                        toggleObjects?.isPhoneinputToggle && 
-                                        <div className="checkout-window-form">
-
-                                            <div className="btautrackorder-postcode-edit" >
-                                                <input type="text" className="strtpostcode" value={street1} onClick={() => handleStreetAddress}/>
-
-                                                <input type="text" className="strtpostcode" value={street2} onClick={() => handleStreetAddress}/>
-
-                                                <div className="strtpostcode-btn">
-                                                    <input
-                                                        type="text"
-                                                        className="strtpostcode"
-                                                        value={postcode}
-                                                        onClick={() => handleStreetAddress}
-                                                    />
-
-                                                    <button type="button" className="change_postcode_btn" onClick={handleChangePostcode}>
-                                                      Change postcode
-                                                    </button>
-
-                                                </div>
-                                            </div>
-                                        </div>
-                                    }
-
-                                
-                                </div>
-                            </div>
-                        </div>
-                      </div>
-
-                      <div className="d1g1checkout-desk" style={{ width: "94%"}}>
-                        <div className="allzc5checkout-desk">
-
-                          <div className="alamd1g1checkout-desk">
-                            <div className="custom-form-group">
-                              <div className="chd2cjd3b1checkout-desk" style={{display: "flex", fontWeight: "600", fontSize: "18px"}}>
-                                  Driver Instruction
-                                  {
-                                      !toggleObjects?.isPhoneinputToggle && 
-                                      <>
-                                          &nbsp; &nbsp; &nbsp; &nbsp;
-                                          <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk" >
-                                              <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
-                                                  {customerDetailObj?.driverInstruction}
-                                              </span>
-                                          </p>
-                                      </>
-                                  }
-                              </div>
-
-                              {
-                                <div className="checkout-window-form">
-                                  <textarea
-                                    rows={10}
-                                    cols={30}
-                                    spellCheck="false"
-                                    onChange={handleInputs}
-                                    className="door_number"
-                                    name="driverInstruction"
-                                    aria-label="Add delivery instructions"
-                                    value={customerDetailObj?.driverInstruction}
-                                    style={{
-                                      paddingTop:" 5px",
-                                      paddingLeft: "10px",
-                                      height: "70px",
-                                      fontSize: "17px"
-                                    }}
-                                    placeholder="Please don’t add notes relating to your food e.g. allergies or extra toppings. These notes are for your driver only."
-                                  />
-                                </div>
-                              }
-
-                            
-                            </div>
-                          </div>
-
-                        </div>
+                        <textarea
+                          type="text"
+                          placeholder="Please don’t add notes relating to your food e.g. allergies or extra toppings. These notes are for your driver only."
+                          rows={2}
+                          cols={30}
+                          id="driverInstruction"
+                          spellCheck="false"
+                          onChange={handleInputs}
+                          name="driverInstruction"
+                          aria-label="Add delivery instructions"
+                          value={customerDetailObj?.driverInstruction}
+                          className={`w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
+                            parseInt(customerDetailObj?.doorHouseName?.length) > 0
+                              ? "border-green-500 focus:ring-green-300"
+                              : customerDetailObj?.doorHouseName?.length === 0
+                              ? "border-gray-300 focus:ring-gray-200"
+                              : "border-red-500 focus:ring-red-300"
+                          }`}
+                        />
                       </div>
                     </>
                   }
@@ -1661,94 +1433,134 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
                   {
                     (isCreditCardButtonClicked && parseInt(sectionNumber) === parseInt(2)) &&
                     <>
-                      <div className="card-display" style={{ width: "94%"}}>
+                      <div className="flex flex-col lg:flex-row items-start gap-2 lg:gap-20 mb-4">
+                        <label
+                          htmlFor="creditCard"
+                          className="w-full lg:w-[20rem] text-md font-semibold text-gray-900"
+                        >
+                          Credit Card <span className="text-red-500">*</span>
+                        </label>
 
-                        <div className="" style={{display: "flex", fontWeight: "600", fontSize: "18px"}}>
-                          Credit Card
-                        </div>
+                        <div className="w-full flex flex-col gap-2">
+                          <div className="w-full flex flex-col md:flex-row gap-2">
+                            {/* Card Number */}
+                            <div className="w-full md:w-1/2 px-4 py-2 border rounded-md bg-[#cfcfcfb5]">
+                              <CardNumberElement
+                                onChange={handleCardNumberChange}
+                                options={{
+                                  hidePostalCode: true,
+                                  style: {
+                                    base: {
+                                      fontSize: '16px',
+                                      color: '#424770',
+                                      '::placeholder': { color: '#aab7c4' },
+                                    },
+                                  },
+                                }}
+                              />
+                            </div>
 
-                        <div className="display-card">
-                          <div className="card-number">
-                            <CardNumberElement  onChange={handleCardNumberChange} options={{hidePostalCode: true, style: { base: {fontSize: '16px', color: '#424770', '::placeholder': { color: '#aab7c4' } } } }} />
+                            {/* Expiry */}
+                            <div className="w-full md:w-1/4 px-4 py-2 border rounded-md bg-[#cfcfcfb5]">
+                              <CardExpiryElement
+                                onChange={handleCardExpiryChange}
+                                options={{
+                                  hidePostalCode: true,
+                                  style: {
+                                    base: {
+                                      fontSize: '16px',
+                                      color: '#424770',
+                                      '::placeholder': { color: '#aab7c4' },
+                                    },
+                                  },
+                                }}
+                              />
+                            </div>
 
+                            {/* CVC */}
+                            <div className="w-full md:w-1/4 px-4 py-2 border rounded-md bg-[#cfcfcfb5]">
+                              <CardCvcElement
+                                options={{
+                                  hidePostalCode: true,
+                                  style: {
+                                    base: {
+                                      fontSize: '16px',
+                                      color: '#424770',
+                                      '::placeholder': { color: '#aab7c4' },
+                                    },
+                                  },
+                                }}
+                              />
+                            </div>
                           </div>
-                          <div className="card-expiry">
-
-                            <CardExpiryElement onChange={handleCardExpiryChange} options={{hidePostalCode: true, style: { base: {fontSize: '16px', color: '#424770', '::placeholder': { color: '#aab7c4' } } } }} />
-                          </div>
-                          <div className="card-cvc">
-                            <CardCvcElement options={{hidePostalCode: true, style: { base: {fontSize: '16px', color: '#424770', '::placeholder': { color: '#aab7c4' } } } }} />
-                          </div>
-
-                          {/* <CardElement options={{hidePostalCode: true, style: { base: {fontSize: '16px', color: '#424770', '::placeholder': { color: '#aab7c4' } } } }} /> */}
-                          {paymentError && <div style={{background: "#ed5858", color: "white", padding: "12px", borderRadius: "1px", marginTop: "10px"}}>{paymentError}</div>}
                         </div>
 
                       </div>
-                      
-                      
+                      <>
+                        {/* Error Message */}
+                        {cardError && (
+                          <div className="flex items-center justify-center bg-red-400 mb-4"> 
+                            <p className="text-white text-sm">{cardError}</p>
+                          </div>
+                        )}
+
+                      {paymentError && (
+                        <div className="flex items-center justify-center bg-red-400 mb-4">
+                          <p className="text-white text-sm">{paymentError}</p>
+                        </div>
+                      )}
+
+                      </>
                     </>
+
+
                   }
                   
                   {
                     (!isCreditCardButtonClicked && parseInt(sectionNumber) === parseInt(1) && (isScheduleClicked === false || isScheduleClicked === true)) &&
-                    <div className="d1g1checkout-desk" style={{ width: "94%"}}>
 
-                      <div className="allzc5checkout-desk">
-
-                        <div className="alamd1g1checkout-desk">
-                          <div className="custom-form-group">
-                            <div className="chd2cjd3b1checkout-desk" style={{display: "flex", fontWeight: "600", fontSize: "18px"}}>
-                              
-                              {
-                                isScheduleClicked ?
-                                  (selectedFilter.id === DELIVERY_ID) ?
-                                    "Schedule delivery time"
-                                  :
-                                  "Schedule collection time"
-                                :
+                      <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2 lg:gap-20 mb-4">
+                        <label
+                          htmlFor="deliveryCollectionTime"
+                          className="w-full lg:w-[20rem] text-md font-semibold text-gray-900"
+                        >
+                          {
+                            isScheduleClicked ?
                                 (selectedFilter.id === DELIVERY_ID) ?
-                                  "Estimated delivery time"  
+                                  "Schedule delivery time"
                                 :
-                                  "Estimated collection time"
-                              }
-                              {
-                                !toggleObjects?.isPhoneinputToggle && 
-                                <>
-                                  &nbsp; &nbsp; &nbsp; &nbsp;
-                                  <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk" >
-                                    <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
-                                      {customerDetailObj?.driverInstruction}
-                                    </span>
-                                  </p>
-                                </>
-                              }
-                            </div>
-
-                            {
-                              !toggleObjects?.isAdddriverInstructionClicked &&
-                              <div className="checkout-window-form">
-                                <select value={moment(deliveryTime, "HH:mm A").format("HH:mm A")} className="bubvbwbdbxbybkaubzc0checkout-window-input" onChange={handleDeliveryTime}>
-                                  {
-                                    listtime?.map((time, index) => {
-                                        return (
-                                        moment(time?.time, "HH:mm").format("HH:mm") >= moment(deliveryTime, "HH:mm").format("HH:mm") && moment(storeToDayClosingTime, "HH:mm").format("HH:mm") >= moment(time?.time, "HH:mm").format("HH:mm") &&
-                                            <option key={index} defaultValue={time?.time}>
-                                            {moment(time?.time, "HH:mm A").format("HH:mm A")}
-                                            </option>
-                                        );
-                                    })
-                                  }
-                                </select>
-                              </div>
+                                "Schedule collection time"
+                              :
+                              (selectedFilter.id === DELIVERY_ID) ?
+                                "Estimated delivery time"  
+                              :
+                                "Estimated collection time"
                             }
+                        </label>
 
-                          </div>
-                        </div>
-                      
+                        <select 
+                          value={moment(deliveryTime, "HH:mm A").format("HH:mm A")}     
+                          className={`w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
+                            parseInt(customerDetailObj?.doorHouseName?.length) > 0
+                              ? "border-green-500 focus:ring-green-300"
+                              : customerDetailObj?.doorHouseName?.length === 0
+                              ? "border-gray-300 focus:ring-gray-200"
+                              : "border-red-500 focus:ring-red-300"
+                          }`}
+                          onChange={handleDeliveryTime}
+                        >
+                          {
+                            listtime?.map((time, index) => {
+                                return (
+                                moment(time?.time, "HH:mm").format("HH:mm") >= moment(storeCurrentOrNextDayOpeningTime, "HH:mm").format("HH:mm") && moment(storeCurrentOrNextDayClosingTime, "HH:mm").format("HH:mm") >= moment(time?.time, "HH:mm").format("HH:mm") &&
+                                    <option key={index} defaultValue={time?.time}>
+                                    {moment(time?.time, "HH:mm A").format("HH:mm A")}
+                                    </option>
+                                );
+                            })
+                          }
+                        </select>
                       </div>
-
-                    </div>
                   }
                 </div>
                 
@@ -1761,202 +1573,260 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
                         {saveMyDetailsError}
                       </p>
                     }
-                    
+  
+
+
+
+
+                    {/* Need to work on these two commented parts later on. */}
                     {
-                      toggleObjects?.isAuthed === false &&
-                      <div className="save-my-details">
-                          <div className="save-my-details-nested">
-                              
-                              <input type="checkbox" className="save-details-input"/>
-                              <label className={`save-details ${isSaveFasterDetailsClicked ? "mch" : ""}`} onClick={() => handleSaveMyDetails(!isSaveFasterDetailsClicked)}>
-                                  <div className="spacer _16"></div>
-                                  <div className="save-my-detail-desk">
-                                      <div className="save-my-checkout-details-desk">
-                                          <div className="save-my-details-checkout-desk">
-                                              <div className="save-my-details-jiencheckout-desk">
-                                                  <div className="save-my-details-ckh6checkout-desk" style={{fontSize: "18px", fontWeight: "600"}}>
-                                                      Save my details for faster checkout next time
-                                                  </div>
-                                                  <div className="spacer _8"></div>
-                                              </div>
-                                          </div>
-                                      </div>
-                                  </div>
-                              </label>
-                          </div>
-                      </div>
+                      // toggleObjects?.isAuthed === false &&
+                      // <div className="w-full py-4">
+                      //   <div className="flex items-start gap-3 items-center">
+                          
+                      //     {/* Checkbox */}
+                      //       <div className="flex items-center">
+                      //         <input
+                      //           id="checkboxNoLabel"
+                      //           type="checkbox"
+                      //           checked={isSaveFasterDetailsClicked}
+                      //           className={`h-5 w-5 appearance-none border-2 border-gray-300 rounded 
+                      //             checked:bg-black checked:border-black 
+                      //             checked:bg-[url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%3E%3Cpath%20fill='white'%20d='M6%2010.8L3.2%208l-0.93%200.93L6%2012.67%2014%204.67%2013.07%203.73%206%2010.8z'/%3E%3C/svg%3E")] 
+                      //             bg-no-repeat bg-center bg-[length:12px_12px] 
+                      //             transition-all cursor-pointer`}
+                      //           aria-label="Select option"
+                      //           onChange={() => handleSaveMyDetails(!isSaveFasterDetailsClicked)}
+                      //         />
+                      //       </div>
+
+                      //     <label
+                      //       htmlFor="save-details-checkbox"
+                      //       className="flex items-center gap-2 cursor-pointer select-none"
+                      //     >
+                      //       {/* Checkbox UI */}
+                      //       <div className="h-5 w-5 rounded-sm border-2 border-gray-400 flex items-center justify-center peer-checked:bg-black peer-checked:border-black transition">
+                      //         {/* Tick icon */}
+                      //         <svg
+                      //           className="hidden peer-checked:block w-3 h-3 text-white"
+                      //           fill="none"
+                      //           stroke="currentColor"
+                      //           strokeWidth="3"
+                      //           viewBox="0 0 24 24"
+                      //         >
+                      //           <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      //         </svg>
+                      //       </div>
+
+                      //       {/* Label Text */}
+                      //       <span className={`text-base font-semibold leading-snug ${isSaveFasterDetailsClicked ? "text-black" : "text-gray-700"}`}>
+                      //         Save my details for faster checkout next time
+                      //       </span>
+                      //     </label>
+
+                      //   </div>
+                      // </div>
                     }
                   
                     {
-                      isSaveFasterDetailsClicked && 
-                      <div className="chcicwd3undersavefastercheckout">
-                        <div className="toundersavefastercheckout">
-                          <div className="eik4ekk5g8undersavefastercheckout">
-                            <span className="h3euh4eimfekfdundersavefastercheckout-span">
-                              {Message}
-                            </span>
-                          </div>
+                      // isSaveFasterDetailsClicked && 
+                      // <div className="w-full max-w-md mx-auto bg-white p-6 rounded-lg shadow-md">
+                      //   <div className="space-y-4">
+                      //     <div>
+                      //       <span className="block text-sm text-gray-700">{Message}</span>
+                      //     </div>
 
-                          {
-                            toggleObjects?.isCustomerHasPassword === false && 
-                            <>
-                              <div className="btaundersavefastercheckout">
-                                <label className="password-label">
-                                  <span style={{ color: "red" }}>*</span>
-                                </label>
-                                <input type="password" name="password" value={customerDetailObj?.password} onChange={handleInputs} placeholder="Enter password" className="undersavecheckoutinput" />
-                              </div>
+                      //     {/* Password Input */}
+                      //     {toggleObjects?.isCustomerHasPassword === false && (
+                      //       <>
+                      //         <div>
+                      //           <label className="block text-sm font-medium text-gray-700 mb-1">
+                      //             Password <span className="text-red-500">*</span>
+                      //           </label>
+                      //           <input
+                      //             type="password"
+                      //             name="password"
+                      //             value={customerDetailObj?.password}
+                      //             onChange={handleInputs}
+                      //             placeholder="Enter password"
+                      //             className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-black"
+                      //           />
+                      //         </div>
 
-                              <div className="already-have-account" style={{margin: "1vh"}}>
-                                <p>
-                                  Already have account?. &nbsp;
-                                </p>
+                      //         <div className="text-sm mt-2 flex items-center space-x-1">
+                      //           <p className="text-gray-600">Already have an account?</p>
+                      //           <a href="/login" className="text-blue-600 hover:underline font-medium">
+                      //             Sign In
+                      //           </a>
+                      //         </div>
+                      //       </>
+                      //     )}
 
-                                <a href="/login" className="sign-in-account">Sign In</a>
-                              </div>
-                            </>
-                          }
+                      //     {/* OTP Input */}
+                      //     {toggleObjects?.isOTPReady && (
+                      //       <div>
+                      //         <label className="block text-sm font-medium text-gray-700 mb-1">
+                      //           OTP Code <span className="text-red-500">*</span>
+                      //         </label>
+                      //         <input
+                      //           type="number"
+                      //           name="otp"
+                      //           value={otpCodeData}
+                      //           onChange={handleOTPInput}
+                      //           placeholder="Enter OTP Code"
+                      //           className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black focus:border-black no-spinner"
+                      //         />
+                      //       </div>
+                      //     )}
 
-                          {
-                            toggleObjects?.isOTPReady && 
-                            <>
-                              <div className="btaundersavefastercheckout">
-                                <label className="password-label">
-                                  <span style={{ color: "red" }}>*</span>
-                                </label>
-                                <input type="number" name="otp" value={otpCodeData} onChange={handleOTPInput} placeholder="Enter OTP Code" className="undersavecheckoutinput no-spinner" />
-                              </div>
-                            </>
-                          }
-                          {
-                            !toggleObjects?.isSuccessFullyLogin &&
-                            <div className="alh2amenc9jdundersavefastercheckout">
-                              {
-                                toggleObjects?.isLoginShow ? 
-                                <button type="button" className="agloundersavefastercheckout" disabled={toggleObjects?.authButtonDisabledUntilPasswordChanged} onClick={handleLogin}>{toggleObjects?.authButtonDisabledUntilPasswordChanged ? "Working...": "Login"}</button>
-                                : 
-                                toggleObjects?.isOTPReady ?
-                                <button type="button" className="agloundersavefastercheckout" disabled={toggleObjects?.authButtonDisabledUntilPasswordChanged} onClick={handleOTP}>{toggleObjects?.authButtonDisabledUntilPasswordChanged ? "Working...": "Verify OTP"}</button>
-                                :
-                                <button type="button" className="agloundersavefastercheckout" disabled={toggleObjects?.authButtonDisabledUntilPasswordChanged} onClick={handleRegister}>{toggleObjects?.authButtonDisabledUntilPasswordChanged ? "Working...": "Register"}</button>
-                              }
-                              <button type="button" className="coasgundersavefastercheckout" disabled={toggleObjects?.authButtonDisabledUntilPasswordChanged} onClick={() => setIsSaveFasterDetailsClicked(!isSaveFasterDetailsClicked)}>
-                                Continue as guest user
-                              </button>
-                            </div>
-                          }
-                        </div>
-                      </div>
+                      //     {/* Action Buttons */}
+                      //     {!toggleObjects?.isSuccessFullyLogin && (
+                      //       <div className="flex flex-col gap-3 pt-2">
+                      //         {toggleObjects?.isLoginShow ? (
+                      //           <button
+                      //             type="button"
+                      //             className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition-all disabled:opacity-50"
+                      //             disabled={toggleObjects?.authButtonDisabledUntilPasswordChanged}
+                      //             onClick={handleLogin}
+                      //           >
+                      //             {toggleObjects?.authButtonDisabledUntilPasswordChanged ? "Working..." : "Login"}
+                      //           </button>
+                      //         ) : toggleObjects?.isOTPReady ? (
+                      //           <button
+                      //             type="button"
+                      //             className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition-all disabled:opacity-50"
+                      //             disabled={toggleObjects?.authButtonDisabledUntilPasswordChanged}
+                      //             onClick={handleOTP}
+                      //           >
+                      //             {toggleObjects?.authButtonDisabledUntilPasswordChanged ? "Working..." : "Verify OTP"}
+                      //           </button>
+                      //         ) : (
+                      //           <button
+                      //             type="button"
+                      //             className="w-full bg-black text-white py-2 rounded-md hover:bg-gray-800 transition-all disabled:opacity-50"
+                      //             disabled={toggleObjects?.authButtonDisabledUntilPasswordChanged}
+                      //             onClick={handleRegister}
+                      //           >
+                      //             {toggleObjects?.authButtonDisabledUntilPasswordChanged ? "Working..." : "Register"}
+                      //           </button>
+                      //         )}
+
+                      //         <button
+                      //           type="button"
+                      //           className="w-full bg-gray-200 text-black py-2 rounded-md hover:bg-gray-300 transition-all disabled:opacity-50"
+                      //           disabled={toggleObjects?.authButtonDisabledUntilPasswordChanged}
+                      //           onClick={() => setIsSaveFasterDetailsClicked(!isSaveFasterDetailsClicked)}
+                      //         >
+                      //           Continue as guest user
+                      //         </button>
+                      //       </div>
+                      //     )}
+                      //   </div>
+                      // </div>
+
                     }
 
-                    <div className="mimjepmkmlmmcheckout-desk">
-                      <div className="d1g1checkout-desk" style={{marginTop: "20px"}}>
-                          <div className="allzc5checkout-desk">
-                          <div className="alamd1g1checkout-desk">
-                              <div className="chd2cjd3b1checkout-desk" style={{fontSize: "18px", fontWeight: "400"}}>
-                              When you place your order, we will send you occasional
-                              marketing offers and promotions. Please select below
-                              if you do not want to receive this marketing.
+                    <div className="px-4 py-6">
+                      <div className="mt-5">
+                        {/* Description */}
+                        <div className="mb-6">
+                          <p className="text-sm font-normal text-gray-800">
+                            When you place your order, we will send you occasional marketing offers and promotions.
+                            Please select below if you do not want to receive this marketing.
+                          </p>
+                        </div>
+
+                        {/* By Email Option */}
+                        <div className="mb-6">
+                          <label className="flex gap-6 items-center space-x-3 cursor-pointer">
+                            <span className="text-lg font-semibold w-1/3">By Email</span>
+                            {
+                              isByEmailClicked ?
+                              <input
+                                id="checkboxNoLabel"
+                                type="checkbox"
+                                checked={isByEmailClicked}
+                                onChange={() => setIsByEmailClicked(false)}
+                                className={`h-8 w-8 appearance-none bg-white border-2 border-gray-300 rounded 
+                                  checked:bg-black checked:border-black 
+                                  checked:bg-[url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%3E%3Cpath%20fill='white'%20d='M6%2010.8L3.2%208l-0.93%200.93L6%2012.67%2014%204.67%2013.07%203.73%206%2010.8z'/%3E%3C/svg%3E")] 
+                                  bg-no-repeat bg-center bg-[length:12px_12px] transition-all cursor-pointer`}
+                                aria-label="Select option"
+                              />
+                              :
+                              <div className="flex items-center">
+                                <input
+                                  id="checkboxNoLabel"
+                                  onChange={() => setIsByEmailClicked(true)}
+                                  type="checkbox"
+                                  className="h-8 w-8 text-blue-600 bg-white border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+                                  value=""
+                                  aria-label="Select option"
+                                />
                               </div>
-                          </div>
-                          </div>
-
-                          <div className="almycheckout-desk" style={{marginTop: "20px"}}>
-                          <div className="allzc5checkout-desk" onClick={() => setIsByEmailClicked(!isByEmailClicked)}>
-                              <input type="checkbox" className="agaxlqdflacheckout-desk-input"/>
-                              <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isByEmailClicked ? "mch" : ""}`}>
-                                <div className="spacer _16"></div>
-                                <div className="d1alfwllcheckout-desk">
-                                  <div className="ald1ame7lmlncheckout-desk">
-                                    <div className="alaqcheckout-desk">
-                                        <div className="alamjiencheckout-desk">
-                                          <div className="chic-cj-ckh6checkout-desk" style={{display: "flex", fontWeight: "600", fontSize: "18px"}}>
-                                              By Email &nbsp;
-                                          </div>
-                                          <div className="spacer _8"></div>
-                                        </div>
-                                    </div>
-                                  </div>
-                                </div>
-                              </label>
-                          </div>
-
-                          <div className="spacer _48"></div>
-                          <div className="allzc5checkout-desk" onClick={() => setIsBySmsClicked(!isBySmsClicked)}>
-                            <input type="checkbox" className="agaxlqdflacheckout-desk-input"/>
-                            <label className={`chd2cjd3bzalafc5l9fwc9lblrcheckout-desk-label ${isBySmsClicked ? "mch" : ""}`}>
-                              <div className="spacer _16"></div>
-                                <div className="d1alfwllcheckout-desk">
-                                  <div className="ald1ame7lmlncheckout-desk">
-                                    <div className="alaqcheckout-desk">
-                                      <div className="alamjiencheckout-desk">
-                                        <div className="chic-cj-ckh6checkout-desk" style={{display: "flex", fontWeight: "600", fontSize: "18px"}}>
-                                          By SMS &nbsp;
-                                        </div>
-                                        <div className="spacer _8"></div>
-                                      </div>
-                                    </div>
-                                  </div>
-                                </div>
-                            </label>
-                          </div>
-
-                          <div className="d1g1checkout-desk" style={{ width: "94%", marginTop: "8px"}}>
-
-                            <div className="allzc5checkout-desk">
-
-                              <div className="alamd1g1checkout-desk">
-                                <div className="form-total-value">
-                                  <div className="chd2cjd3b1checkout-desk" style={{display: "flex", fontWeight: "600", fontSize: "18px"}}>
-                                      Total
-                                      {
-                                      !toggleObjects?.isPhoneinputToggle && 
-                                      <>
-                                          &nbsp; &nbsp; &nbsp; &nbsp;
-                                          <p data-baseweb="typo-paragraphsmall" className="b1chcwcid3checkout-desk" >
-                                              <span style={{fontFamily: "UberMoveText",color: "#05944F",}}>
-                                                  {customerDetailObj?.driverInstruction}
-                                              </span>
-                                          </p>
-                                      </>
-                                      }
-                                  </div>
-
-                                  {
-                                      !toggleObjects?.isAdddriverInstructionClicked &&
-                                      <div className="checkout-window-form" style={{width: "40%", }} >
-                                          <h4
-                                              style={{
-                                              fontSize: "26px",
-                                              lineHeight: "1",
-                                              fontWeight: "bold",
-                                              textAlign: "center",
-                                              marginTop: "20px",
-                                              marginBottom: "15px",
-                                              }}    
-                                          >
-                                              &pound; <span>{getAmountConvertToFloatWithFixed(totalOrderAmountValue, 2)}</span>
-                                          </h4>
-                                      </div>
-                                  }
-
-                                
-                                </div>
-                              </div>
+                            }
                             
+                          </label>
+                        </div>
+
+
+
+                        {/* By SMS Option */}
+                        <div className="mb-6">
+                          <label className={`flex gap-6 items-center space-x-3`}>
+                            <span className="text-lg font-semibold w-1/3">By SMS</span>
+                           
+                            {
+                              isBySmsClicked ?
+                              <input
+                                id="checkboxNoLabel"
+                                type="checkbox"
+                                checked={isBySmsClicked}
+                                onChange={() => setIsBySmsClicked(false)}
+                                className={`h-8 w-8 appearance-none bg-white border-2 border-gray-300 rounded 
+                                  checked:bg-black checked:border-black 
+                                  checked:bg-[url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%3E%3Cpath%20fill='white'%20d='M6%2010.8L3.2%208l-0.93%200.93L6%2012.67%2014%204.67%2013.07%203.73%206%2010.8z'/%3E%3C/svg%3E")] 
+                                  bg-no-repeat bg-center bg-[length:12px_12px] transition-all cursor-pointer`}
+                                aria-label="Select option"
+                              />
+                              :
+                              <div className="flex items-center">
+                                <input
+                                  id="checkboxNoLabel"
+                                  onChange={() => setIsBySmsClicked(true)}
+                                  type="checkbox"
+                                  className="h-8 w-8 text-blue-600 bg-white border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+                                  value=""
+                                  aria-label="Select option"
+                                />
+                              </div>
+                            }
+                            
+                          </label>
+                        </div>
+
+                        {/* Total Section */}
+                        <div className="flex flex-col md:flex-row"> 
+                          <div className=" items-center text-lg font-semibold">
+                            Total
+                          </div>
+                            <div className="w-full md:w-2/5 mx-auto mt-5 mb-4 text-center">
+                              <h4 className="text-3xl font-bold leading-none">
+                                &pound; <span>{getAmountConvertToFloatWithFixed(totalOrderAmountValue, 2)}</span>
+                              </h4>
                             </div>
 
-                          </div>
-                          </div>
+                        </div>
                       </div>
                     </div>
+
                   </>
                 }
               </div>
             </div>
           
 
-            <div className="atbaagcheckout">
+            <div className="flex justify-center items-center w-full">
               {
                 (isCreditCardButtonClicked && parseInt(sectionNumber) === parseInt(2)) &&
                 <>
@@ -1972,47 +1842,50 @@ export default function PlaceOrderForm({setModalObject, handleBoolean, sectionNu
       
                     <button 
                       type="submit" 
-                      className="fwbrbocheckout-place-order"
-                      onMouseEnter={() => setIsHover(true)}
-                      onMouseLeave={() => setIsHover(false)}
-                    
+                        className="bg-green-700 hover:bg-green-800 text-white w-1/3 px-4 py-3 rounded-md font-semibold transition-all duration-200 border text-center mx-auto block"
                     >
                       Pay Now
                     </button>
                     :
-                    <button type="button" className="fwbrbocheckout-place-order" style={{background: "rgb(12,12,12)"}}>
+                    <button type="button" className="bg-black text-white w-1/3 px-4 py-3 rounded-md font-semibold transition-all duration-200 border text-center mx-auto block">
                       Pay Now
                     </button>
+
                   }
                 </>
               }
               
-              {
-                (!isCreditCardButtonClicked && parseInt(sectionNumber) === parseInt(1)) &&
-                  <>
-                    {
-                      (isNextButtonReadyToClicked) ?
-                      
-                      <button 
-                        type="button" 
-                        className="fwbrbocheckout-place-order"
-        
-                        onClick={() => handleObject(2,"sectionNumber")}
-                      >
-                        Next
-                      </button>
-                      :
-                      <button type="button" className="fwbrbocheckout-place-order" style={{background: "rgb(12,12,12)"}}>
-                        Next
-                      </button>
-                    }
-                  </>
-              }
+          
               <div style={{ height: "10px" }}></div>
             </div>
-
           </form>
         }
+
+        <>
+        
+          {
+            (!isCreditCardButtonClicked && parseInt(sectionNumber) === parseInt(1)) &&
+            <>
+              {
+                (isNextButtonReadyToClicked) ?
+                
+                <button 
+                  type="button" 
+                  className="bg-green-700 hover:bg-green-800 text-white w-1/3 px-4 py-3 rounded-md font-semibold transition-all duration-200 border text-center mx-auto block"
+  
+                  onClick={() => handleObject(2,"sectionNumber")}
+                >
+                  Next
+                </button>
+                :
+                <button type="button" className="bg-black text-white w-1/3 px-4 py-3 rounded-md font-semibold transition-all duration-200 border text-center mx-auto block">
+                  Next
+                </button>
+              }
+            </>
+          }
+        </> 
+              
       </Fragment>
     )
 }

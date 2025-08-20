@@ -1,9 +1,9 @@
 import { ContextCheckApi } from "@/app/layout";
 import HomeContext from "@/contexts/HomeContext";
-import { axiosPrivate, BRAND_SIMPLE_GUID, IMAGE_URL_Without_Storage } from "@/global/Axios";
+import { axiosPrivate, BRAND_GUID, BRAND_SIMPLE_GUID, IMAGE_URL_Without_Storage } from "@/global/Axios";
 import { getAmountConvertToFloatWithFixed } from "@/global/Store";
 import { CardElement, useElements, useStripe } from "@stripe/react-stripe-js";
-import moment from "moment";
+import moment from "moment-timezone";
 import { useRouter } from "next/navigation";
 import React, { Fragment, useContext, useEffect, useState } from "react";
 
@@ -22,27 +22,6 @@ export default function CustomModalCard()
         setIsLocationBrandOnline,
         websiteModificationData,
       } = useContext(HomeContext)
-    
-      const { setMetaDataToDisplay} = useContext(ContextCheckApi)
-    
-    useEffect(() => {
-    if(websiteModificationData)
-    {
-        const metaHeadingData = {
-        title: websiteModificationData?.brand?.name,
-        contentData: websiteModificationData?.brand?.name,
-        iconImage: IMAGE_URL_Without_Storage+"/"+websiteModificationData?.websiteModificationLive?.json_log?.[0]?.websiteFavicon,
-        singleItemsDetails: {
-            title: "",
-            description: "",
-            itemImage: "",
-            keywords: "",
-            url: ""
-        }
-        }
-        setMetaDataToDisplay(metaHeadingData)
-    }
-    }, [websiteModificationData]);
     
     const [isHover, setIsHover] = useState(false);
     
@@ -155,7 +134,8 @@ export default function CustomModalCard()
             const data = {
                 guid: orderId,
                 url: url,
-                pathname: pathname
+                pathname: pathname,
+                brandGuid: BRAND_GUID,
             } 
 
             const response = await axiosPrivate.post(`/send-sms-and-email`, data)
@@ -196,9 +176,10 @@ export default function CustomModalCard()
         const visitorInfo = JSON.parse(window.localStorage.getItem('userInfo'))
         const data = {
         guid: orderId,
-        amount_paid: getAmountConvertToFloatWithFixed(paymentIntent.amount / 100,2),
-        stripeid: paymentIntent.id,
-        visitorGUID: visitorInfo.visitorId
+            amount_paid: getAmountConvertToFloatWithFixed(paymentIntent.amount / 100,2),
+            stripeid: paymentIntent.id,
+            visitorGUID: visitorInfo.visitorId,
+            placed: moment().tz("Europe/London").format("YYYY-MM-DD HH:mm:ss"),
         }  
 
         const response = await axiosPrivate.post(`/update-order-after-successfully-payment-save`, data)

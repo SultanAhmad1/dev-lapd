@@ -9,8 +9,10 @@ import {
   BLACK_COLOR,
   WHITE_COLOR,
   LIGHT_BLACK_COLOR,
+  DELIVERY_ID,
 } from "@/global/Axios";
 import {
+  check_is_delivery_available,
   setAtFirstLoadModalShow,
   setLocalStorage,
   setNextCookies,
@@ -18,22 +20,22 @@ import {
 import AvailableStore from "@/components/AvailableStore";
 import moment from "moment";
 import { NextResponse } from "next/server";
-import FilterLocationTime from "@/components/FilterLocationTime";
 import { useSearchParams } from "next/navigation";
 
-function SubAtLoadLoadShow({ setLoader }) {
+function SubAtLoadLoadShow() {
   
   const searchParams = useSearchParams()
 
   const locationFiltered = searchParams.get('location')
   
   const locationDetails = locationFiltered ? locationFiltered.replace(/^"+|"+$/g, '') : '';
-
+  
   const responseNext = NextResponse.next()
 
   const postCodeRef = useRef(null)
 
   const {
+    setLoader,
     dayName,
     dayNumber,
     setPostcode,
@@ -46,7 +48,7 @@ function SubAtLoadLoadShow({ setLoader }) {
     handleBoolean,
     setAtFirstLoad,
     setCartData,
-   
+    setOrderGuid,
   } = useContext(HomeContext);
 
   useEffect(() => {
@@ -55,6 +57,8 @@ function SubAtLoadLoadShow({ setLoader }) {
       postCodeRef.current.focus();
     }
   }, []);
+  
+  const [isLoading, setIsLoading] = useState(false);
   
   const [validPostcode, setValidPostcode] = useState("");
   const [postcodeerror, setPostcodeerror] = useState("");
@@ -124,9 +128,10 @@ function SubAtLoadLoadShow({ setLoader }) {
 
       const response = await axiosPrivate.post(`/ukpostcode-website`, data);
 
-      
-      const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows;
-
+    
+      const orderGuid = response?.data?.data?.order?.external_order_id
+      setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`, orderGuid)
+      setOrderGuid(orderGuid)
       const currentDateTime = moment().format('YYYY-MM-DD HH:mm:ss');
 
       const isViaQr = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}via_qr`))
@@ -136,36 +141,34 @@ function SubAtLoadLoadShow({ setLoader }) {
 
      
       // make cart empty.
-      // now make sure store is selected, and matched with already selected store. isChangePostcodeButtonClicked
-
-       setLoader(false)
+      // now make sure store is selected, and matched with already selected store. isChangePostcodeButtonClicked       
       
-      if(isChangePostcodeButtonClicked)
-      {
-        const userSelectedStore = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
-        if(userSelectedStore)
-        {
-          const filterStore = availableStores.find((store) => store.location_guid === userSelectedStore.display_id)
+      // if(isChangePostcodeButtonClicked)
+      // {
+      //   const userSelectedStore = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
+      //   if(userSelectedStore)
+      //   {
+      //     const filterStore = availableStores.find((store) => store.location_guid === userSelectedStore.display_id)
   
-          if(filterStore)
-          {
-            setLocalStorage(`${BRAND_SIMPLE_GUID}user_postcode_time`, currentDateTime)
-            setLocalStorage(`${BRAND_SIMPLE_GUID}address`, response?.data?.data);    
-            setLocalStorage(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validPostcode)
+      //     if(filterStore)
+      //     {
+      //       setLocalStorage(`${BRAND_SIMPLE_GUID}user_postcode_time`, currentDateTime)
+      //       setLocalStorage(`${BRAND_SIMPLE_GUID}address`, response?.data?.data);    
+      //       setLocalStorage(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validPostcode)
   
-            responseNext.cookies.set(`${BRAND_SIMPLE_GUID}user_postcode_time`, currentDateTime)
-            responseNext.cookies.set(`${BRAND_SIMPLE_GUID}address`, response?.data?.data)
-            responseNext.cookies.set(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validPostcode)
-            setAtFirstLoad(false)
-            setLoader(false)
-            return
-          }
-        }
-      }
+      //       responseNext.cookies.set(`${BRAND_SIMPLE_GUID}user_postcode_time`, currentDateTime)
+      //       responseNext.cookies.set(`${BRAND_SIMPLE_GUID}address`, response?.data?.data)
+      //       responseNext.cookies.set(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validPostcode)
+      //       setAtFirstLoad(false)
+      //       setIsLoading(!true)
+      //       return
+      //     }
+      //   }
+      // }
       
       if((isViaQr !== null && isViaQr !== undefined) && parseInt(isViaQr) === parseInt(0))
       {
-        
+        // setLoader(true)
         setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[]);
         setCartData([])
         setLocalStorage(`${BRAND_SIMPLE_GUID}user_postcode_time`, currentDateTime)
@@ -185,7 +188,7 @@ function SubAtLoadLoadShow({ setLoader }) {
 
       setIsGoBtnClickAble(false);
       setPostcode(validPostcode);
-
+      
       if((isViaQr !== null && isViaQr !== undefined) && parseInt(isViaQr) === parseInt(0))
       {
         if(parseInt(availableStores?.length) === parseInt(0) || parseInt(orderTypeFilters?.length) === parseInt(0))
@@ -195,12 +198,15 @@ function SubAtLoadLoadShow({ setLoader }) {
           setIsGoBtnClickAble(false);
           setPostcode(validPostcode);
           setTimeout(() => {
-            setLoader(false);
+            setIsLoading(!true)
           }, 1000);
           
           return
         }
+        
         const availableStoreUpdate = availableStores?.map((store) => {
+          // matching the delivery matrix code.
+          const finalResult = check_is_delivery_available(store.deliveryMatrixes.delivery_matrix_rows ?? [], validPostcode)
           // Find matching locationalStatus from orderTypeFilters
           const matchingFilters = orderTypeFilters
             ?.map((filter, filterIndex) => {
@@ -217,10 +223,13 @@ function SubAtLoadLoadShow({ setLoader }) {
               };
             })
             .filter((filter) => filter.locationalStatus.length > 0); // Keep only filters that have matching locations
-        
+          
+          const ifDeliveryMatrixHasNotMatchedDistrictCodeThenRemoveDelivery = finalResult ? matchingFilters : matchingFilters.filter((filter) => filter?.id !== DELIVERY_ID)
+
           return {
             ...store,
-            orderType: matchingFilters.length > 0 ? matchingFilters : null, // Attach matched filters or null
+            storeDeliveryMessage: finalResult ? "" : "Delivery is not available at your postcode.",
+            orderType: ifDeliveryMatrixHasNotMatchedDistrictCodeThenRemoveDelivery.length > 0 ? ifDeliveryMatrixHasNotMatchedDistrictCodeThenRemoveDelivery : null, // Attach matched filters or null
           };
         });
         
@@ -234,7 +243,7 @@ function SubAtLoadLoadShow({ setLoader }) {
 
     
       setTimeout(() => {
-        setLoader(false);
+        setIsLoading(!true)
       }, 1000);
       return responseNext
     } 
@@ -243,7 +252,7 @@ function SubAtLoadLoadShow({ setLoader }) {
       setAvailableStores([])
       if(error?.code === "ERR_NETWORK")
       {
-        setPostcodeerror("There is something went wrong!. Please try again.");
+        setPostcodeerror("Please check your internet connection and try again.");
 
       }
       else
@@ -253,7 +262,7 @@ function SubAtLoadLoadShow({ setLoader }) {
       setIsStoreAvailable(true);
       setIsGoBtnClickAble(false);
       setTimeout(() => {
-        setLoader(false);
+        setIsLoading(!true)
       }, 1000);
     }
   }
@@ -270,9 +279,11 @@ function SubAtLoadLoadShow({ setLoader }) {
   const handleGoBtn = (e) => 
   {
     e.preventDefault()
+    
     if (parseInt(validPostcode?.length) > parseInt(3)) 
     {
-      setLoader(true);
+      setAvailableStores([])
+      setIsLoading(true)
       fetchPostcodeData();
       return 
     } 
@@ -287,7 +298,7 @@ function SubAtLoadLoadShow({ setLoader }) {
       setLocalStorage(`${BRAND_SIMPLE_GUID}via_qr`,1)
       async function fetchQueryParamLocation() {
         try {
-            setLoader(true)
+          setIsLoading(true)
           
           const data = {
             
@@ -299,7 +310,7 @@ function SubAtLoadLoadShow({ setLoader }) {
     
           const response = await axiosPrivate.post(`/qr-code-website`, data);
           
-          const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows;
+          const matrix = response.data?.data?.deliveryMartix?.collection_matrix_rows;
           
           const availableStores = response?.data?.data?.availableStore || [];
           const orderTypeFilters = response?.data?.data?.orderTypeFilters || [];
@@ -333,7 +344,7 @@ function SubAtLoadLoadShow({ setLoader }) {
             setIsGoBtnClickAble(false);
             setPostcode(validPostcode);
             setTimeout(() => {
-              setLoader(false);
+              setIsLoading(!true)
             }, 1000);
             
             return
@@ -370,7 +381,7 @@ function SubAtLoadLoadShow({ setLoader }) {
           setIsGoBtnClickAble(false);
           setPostcode(validPostcode);
           setTimeout(() => {
-            setLoader(false);
+            setIsLoading(!true)
           }, 1000);
           return responseNext
         } 
@@ -379,7 +390,7 @@ function SubAtLoadLoadShow({ setLoader }) {
           setAvailableStores([])
           if(error?.code === "ERR_NETWORK")
           {
-            setPostcodeerror("There is something went wrong!. Please try again.");
+            setPostcodeerror("There is something went wrong!. Please try again 6.");
     
           }
           else
@@ -389,7 +400,7 @@ function SubAtLoadLoadShow({ setLoader }) {
           setIsStoreAvailable(true);
           setIsGoBtnClickAble(false);
           setTimeout(() => {
-            setLoader(false);
+            setIsLoading(!true)
           }, 1000);
         }
       }
@@ -398,120 +409,154 @@ function SubAtLoadLoadShow({ setLoader }) {
     }
   }, [locationDetails]);
   
-
   return (
-    <div className="modal-delivery-details">
-      <div className="modal-delivery-details-level-one-div">
+    <>
+      {
+        <div className={`fixed inset-0 bg-black/90 z-40  justify-center px-2 overflow-y-auto pt-10 pb-10 ${locationDetails ? "hidden" : "flex"}`}>
 
-        <div className="modal-delivery-details-level-one-div-dialog" style={{ marginTop: "15px"}}>
-          <div className="deliver-to-body-content">
-            <div>
-              <h1 className="deliver-to-body-content-h1">Order Food Now</h1>
-              {
-                isChangePostcodeButtonClicked &&
-                <button 
-                  class="at-first-cross-btn"
+          <div
+            className={`bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative flex flex-col transition-all duration-300 ${
+              isStoreAvailable && availableStores.length > 0
+                ? 'max-h-screen'
+                : isGoBtnClickAble
+                ? 'max-h-[200px]'
+                : 'max-h-[150px]'
+            }`}
+          >
+            {/* Header */}
+            <div className="flex justify-between items-center mb-4">
+              <h1 className="text-2xl font-semibold">Order Food Now</h1>
+
+              {isChangePostcodeButtonClicked && (
+                <button
                   onClick={handleFormCross}
+                  className="text-gray-600 hover:bg-gray-100 rounded-full p-1"
                 >
-                  <div class="cart-close-btn-div">
-                    <svg width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                      <path 
-                        d="m19.5831 6.24931-1.8333-1.83329-5.75 5.83328-5.75-5.83328-1.8333 1.83329 5.8333 5.74999-5.8333 5.75 1.8333 1.8333 5.75-5.8333 5.75 5.8333 1.8333-1.8333-5.8333-5.75z" 
-                        fill="#000"
-                      >
-                      </path>
-                    </svg>
-                  </div>
+                  <svg width="20" height="20" viewBox="0 0 24 24">
+                    <path
+                      d="m19.58 6.25-1.83-1.83-5.75 5.83-5.75-5.83-1.83 1.83 5.83 5.75-5.83 5.75 1.83 1.83 5.75-5.83 5.75 5.83 1.83-1.83-5.83-5.75z"
+                      fill="currentColor"
+                    />
+                  </svg>
                 </button>
-              }
+              )}
             </div>
-            <div className="deliver-to-body-content-nested-div-level-one">
 
-              <form onSubmit={handleGoBtn}>
-                <label id="location-typeahead-location-manager-label" htmlFor="location-typeahead-location-manager-input" className="deliver-to-body-content-nested-div-level-one-label" >
-                  When autocomplete results are available, use up and down arrows
-                  to review and enter to select. Touch device users, explore by
-                  touch or with swipe gestures.
-                </label>
+            {/* Form */}
+            <form onSubmit={handleGoBtn} className="space-y-4">
+              <div className="flex items-center rounded border-2 border-black overflow-hidden" 
+                  style={{
+                    borderColor:
+                      websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                        ?.buttonBackgroundColor,
+                  }}>
+                <div className="px-3 flex items-center bg-white">
+                  <svg
+                    width="20"
+                    height="20"
+                    viewBox="0 0 24 24"
+                    className="text-gray-600"
+                  >
+                    <path
+                      d="M17.58 5.17C14.5 2.08 9.5 2.08 6.42 5.17 3.33 8.25 3.33 13.33 6.42 16.42L12 22l5.58-5.67c3.09-3.09 3.09-8.17 0-11.16ZM12 12.42c-.92 0-1.67-.75-1.67-1.67s.75-1.67 1.67-1.67 1.67.75 1.67 1.67-.75 1.67-1.67 1.67Z"
+                      style={{
+                        fill:
+                          websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                            ?.buttonBackgroundColor,
+                      }}
+                    />
+                  </svg>
+                </div>
 
-                <div className="deliver-to-body-content-nested-div-level-one-nested">
-                  <div className="deliver-to-body-content-nested-div-level-one-nested-svg-div-one">
-                    <div className="deliver-to-body-content-nested-div-level-one-nested-svg-div-two">
-                      <svg 
-                        width="24px" 
-                        height="24px" 
-                        fill="none" 
-                        viewBox="0 0 24 24" 
-                        xmlns="http://www.w3.org/2000/svg" 
-                        aria-hidden="true" 
-                        focusable="false"
+                <input
+                  id="postcode-input"
+                  type="text"
+                  ref={postCodeRef}
+                  value={validPostcode}
+                  onChange={handlePostCode}
+                  placeholder="Enter postcode"
+                  className={`flex-1 text-lg px-3 py-2 text-sm outline-none bg-white rounded placeholder-opacity-100`}
+                />
+
+
+
+              </div>
+
+              {postcodeerror && (
+                <p className="text-red-600 bg-red-100 text-center text-sm rounded p-2">
+                  {postcodeerror}
+                </p>
+              )}
+
+              {isGoBtnClickAble && (
+                <button
+                  type="submit"
+                  className="w-full py-2 rounded text-white font-medium transition flex justify-center items-center gap-2"
+                  style={{
+                    backgroundColor:
+                      websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                        ?.buttonBackgroundColor || 'black',
+                    color:
+                      websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                        ?.buttonColor || 'white',
+                  }}
+                  disabled={isLoading}
+                >
+                  {isLoading ? (
+                    <>
+                      <svg
+                        className="animate-spin h-5 w-5 text-white"
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
                       >
-                        <path 
-                          d="M17.5834 5.16602C14.5001 2.08268 9.50008 2.08268 6.41675 5.16602C3.33341 8.24935 3.33341 13.3327 6.41675 16.416L12.0001 21.9993L17.5834 16.3327C20.6667 13.3327 20.6667 8.24935 17.5834 5.16602ZM12.0001 12.416C11.0834 12.416 10.3334 11.666 10.3334 10.7493C10.3334 9.83268 11.0834 9.08268 12.0001 9.08268C12.9167 9.08268 13.6667 9.83268 13.6667 10.7493C13.6667 11.666 12.9167 12.416 12.0001 12.416Z" 
+                        <circle
+                          className="opacity-25"
+                          cx="12"
+                          cy="12"
+                          r="10"
+                          stroke="currentColor"
+                          strokeWidth="4"
+                        ></circle>
+                        <path
+                          className="opacity-75"
                           fill="currentColor"
+                          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
                         ></path>
                       </svg>
-                    </div>
-                  </div>
+                      Loading...
+                    </>
+                  ) : (
+                    'Go'
+                  )}
+                </button>
+              )}
+            </form>
 
-                  <div className="spacer _16"></div>
-
-                  <input
-                    type="text"
-                    autoComplete="off"
-                    ref={postCodeRef}
-                    value={validPostcode}
-                    onChange={handlePostCode}
-                    className="deliver-to-input"
-                    placeholder="Enter postcode"
-                  />
-                  <div className="spacer _8"></div>
-                </div>
-
-                <div className="availabe_stores"></div>
-                {
-                  postcodeerror !== "" && 
-                  <p style={{color: "red",background: "#eda7a7",textAlign: "center",marginTop: "10px", padding: "10px",}}>
-                    {postcodeerror}
-                  </p>
-                }
-
-                {
-                  isGoBtnClickAble && 
-                  <button type="submit" className="deliver-to-done-button" style={{
-                    '--go-btn-background-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR,
-                    '--go-btn-font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR, 
-                    '--go-hover-btn-background-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || LIGHT_BLACK_COLOR,
-                    '--go-hover-btn-font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor || BLACK_COLOR,
-                    '--go-hover-border': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR, 
-                  }}>
-                    Go
-                  </button>
-                }
-              </form>
-
-            </div>
-
-            {/* All the Available Stores */}
+            {/* Feedback */}
             {isStoreAvailable === false && (
-              <div className="available-stores-show" style={{cursor: "pointer",textAlign: "center",marginTop: "10px",fontWeight: "bold",}}>
-                <div className="available-stores">
-                  Your are out of radius.
-                </div>
-                <div className="spacer _8"></div>
+              <div className="text-center text-sm font-medium text-red-600 mt-4">
+                You are out of radius.
               </div>
             )}
 
-            {
-              parseInt(availableStores.length) > parseInt(0) && 
-              
-                <AvailableStore {...{availableStores, setAvailableStores, validPostcode, locationDetails}} />
-            }
+            {/* Available Stores */}
+            {availableStores.length > 0 && (
+              <div className="mt-4 flex-1 overflow-y-auto max-h-90">
+                <AvailableStore
+                  {...{
+                    availableStores,
+                    setAvailableStores,
+                    validPostcode,
+                    locationDetails,
+                  }}
+                />
+              </div>
+            )}
           </div>
         </div>
-
-      </div>
-    </div>
+      }
+    </>
   );
 }
 

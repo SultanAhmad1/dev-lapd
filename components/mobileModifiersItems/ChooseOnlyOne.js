@@ -13,153 +13,148 @@ export default function ChooseOnlyOne({
 {
 
   return(
-    <li className={`msection${index}`} style={{margin: "0px 0px 30px 0px"}}>
-      <div className="fusingle-productlidiv">
-        <div className="modifier-header" onClick={() => handleMobileModifierToggle(modifier?.id)}>
-          <div className="modifier-div">
-            <div className="alamsingle-product">
-              
-              <div className="bnfrbpfsingle-product">
+    <li className={`msection${index} mb-6 space-y-2`}>
+        {/* Header */}
+        <div
+          className="flex justify-between items-start cursor-pointer bg-gray-300"
+          onClick={() => handleMobileModifierToggle(modifier?.id)}
+        >
+         <div className="flex-1 space-y-1 p-2">
+            {/* Title and Options Row */}
+            <div className="flex items-start justify-between">
+              <h5 className="text-base font-semibold">{modifier?.title}</h5>
 
-                <h5 className="modifier-dropdown-title">
-                  {modifier?.title}
-                </h5>
-
-                <div className="fzsingle-product">
-                  
-                  <div className={`g0afg1single-product ${modifier?.valid_class}`}>
-                    {parseInt(modifier?.min_permitted) > parseInt(0) ? "Required" : "Optional"}
-                  </div>
-
-                  <div className="choose-items">
-                    Choose {parseInt(modifier?.min_permitted) === parseInt(0) && "up to"} {modifier?.max_permitted}
-                  </div>
-
-                </div>
-              </div>
-
-              {/* Display selected modifier items. */}
-              <div className="bresbtdqfysingle-product">
-                <div>
-                  { 
-                    !modifier?.is_toggle_active && 
-                    <Fragment>
-                    {  
-                      parseInt(modifier?.selected_item_name?.length) > parseInt(20) ? 
-                      modifier?.selected_item_name?.substring(0,20) + "..." 
-                      : 
-                      modifier?.selected_item_name
-                    }
-                      <br/>
-                    { 
-                      modifier?.modifier_secondary_items?.map((nestedModifier, index) => (
-                        (nestedModifier?.item_select_to_sale) &&
-                        nestedModifier?.secondary_item_modifiers?.map((secondModifiers, nestedIndex) => (
-                          secondModifiers?.is_second_item_modifier_clicked && 
-                          secondModifiers?.secondary_items_modifier_items?.map((secondItems, itemIndex) => {
-                          
-                            return(secondItems?.item_select_to_sale && 
-                              <Fragment key={`${index}.${nestedIndex}.${itemIndex}`}>
-                                <span className="secondItemModifiers">{secondModifiers?.title}:</span> {secondItems?.title}
-                                <br />
-                              </Fragment>
-                            )  
-                          })
-                        ))
-                      ))
-                    }
-                    </Fragment>
-                  }
-                </div>
-                {/* <div className="fzsingle-product">
-                  <div className={`g0afg1single-product ${modifier?.valid_class}`}>
-                    {parseInt(modifier?.min_permitted) > parseInt(0) ? "Required" : "Optional"}
-                  </div>
-                  <div>Choose {parseInt(modifier?.min_permitted) === parseInt(0) && "up to"} {modifier?.max_permitted}</div>
-                </div> */}
+              <div className="flex flex-col items-end text-sm text-gray-600">
+                <span className={`px-1 py-1 rounded-xl ${modifier?.valid_class}`}>
+                  {parseInt(modifier?.min_permitted) > 0 ? 'Required' : 'Optional'}
+                </span>
+                <span>
+                  Choose {parseInt(modifier?.min_permitted) === 0 && 'up to'} {modifier?.max_permitted}
+                </span>
               </div>
             </div>
 
-            <div className="single-product-svg-div accordion">
-              <div className="single-product-svg-div-one">
-                {
-                  modifier?.is_toggle_active ?
-                  <svg className="bottom-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                    <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(180, 12, 12)"></path>
-                  </svg>
-                : 
-                  <svg className="right-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{ cursor: "pointer" }}>
-                    <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(90, 12, 12)"></path>
-                  </svg>
-                }
+            {/* Selected Item(s) */}
+            {!modifier?.is_toggle_active && (
+              <div className="text-sm text-gray-500">
+                {modifier?.selected_item_name?.length > 20
+                  ? `${modifier?.selected_item_name.substring(0, 20)}...`
+                  : modifier?.selected_item_name}
+
+                {modifier?.modifier_secondary_items?.map((nestedModifier, idx) =>
+                  nestedModifier?.item_select_to_sale
+                    ? nestedModifier?.secondary_item_modifiers?.map((secondModifier, sIdx) =>
+                        secondModifier?.is_second_item_modifier_clicked
+                          ? secondModifier?.secondary_items_modifier_items?.map((secondItem, iIdx) =>
+                              secondItem?.item_select_to_sale && (
+                                <div key={`${idx}.${sIdx}.${iIdx}`}>
+                                  <span className="font-medium">{secondModifier.title}:</span> {secondItem.title}
+                                </div>
+                              )
+                            )
+                          : null
+                      )
+                    : null
+                )}
               </div>
-            </div>
+            )}
+          </div>
+
+
+          <div className="ml-2">
+            <svg
+              className="w-6 h-6 text-gray-500"
+              viewBox="0 0 24 24"
+              fill="currentColor"
+            >
+              <path
+                d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
+                transform={`rotate(${modifier?.is_toggle_active ? '180' : '90'}, 12, 12)`}
+              />
+            </svg>
           </div>
         </div>
 
-        {/* Listed Data */}
-        {
-          <div className={`g5single-product ${modifier?.is_toggle_active ? "show" : "fade"}`}>
-            {
-              modifier?.modifier_secondary_items?.map((mobileSecondItems, mobileSecondIndex) => 
-              {
-                let isItemSuspend = false;
-                if(mobileSecondItems?.suspension_info !== null)
-                {
-                  if(moment().format('YYYY-MM-DD') <= moment.unix(mobileSecondItems?.suspension_info?.suspend_untill).format('YYYY-MM-DD'))
-                  {
-                    isItemSuspend = true
-                  }
-                }
-                return (
-                  isItemSuspend === false &&
-                  <div 
-                    className="alakg6bfsingle-product" 
-                    style={{
-                      background: mobileSecondItems?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR),
-                      border: mobileSecondItems?.item_select_to_sale && `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || WHITE_COLOR}`
-                    }} 
-                    key={`${index}.${mobileSecondIndex}`} 
-                    onClick={() => handleRadioInput(modifier?.id,mobileSecondItems?.id,mobileSecondItems?.title,parseInt(mobileSecondItems ?.secondary_item_modifiers.length))}
-                  >
-                  
-                    <label className={`brbsdpdqbkalbfafg6single-productlable`}>
-                      
-                      <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" stroke={`${mobileSecondItems?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR)}`} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
-                      {/* <div className="spacer _16"></div> */}
-                      <div className="alamgmgnsingle-product">
-                        <div className="bresdpg4gosingle-product" style={{color: mobileSecondItems?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR)}}>
-                          {mobileSecondItems?.title}
-                        </div>
-                        <div className="spacer _8"></div>
-                        {
-                          // getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && 
-                          <div className="bresbtdqb1bzsingle-productincdecprice" style={{color: mobileSecondItems?.item_select_to_sale && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR)}}>
-                            &pound; {getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}
-                          </div>
-                        }
-                      </div>
-                    </label>
+        {/* Options List */}
+        {modifier?.is_toggle_active && (
+          <div className="space-y-1">
+            {modifier?.modifier_secondary_items?.map((item, i) => {
+              const isSuspended = item?.suspension_info &&
+                moment().format('YYYY-MM-DD') <= moment.unix(item?.suspension_info?.suspend_untill).format('YYYY-MM-DD');
 
-                    {
-                      parseInt(mobileSecondItems?.secondary_item_modifiers?.length) > parseInt(0) && (
-                      <div className="poquickreview-modal">
-                        <div className="c8c7cuquickreview-modal">
-                          <svg style={{ cursor: "pointer" }} width="24px" height="24px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                            <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill={`${mobileSecondItems?.item_select_to_sale ? (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR): "#AFAFAF"}`} transform="rotate(90, 12, 12)"></path>
-                          </svg>
-                        </div>
-                      </div>
-                    )}
+              if (isSuspended) return null;
+
+              const isSelected = item?.item_select_to_sale;
+              const bgColor = isSelected && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR);
+              const borderColor = isSelected && `1px solid ${(websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || WHITE_COLOR)}`;
+              const textColor = isSelected && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR);
+
+              return (
+                <div
+                  key={`${index}.${i}`}
+                  onClick={() =>
+                    handleRadioInput(
+                      modifier?.id,
+                      item?.id,
+                      item?.title,
+                      parseInt(item?.secondary_item_modifiers.length)
+                    )
+                  }
+                  className={`flex items-center justify-between p-3 border rounded-md cursor-pointer`}
+                  style={{ background: bgColor, borderColor }}
+                >
+                  {/* Left Icon + Title + Price */}
+                  <div className="flex items-center gap-2 flex-1">
+                    {/* Checkmark Icon */}
+                    <svg
+                      width="24"
+                      height="24"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M4.89163 13.2687L9.16582 17.5427L18.7085 8"
+                        stroke={textColor}
+                        strokeWidth="2.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                    </svg>
+
+                    {/* Title and Price */}
+                    <div className="flex justify-between items-center w-full font-bold">
+                      <p className="text-left" style={{ color: textColor }}>
+                        {item?.title}
+                      </p>
+                      <p className="text-sm text-right whitespace-nowrap font-bold" style={{ color: textColor }}>
+                        &pound;{getAmountConvertToFloatWithFixed(item?.price, 2)}
+                      </p>
+                    </div>
                   </div>
-                );
-              }
-            )}
+
+                  {/* Arrow icon (if needed) */}
+                  {
+                    parseInt(item?.secondary_item_modifiers?.length) > parseInt(0) &&
+                    <svg
+                      width="20"
+                      height="20"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
+                        fill={`${item?.item_select_to_sale ? (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR): "#AFAFAF"}`}
+                        transform="rotate(90, 12, 12)"
+                      />
+                    </svg>
+                  }
+                </div>
+              );
+            })}
           </div>
-        }
-      </div>
+        )}
     </li>
   )
 }

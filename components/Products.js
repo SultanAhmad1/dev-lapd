@@ -55,148 +55,152 @@ export default function Products() {
  
   return (
     <>
-      <Header websiteModificationData={websiteModificationData}/>
+      <Header/>
       <MobileTopBar/>
+      <Banner/>
 
-      <div className="header-display">
-        <Banner websiteModificationData={websiteModificationData} />
-      </div>
+      <div className="w-full px-4 md:px-6 lg:px-10 mt-6">
+        <div className="flex justify-center w-full">
+          <div className="flex flex-col lg:flex-row gap-4 w-full max-w-screen-xl">
+            
+            {/* Left Section */}
+            <div className="w-full">
+              <ul className="space-y-6">
+                {navigationCategories?.map(
+                  (category, index) =>
+                    category?.items?.length > 0 && (
+                      <li key={category.id}>
+                        <section id={`section_${index}`}>
+                          <h4
+                            className="text-xl sm:text-2xl font-semibold"
+                            style={{
+                              color:
+                                websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                                  ?.categoryFontColor,
+                            }}
+                          >
+                            {category.title}
+                          </h4>
+                        </section>
 
-      <div className="content">
+                        <ul className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          {category.items.map((item, itemIndex) => {
+                            const { title, price, description, image_url } = item;
 
-        <div className="content-div-level-one">
-       
-          <div></div>
-          <div className="spacer _40"></div>
-          {/* Navigation bar for 900 or lesser width device */}
-          <div className="cat-items-content">
-            <ul className="items-ul">
-              {
-                navigationCategories?.map((category, index) => {
-                  return (
-                    category?.items?.length > 0 && 
-                    <li key={category.id}  className={`item-lists`}>
-                      <section id={`section_${index}`} className="item-title">
-                        <h3 className="item-title-h3" style={{'--category-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.categoryFontColor}}>
-                          {category.title}
-                        </h3>
-                      </section>
-                      
-                      {/* <div className="item-list-empty-div"></div> */}
+                            // Skip suspended items
+                            const isItemSuspend =
+                              item?.suspension_info !== null &&
+                              moment().format("YYYY-MM-DD") <=
+                                moment
+                                  .unix(item?.suspension_info?.suspend_untill)
+                                  .format("YYYY-MM-DD");
 
-                      <ul className="items-list-nested-ul">
-                        {
-                          category?.items?.map((item, itemIndex) => {
-                            
-                            let isItemSuspend = false;
-                            
-                            if(item?.suspension_info !== null)
-                            {
-                              if(moment().format('YYYY-MM-DD') <= moment.unix(item?.suspension_info?.suspend_untill).format('YYYY-MM-DD'))
-                              {
-                                isItemSuspend = true
-                              }
-                            }
+                            if (isItemSuspend) return null;
 
-                            const { id,title, price, description, image_url } = item;
                             return (
-                              isItemSuspend === false &&
-                              <li 
-                                ref={scrollContainerRef} 
-                                style={{
-                                  '--item-hover-background': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.itemHoverBackgroundColor, 
-                                  '--item-hover-font-color':websiteModificationData?.websiteModificationLive?.json_log?.[0]?.itemHoverFontColor
-                                }}
-                                key={itemIndex} 
-                                className="items-list-nested-list" 
+                              <li
+                                key={itemIndex}
                                 onClick={() => handleProductSelect(category?.id, item?.id)}
+                                style={{
+                                  "--item-hover-background":
+                                    websiteModificationData?.websiteModificationLive
+                                      ?.json_log?.[0]?.itemHoverBackgroundColor,
+                                  "--item-hover-font-color":
+                                    websiteModificationData?.websiteModificationLive
+                                      ?.json_log?.[0]?.itemHoverFontColor,
+                                  "--font-color":
+                                    websiteModificationData?.websiteModificationLive
+                                      ?.json_log?.[0]?.itemFontColor,
+                                }}
+                                className="bg-white rounded-lg shadow-lg p-3 cursor-pointer transition-colors duration-300 hover:bg-[var(--item-hover-background)] hover:text-[var(--item-hover-font-color)]"
                               >
-                                <Link href={`${storeName?.replace(/ /g, '-')?.toLowerCase()}/${category?.slug}/${item?.slug}`}>
-                                  <div className="items-nested-div">
-                                    <div className="items-nested-div-one">
-                                      <div className="item-detail-style">
-                                        <div className="item-detail">
-                                          <p className="item-title-p"
-                                            style={{
-                                              '--font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.itemFontColor,
-                                              '--item-hover-font-color':websiteModificationData?.websiteModificationLive?.json_log?.[0]?.itemHoverFontColor
-                                            }}
-                                          >
-                                            {title}
-                                          </p>
+                                <Link
+                                  href={`/${storeName
+                                    ?.replace(/ /g, "-")
+                                    ?.toLowerCase()}/${category?.slug}/${item?.slug}`}
+                                  className="flex flex-row justify-between items-start gap-3"
+                                >
+                                  {/* Text */}
+                                  <div className="flex flex-col gap-1 flex-1 min-w-0">
+                                    <p className="text-base font-semibold break-words whitespace-normal">
+                                      {title}
+                                    </p>
 
-                                          <div className="item-description-style">
-                                            <p className="item-description"
-                                              style={{
-                                                '--font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.itemFontColor,
-                                                '--item-hover-font-color':websiteModificationData?.websiteModificationLive?.json_log?.[0]?.itemHoverFontColor
-                                              }}
-                                            >
-                                              {description}
-                                            </p>
-                                          </div>
 
-                                          {/* <div className="item-price"> */}
-                                            <span className="item-price-span" 
-                                              style={{
-                                                '--font-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.itemFontColor,
-                                                '--item-hover-font-color':websiteModificationData?.websiteModificationLive?.json_log?.[0]?.itemHoverFontColor
-                                              }}
-                                            >
-                                              &pound;{parseFloat(price).toFixed(2)}
-                                            </span>
-                                          {/* </div> */}
+                                    <hr className="my-3 border-gray-300" />
 
-                                          {/* <div className="item-description-style">
-                                            <div className="item-description">
-                                              <span className="item-description-span">
-                                                {description}
-                                              </span>
-                                            </div>
-                                          </div> */}
-
-                                        </div>
-                                        {
-                                          image_url && 
-                                          <div className="item-img-style">
-                                            <div className="lazyload-wrapper">
-                                              {
-                                                isValidHttpsUrl(image_url) ? 
-                                                  <Image className="item-img" src={image_url} alt={title} width={200} height={200}/>
-                                                : 
-                                                  <Image className="item-img" src={IMAGE_URL_Without_Storage+""+image_url} alt={title} width={200} height={200}/>
-                                              }
-                                            </div>
-                                          </div>
-                                        }
-                                      </div>
-                                      {/* <div className="item-review">
-                                      <a className="quick-review-btn" onClick={handleQuickViewClicked}>Quick view</a>
-                                    </div> */}
-                                    </div>
+                                    <p className="text-sm leading-snug line-clamp-2">
+                                      {description}
+                                    </p>
+                                    <span className="text-base font-medium text-right block">
+                                      &pound;{parseFloat(price).toFixed(2)}
+                                    </span>
                                   </div>
+
+                                  {/* Image */}
+                                  
+                                    {image_url ? 
+                                        <Image
+                                          src={
+                                            isValidHttpsUrl(image_url)
+                                              ? image_url
+                                              : `${IMAGE_URL_Without_Storage}${image_url}`
+                                          }
+                                          className="object-contain w-[100px] h-[120px]"
+                                          alt={title}
+                                          width={200}
+                                          height={200}
+                                        />
+                                      :
+                                        <div className="object-contain w-[100px] h-[120px]"></div>
+                                    }
+                                    
+                                    
+                                           {/* <Image
+                                  src={
+                                    isValidHttpsUrl(image_url)
+                                      ? image_url
+                                      : `${IMAGE_URL_Without_Storage}${image_url}`
+                                  }
+                                  alt={title}
+                                  width={200}
+                                  height={200}
+                                  className="
+                                    transition-transform duration-500 ease-in-out transform scale-100 
+                                    outline outline-[1px] outline-black/5 
+                                    h-[180px] sm:h-[200px] md:h-[220px] lg:h-[158px] 
+                                    w-full sm:w-[100px] md:w-[120px] lg:w-[140px] 
+                                    object-contain opacity-100 shrink-0
+                                  "
+                                /> */}
+                                       
+
                                 </Link>
                               </li>
                             );
-                          })
-                        }
-                      </ul>
-                    </li>
-                  );
-                })
-              }
-            </ul>
+                          })}
+                        </ul>
+                      </li>
+                    )
+                )}
+              </ul>
+            </div>
+
+            {/* Right Panel */}
+            <div className="hidden lg:block max-w-[30vw] min-w-[28vw] bg-[#eaeaea] sticky top-[15vh] right-0 mt-[50px] rounded-[15px] block max-h-[80vh] overflow-y-auto overflow-y-auto border border-gray-300 p-[20px]">
+              <CheckoutDisplay />
+            </div>
+
           </div>
         </div>
-
-        <div className="checkout-hide">
-          <CheckoutDisplay />
-        </div>
-
+      </div>
+          
+      <div className="block lg:hidden">
+        <ViewCartMobileBtn />
       </div>
 
-    
-      <ViewCartMobileBtn />
+      <hr className="my-6 border-gray-300" />
+
       <Footer />
     </>
   );

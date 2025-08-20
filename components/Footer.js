@@ -1,131 +1,190 @@
 "use client";
-import React, { Fragment, useContext, useEffect, useState} from "react";
+import React, {useContext} from "react";
 import HomeContext from "../contexts/HomeContext";
 import moment from "moment";
-import { BRAND_SIMPLE_GUID, brandLogoPath, IMAGE_URL_Without_Storage } from "../global/Axios";
+import { brandLogoPath, IMAGE_URL_Without_Storage } from "../global/Axios";
 import Image from "next/image";
 import Link from "next/link";
 
 function Footer() {
-  const { websiteModificationData, brandLogo } = useContext(HomeContext);
-
-  const myColor = "#000000"
-
-  const [locationDetails, setLocationDetails] = useState({
-    telephone: "",
-    email: "",
-  });
-  
-
-  useEffect(() => {
-    const selectedStoreData = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`)
-    if(selectedStoreData){
-      const storeData = JSON.parse(selectedStoreData);
-      setLocationDetails({  
-        telephone: storeData?.telephone || "",
-        email: storeData?.email || "",
-      });
-    }
-  }, [websiteModificationData]);
+  const { websiteModificationData, brandLogo ,selectedStoreDetails} = useContext(HomeContext);
   
   return (
-    <footer className="footer" style={{'--before-border-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,'--before-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}}>
-      <div className="footer-div">
-        <div className="footer-brand-logo-partner-logo">
-          <div className="footer-brand-logo">
-            <a href="/">
-            {
-              brandLogo !== null ?
-                <Image loading="lazy" src={IMAGE_URL_Without_Storage+''+brandLogo} width={146} height={24} className="brand-logo" alt='Brand Name'/>
-              :
-                <Image loading="lazy" src={brandLogoPath} width={146} height={24} className="brand-logo" alt='Brand Name'/>
-            }
-            </a>
-            <div className="footer-partners-log" style={{margin: "10px 0px 0px 0px"}}>
-              <div className="footer-partners-div">
-                {
-                  websiteModificationData?.brand?.brand_social_links?.map((links, index) => {
-                    return (
-                      links?.social_links !== null && (
-                        <Fragment key={index}>
-                          <a href={links?.social_links} target="_blank">
-                            <span className="partner-logo">Facebook</span>
-                            {/* <div style={{ color: websiteModificationData ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor : myColor}} dangerouslySetInnerHTML={{__html: links?.social_icons,}}/> */}
-                            <div style={{ color: websiteModificationData ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor : myColor}} dangerouslySetInnerHTML={{__html: links?.social_icons,}}/>
-                          </a>
-                          <div className="spacer _24"></div>
-                        </Fragment>
-                      )
-                    );
-                  })
-                }
-              </div>
-            </div>
-          </div>
-
-          <div className="footer-brand-conditions">
-            <ul>
-              <li>
-                <a className="footer-brand-conditions-btn" style={{'--condition-btn-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}} href="/about-us">About Us</a>
-              </li>
-              <li>
-                <a className="footer-brand-conditions-btn" style={{'--condition-btn-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}} href="/contact-us">Contact Us</a>
-              </li>
-            </ul>
-          </div>
-
-          <div className="footer-brand-conditions">
-            <ul>
-              <li>
-                <a href="/track-order" className="footer-brand-conditions-btn" style={{'--condition-btn-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>Track Order</a>
-              </li>
-              <li>
-                <a className="footer-brand-conditions-btn" style={{'--condition-btn-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>Allergens</a>
-              </li>
-            </ul>
-          </div>
-
-          <div className="footer-brand-conditions">
-            <ul>
-              <li>
-                <a className="footer-brand-conditions-btn" style={{'--condition-btn-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}} href="/terms-conditions">Terms</a>
-              </li>
-              <li>
-                <a className="footer-brand-conditions-btn" style={{'--condition-btn-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}} href="/privacy-policy">Privacy Policy</a>
-              </li>
-            </ul>
-          </div>
-
-          <div className="footer-brand-conditions">
-            <ul>
-              <li>
-                <button type="button" className="footer-brand-conditions-btn" style={{'--condition-btn-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
-                  {locationDetails?.telephone.replace(/^\d/,"+44")}
-                </button>
-                <a className="footer-brand-conditions-btn" style={{wordSpacing: " -0.1em",'--condition-btn-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}} href={websiteModificationData?.brand?.brand_social_links?.[0]?.social_links} target="_blank">
-                  @{websiteModificationData?.brand?.name.split(" ").join("").toLowerCase()}
-                </a>
-              </li>
-            </ul>
-          </div>
-
+    <footer
+      className="pt-8 px-4 bg-white border-t"
+      style={{
+        borderTop: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+        backgroundColor: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+      }}
+    >
+      <div className="max-w-screen-xl mx-auto">
+        {/* Brand & Social */}
+        <div className="flex flex-col lg:flex-row lg:justify-between items-center gap-6 text-center">
           
-          <div className="footer-brand-conditions">
-            <ul>
-              <li>
-                <a className="footer-brand-conditions-btn" style={{'--condition-btn-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}} href="/subscription">Subscription</a>
-              </li>
-            </ul>
-          </div>
-        </div>
-        <hr style={{margin: "20px"}}/>
-        <div className="copy-rigth">
-          <div className="copy-right-hr"></div>
-          <div className="copy-rigth">
-            <div className="copy-right-nested-div" style={{'--copy-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor}}>
-              @ All Rights Reserved. {websiteModificationData?.brand?.name} {moment().format("YYYY")}. Powered by&nbsp;<Link href="https://cleartwo.co.uk/" target="_blank">Cleartwo</Link>
+          {/* Brand Logo + Social */}
+          <a href="/" className="block">
+            {brandLogo ? (
+              <Image
+                src={`${IMAGE_URL_Without_Storage}${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.websiteFLogoUrl}`}
+                width={200}
+                height={100}
+                alt="Brand Name"
+                className="w-[200px] h-[100px] object-contain mx-auto"
+              />
+            ) : (
+              <Image
+                loading="lazy"
+                src={brandLogoPath}
+                width={200}
+                height={100}
+                alt="Brand Name"
+                className="w-[200px] h-[100px] object-contain mx-auto"
+              />
+            )}
+          </a>
+
+          {/* Link Groups */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0 sm:gap-6 w-full">
+            {/* Column 1 */}
+            <div className="text-center">
+              <ul className="space-y-1">
+                <li>
+                  <a
+                    href="/about-us"
+                    className="text-base font-medium hover:underline"
+                    style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                  >
+                    About Us
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/contact-us"
+                    className="text-base font-medium hover:underline"
+                    style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                  >
+                    Contact Us
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/subscription"
+                    className="text-base font-medium hover:underline"
+                    style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                  >
+                    Subscription
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 2 */}
+            <div className="text-center">
+              <ul className="space-y-1">
+                <li>
+                  <a
+                    href="/track-order"
+                    className="text-base font-medium hover:underline"
+                    style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                  >
+                    Track Order
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/allergens"
+                    className="text-base font-medium hover:underline"
+                    style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                  >
+                    Allergens
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 3 */}
+            <div className="text-center">
+              <ul className="space-y-1">
+                <li>
+                  <a
+                    href="/terms-conditions"
+                    className="text-base font-medium hover:underline"
+                    style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                  >
+                    Terms
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/privacy-policy"
+                    className="text-base font-medium hover:underline"
+                    style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                  >
+                    Privacy Policy
+                  </a>
+                </li>
+              </ul>
+            </div>
+
+            {/* Column 4 */}
+            <div className="text-center">
+              <ul className="space-y-1">
+                <li>
+                  <button
+                    type="button"
+                    className="text-base font-medium hover:underline"
+                    style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                  >
+                    {selectedStoreDetails?.telephone?.replace(/^\d/, '+44')}
+                  </button>
+                </li>
+
+                <li>
+                  <a
+                    href={websiteModificationData?.brand?.brand_social_links?.[0]?.social_links}
+                    target="_blank"
+                    className="text-base font-medium hover:underline"
+                    style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                  >
+                    @{websiteModificationData?.brand?.name?.split(' ').join('').toLowerCase()}
+                  </a>
+                </li>
+
+                <li>
+                  <div className="flex justify-center items-center gap-3">
+                    {websiteModificationData?.brand?.brand_social_links?.map((link, index) =>
+                      link?.social_links ? (
+                        <a
+                          key={index}
+                          href={link.social_links}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xl"
+                          style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                        >
+                          <div dangerouslySetInnerHTML={{ __html: link.social_icons }} />
+                        </a>
+                      ) : null
+                    )}
+                  </div>
+                </li>
+              </ul>
             </div>
           </div>
+
+        </div>
+
+        {/* Divider */}
+        <hr className="my-6 border-gray-300" />
+
+        {/* Copyright */}
+        <div className="text-center text-sm sm:text-base" style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}>
+          <p className="py-3"> 
+            © All Rights Reserved. {websiteModificationData?.brand?.name} {moment().format('YYYY')}. Powered by{' '}
+            <Link href="https://cleartwo.co.uk/" target="_blank" className="underline hover:text-blue-600">
+              Cleartwo
+            </Link>
+          </p>
         </div>
       </div>
     </footer>

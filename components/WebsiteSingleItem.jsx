@@ -33,249 +33,172 @@ export const WebsiteSingleItem = (props) => {
   };
   
   return (
-    <div className="e5 e6">
-      <div className="single-product-level-one-div">
-        <div className="level-one-div-nested-one">
-          <a className="back-btn-product" href="/">
-            <svg aria-hidden="true" focusable="false" viewBox="0 0 24 24" className="back-svg">
-              <path d="M22 13.5H6.3l5.5 7.5H8.3l-6.5-9 6.5-9h3.5l-5.5 7.5H22v3z"></path>
-            </svg>
-            <div className="spacer _8"></div>
-            Back to list
-          </a>
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      {/* Scrollable Content */}
+      <div className="flex-grow overflow-y-auto px-4 pt-8 pb-36"> 
+        <div className="flex flex-col lg:flex-row gap-6 max-w-5xl w-full mx-auto bg-white p-6 rounded-lg shadow-md">
 
-          <button className="cross-btn" onClick={() => handleDisplayItemStates("isItemClicked",false)}>
-            <svg version="1.1" xmlns="http://www.w3.org/2000/svg" className="back-svg">
-              <line x1="1" y1="11" x2="11" y2="1" stroke="black" strokeWidth="2"/>
-              <line x1="1" y1="1" x2="11" y2="11" stroke="black" strokeWidth="2"/>
-            </svg>
-            <span>{singleItem?.title}</span>
-          </button>
+          {/* Left Side */}
+          <div className="flex flex-col gap-4 lg:w-1/2">
+            <div className="flex items-center justify-between">
+              <a href="/" className="flex items-center text-sm text-gray-700 hover:text-black">
+                <svg viewBox="0 0 24 24" className="w-5 h-5">
+                  <path d="M22 13.5H6.3l5.5 7.5H8.3l-6.5-9 6.5-9h3.5l-5.5 7.5H22v3z" />
+                </svg>
+                <span className="ml-2">Back to list</span>
+              </a>
+            </div>
 
-          {
-            singleItem?.image_url &&
-            <div className="product-img">
-              <div className="bz">
-                <div className="product-img-div-one-div">
-                  <div className="product-img-div-one-div-nested">
-                    <div className="product-img-div-one-div-nested-div">
-                      <div className="product-img-zoom">
-                        {
-                          isValidHttpsUrl(singleItem?.image_url) ?
-                          <Image
-                            alt={singleItem?.title}
-                            role="presentation"
-                            src={singleItem?.image_url}
-                            className="product-img-display"
-                            loading="lazy"
-                            width={100}
-                            height={100}
-                          />
-
-                          :
-                          <Image
-                            alt={singleItem?.title}
-                            role="presentation"
-                            src={IMAGE_URL_Without_Storage+"/"+singleItem?.image_url}
-                            className="product-img-display"
-                            loading="lazy"
-                            width={100}
-                            height={100}
-                          />
-
-                        }
-                        <div className="img-hr"></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+            {singleItem?.image_url && (
+              <div className="border rounded overflow-hidden">
+                <Image
+                  alt={singleItem?.title}
+                  src={
+                    isValidHttpsUrl(singleItem?.image_url)
+                      ? singleItem.image_url
+                      : `${IMAGE_URL_Without_Storage}/${singleItem.image_url}`
+                  }
+                  className="w-full object-cover"
+                  loading="lazy"
+                  width={100}
+                  height={100}
+                />
               </div>
-            </div>
-          }
-        </div>
-
-        <div className="level-one-div-nested-two">
-          <div className="product-title">
-            <h2 className="product-h2"></h2>
-            <h1 className="product-h1">{singleItem?.title}</h1>
-            <span className="product-price-span">&pound;{parseFloat(singleItem?.price).toFixed(2)}</span>
-            <div className="product_h8"></div>
-
-            <div className="product-description">
-              <div className="product-description-div">{singleItem?.description}</div>
-            </div>
-
-            <div className="product_h8"></div>
+            )}
           </div>
 
-          <div className="product-height"></div>
+          {/* Right Side */}
+          <div className="w-1/2 space-y-14 relative">
+            <div>
+              <h1 className="text-2xl font-semibold">{singleItem?.title}</h1>
+              <p className="text-lg font-medium">£{parseFloat(singleItem?.price).toFixed(2)}</p>
+              <p className="text-gray-600 mt-2">{singleItem?.description}</p>
+            </div>
 
-          <ul className="product-ul">
-            {
-              optionNumber === 1 && 
-              singleItem?.modifier_group?.map((modifier, index) => {
-                if(modifier?.isExtras === false)
-                {
-                  return (
-                    // (parseInt(modifier?.modifier_secondary_items?.length) > 0) &&
-                    (
-                      modifier?.select_single_option === 1 && modifier?.max_permitted === 1 
-                      ? 
-                       <ChooseOnlyOne 
-                          key={index}
-                          {
-                            ...{
-                              index,
-                              modifier,
-                              handleRadioInput,
-                              websiteModificationData,
-                            }
-                          }
-                       />
-                      : 
-                        (modifier?.select_single_option === 1 && modifier?.max_permitted > 1) 
-                      ?
-                        <ChooseOneItemOneTime 
-                          key={index}
-                          {
-                            ...{
-                              index,
-                              modifier,
-                              handleCheckInput,
-                              websiteModificationData,
-                            }
-                          }
-                        />
-                      : 
-                        (modifier?.select_single_option > 1 && modifier?.max_permitted >= 1) 
-                      &&
-                        <CounterItem 
-                          key={index}
-                          {
-                            ...{
-                              index,
-                              modifier,
-                              handleDecrement,
-                              handleIncrement,
-                            }
-                          }
-                        />
-                    ) 
-                  );
-                }
-              })
-            }
-
-            {/* optionNumber is greater than 1 and less than 2, isExtras must be true */}
-            {
-              optionNumber === 2 && 
-              singleItem?.modifier_group?.map((modifier, index) => {
-                if(modifier?.isExtras)
-                {
-                  return (
-                    (parseInt(modifier?.modifier_secondary_items?.length) > 0) &&
-                    (
-                        modifier?.select_single_option === 1 && modifier?.min_permitted > 0 && modifier?.max_permitted === 1 
-                      ? 
-                        <ChooseOnlyOne 
-                          key={index}
-                          {
-                            ...{
-                              index,
-                              modifier,
-                              handleRadioInput,
-                              websiteModificationData,
-                            }
-                          }
-                        />
-                      : 
-                        (modifier?.select_single_option === 1 && modifier?.max_permitted > 1) ?
-                          <ChooseOneItemOneTime 
-                            key={index}  
-                            {
-                              ...{
-                                index,
-                                modifier,
-                                handleCheckInput,
-                                websiteModificationData,
-                              }
-                            }
-                          />
-                      :
-                        (modifier?.select_single_option > 1 && modifier?.max_permitted >= 1) &&
-                        <CounterItem 
-                          key={index}
-                          {
-                            ...{
-                              index,
-                              modifier,
-                              handleDecrement,
-                              handleIncrement,
-                            }
-                          }
-                        />
-                    ) 
-                  );
-                }
-              })
-            }
-          </ul>
-
-          <div className="product-top-padding-2"></div>
-
-          <div className="of">
-            <div className="add-to-cart-btn-no-selection">
-            
-              <p>&pound;{parseFloat(quantity * itemPrice).toFixed(2)}</p>
+            <ul className="space-y-4">
+              {(optionNumber === 1 || optionNumber === 2) &&
+                singleItem?.modifier_group?.map((modifier, index) => {
+                  const isExtras = optionNumber === 2;
+                  if ((isExtras && modifier?.isExtras) || (!isExtras && !modifier?.isExtras)) {
+                    if (modifier?.modifier_secondary_items?.length > 0) {
+                      if (modifier.select_single_option === 1 && modifier.max_permitted === 1) {
+                        return <ChooseOnlyOne key={index} {...{ index, modifier, handleRadioInput, websiteModificationData }} />;
+                      }
+                      if (modifier.select_single_option === 1 && modifier.max_permitted > 1) {
+                        return <ChooseOneItemOneTime key={index} {...{ index, modifier, handleCheckInput, websiteModificationData }} />;
+                      }
+                      if (modifier.select_single_option > 1 && modifier.max_permitted >= 1) {
+                        return <CounterItem key={index} {...{ index, modifier, handleDecrement, handleIncrement }} />;
+                      }
+                    }
+                  }
+                })}
+            </ul>
               
-                <div className="albfglh3single-product">
-                  <div className="agbdh8h4albfsingle-product" >
-                    
-                    <button className="e3bubrdpb9h9h0albfc4affoh6hagzf1hbhcdohdhesingle-count-btn" disabled={quantity > 1 ? false : true} onClick={handleMobileQuantityDecrement}>
-                      <svg aria-hidden="true" color="#fff" focusable="false" viewBox="0 0 20 20" className="hfg0ebhgsingle-product-svg" >
-                        <path d="M15.833 8.75H4.167v2.5h11.666v-2.5z"></path>
-                      </svg>
+              
+            <div className="bottom-0 left-0 w-full mt-5">
+              <div className="bg-black text-white px-4 py-5 rounded-t-lg shadow-lg">
+                <div className="flex items-center justify-between">
+                  <p className="text-xl font-semibold">£{parseFloat(quantity * itemPrice).toFixed(2)}</p>
+                  <div className="flex items-center gap-2">
+                    <button
+                      className="px-3 py-1 bg-gray-700 text-white rounded-xl disabled:opacity-50 border-2 border-white"
+                      disabled={quantity <= 1}
+                      onClick={handleMobileQuantityDecrement}
+                    >
+                      -
+                    </button>
+                    <span className="px-3">{quantity}</span>
+                    <button
+                      className="px-3 py-1 bg-gray-700 text-white rounded-xl border-2 border-white"
+                      onClick={handleMobileQuantityIncrement}
+                    >
+                      +
                     </button>
 
-                    <div className="aghhhibre3dpbualc4bfbzbmsingle-product">
-                      {parseInt(quantity)}
-                    </div>
-
-                    <button className="e3bubrdpb9h9h0albfc4affoh6hagzf1hbhcdohdhesingle-count-btn" onClick={handleMobileQuantityIncrement}>
-                      <svg aria-hidden="true" color="#fff" focusable="false" viewBox="0 0 20 20" className="hfg0ebhgsingle-product-svg">
-                        <path d="M15.833 8.75H11.25V4.167h-2.5V8.75H4.167v2.5H8.75v4.583h2.5V11.25h4.583v-2.5z"></path>
-                      </svg>
-                    </button>
-                  </div>
-
-                  {
-                    isAnyModifierHasExtras ? 
-                      <button type="button" style={{marginLeft: "10px"}} className="add-to-cart-btn-item" onClick={() => handleAddOrNextClickedToCart("next")}>
+                    {isAnyModifierHasExtras ? (
+                      <button
+                        className="ml-3 px-4 py-2 bg-green-600 text-white rounded"
+                        onClick={() => handleAddOrNextClickedToCart("next")}
+                      >
                         NEXT
                       </button>
-                    :
-                      <Fragment>
-                        {
-                          optionNumber === 2 &&
-                          <button 
-                            type="button" 
-                            class="add-to-cart-back-btn-click" 
-                            style={{marginLeft: "10px",minWidth: "100px"}} 
+                    ) : (
+                      <>
+                        {optionNumber === 2 && (
+                          <button
+                            className="ml-3 px-4 py-2 border rounded bg-gray-300 text-black"
                             onClick={() => handleAddOrNextClickedToCart("back")}
                           >
                             Back
                           </button>
-                        }
-                        <button type="button" style={{marginLeft: "10px"}} className="add-to-cart-btn-item" onClick={() => handleAddOrNextClickedToCart("addToCart")}>
+                        )}
+                        <button
+                          className="ml-3 px-4 py-2 bg-green-600 text-white rounded"
+                          onClick={() => handleAddOrNextClickedToCart("addToCart")}
+                        >
                           ADD TO CART
                         </button>
-
-                      </Fragment>
-                  }
+                      </>
+                    )}
+                  </div>
                 </div>
-
+              </div>
             </div>
           </div>
+
+
+            {/* Sticky Footer Button */}
+{/*             
+            <div className="fixed bottom-0 z-40 w-full px-4 lg:w-1/3 lg:right-[16rem] 2xl:right-[25rem] 2xl:w-1/3">
+              <div className="bg-black text-white px-4 py-5 rounded-t-lg shadow-lg">
+                <div className="flex items-center justify-between">
+                  <p className="text-xl font-semibold">£{parseFloat(quantity * itemPrice).toFixed(2)}</p>
+                  <div className="flex items-center gap-2">
+                    <button
+                      className="px-3 py-1 bg-gray-700 text-white rounded-xl disabled:opacity-50 border-2 border-white"
+                      disabled={quantity <= 1}
+                      onClick={handleMobileQuantityDecrement}
+                    >
+                      -
+                    </button>
+                    <span className="px-3">{quantity}</span>
+                    <button
+                      className="px-3 py-1 bg-gray-700 text-white rounded-xl border-2 border-white"
+                      onClick={handleMobileQuantityIncrement}
+                    >
+                      +
+                    </button>
+
+                    {isAnyModifierHasExtras ? (
+                      <button
+                        className="ml-3 px-4 py-2 bg-green-600 text-white rounded"
+                        onClick={() => handleAddOrNextClickedToCart("next")}
+                      >
+                        NEXT
+                      </button>
+                    ) : (
+                      <>
+                        {optionNumber === 2 && (
+                          <button
+                            className="ml-3 px-4 py-2 border rounded bg-gray-300 text-black"
+                            onClick={() => handleAddOrNextClickedToCart("back")}
+                          >
+                            Back
+                          </button>
+                        )}
+                        <button
+                          className="ml-3 px-4 py-2 bg-green-600 text-white rounded"
+                          onClick={() => handleAddOrNextClickedToCart("addToCart")}
+                        >
+                          ADD TO CART
+                        </button>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div> */}
         </div>
       </div>
     </div>
