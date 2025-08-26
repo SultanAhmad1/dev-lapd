@@ -44,7 +44,7 @@ function FilterModal()
                     <div className="modal-delivery-details-level-one-div-height"></div>
                 </div>
             </div>
-            <Loader loader={loader}/>
+            {loader && <Loader />}
         </>
     )
 }

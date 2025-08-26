@@ -2,8 +2,8 @@
 import AvailableStore from "@/components/AvailableStore";
 import { usePostAfterAuthenticateMutationHook } from "@/components/reactquery/useQueryHook";
 import HomeContext from "@/contexts/HomeContext";
-import { axiosPrivate, BRAND_GUID, BRAND_SIMPLE_GUID } from "@/global/Axios";
-import { find_matching_postcode, setLocalStorage } from "@/global/Store";
+import { axiosPrivate, BRAND_GUID, BRAND_SIMPLE_GUID, DELIVERY_ID } from "@/global/Axios";
+import { find_collection_matching_postcode, find_matching_postcode, setLocalStorage } from "@/global/Store";
 import React, { Fragment, useContext, useEffect, useState } from "react";
 
 export default function AddressList({handleCreateAddress}) 
@@ -30,43 +30,55 @@ export default function AddressList({handleCreateAddress})
     async function fetchPostcodeData(validPostcode) {
         try 
         {
-          let filterPostcode = validPostcode.replace(/\s/g, "");
-    
-          let grabPostcodeOutWard = "";
-          if (parseInt(filterPostcode.length) === parseInt(7)) 
-          {
-            grabPostcodeOutWard = filterPostcode.substring(0, 4);
-          } 
-          else if (parseInt(filterPostcode.length) === parseInt(6)) 
-          {
-            grabPostcodeOutWard = filterPostcode.substring(0, 3);
-          } 
-          else 
-          {
-            grabPostcodeOutWard = filterPostcode.substring(0, 2);
-          }
-    
-          const visitorInfo = JSON.parse(window.localStorage.getItem('userInfo'))
-          const data = {
-            postcode: filterPostcode,
-            brand_guid: BRAND_GUID,
-            dayName: dayName,
-            dayNumber: dayNumber,
-            outwardString: grabPostcodeOutWard,
-            visitorGUID: visitorInfo.visitorId
-          };
-    
-          const response = await axiosPrivate.post(`/ukpostcode-website`, data);
-          const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows;
-          find_matching_postcode(matrix, validPostcode, setDeliveryMatrix);
-    
-          setLocalStorage(`${BRAND_SIMPLE_GUID}address`, response?.data?.data);
-          setLocalStorage(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validPostcode);
-    
-          
-          setListObj((prevData) => ({...prevData, availableStores: response.data?.data?.availableStore}))
+            let filterPostcode = validPostcode.replace(/\s/g, "");
+        
+            let grabPostcodeOutWard = "";
+            if (parseInt(filterPostcode.length) === parseInt(7)) 
+            {
+                grabPostcodeOutWard = filterPostcode.substring(0, 4);
+            } 
+            else if (parseInt(filterPostcode.length) === parseInt(6)) 
+            {
+                grabPostcodeOutWard = filterPostcode.substring(0, 3);
+            } 
+            else 
+            {
+                grabPostcodeOutWard = filterPostcode.substring(0, 2);
+            }
+        
+            const visitorInfo = JSON.parse(window.localStorage.getItem('userInfo'))
+            const data = {
+                postcode: filterPostcode,
+                brand_guid: BRAND_GUID,
+                dayName: dayName,
+                dayNumber: dayNumber,
+                outwardString: grabPostcodeOutWard,
+                visitorGUID: visitorInfo.visitorId
+            };
+        
+            const response = await axiosPrivate.post(`/ukpostcode-website`, data);
 
-          setPostcode(validPostcode);
+            const addressListFilter = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`))
+            if(addressListFilter !== null && addressListFilter !== undefined)
+            {
+                if(addressListFilter.id.includes(DELIVERY_ID))
+                {
+                    const matrix = response.data?.data?.deliveryMartix?.delivery_matrix_rows;
+                    find_matching_postcode(matrix, validPostcode, setDeliveryMatrix);
+
+                }
+                else
+                {
+                    const matrix = response.data?.data?.deliveryMartix?.collection_matrix_rows;
+                    find_collection_matching_postcode(matrix, validPostcode, setDeliveryMatrix);
+                }
+            }
+        
+            setLocalStorage(`${BRAND_SIMPLE_GUID}address`, response?.data?.data);
+            setLocalStorage(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validPostcode);
+            
+            setListObj((prevData) => ({...prevData, availableStores: response.data?.data?.availableStore}))
+            setPostcode(validPostcode);
           
         } 
         catch (error) 

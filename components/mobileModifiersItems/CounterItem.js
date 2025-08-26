@@ -11,145 +11,129 @@ export default function CounterItem({
 }) 
 {
     return(
-        <li className={`msection${index}`} style={{margin: "0px 0px 30px 0px"}}>
-            <div className="fusingle-productlidiv">
-                <hr className="modifier-hr"></hr>
+        <li className={`msection${index} mb-6`}>
+            <div className="space-y-2">
 
-                <div className="modifier-header" onClick={() => handleMobileModifierToggle(modifier?.id)}>
-                    <div className="modifier-div">
-                    
-                    
-                        <div className="alamsingle-product">
+                {/* Header */}
 
-                            <div className="bnfrbpfsingle-product">
-                                <h5 className="modifier-dropdown-items">
-                                    {modifier?.title}
-                                </h5>
+                <div
+                    className="flex justify-between items-start cursor-pointer bg-gray-100"
+                    onClick={() => handleMobileModifierToggle(modifier?.id)}
+                >
+                    <div className="flex-1 space-y-1 p-2">
+                        {/* Title and Options Row */}
+                        <div className="flex items-start justify-between">
+                            <h5 className="text-base font-semibold">{modifier?.title}</h5>
 
-                                <div className="fzsingle-product">
-                                    <div className={`g0afg1single-product ${modifier?.valid_class}`}>
-                                        {parseInt(modifier?.min_permitted) > parseInt(0) ? "Required" : "Optional"}
-                                    </div>
-                                    
-                                    <div className="choose-items">Choose { parseInt(modifier?.min_permitted) === parseInt(0) && "up to"} {modifier?.max_permitted}</div>
-                                </div>
-                            
+                            <div className="flex flex-col items-end text-sm text-gray-600">
+                                <span className={`px-1 py-1 rounded-xl ${modifier?.valid_class}`}>
+                                {parseInt(modifier?.min_permitted) > 0 ? 'Required' : 'Optional'}
+                                </span>
+                                <span>
+                                Choose {parseInt(modifier?.min_permitted) === 0 && 'up to'} {modifier?.max_permitted}
+                                </span>
                             </div>
-                            
-                            <div className="bresbtdqfysingle-product" style={{display: "block"}}>
-                            {
-                                !modifier?.is_toggle_active &&
-                                modifier?.modifier_secondary_items?.map((displaySelectedItems,displaySelectedItemsIndex) => 
+                        </div>
+
+                        {/* Selected Item(s) */}
+                        {
+                            !modifier?.is_toggle_active && (
+                            <div className="text-sm text-gray-500">
                                 {
-                                return (
-                                    parseInt(displaySelectedItems?.counter) > parseInt(0) && (
-                                    <div key={`${index}.${displaySelectedItemsIndex}`}>
-                                        {parseInt(displaySelectedItems?.counter)} x {parseInt(displaySelectedItems?.title?.length) > parseInt(20) ? displaySelectedItems?.title?.substring(0,20) + "...": displaySelectedItems?.title}
-                                    </div>
-                                    )
-                                );
+                                    modifier?.modifier_secondary_items?.map((displaySelectedItems,displaySelectedItemsIndex) => 
+                                    {
+                                        return (
+                                            parseInt(displaySelectedItems?.counter) > parseInt(0) && (
+                                            <div key={`${index}.${displaySelectedItemsIndex}`}>
+                                                {parseInt(displaySelectedItems?.counter)} x {parseInt(displaySelectedItems?.title?.length) > parseInt(20) ? displaySelectedItems?.title?.substring(0,20) + "...": displaySelectedItems?.title}
+                                            </div>
+                                            )
+                                        );
+                                    })
                                 }
-                            )}
                             </div>
-                            
-                        </div>
+                            )
+                        }
+                    </div>
 
-                        <div className="single-product-svg-div accordion">
-                            <div className="single-product-svg-div-one">
-
-                            {
-                                modifier?.is_toggle_active ? 
-                                <svg className="bottom-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" >
-                                    <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(180, 12, 12)"></path>
-                                </svg>
-                                : 
-                                <svg className="right-arrow-head-svg" width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false" style={{ cursor: "pointer" }}>
-                                    <path d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z" fill="currentColor" transform="rotate(90, 12, 12)"></path>
-                                </svg>
-                            }
-
-                            </div>
-                        </div>
+                    <div className="ml-2">
+                        <svg
+                        className="w-6 h-6 text-gray-500"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        >
+                        <path
+                            d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
+                            transform={`rotate(${modifier?.is_toggle_active ? '180' : '90'}, 12, 12)`}
+                        />
+                        </svg>
                     </div>
                 </div>
 
                 {/* Listed Data */}
                 {
-                    <div className={`g5single-product ${modifier?.is_toggle_active ? "show" : "fade"}`}>
+                    modifier?.is_toggle_active &&
+                    modifier?.modifier_secondary_items?.map((mobileSecondItems, mobileSecondItemsIndex) => 
                     {
-                        modifier?.modifier_secondary_items?.map((mobileSecondItems, mobileSecondItemsIndex) => 
-                        {
-                            let isItemSuspend = false;
-                            if(mobileSecondItems?.suspension_info !== null)
-                            {
-                                if(moment().format('YYYY-MM-DD') <= moment.unix(mobileSecondItems?.suspension_info?.suspend_untill).format('YYYY-MM-DD'))
-                                {
-                                    isItemSuspend = true
-                                }
-                            }
+                        let isItemSuspend = mobileSecondItems?.suspension_info && (moment().format('YYYY-MM-DD') <= moment.unix(mobileSecondItems?.suspension_info?.suspend_untill).format('YYYY-MM-DD'))
+                        if (isItemSuspend) return null;
 
-                            return (
-                                isItemSuspend === false &&
-                                <Fragment key={`${index}.${mobileSecondItemsIndex}`}>
-                                    <div className="alg5bfsingle-product">
-                                        <div className="alaqbfsingle-product">
-                                        {
-                                            parseInt(mobileSecondItems?.counter) > parseInt(0) &&
-                                            <>
-                                            <button className="b9bmalambfc4b1gtgugvgwgxgygzh0single-product-incdec-btn" disabled={mobileSecondItems?.is_item_select} onClick={() => handleDecrement(modifier?.id,mobileSecondItems?.id)}>
+                        return (
+                            <div key={`${index}.${mobileSecondItemsIndex}`} className="flex flex-row gap-2 items-center justify-between mb-2 p-2 border border-gray-200 rounded-lg shadow-sm bg-white">
+                                
+                                {/* Product Title and Price */}
+                                <div className="mt-1">
+                                    <div className="text-base font-semibold">{mobileSecondItems?.title} &pound;{parseFloat(mobileSecondItems?.price).toFixed(2)}</div>
+                                </div>
 
-                                                <div className="ezfj">
-                                                    <div className="fjezh1">
-                                                        <svg width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                                            <path d="m7.33325 13v-2h9.33335v2z" fill="#000000"></path>
-                                                        </svg>
-                                                    </div>
-                                                </div>
-                                                
-                                            </button>
-
-                                            <div className="bresbtdqiqsingle-product">{parseInt(mobileSecondItems?.counter)}</div>
-                                            </>
-                                        }
-
-                                        
-                                        <button type="button" className="b9bmalambfc4b1gtgugvgwgxgygzh0single-product-incdec-btn" disabled={parseInt(modifier?.max_permitted) === parseInt(modifier?.modifier_counter) ? true : false} onClick={() => handleIncrement(modifier?.id, mobileSecondItems?.id)}>
-                                            <div className="ez fj">
-
-                                                <div className="fj ez h1">
-                                                    <svg width="30px" height="30px" fill="none" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" aria-hidden="true" focusable="false">
-                                                        <path d="m16.6666 11.0007h-3.6667v-3.66672h-2v3.66672h-3.66665v2h3.66665v3.6666h2v-3.6666h3.6667z" fill="#000000"></path>
-                                                    </svg>
-                                                </div>
-
-                                            </div>
+                                {/* Increment / Decrement Controls */}
+                                <div className="flex items-center space-x-1">
+                                    {parseInt(mobileSecondItems?.counter) > 0 && (
+                                        <>
+                                        <button
+                                            className="p-1 rounded-full bg-gray-100 disabled:opacity-50"
+                                            disabled={mobileSecondItems?.is_item_select} onClick={() => handleDecrement(modifier?.id,mobileSecondItems?.id)}
+                                        >
+                                            <svg
+                                            width="24"
+                                            height="24"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            aria-hidden="true"
+                                            focusable="false"
+                                            >
+                                            <path d="m7.33325 13v-2h9.33335v2z" fill="#000000" />
+                                            </svg>
                                         </button>
-                                        </div>
 
-                                        <div className="spacer _16"></div>
-                                        <div className="e4ald0ghsingle-productincdec">
-                                        <div className="ale4amc4gigjgksingle-productincdec">
-                                            <div className="alaqsingle-product">
-                                            <div className="alamglgmsingle-productincdec">
-                                                <div className="bresdpg3gnsingle-productincdecheading">{mobileSecondItems?.title}</div>
-                                                <div className="spacer _8"></div>
-                                                {
-                                                // getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2) > getAmountConvertToFloatWithFixed(0,2) && 
-                                                <div className="bresbtdqb1bzsingle-productincdecprice">
-                                                    &pound;{getAmountConvertToFloatWithFixed(mobileSecondItems?.price,2)}
-                                                </div>
-                                                }
-                                            </div>
-                                            </div>
-                                        </div>
-                                        </div>
-                                    </div>
-                                    {/* <hr className="efbvgogpsingle-producthr"></hr> */}
-                                </Fragment>
-                            );
-                        }
-                    )}
-                    </div>
+                                        <div className="text-lg font-medium">{parseInt(mobileSecondItems?.counter)}</div>
+                                        </>
+                                    )}
+
+                                    <button
+                                        className="p-1 rounded-full bg-gray-100 disabled:opacity-50"
+                                        disabled={parseInt(modifier?.max_permitted) === parseInt(modifier?.modifier_counter) ? true : false} onClick={() => handleIncrement(modifier?.id, mobileSecondItems?.id)}
+                                    >
+                                        <svg
+                                            width="24"
+                                            height="24"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            aria-hidden="true"
+                                            focusable="false"
+                                        >
+                                        <path
+                                            d="m16.6666 11.0007h-3.6667v-3.66672h-2v3.66672h-3.66665v2h3.66665v3.6666h2v-3.6666h3.6667z"
+                                            fill="#000000"
+                                        />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        );
+                    })   
                 }
             </div>
         </li>

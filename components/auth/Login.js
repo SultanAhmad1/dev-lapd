@@ -75,19 +75,11 @@ export default function Login()
     useEffect(() => {
         if(websiteModificationData)
         {
-            const metaHeadingData = {
-                title: websiteModificationData?.brand?.name,
-                contentData: websiteModificationData?.brand?.name,
-                iconImage: IMAGE_URL_Without_Storage+"/"+websiteModificationData?.websiteModificationLive?.json_log?.[0]?.websiteFavicon,
-                singleItemsDetails: {
-                title: "",
-                description: "",
-                itemImage: "",
-                keywords: "",
-                url: ""
-            }
-        }
-        setMetaDataToDisplay(metaHeadingData)
+            setMetaDataToDisplay((prevData) => ({
+                ...prevData,
+                title: `Login - ${websiteModificationData?.brand?.name}`,
+                contentData: "",
+            }))
         }
     }, [websiteModificationData]);
 

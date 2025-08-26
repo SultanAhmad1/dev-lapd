@@ -2,38 +2,75 @@
 import React, { useContext, useEffect, useState } from 'react'
 import HomeContext from '../contexts/HomeContext'
 import moment from 'moment'
-import { setLocalStorage, setNextCookies, setSessionStorage } from '../global/Store'
-import { BLACK_COLOR, BRAND_SIMPLE_GUID, LIGHT_BLACK_COLOR, WHITE_COLOR } from '../global/Axios'
+import { find_collection_matching_postcode, find_matching_postcode, setLocalStorage, setNextCookies, setSessionStorage } from '../global/Store'
+import { BLACK_COLOR, BRAND_SIMPLE_GUID, DELIVERY_ID, LIGHT_BLACK_COLOR, WHITE_COLOR } from '../global/Axios'
 
 function FilterLocationTime(props) 
 {
     const {isDisplayFromModal} = props
 
     const {
+        setLoader,
         selectedFilter,
         setSelectedFilter,
         filters,
         setFilters,
-        storeName,
-        storeToDayName,
-        storeToDayOpeningTime,
-        storeToDayClosingTime,
-        ordertypeselect, 
-        setOrdertypeselect,
         websiteModificationData,
-        setDisplayFilterModal
+        setDisplayFilterModal,
+        setDeliveryMatrix
     } = useContext(HomeContext)
-
-    const [isHeaderSandwichHover, setIsHeaderSandwichHover] = useState(false);
 
     const handleOrderType = (id) => {
         const updateFilter = filters?.find((findFilter) => findFilter?.id === id && findFilter?.status)
         if(updateFilter)
         {
+            setLoader(true)
             setSelectedFilter(updateFilter)
             setLocalStorage(`${BRAND_SIMPLE_GUID}filter`,updateFilter)
             setNextCookies(`${BRAND_SIMPLE_GUID}filter`,updateFilter)
             document.cookie = `${BRAND_SIMPLE_GUID}filter=${updateFilter}`
+
+            // now set the delivery matrix.
+
+            const getDeliveryMatrix = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}address`)
+            const getSelectedStore = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`)
+            if(getDeliveryMatrix && getSelectedStore)
+            {
+                const objStore = JSON.parse(getSelectedStore)
+
+                const objDeliveryMatrix = JSON.parse(getDeliveryMatrix)
+                const getAvailableStore = objDeliveryMatrix.availableStore?.find((findStore) => findStore.location_guid.includes(objStore.display_id))
+
+                if(getAvailableStore && getAvailableStore.deliveryMatrixes)
+                {
+                    // now check the order type is delivery
+
+                    if(id.includes(DELIVERY_ID))
+                    {
+                        const getValidPostcode = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_valid_postcode`)
+
+                        if(getValidPostcode)
+                        {
+                            const objGetValidPostcode = JSON.parse(getValidPostcode)
+                            find_matching_postcode(getAvailableStore.deliveryMatrixes.delivery_matrix_rows, objGetValidPostcode, setDeliveryMatrix);
+                        }
+                    }
+                    else
+                    {
+                        // for collection
+                        const getValidPostcode = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_valid_postcode`)
+                        
+                        
+                        if(getValidPostcode)
+                        {
+                            const objGetValidPostcode = JSON.parse(getValidPostcode)
+                            find_collection_matching_postcode(getAvailableStore.deliveryMatrixes.collection_matrix_rows, objGetValidPostcode, setDeliveryMatrix);
+                        }
+                    }
+                    
+                }
+
+            }
 
             if(isDisplayFromModal)
             {
@@ -50,110 +87,65 @@ function FilterLocationTime(props)
       setFilters(jsFilters)
     }, [isDisplayFromModal]);
     
-    // useEffect(() => {
-    //     if(isDisplayFromModal)
-    //     {
-    //         const filterByStatus = filters?.filter((filter) => filter?.status === true)
-
-    //         if(parseInt(filterByStatus.length) === parseInt(1))
-    //         {
-    //             setTimeout(() => {
-    //                 handleOrderType(filterByStatus?.[0]?.id)
-    //             }, 3000);
-    //         }
-    //     }
-    // }, [isDisplayFromModal, filters]);
-    
     return (
-        <div className='open-close-time'>
-            <div>
-                {/* <h1 className='gfj0GGGe-store-head'>{storeName}</h1>
+        <div className="w-full bg-gray-100 py-1">
+            <div className="flex gap-2 max-w-lg mx-auto">
+                {filters?.map((filter, index) => {
+                const isActive = filter?.id === selectedFilter?.id;
 
-                <div className='dame-d-store'></div>
-                <div className="display-time">
-                    <span className="">{storeToDayName}: <span>{moment(storeToDayOpeningTime,'HH:mm A').format('HH:mm A')} - {moment(storeToDayClosingTime,'HH:mm A').format('HH:mm A')}</span></span>
-                </div> */}
+                const bgColor = isActive
+                    ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.activeButtonBackgroundColor || LIGHT_BLACK_COLOR
+                    : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || WHITE_COLOR;
 
-            </div>
-            
-            <div className='openCloseTime-type'>
+                const textColor = isActive
+                    ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.activeButtonFontColor || WHITE_COLOR
+                    : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR;
 
-                <div 
-                    className="filter-type"
-                    // style={{
-                    //     background: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || LIGHT_BLACK_COLOR,
-                    //     color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR,
-                    //     border: `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || LIGHT_BLACK_COLOR}` 
-                    //     ,
-                    // }}
+                const borderColor = isActive
+                    ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.activeButtonBackgroundColor || LIGHT_BLACK_COLOR
+                    : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || LIGHT_BLACK_COLOR;
 
-                   
-                >
-                    {
-                        filters?.map((filter,index) =>
-                        {
-                            return(
-                                <div 
-                                    key={index} 
-                                    className={`akd0afbz-delivery-type ${filter?.id === selectedFilter?.id && "delivery-type-active"}`} 
-                                    onClick={() => handleOrderType(filter?.id)}
+                return (
+                    <button
+                        type="button"
+                        key={index}
+                        onClick={() => handleOrderType(filter?.id)}
+                        className="
+                            w-full
+                            text-white px-2 py-1 rounded-3xl
+                            flex items-center justify-center gap-2 border transition-colors duration-200
+                        "
+                        style={{
+                            background: bgColor,
+                            color: textColor,
+                            borderColor: borderColor,
+                        }}
+                    >
+                        {isActive && (
+                            <svg
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="none"
+                                xmlns="http://www.w3.org/2000/svg"
+                            >
+                            <path
+                                d="M4.89163 13.2687L9.16582 17.5427L18.7085 8"
+                                stroke={textColor}
+                                strokeWidth="2.5"
+                                strokeLinejoin="round"
+                            />
+                            </svg>
+                        )}
 
-                                    style={{
-                                        background: filter?.id === selectedFilter?.id ? 
-                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.activeButtonBackgroundColor || LIGHT_BLACK_COLOR
-                
-                                        : 
-                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || WHITE_COLOR
-                                        ,
-                                        color: filter?.id === selectedFilter?.id ? 
-                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.activeButtonFontColor || WHITE_COLOR
-                                        :
-                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR
-                                        ,
-                                        border: filter?.id === selectedFilter?.id ? 
-                                            `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.activeButtonBackgroundColor || LIGHT_BLACK_COLOR}` 
-                                        : 
-                                            `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || LIGHT_BLACK_COLOR}`
-                                        ,
-                                        display: "flex"
-                                    }}
+                       
+                        {filter?.name}
+                        
+                        </button>
 
-                                >
-                                    {
-                                        filter?.id === selectedFilter?.id &&
-                                        <svg width="30px" height="30px" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                            <path 
-                                                d="M4.89163 13.2687L9.16582 17.5427L18.7085 8" 
-                                                stroke={`${(filter?.id === selectedFilter?.id ? (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.activeButtonFontColor || WHITE_COLOR) : (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR))}`} 
-                                                strokeWidth="2.5" 
-                                                strokeLinejoin="round"/>
-                                        </svg>
-                                    }
-                                    <div className="algid0amc5-delivery-type">
-                                        <div className="chic-cj-ckeeafgmc9gnehclbz g7">
-                                            <div className={`algid0amc5-delivery-type ${filter?.status === false && "p8"}`}>
-                                                <div 
-                                                    className="chic-cj-ck b1"
-                                                    style={{
-                                                        color: filter?.id === selectedFilter?.id ? 
-                                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.activeButtonFontColor || WHITE_COLOR
-                                                        :
-                                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || BLACK_COLOR
-                                                        ,
-                                                    }}
-                                                >
-                                                    {filter?.name}
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            )
-                        })
-                    }
-            
-                </div>
 
+                );
+                })}
             </div>
         </div>
     )

@@ -83,16 +83,16 @@ export function setLocalStorage(keyName,data)
     return window.localStorage.setItem(`${keyName}`,JSON.stringify(data))
 }
 
-export function find_matching_postcode(matrixArgument, postcodeArgument, setState)
+export function check_is_delivery_available(matrixArgument, postcodeArgument)
 {
-    var postcode = postcodeArgument.toString();
-    postcode = postcode.toUpperCase();
-    postcode = postcode.replace(/\s/g, '');
+    var postcode = postcodeArgument?.toString();
+    postcode = postcode?.toUpperCase();
+    postcode = postcode?.replace(/\s/g, '');
     var matchingPostcodes = [];
 
     for(let x=0;x<matrixArgument.length;x++)
     {
-        if(postcode.startsWith(matrixArgument[x].postcode) === true)
+        if(postcode?.startsWith(matrixArgument[x].postcode) === true)
         {
             matchingPostcodes.push(matrixArgument[x]);
         }
@@ -124,8 +124,116 @@ export function find_matching_postcode(matrixArgument, postcodeArgument, setStat
         finalMatch = matrixArgument.filter(function(pcode){
             return pcode.postcode == "STANDARD";
         })[0];
+    }
+
+    return finalMatch ?? null
+}
+
+export function find_matching_postcode(matrixArgument, postcodeArgument, setState)
+{
+    var postcode = postcodeArgument?.toString();
+    postcode = postcode?.toUpperCase();
+    postcode = postcode?.replace(/\s/g, '');
+    var matchingPostcodes = [];
+
+    for(let x=0;x<matrixArgument.length;x++)
+    {
+        if(postcode?.startsWith(matrixArgument[x].postcode) === true)
+        {
+            matchingPostcodes.push(matrixArgument[x]);
+        }
+    }
+
+    var finalMatch = null;
+    if(parseInt(matchingPostcodes.length) > parseInt(1))
+    {
+        if(parseInt(postcode.length) === parseInt(7))
+        {
+            finalMatch = matchingPostcodes.filter(function(pcode){
+                return parseInt(pcode.postcode.length) === parseInt(4);
+            })[0];
+        }
+        else if(parseInt(postcode.length) === parseInt(6))
+        {
+            finalMatch = matchingPostcodes.filter(function(pcode){
+                return parseInt(pcode.postcode.length) === parseInt(3);
+            })[0];
+        }
+    }
+    else
+    {
+        finalMatch = matchingPostcodes[0];
+    }
+    
+    if(finalMatch == null)
+    {
+        finalMatch = matrixArgument.filter(function(pcode){
+            return pcode.postcode == "STANDARD";
+        })[0];
+    }
+
+    if (!finalMatch) {
+        window.localStorage.clear();
+        window.alert(
+            "Unfortunately, delivery is not available to this postcode. You may select collection or contact the store for assistance."
+        );
+        return
+    }
+
+    setLocalStorage(`${BRAND_SIMPLE_GUID}delivery_matrix`, finalMatch);
+    setState(finalMatch);
+
+}
+
+export function find_collection_matching_postcode(matrixArgument, postcodeArgument, setState)
+{
+    var postcode = postcodeArgument.toString();
+    postcode = postcode.toUpperCase();
+    postcode = postcode.replace(/\s/g, '');
+    var matchingPostcodes = [];
+
+    for(let x=0;x<matrixArgument.length;x++)
+    {
+        if(postcode.startsWith(matrixArgument[x].collection_postcode) === true)
+        {
+            matchingPostcodes.push(matrixArgument[x]);
+        }
+    }
+
+    var finalMatch = null;
+    if(parseInt(matchingPostcodes.length) > parseInt(1))
+    {
+        if(parseInt(postcode.length) === parseInt(7))
+        {
+            finalMatch = matchingPostcodes.filter(function(pcode){
+                return parseInt(pcode.collection_postcode.length) === parseInt(4);
+            })[0];
+        }
+        else if(parseInt(postcode.length) === parseInt(6))
+        {
+            finalMatch = matchingPostcodes.filter(function(pcode){
+                return parseInt(pcode.collection_postcode.length) === parseInt(3);
+            })[0];
+        }
+    }
+    else
+    {
+        finalMatch = matchingPostcodes[0];
+    }
+    
+    if(finalMatch == null)
+    {
+        finalMatch = matrixArgument.filter(function(pcode){
+            return pcode.collection_postcode == "STANDARD";
+        })[0];
     } 
 
+    if(!finalMatch)
+    {
+        window.localStorage.clear()
+        window.alert("Collection orders are currently disabled. Please reach out to the store management to enable this option.")
+        return
+    }
     setLocalStorage(`${BRAND_SIMPLE_GUID}delivery_matrix`,finalMatch)
     setState(finalMatch)
 }

@@ -7,8 +7,9 @@ import HomeContext from "@/contexts/HomeContext";
 import moment from "moment";
 import { WebsiteSingleItem } from "../WebsiteSingleItem";
 import { MobileSingleItem } from "../MobileSingleItem";
-import { axiosPrivate, BRAND_GUID, BRAND_SIMPLE_GUID, PARTNER_ID } from "@/global/Axios";
+import { axiosPrivate, BRAND_GUID, BRAND_SIMPLE_GUID, IMAGE_URL_Without_Storage, PARTNER_ID } from "@/global/Axios";
 import { ContextCheckApi } from "@/app/layout";
+import Footer from "../Footer";
 
 export default function DisplaySingleItem({params}) 
 {
@@ -524,16 +525,16 @@ export default function DisplaySingleItem({params})
     
     useEffect(() => {
         
-        if(websiteModificationData || singleItem !== undefined || singleItem !== null)
+        if(websiteModificationData && singleItem)
         {
-            const getSeoTitle = singleItem?.seo_title === null ? singleItem.title : singleItem?.seo_title
+            const getSeoTitle = singleItem?.seo_title === null ? singleItem?.title : singleItem?.seo_title
             const getSeoDescription = singleItem?.seo_description === null ? singleItem?.description : singleItem?.seo_description
-
-            const metaHeadingData = {
-                   title: `${getSeoTitle} - ${websiteModificationData?.brand?.name}`,
-                   contentData: `${getSeoDescription} - ${websiteModificationData?.brand?.name}`,
-                   iconImage: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.websiteFavicon,
-                   singleItemsDetails: {
+          
+            setMetaDataToDisplay((prevData) => ({
+                ...prevData,
+                title: `${singleItem.title} - ${websiteModificationData?.brand?.name}`,
+                contentData: `${singleItem.description}`,
+                singleItemsDetails: {
                     title: getSeoTitle,
                     description: getSeoDescription,
                     itemImage: singleItem?.image_url,
@@ -541,9 +542,7 @@ export default function DisplaySingleItem({params})
                     url: window.location.href
                     //  url: {`${storeName.toLowerCase()}/${category?.slug}/${item?.slug}`}
                 }
-            }
-             
-            setMetaDataToDisplay(metaHeadingData)
+            }))
         }
     }, [singleItem, websiteModificationData]);
     
@@ -1009,68 +1008,66 @@ export default function DisplaySingleItem({params})
             ...singleItem,
             modifier_group: singleItem?.modifier_group?.map((modifier) => {
                 if (modifierId === modifier?.id) {
-                return {
-                    ...modifier,
-                    is_modifier_selected: true,
-                    modifier_secondary_items: modifier?.modifier_secondary_items?.map((item) => {
-                        if (itemId === item?.id) {
-                            defaultOption = item?.default_option
-                            return {
-                                ...item,
-                                secondary_item_modifiers:
-                                item?.secondary_item_modifiers?.map(
-                                    (secondaryModifier) => {
-                                    if (secondaryModifierId === secondaryModifier?.id) {
-                                        return {
-                                        ...secondaryModifier,
-                                        valid_class:
-                                            parseInt(secondaryModifier.min_permitted) >
-                                            parseInt(0) &&
-                                            secondaryModifier.valid_class ===
-                                            "error_check"
-                                            ? "success_check"
-                                            : "success_check",
-                                        is_modifier_selected: true,
-                                        secondary_items_modifier_items:
-                                            secondaryModifier?.secondary_items_modifier_items?.map(
-                                            (secondaryItem) => {
-                                                if (
-                                                secondaryItemId === secondaryItem?.id
-                                                ) {
-                                                return {
-                                                    ...secondaryItem,
-                                                    activeClass: "nv",
-                                                    is_item_select: true,
-                                                    item_select_to_sale: true,
-                                                };
-                                                }
+                    return {
+                        ...modifier,
+                        is_modifier_selected: true,
+                        modifier_secondary_items: modifier?.modifier_secondary_items?.map((item) => {
+                            if (itemId === item?.id) {
+                                defaultOption = item?.default_option
+                                return {
+                                    ...item,
+                                    secondary_item_modifiers: item?.secondary_item_modifiers?.map((secondaryModifier) => 
+                                    {
+                                        if (secondaryModifierId === secondaryModifier?.id) {
+                                            return {
+                                            ...secondaryModifier,
+                                            valid_class:
+                                                parseInt(secondaryModifier.min_permitted) >
+                                                parseInt(0) &&
+                                                secondaryModifier.valid_class ===
+                                                "error_check"
+                                                ? "success_check"
+                                                : "success_check",
+                                            is_modifier_selected: true,
+                                            secondary_items_modifier_items:
+                                                secondaryModifier?.secondary_items_modifier_items?.map(
+                                                (secondaryItem) => {
+                                                    if (
+                                                    secondaryItemId === secondaryItem?.id
+                                                    ) {
+                                                    return {
+                                                        ...secondaryItem,
+                                                        activeClass: "nv",
+                                                        is_item_select: true,
+                                                        item_select_to_sale: true,
+                                                    };
+                                                    }
 
-                                                return {
-                                                ...secondaryItem,
-                                                activeClass: "ob",
-                                                is_item_select: false,
-                                                item_select_to_sale: false,
-                                                };
-                                            }
-                                            ),
-                                        };
-                                    }
-                                    return secondaryModifier;
-                                    }
-                                ),
-                                // activeClass: "nv",
-                                // is_item_select: true
-                            };
+                                                    return {
+                                                    ...secondaryItem,
+                                                    activeClass: "ob",
+                                                    is_item_select: false,
+                                                    item_select_to_sale: false,
+                                                    };
+                                                }
+                                                ),
+                                            };
+                                        }
+                                        return secondaryModifier;
+                                    }),
+                                    // activeClass: "nv",
+                                    // is_item_select: true
+                                };
+                            }
+                            return item;
+                            // return{
+                            //     ...secondItems,
+                            //     activeClass: "ob",
+                            //     is_item_select: false
+                            // }
                         }
-                        return item;
-                        // return{
-                        //     ...secondItems,
-                        //     activeClass: "ob",
-                        //     is_item_select: false
-                        // }
-                    }
-                    ),
-                };
+                        ),
+                    };
                 }
 
                 return modifier;
@@ -1859,10 +1856,7 @@ export default function DisplaySingleItem({params})
         }
 
         const response = await axiosPrivate.post('/store-add-to-basket', data)
-        // console.log("basket success: ",response);
-        
     } catch (error) {
-        // console.log("basket error:", error);
             
     }
 }
@@ -2572,7 +2566,7 @@ export default function DisplaySingleItem({params})
     <>
         <Header />
 
-        <div className="single-product">
+        <div className="hidden lg:block">
             <WebsiteSingleItem
                 {
                     ...{
@@ -2598,7 +2592,7 @@ export default function DisplaySingleItem({params})
         </div>
 
         {/* Mobile Responsive */}
-        <div className="mobile-view">
+        <div className="block lg:hidden">
             <MobileSingleItem
                 {
                     ...{
@@ -2646,5 +2640,6 @@ export default function DisplaySingleItem({params})
                 }
             />
         }
+        <Footer />
     </>)
 }

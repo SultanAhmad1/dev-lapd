@@ -1,41 +1,56 @@
 "use client";
 
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { useGetQueryAutoUpdate } from "./reactquery/useQueryHook";
 import HomeContext from "@/contexts/HomeContext";
 import AtLoadModalShow from "./modals/AtLoadModalShow";
 import Cart from "./Cart";
 import Loader from "./modals/Loader";
-import { axiosPrivate, BRAND_GUID, BRAND_SIMPLE_GUID, DEFAULT_LOCATION, DELIVERY_ID, PARTNER_ID } from "@/global/Axios";
+import { axiosPrivate, BRAND_GUID, BRAND_SIMPLE_GUID, DELIVERY_ID, IMAGE_URL_Without_Storage, PARTNER_ID } from "@/global/Axios";
 import moment from "moment";
 import { getAmountConvertToFloatWithFixed, setLocalStorage } from "@/global/Store";
 import CustomerPersonal from "./CustomerPersonal";
 import MenuNotAvailableModal from "./modals/MenuNotAvailableModal";
 import PlaceOrderModal from "./modals/PlaceOrderModal";
-import StoreClosedModal from "./modals/StoreClosedModal";
 import { useSearchParams } from "next/navigation";
 import { UAParser } from "ua-parser-js";
+import { listtime } from "@/global/Time";
+import { ContextCheckApi } from "@/app/layout";
 
 export default function CustomLayout({ children }) 
 {
-  const searchParams = useSearchParams()
+  const {setMetaDataToDisplay} = useContext(ContextCheckApi)
+  // const searchParams = useSearchParams()
   
-  const customLayoutLocationFiltered = searchParams.get('location')
+  // const customLayoutLocationFiltered = searchParams.get('location')
   
-  const customerLocationDetails = customLayoutLocationFiltered ? customLayoutLocationFiltered.replace(/^"+|"+$/g, '') : '';
+  // const customerLocationDetails = customLayoutLocationFiltered ? customLayoutLocationFiltered.replace(/^"+|"+$/g, '') : '';
+  // // This block of code, will help in-case of customer used our site before qr-code,
+  // // Mean already type postcode selected store, order type collection or delivery.
+  // // but suddenly scan qr-code for collection order inside the store.
+  // // This block of code will help, to switch.
+  // useEffect(() => {
+  //   if(parseInt(customerLocationDetails.length) > parseInt(0))
+  //   {
+  //     window.localStorage.clear()
+  //   }
+  // }, [customerLocationDetails]);
+  
+  // const searchParams = useSearchParams();
 
-  // This block of code, will help in-case of customer used our site before qr-code,
-  // Mean already type postcode selected store, order type collection or delivery.
-  // but suddenly scan qr-code for collection order inside the store.
-  // This block of code will help, to switch.
-  useEffect(() => {
-    if(parseInt(customerLocationDetails.length) > parseInt(0))
-    {
-      window.localStorage.clear()
-    }
-  }, [customerLocationDetails]);
-  
+  // // Extract primitive value once
+  // const locationParam = searchParams.get("location") || "";
+
+  // useEffect(() => {
+  //   const cleaned = locationParam.replace(/^"+|"+$/g, "");
+  //   if (cleaned.length > 0) {
+  //     localStorage.clear();
+  //   }
+  // }, [locationParam]);
+
+
   const [loader, setLoader] = useState(true);
+  const [paymentLoader, setPaymentLoader] = useState(false);
 
   const [ipAddressDetails, setIpAddressDetails] = useState(null);
   
@@ -50,14 +65,17 @@ export default function CustomLayout({ children })
   const [headerCartBtnDisplay, setHeaderCartBtnDisplay] = useState(true);
   
   // FilterLocationTime Component States
-  const [storeGUID, setStoreGUID] = useState(null);
+  const [storeGUID, setStoreGUID] = useState("57237242-C91A-4C3F-BCF1-5DAF5FE65D6E");
   const [menuRequestBoolean, setMenuRequestBoolean] = useState(true);
   
   const [storeName, setStoreName] = useState("");
   const [storeToDayName, setStoreToDayName] = useState("");
   const [storeToDayOpeningTime, setStoreToDayOpeningTime] = useState("");
   const [storeToDayClosingTime, setStoreToDayClosingTime] = useState("");
-
+  
+  const [storeCurrentOrNextDayOpeningTime, setStoreCurrentOrNextDayOpeningTime] = useState("");
+  const [storeCurrentOrNextDayClosingTime, setStoreCurrentOrNextDayClosingTime] = useState("");
+  
   const [isScheduleIsReady, setIsScheduleIsReady] = useState(false);
   const [isScheduleClicked, setIsScheduleClicked] = useState(false);
   
@@ -65,7 +83,9 @@ export default function CustomLayout({ children })
   // 0 for neutral, 1 for today, 2 for next day.
   const [isScheduleForToday, setIsScheduleForToday] = useState(0);
   const [scheduleTime, setScheduleTime] = useState("");
+  const [isScheduleEnabled, setIsScheduleEnabled] = useState(0);
   
+  const [selectedStoreDetails, setSelectedStoreDetails] = useState(null);
   
 
   const [cutOffSchedule, setCutOffSchedule] = useState(null);
@@ -74,7 +94,8 @@ export default function CustomLayout({ children })
 
   const [selectedCategoryId, setSelectedCategoryId] = useState(0);
   const [selectedItemId, setSelectedItemId] = useState(0);
-
+  const [orderGuid, setOrderGuid] = useState("");
+  
   const [firstName, setFirstName] = useState("Sultan");
   const [lastName, setLastName] = useState("Ahmad");
 
@@ -84,6 +105,7 @@ export default function CustomLayout({ children })
   // HomeContext Data
   const [postCodeForOrderAmount, setPostCodeForOrderAmount] = useState("");
   const [postcode, setPostcode] = useState("");
+  const [customDoorNumberName, setCustomDoorNumberName] = useState(null);
   const [street1, setStreet1] = useState("");
   const [street2, setStreet2] = useState("");
   const [deliveryMatrix, setDeliveryMatrix] = useState(null);
@@ -148,7 +170,7 @@ export default function CustomLayout({ children })
     try {
       
       const getQr = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}via_qr`))
-
+      
       if(getQr)
       {
         setLocalStorage(`${BRAND_SIMPLE_GUID}via_qr`, parseInt(getQr) === parseInt(1) ? 1 : 0)
@@ -240,7 +262,7 @@ export default function CustomLayout({ children })
       }
 
       const getSelectStore = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`);
-
+      
       if (getSelectStore === null) 
       {
         // setStoreGUID(DEFAULT_LOCATION)
@@ -255,7 +277,6 @@ export default function CustomLayout({ children })
         } 
         else 
         {
-       
           setAtFirstLoad(true)
           setHeaderCartBtnDisplay(true);
           setHeaderPostcodeBtnDisplay(true);
@@ -263,6 +284,7 @@ export default function CustomLayout({ children })
       } 
       else 
       {
+        setSelectedStoreDetails(JSON.parse(getSelectStore))
         setMenuRequestBoolean(true)
         setPostcode(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_valid_postcode`)));
 
@@ -273,20 +295,62 @@ export default function CustomLayout({ children })
         const address = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}address`));
         const getDeliveryMatrix = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`));
 
-        setSelectedPostcode(getDeliveryMatrix?.postcode)
+        
         setSelectedLocation(parseToJSobj?.display_id)
         
         setAmountDiscountApplied(appliedAmountDiscount);
         setDeliveryMatrix(getDeliveryMatrix);
-        setPostCodeForOrderAmount(getDeliveryMatrix?.postcode);
 
-        const parseToJSobjAvailableStore = address?.availableStore;
-        if (parseInt(parseToJSobjAvailableStore.length) > parseInt(0)) {
-          for (const store of parseToJSobjAvailableStore) {
-            if (parseToJSobj.display_id === store?.location_guid) {
-              setStreet1(store?.user_street1);
-              setStreet2(store?.user_street2);
+        const getFilters = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`))
+
+        if(getFilters !== null && getFilters !== undefined)
+        {
+          if(getFilters?.id?.includes(DELIVERY_ID))
+          {
+            setPostCodeForOrderAmount(getDeliveryMatrix?.postcode);
+            setSelectedPostcode(getDeliveryMatrix?.postcode)
+          }
+          else
+          {
+            setPostCodeForOrderAmount(getDeliveryMatrix?.collection_postcode);
+            setSelectedPostcode(getDeliveryMatrix?.collection_postcode)
+          }
+        }
+
+        if(getFilters?.id === DELIVERY_ID)
+        {
+          const houseName = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}address`)
+
+          const ukPostcode = JSON.parse(houseName)
+          setStreet1(ukPostcode?.ukpostcode?.street1);
+          setStreet2(ukPostcode?.ukpostcode?.street2);
+        }
+        else
+        {
+          const parseToJSobjAvailableStore = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}address`)
+          if (parseInt(parseToJSobjAvailableStore.length) > parseInt(0)) {
+            for (const store of parseToJSobjAvailableStore) {
+              if (parseToJSobj.display_id === store?.location_guid) {
+                setCustomDoorNumberName(store?.house_no_name);
+                setStreet1(store?.user_street1);
+                setStreet2(store?.user_street2);
+              }
             }
+          }
+
+          if(parseToJSobjAvailableStore)
+          {
+            const toObj = JSON.parse(parseToJSobjAvailableStore)
+            const findStore = toObj?.availableStore.find((store) => store.location_guid === parseToJSobj.display_id)
+            setCustomDoorNumberName(findStore?.house_no_name);
+
+            const filterAddress = findStore.address.replace(findStore.house_no_name, '').trim();
+            const [street1, ...rest] = filterAddress.split(',');
+            const street2 = rest.join(',').trim();
+
+            setStreet1(street1.trim());
+            setStreet2(street2);
+            
           }
         }
 
@@ -335,7 +399,6 @@ export default function CustomLayout({ children })
             ip: data.ip,
             country: data.country,
           };
-          // console.log("Full User Info:", updatedUser);
           // Save or send to backend
           localStorage.setItem("userInfo", JSON.stringify(updatedUser));
         })
@@ -349,11 +412,11 @@ export default function CustomLayout({ children })
   }, []);
   
   useEffect(() => {
-    if(storeGUID !== null && storeGUID !== undefined)
+    if(storeGUID)
     {
       setMenuRequestBoolean(true)
-      menuRefetch()
       colorRefetch()
+      menuRefetch()
 
     }
     else{
@@ -384,8 +447,6 @@ export default function CustomLayout({ children })
           }
           const getResponse = await axiosPrivate.post(`/store-user-device-detail`, data)
 
-          // console.log("user store detail data run:");
-          
           const filterResponse = getResponse.data.data
 
           const editUserInfoFromLocal = {
@@ -412,46 +473,59 @@ export default function CustomLayout({ children })
   const onMenuSuccess = (data) => 
   {
     setLoader(false)
-    const { menu } = data?.data
-    
-    // console.log("response menu data:", data);
-    
+    const { menu, orderExistOrNot} = data?.data
+
+    if(orderExistOrNot)
+    {
+      setOrderGuid(orderExistOrNot?.external_order_id)
+      setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`, orderExistOrNot?.external_order_id)
+    }
+
     const convertToJSobj = menu?.menu_json_log;
 
     const menuToParse = JSON.parse(convertToJSobj.menus)
+
+    const customLayoutOrderGuid = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_guid`)
+    setOrderGuid(customLayoutOrderGuid ? JSON.parse(customLayoutOrderGuid) : "")
 
     const getdayInformation = menuToParse?.[0].service_availability?.find((dayInformation) => dayInformation.day_of_week === moment().format("dddd").toLowerCase());
     const getNextDayInformation = menuToParse?.[0].service_availability?.find((dayInformation) => dayInformation.day_of_week === moment().add(1, 'days').format("dddd").toLowerCase());
 
     setStoreToDayName(moment().format("dddd"));
-    
+
     setStoreToDayOpeningTime(getdayInformation?.time_periods?.[0].start_time);
     setStoreToDayClosingTime(getdayInformation?.time_periods?.[0].end_time);
+
+    let customUpdateAddMinutes = (selectedFilter?.id === DELIVERY_ID) ?  getdayInformation?.time_periods?.[0]?.time_to : getdayInformation?.time_periods?.[0]?.collection_after_opening_from;
+
+    const customUpdateEndTime = moment.utc(getdayInformation?.time_periods?.[0].end_time, "HH:mm", "Europe/London").add(customUpdateAddMinutes,'minutes').format("HH:mm")
+    const customUpdateOpeningTime = moment.utc(getdayInformation?.time_periods?.[0].start_time, "HH:mm", "Europe/London").add(customUpdateAddMinutes,'minutes').format("HH:mm")
+
+    const getCurrentTime = moment().tz("Europe/London").format("HH:mm");
+    setStoreCurrentOrNextDayOpeningTime(customUpdateOpeningTime >= getCurrentTime ? customUpdateOpeningTime : getCurrentTime )
+    setStoreCurrentOrNextDayClosingTime(customUpdateEndTime);
 
     const mergedDayInfo = [getdayInformation, getNextDayInformation].filter(Boolean);
     setCutOffSchedule(mergedDayInfo)
 
     if (convertToJSobj?.menus) {
       const getDay = JSON.parse(convertToJSobj.menus);
+      
       const dayName = moment().format("dddd").toLowerCase();
     
       // 1) Find today’s availability entry
       const findToday = getDay?.[0]?.service_availability?.find(day =>
         day.day_of_week.toLowerCase().includes(dayName)
       );
-    
-      const dayNumber = moment().day();
-      const dateTime = moment().format("HH:mm");
-      // const findToday = getDay?.[0]?.service_availability?.find((dayInformation) => dayInformation.day_of_week === moment().format("dddd").toLowerCase());
 
       if (!findToday) {
         // No service today
-        
         return;
       }
           
           
       const period = findToday.time_periods?.[0];
+      
       if (!period) {
         // No defined time slot
         // setAtFirstLoad(false);
@@ -462,238 +536,239 @@ export default function CustomLayout({ children })
       // 2) Build Moments for start/end **today** at those clock times:
       const now = moment(); // full date and time now
 
-      const [startHour, startMinute] = period.start_time.split(":").map(Number);
-      const [endHour, endMinute] = period.end_time.split(":").map(Number);
+      const currentTime = moment().tz("Europe/London").format("HH:mm");
 
-      let startTime = moment(now).set({ hour: startHour, minute: startMinute, second: 0, millisecond: 0 });
-      let endTime = moment(now).set({ hour: endHour, minute: endMinute, second: 0, millisecond: 0 });
-
-      const isBeforeStart = now.isBefore(startTime)
-      
-      const isAfterClose = now.isBefore(endTime)
-
+      const getStartTime = moment.utc(period.start_time, "HH:mm", "Europe/London").format("HH:mm")
+      let getEndTime = moment.utc(period.end_time, "HH:mm", "Europe/London").format("HH:mm")
       const getNextDayDetail = getDay?.[0]?.service_availability?.find((dayInformation) => dayInformation.day_of_week === moment().add(1, 'days').format("dddd").toLowerCase());
       
-      const minsUntilClose = endTime.diff(now, "minutes");
 
+      // delivery_cut_off and collection_cut_off will be used with end_time not with start_time.
       const getFilter = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`))
       
-      if(isBeforeStart)
+      getEndTime = moment.utc(period.end_time,"HH:mm", "Europe/London").subtract((getFilter?.id === DELIVERY_ID) ? period.delivery_cut_off : period.collection_cut_off, "minute").format("HH:mm")
+
+      // This block of code will check the schedule time for today, and check the schedule time is true/false.
+
+        const newNextDeliveryOrCollection = getNextDayDetail.time_periods?.[0];
+          
+      // for today delivery or collection
+
+      setIsScheduleForToday(0)
+      if(getFilter?.id === DELIVERY_ID)
       {
+        // for delivery, i need to check the schedule time for today, and check the schedule is enable or not.
+        setIsScheduleEnabled(0)
+      }
+      else
+      {
+        // for collection, i need to check the schedule time for today, and check the schedule is enable or not.
+        setIsScheduleEnabled(0)
+      }
+      
+      const getTodayDetails = getDay?.[0]?.service_availability?.find((dayInformation) => {
+        return dayInformation.day_of_week === moment().format("dddd").toLowerCase();
+      });
+      
+      if (getTodayDetails) {
+        const newDeliveryOrCollection = getTodayDetails.time_periods?.[0];
+        // first check the order type is delivery or collection.
+        let customBeforeAddMinutes = (getFilter?.id === DELIVERY_ID) ?  newDeliveryOrCollection?.time_to : newDeliveryOrCollection?.collection_after_opening_from;
+        const customBeforeUpdateScheduleTime = moment.utc(currentTime, "HH:mm", "Europe/London").add(customBeforeAddMinutes,'minutes').format("HH:mm")
+        
+        setScheduleTime(customBeforeUpdateScheduleTime);
+
+        const nextAvailableTime = listtime.find(item => 
+          moment(item.time, "HH:mm").isSameOrAfter(moment(customBeforeUpdateScheduleTime, "HH:mm"))
+        );
+        
+        setStoreCurrentOrNextDayOpeningTime(nextAvailableTime?.time)
+      }
+      setIsScheduleIsReady(false)
+      setIsCheckoutReadyAfterSchedule(false)
+      setScheduleMessage("")
+        
+      // for today delivery or collection end.
+      if(getStartTime >= currentTime)
+      {
+        // i need to check the schedule time for today, and check the schedule time check is true/false.
+        setIsScheduleForToday(1)
+        if(getFilter?.id === DELIVERY_ID)
+        {
+          // for delivery, i need to check the schedule time for today, and check the schedule is enable or not.
+          setIsScheduleEnabled(parseInt(period.is_delivery_schedule) === parseInt(0) && 1)
+        }
+        else
+        {
+          // for collection, i need to check the schedule time for today, and check the schedule is enable or not.
+          setIsScheduleEnabled(parseInt(period.is_collection_schedule) === parseInt(0) && 2)
+        }
+        
         const getTodayDetails = getDay?.[0]?.service_availability?.find((dayInformation) => {
           return dayInformation.day_of_week === moment().format("dddd").toLowerCase();
         });
-        
+  
+
         if (getTodayDetails) {
           const newDeliveryOrCollection = getTodayDetails.time_periods?.[0];
-        
           // first check the order type is delivery or collection.
+          let customBeforeAddMinutes = (getFilter?.id === DELIVERY_ID) ?  newDeliveryOrCollection?.time_to : newDeliveryOrCollection?.collection_after_opening_from;
 
-          if (newDeliveryOrCollection?.start_time && newDeliveryOrCollection?.time_to != null) {
-            // const nextDayStartTime = moment(newDeliveryOrCollection.start_time, 'HH:mm');
-            // const updatedTime = nextDayStartTime.clone().add(newDeliveryOrCollection.time_to, 'minutes');
-            const today = moment().format('YYYY-MM-DD'); // Get today's date
-            const startTime = newDeliveryOrCollection.start_time; // e.g., "14:00"
-            const timeToAdd = newDeliveryOrCollection.time_to; // e.g., 30
-
-            // Combine date and time, then add minutes
-            const todayStartTime = moment(`${today} ${startTime}`, 'YYYY-MM-DD HH:mm');
-            
-            const getFilter = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`))
-
-            if(getFilter && getFilter?.id === DELIVERY_ID)
-            {
-              const updatedTime = todayStartTime.add(timeToAdd, 'minutes');
-              // Set only the time part
-              setScheduleTime(updatedTime.format('YYYY-MM-DD HH:mm:ss'));
-            }
-            else
-            {
-              const updatedTime = todayStartTime.add(newDeliveryOrCollection.collection_after_opening_from, 'minutes');
-              // Set only the time part
-              setScheduleTime(updatedTime.format('YYYY-MM-DD HH:mm:ss'));
-            }
-          }
-          else
-          {
-            const today = moment().format('YYYY-MM-DD'); // Get today's date
-            const startTime = newDeliveryOrCollection.start_time; // e.g., "14:00"
-            const timeToAdd = newDeliveryOrCollection.time_from;
-
-            // Combine date and time, then add minutes
-            const todayStartTime = moment(`${today} ${startTime}`, 'YYYY-MM-DD HH:mm');
-            const getFilter = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`))
-            
-            if(getFilter && getFilter?.id === DELIVERY_ID)
-            {
-              const updatedTime = todayStartTime.add(timeToAdd, 'minutes');
-              // Set only the time part
-              setScheduleTime(updatedTime.format('YYYY-MM-DD HH:mm:ss'))
-            }
-            else
-            {
-              const updatedTime = todayStartTime.add(newDeliveryOrCollection.collection_after_opening_from, 'minutes');
-              // Set only the time part
-              setScheduleTime(updatedTime.format('YYYY-MM-DD HH:mm:ss'))
-            }
-          }
+          const customBeforeUpdateScheduleTime = moment.utc(newDeliveryOrCollection.start_time, "HH:mm", "Europe/London").add(customBeforeAddMinutes,'minutes').format("HH:mm")
+          
+          setScheduleTime(customBeforeUpdateScheduleTime);
+          setStoreCurrentOrNextDayOpeningTime(customBeforeUpdateScheduleTime)
         }
 
         setIsScheduleIsReady(true)
-        setIsScheduleForToday(1)
         setIsCheckoutReadyAfterSchedule(true)
         setScheduleMessage("later today")
         
       }
-      else if(! isAfterClose)
+      // This block of code will check the schedule time for next day, and check the schedule time check is true/false.
+      else if(currentTime >= getEndTime)
       {
+        
+        if(getFilter?.id === DELIVERY_ID)
+        {
+          // for delivery, i need to check the schedule time for today, and check the schedule is enable or not.
+          setIsScheduleEnabled(parseInt(period.is_delivery_schedule) === parseInt(0) && 1)
+        }
+        else
+        {
+          // for collection, i need to check the schedule time for today, and check the schedule is enable or not.
+          setIsScheduleEnabled(parseInt(period.is_collection_schedule) === parseInt(0) && 2)
+        }
+
         const getNextDayDetail = getDay?.[0]?.service_availability?.find((dayInformation) => {
           return dayInformation.day_of_week === moment().add(1, 'days').format("dddd").toLowerCase();
         });
         
+        const getCurrentDayDetail = getDay?.[0]?.service_availability?.find((dayInformation) => {
+          return dayInformation.day_of_week === moment().add('days').format("dddd").toLowerCase();
+        });
+
+        // checking after adding minutes, current day is bigger or not.
+        const currentDeliveryCollection = getCurrentDayDetail.time_periods?.[0];
+        let customUpdateAddMinutes = (getFilter?.id === DELIVERY_ID) ?  currentDeliveryCollection.time_to : currentDeliveryCollection.collection_after_opening_from;
+        const customCurrentEndTime = moment.utc(currentDeliveryCollection.end_time, "HH:mm", "Europe/London").add(customUpdateAddMinutes,'minutes').format("HH:mm")
+        const customCurrentOpeningTime = moment.utc(currentDeliveryCollection.start_time, "HH:mm", "Europe/London").add(customUpdateAddMinutes,'minutes').format("HH:mm")
+
+        // get the two dates difference
+        const todayDate = moment().tz("Europe/London").format("YYYY-MM-DD");
+
+        const startDateTime = moment(`${todayDate} ${currentTime}`, "YYYY-MM-DD HH:mm");
+        const endDateTime = moment(`${todayDate} ${customCurrentEndTime}`, "YYYY-MM-DD HH:mm");
+
+        const differenceInMinutes = endDateTime.diff(startDateTime, 'minutes')
+        const getTheMinutes = (getFilter?.id === DELIVERY_ID ? currentDeliveryCollection.time_to : currentDeliveryCollection.collection_after_opening_from)
+        if((currentTime >= customCurrentEndTime || currentTime <= customCurrentEndTime) && differenceInMinutes >= getTheMinutes)
+        {
+          const getCurrentTime = moment().tz("Europe/London").format("HH:mm");
+          setStoreCurrentOrNextDayOpeningTime(customCurrentOpeningTime >= getCurrentTime ? customCurrentOpeningTime : getCurrentTime )
+          setStoreCurrentOrNextDayClosingTime(customCurrentEndTime);
+        }
+        else 
         if (getNextDayDetail) {
-          const newDeliveryOrCollection = getNextDayDetail.time_periods?.[0];
-          setStoreToDayClosingTime(newDeliveryOrCollection?.end_time);
+          const newNextDeliveryOrCollection = getNextDayDetail.time_periods?.[0];
+          
+          // here i am displaying next day opening closing time
+          setStoreToDayClosingTime(getCurrentDayDetail?.time_periods?.[0]?.end_time);
+          
+          let customUpdateAddMinutes = (getFilter?.id === DELIVERY_ID) ?  newNextDeliveryOrCollection?.time_to : newNextDeliveryOrCollection?.collection_after_opening_from;
+          const customUpdateEndTime = moment.utc(newNextDeliveryOrCollection.end_time, "HH:mm", "Europe/London").add(customUpdateAddMinutes,'minutes').format("HH:mm")
+          const customUpdateOpeningTime = moment.utc(newNextDeliveryOrCollection.start_time, "HH:mm", "Europe/London").add(customUpdateAddMinutes,'minutes').format("HH:mm")
 
-          if (newDeliveryOrCollection?.start_time && newDeliveryOrCollection?.time_to != null) {
-            // const nextDayStartTime = moment(newDeliveryOrCollection.start_time, 'HH:mm');
-            // const updatedTime = nextDayStartTime.clone().add(newDeliveryOrCollection.time_to, 'minutes');
-        
-            const nextDay = moment().add(1, 'days').format('YYYY-MM-DD'); // Get next day's date
-            const startTime = newDeliveryOrCollection.start_time; // e.g., "14:00"
-            const timeToAdd = newDeliveryOrCollection.time_to; // e.g., 30
-
-            // Combine date and time, then add minutes
-            const todayStartTime = moment(`${nextDay} ${startTime}`, 'YYYY-MM-DD HH:mm');
-            const updatedTime = todayStartTime.add(timeToAdd, 'minutes');
-            // Set only the time part
-            setScheduleTime(updatedTime.format('YYYY-MM-DD HH:mm:ss'));
-            
-          }
-          else
-          {
-            const nextDay = moment().add(1, 'days').format('YYYY-MM-DD'); // Get next day's date
-            const startTime = newDeliveryOrCollection.start_time; // e.g., "14:00"
-            const timeToAdd = newDeliveryOrCollection.time_from; // e.g., 30
-
-            // Combine date and time, then add minutes
-            const todayStartTime = moment(`${nextDay} ${startTime}`, 'YYYY-MM-DD HH:mm');
-            const updatedTime = todayStartTime.add(timeToAdd, 'minutes');
-            // Set only the time part
-            setScheduleTime(updatedTime.format('YYYY-MM-DD HH:mm:ss'));
-
-          }
+          setStoreCurrentOrNextDayOpeningTime(customUpdateOpeningTime)
+          setStoreCurrentOrNextDayClosingTime(customUpdateEndTime === "00:00" ? moment.utc(customUpdateEndTime, "HH:mm", "Europe/London").subtract(15,'minutes').format("HH:mm"): customUpdateEndTime);
+         
+          let customBeforeAddMinutes = (getFilter?.id === DELIVERY_ID) ?  newNextDeliveryOrCollection?.time_to : newNextDeliveryOrCollection?.collection_after_opening_from;
+          const customBeforeUpdateScheduleTime = moment.utc(newNextDeliveryOrCollection.start_time, "HH:mm", "Europe/London").add(customBeforeAddMinutes,'minutes').format("HH:mm")
+          setScheduleTime(customBeforeUpdateScheduleTime);
+          setIsScheduleIsReady(true)
+          setIsCheckoutReadyAfterSchedule(true)
+          setScheduleMessage(getNextDayDetail.day_of_week)
+          setIsScheduleForToday(2)
         }
 
-        setIsScheduleIsReady(true)
-        setIsScheduleForToday(2)
-        setIsCheckoutReadyAfterSchedule(true)
-        setScheduleMessage(getNextDayDetail.day_of_week)
       }
-      else if(getFilter?.id === DELIVERY_ID)
-      {
-        if(parseInt(minsUntilClose) <= parseInt(period.delivery_cut_off))
-        {
-          if(parseInt(getNextDayDetail.time_periods?.[0]?.is_delivery_schedule) === parseInt(1))
-          {
-            const getNextDayDetail = getDay?.[0]?.service_availability?.find((dayInformation) => {
-              return dayInformation.day_of_week === moment().add(1, 'days').format("dddd").toLowerCase();
-            });
-            if (getNextDayDetail) {
-              const newDeliveryOrCollection = getNextDayDetail.time_periods?.[0];
-            
-              if (newDeliveryOrCollection?.start_time && newDeliveryOrCollection?.time_to != null) {
-                const nextDay = moment().add(1, 'days').format('YYYY-MM-DD'); // Get next day's date
-                const startTime = newDeliveryOrCollection.start_time; // e.g., "14:00"
-                const timeToAdd = newDeliveryOrCollection.time_to; // e.g., 30
-    
-                // Combine date and time, then add minutes
-                const todayStartTime = moment(`${nextDay} ${startTime}`, 'YYYY-MM-DD HH:mm');
-                const updatedTime = todayStartTime.add(timeToAdd, 'minutes');
-                // Set only the time part
-                setScheduleTime(updatedTime.format('YYYY-MM-DD HH:mm:ss'));
-              }
-              else
-              {
-                const nextDay = moment().add(1, 'days').format('YYYY-MM-DD'); // Get next day's date
-                const startTime = newDeliveryOrCollection.start_time; // e.g., "14:00"
-                const timeToAdd = newDeliveryOrCollection.time_from; // e.g., 30
-    
-                // Combine date and time, then add minutes
-                const todayStartTime = moment(`${nextDay} ${startTime}`, 'YYYY-MM-DD HH:mm');
-                const updatedTime = todayStartTime.add(timeToAdd, 'minutes');
-                // Set only the time part
-                setScheduleTime(updatedTime.format('YYYY-MM-DD HH:mm:ss'));
-              }
-            }
+      // // This block of code will work when time in between the opening and closing time for delivery.
+      // else if(getFilter?.id === DELIVERY_ID)
+      // {
+      //   if(parseInt(minsUntilClose) <= parseInt(period.delivery_cut_off))
+      //   {
+      //     if(parseInt(getNextDayDetail.time_periods?.[0]?.is_delivery_schedule) === parseInt(1))
+      //     {
+      //       const getNextDayDetail = getDay?.[0]?.service_availability?.find((dayInformation) => {
+      //         return dayInformation.day_of_week === moment().add(1, 'days').format("dddd").toLowerCase();
+      //       });
+      //       if (getNextDayDetail) {
+      //         const newDeliveryOrCollection = getNextDayDetail.time_periods?.[0];
+              
+      //         let customBeforeAddMinutes = newDeliveryOrCollection?.time_to;
+      //         const customBeforeUpdateScheduleTime = moment.utc(newDeliveryOrCollection.start_time, "HH:mm", "Europe/London").add(customBeforeAddMinutes,'minutes').format("HH:mm")
+      //         setScheduleTime(customBeforeUpdateScheduleTime);
+      //       }
 
-            setIsScheduleForToday(2)
-            setIsScheduleIsReady(true)
-            setIsCheckoutReadyAfterSchedule(true)
-            setScheduleMessage(getNextDayDetail.day_of_week)
-            setStoreToDayClosingTime(newDeliveryOrCollection?.end_time);
-          }
-          else
-          {
-            setIsScheduleForToday(0)
-            setIsScheduleIsReady(false)
-            setIsCheckoutReadyAfterSchedule(false)
-            setScheduleMessage("")
-            setScheduleTime("")
-          }
-        }
-      }
-      else {
-        if(parseInt(minsUntilClose) <= parseInt(period.collection_cut_off))
-        {
-          if(parseInt(getNextDayDetail.time_periods?.[0]?.is_delivery_schedule) === parseInt(1))
-          {
-            const getNextDayDetail = getDay?.[0]?.service_availability?.find((dayInformation) => {
-              return dayInformation.day_of_week === moment().add(1, 'days').format("dddd").toLowerCase();
-            });
+      //       setIsScheduleForToday(2)
+      //       setIsScheduleIsReady(true)
+      //       setIsCheckoutReadyAfterSchedule(true)
+      //       setScheduleMessage(getNextDayDetail.day_of_week)
+
+      //       setStoreToDayClosingTime(newDeliveryOrCollection?.end_time);
+
+      //       let customUpdateAddMinutes = newDeliveryOrCollection?.time_to;
+      //       const customUpdateEndTime = moment.utc(newDeliveryOrCollection.end_time, "HH:mm", "Europe/London").add(customUpdateAddMinutes,'minutes').format("HH:mm")
+      //       setStoreCurrentOrNextDayClosingTime(customUpdateEndTime);
+      
+      //     }
+      //     else
+      //     {
+      //       setIsScheduleForToday(0)
+      //       setIsScheduleIsReady(false)
+      //       setIsCheckoutReadyAfterSchedule(false)
+      //       setScheduleMessage("")
+      //       setScheduleTime("")
+      //     }
+      //   }
+      // }
+      // // This block of code will work when time in between the opening and closing time for collection.
+      // else {
+      //   if(parseInt(minsUntilClose) <= parseInt(period.collection_cut_off))
+      //   {
+      //     if(parseInt(getNextDayDetail.time_periods?.[0]?.is_delivery_schedule) === parseInt(1))
+      //     {
+      //       const getNextDayDetail = getDay?.[0]?.service_availability?.find((dayInformation) => {
+      //         return dayInformation.day_of_week === moment().add(1, 'days').format("dddd").toLowerCase();
+      //       });
             
-            if (getNextDayDetail) {
-              const newDeliveryOrCollection = getNextDayDetail.time_periods?.[0];
-            
-              if (newDeliveryOrCollection?.start_time && newDeliveryOrCollection?.time_to != null) {
-                const nextDay = moment().add(1, 'days').format('YYYY-MM-DD'); // Get next day's date
-                const startTime = newDeliveryOrCollection.start_time; // e.g., "14:00"
-                const timeToAdd = newDeliveryOrCollection.time_to; // e.g., 30
-    
-                // Combine date and time, then add minutes
-                const todayStartTime = moment(`${nextDay} ${startTime}`, 'YYYY-MM-DD HH:mm');
-                const updatedTime = todayStartTime.add(timeToAdd, 'minutes');
-                // Set only the time part
-                setScheduleTime(updatedTime);
-              }
-              else
-              {
-                const nextDay = moment().add(1, 'days').format('YYYY-MM-DD'); // Get next day's date
-                const startTime = newDeliveryOrCollection.start_time; // e.g., "14:00"
-                const timeToAdd = newDeliveryOrCollection.time_from; // e.g., 30
-    
-                // Combine date and time, then add minutes
-                const todayStartTime = moment(`${nextDay} ${startTime}`, 'YYYY-MM-DD HH:mm');
-                const updatedTime = todayStartTime.add(timeToAdd, 'minutes');
-                // Set only the time part
-                setScheduleTime(updatedTime);
-              }
-            }
-            
-            setIsScheduleForToday(2)
-            setIsScheduleIsReady(true)
-            setScheduleMessage(getNextDayDetail.day_of_week)
-            setStoreToDayClosingTime(newDeliveryOrCollection?.end_time);
-          }
-          else
-          {
-            setIsScheduleForToday(0)
-            setIsScheduleIsReady(false)
-            setScheduleMessage("")
-            setScheduleTime("")
-          }
-        }
-      }
+      //       if (getNextDayDetail) {
+      //         const newDeliveryOrCollection = getNextDayDetail.time_periods?.[0];
+              
+      //         let customBeforeAddMinutes = newDeliveryOrCollection?.collection_after_opening_from;
+      //         const customBeforeUpdateScheduleTime = moment.utc(newDeliveryOrCollection.start_time, "HH:mm", "Europe/London").add(customBeforeAddMinutes,'minutes').format("HH:mm")
+      //         setScheduleTime(customBeforeUpdateScheduleTime);
+             
+      //       }
+      //       setIsScheduleForToday(2)
+      //       setIsScheduleIsReady(true)
+
+      //       setScheduleMessage(getNextDayDetail.day_of_week)
+      //       setStoreToDayClosingTime(newDeliveryOrCollection?.end_time);
+
+      //       let customUpdateAddMinutes = newDeliveryOrCollection?.collection_after_opening_from;
+      //       const customUpdateEndTime = moment.utc(newDeliveryOrCollection.end_time, "HH:mm", "Europe/London").add(customUpdateAddMinutes,'minutes').format("HH:mm")
+      //       setStoreCurrentOrNextDayClosingTime(customUpdateEndTime);
+      //     }
+      //     else
+      //     {
+      //       setIsScheduleForToday(0)
+      //       setIsScheduleIsReady(false)
+      //       setScheduleMessage("")
+      //       setScheduleTime("")
+      //     }
+      //   }
+      // }
     }
 
     setMenu(convertToJSobj);
@@ -725,18 +800,22 @@ export default function CustomLayout({ children })
 
   const onWebsiteModificationSuccess = (data) => {
     setLoader(false)
-    
-    if (data?.data?.websiteModificationLive !== null && data?.data?.websiteModificationLive?.json_log?.[0]?.websiteLogoUrl !== null) 
+    if (data?.data?.websiteModificationLive && data?.data?.websiteModificationLive?.json_log?.[0]?.websiteLogoUrl) 
     {
       setBrandLogo(data?.data?.websiteModificationLive?.json_log?.[0]?.websiteLogoUrl);
+      setMetaDataToDisplay((prevData) => ({
+          ...prevData,
+          iconImage: `${IMAGE_URL_Without_Storage}${data?.data?.websiteModificationLive?.json_log?.[0]?.websiteFavicon}`
+      }))
     }
+    
     setWebsiteModificationData(data?.data);
   }
   
   const onWebsiteModificationError = (error) => {
     setLoader(false)
   }
-
+  
   const { isLoading, isError, refetch: colorRefetch} = useGetQueryAutoUpdate('website-color', `/website-modification-detail/${BRAND_GUID}/${PARTNER_ID}`, onWebsiteModificationSuccess, onWebsiteModificationError, true)
 
   const [countMinutes, setCountMinutes] = useState(0);
@@ -811,7 +890,7 @@ export default function CustomLayout({ children })
       checkOrderGuidIsPaidAndStatusIsAwaiting()
     }
   });
-
+  
   // Context Data
   const contextData = {
     isChangePostcodeButtonClicked: booleanObj?.isChangePostcodeButtonClicked,
@@ -860,7 +939,8 @@ export default function CustomLayout({ children })
     booleanObj,
     comingSoon,
     cutOffSchedule,
-
+    orderGuid,
+    setOrderGuid,
     isCheckoutReadyAfterSchedule, 
     setIsCheckoutReadyAfterSchedule,
     isScheduleForToday,
@@ -876,10 +956,20 @@ export default function CustomLayout({ children })
 
     isScheduleForToday,
     setIsScheduleForToday,
+    isScheduleEnabled,
+    setIsScheduleEnabled,
     scheduleTime,
     setScheduleTime,
     selectedPostcode,
     selectedLocation,
+    storeCurrentOrNextDayClosingTime,
+    selectedStoreDetails,
+    setSelectedStoreDetails,
+    storeCurrentOrNextDayOpeningTime,
+    paymentLoader,
+    setPaymentLoader,
+    setStoreCurrentOrNextDayOpeningTime,
+    setStoreCurrentOrNextDayClosingTime,
     setComingSoon,
     setErrorMessage,
     handleBoolean,
@@ -921,7 +1011,8 @@ export default function CustomLayout({ children })
     setHeaderUserBtnDisplay,
     setHeaderSearchBarDisplay,
     setHeaderPostcodeBtnDisplay,
-    
+    customDoorNumberName,
+    setCustomDoorNumberName,
     setStreet1,
     setStreet2,
     setPostcode,
@@ -930,7 +1021,7 @@ export default function CustomLayout({ children })
     setIsDeliveryChangedBtnClicked,
   }
   
-  const loaderState = menuLoading || isLoading || loader
+  const loaderState = paymentLoader || loader || isLoading || menuLoading
   
   return (
     <HomeContext.Provider value={contextData}>
@@ -939,18 +1030,15 @@ export default function CustomLayout({ children })
       {booleanObj?.isCustomerCanvasOpen && <CustomerPersonal />}
 
       {comingSoon && <MenuNotAvailableModal {...{errorMessage}}/>}
-
-      {atFirstLoad && <AtLoadModalShow />}
       {/* {displayFilterModal && <FilterModal />} */}
 
       {isCartBtnClicked && <Cart />}
       {booleanObj.isPlaceOrderButtonClicked && <PlaceOrderModal />}
       {/* {isDeliveryBtnClicked && <DeliveryModal />} */}
       {/* {isTimeToClosed && <StoreClosedModal />} */}
-
+      {loaderState && <Loader />}
+      {atFirstLoad && <AtLoadModalShow /> }
       {/* <OtpVerifyModal /> */}
-      {loaderState && <Loader loader={loaderState}/>}
     </HomeContext.Provider>
-         
   );
 }

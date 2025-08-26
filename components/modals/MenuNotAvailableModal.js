@@ -14,7 +14,9 @@ export default function MenuNotAvailableModal({errorMessage})
         const checkAuth = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}websiteToken`))
         setAtFirstLoad(true)
         setComingSoon(false)
-        
+        window.location.href = "/";
+        window.location.reload(true);
+
         if(checkAuth === undefined || checkAuth === null)
         {
             localStorage.clear()
@@ -23,53 +25,24 @@ export default function MenuNotAvailableModal({errorMessage})
     }
 
     return (
-        <>
-            <div className="modal-delivery-details">
-                <div className="modal-delivery-details-level-one-div">
-                    <div className="modal-delivery-details-level-one-div-height"></div>
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-40">
+            <div className="bg-white rounded-lg shadow-lg w-full max-w-md p-6">
+                <form>
+                    {errorMessage && (
+                        <p className="text-center text-green-800 bg-yellow-200 mt-2 py-2 px-3 font-semibold rounded">
+                            {errorMessage}
+                        </p>
+                    )}
 
-                    <div className="modal-delivery-details-level-one-div-dialog">
-                    <div className="modal-delivery-details">
-                        <div className="modal-delivery-details-level-one-div">
-                            <div className="modal-delivery-details-level-one-div-height"></div>
-
-                            <div className="modal-delivery-details-level-one-div-dialog">
-                            <div className="deliver-to-body-content">
-                                <div className="deliver-to-body-content-nested-div-level-one">
-
-                                <form >
-                                    <label id="location-typeahead-location-manager-label" htmlFor="location-typeahead-location-manager-input" className="deliver-to-body-content-nested-div-level-one-label" >
-                                    When autocomplete results are available, use up and down arrows
-                                    to review and enter to select. Touch device users, explore by
-                                    touch or with swipe gestures.
-                                    </label>
-
-                                    <div className="availabe_stores"></div>
-                                    
-                                    <p style={{ color:" #6e9600",background: "rgb(235 214 124)",textAlign: "center", marginTop: "10px",padding: "10px",fontWeight: "bold"}}>
-                                        {/* Comming Soon at {storeDetail?.store} */}
-                                        {errorMessage}
-                                    </p>
-
-                                    <button type="button" className="deliver-to-done-button" onClick={handleClearAll}>Click to try with different postcode.</button>
-                                </form>
-
-                                </div>
-
-                            </div>
-                            </div>
-
-                            <div className="modal-delivery-details-level-one-div-height"></div>
-                        </div>
-                    </div>
-                        
-                        
-
-                    </div>
-
-                    <div className="modal-delivery-details-level-one-div-height"></div>
-                </div>
+                    <button
+                        type="button"
+                        onClick={handleClearAll}
+                        className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded shadow"
+                    >
+                        Click to try with different postcode.
+                    </button>
+                </form>
             </div>
-        </>
+        </div>
     )
 }

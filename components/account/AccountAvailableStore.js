@@ -35,11 +35,12 @@ export default function AccountAvailableStore({availableStores})
     setStreet1,
     setStreet2,
     setComingSoon,
+    setSelectedStoreDetails,
   } = useContext(HomeContext);
 
   const route = useRouter();
 
-  function handleLocationSelect(storeGUID, storeName, storeTelephone) 
+  function handleLocationSelect(storeGUID, storeName, storeTelephone, storeEmail, storeDoor,storeAddress) 
   {
     setStoreName(storeName);
     setAtFirstLoad(false);
@@ -58,8 +59,15 @@ export default function AccountAvailableStore({availableStores})
       display_id: storeGUID,
       store: storeName,
       telephone: storeTelephone,
+      email: storeEmail,
+      storeDoor: storeDoor,
+      address: storeAddress,
     };
     setLocalStorage(`${BRAND_SIMPLE_GUID}user_selected_store`, selectedStoreData);
+    setSelectedStoreDetails({
+      email: storeEmail,
+      telephone: storeTelephone
+    })
   }
 
   useEffect(() => {
@@ -68,7 +76,10 @@ export default function AccountAvailableStore({availableStores})
         handleLocationSelect(
           availableStores[0]?.location_guid,
           availableStores[0]?.location_name,
-          availableStores[0]?.telephone
+          availableStores[0]?.telephone,
+          availableStores[0]?.email,
+          availableStores[0]?.house_no_name,
+          availableStores[0]?.address,
         );
       }
     }, 2000);
@@ -89,7 +100,7 @@ export default function AccountAvailableStore({availableStores})
           {
             availableStores?.map((stores, index) => {
               return (
-                <div className="available-stores-show" style={{ cursor: "pointer" }} key={index} onClick={() => handleLocationSelect(stores.location_guid,stores.location_name,stores.telephone)}>
+                <div className="available-stores-show" style={{ cursor: "pointer" }} key={index} onClick={() => handleLocationSelect(stores.location_guid,stores.location_name,stores.telephone,stores.email,stores.house_no_name, stores.address)}>
                   <div className="deliver-to-body-content-nested-div-level-one-nested-svg-div-one">
                     <div className="deliver-to-body-content-nested-div-level-one-nested-svg-div-two">
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" >

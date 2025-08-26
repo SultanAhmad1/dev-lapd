@@ -1,20 +1,21 @@
 "use client";
 import HomeContext from "@/contexts/HomeContext";
 import { axiosPrivate, BLACK_COLOR, BRAND_GUID, BRAND_SIMPLE_GUID, DELIVERY_ID, LIGHT_BLACK_COLOR, PARTNER_ID, WHITE_COLOR } from "@/global/Axios";
-import { find_matching_postcode, setLocalStorage } from "@/global/Store";
-import React, { Fragment, useContext, useEffect } from "react";
+import { find_collection_matching_postcode, find_matching_postcode, setLocalStorage } from "@/global/Store";
+import React, { useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import moment from "moment";
-import FilterLocationTime from "./FilterLocationTime";
-import FilterLocationTimeEdit from "./FilterLocationTimeEdit";
 
 export default function AvailableStore({availableStores, setAvailableStores,validPostcode, locationDetails}) 
 {
 
   const {
+    setLoader,
     setDayOpeningClosingTime,
     setIsTimeToClosed,
     setMenu,
+    setSelectedStoreDetails,
+    selectedFilter,
     setSelectedFilter,
     filters,
     setFilters,
@@ -23,19 +24,13 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
     setStoreToDayName,
     setStoreToDayOpeningTime,
     setStoreToDayClosingTime,
-    setIsMenuAvailable,
-    storeGUID,
+    setStoreCurrentOrNextDayOpeningTime,
+    setStoreCurrentOrNextDayClosingTime,
     setStoreGUID,
     setStoreName,
-    dayName,
-    dayNumber,
-    postcode,
-    setPostcode,
     setAtFirstLoad,
-    setIsGoBtnClicked,
-    setPostCodeForOrderAmount,
-    deliveryMatrix,
     setDeliveryMatrix,
+    setCustomDoorNumberName,
     setStreet1,
     setStreet2,
     setComingSoon,
@@ -46,9 +41,10 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
 
   const route = useRouter();
 
-  async function fetchMenu(storeGUID) {
+  async function fetchMenu(storeGUID, selectedOrderId) {
     try {
 
+      
       const visitorInfo = JSON.parse(window.localStorage.getItem('userInfo'))
 
       const data = {
@@ -113,42 +109,74 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
       const getdayInformation = convertToJSObject[0].service_availability?.find((dayInformation) =>dayInformation.day_of_week === moment().format("dddd").toLowerCase());
       
       setStoreToDayName(moment().format("dddd"));
+
+      // now check the time to store open and close.
+      // if the store is closed. then show opening and closing time of next day for collection.
+      
+      let addedTime = (selectedOrderId === DELIVERY_ID) ? getdayInformation.time_periods[0].time_to : getdayInformation.time_periods[0].collection_after_opening_from;
+      const updatedCloseTime = moment.utc(getdayInformation.time_periods[0].end_time,'HH:mm','Europe/London').add(addedTime, 'minutes').format('HH:mm');
+      // if it is delivery then  delivery time otherwise collection time.
       setStoreToDayOpeningTime(getdayInformation.time_periods[0].start_time);
       setStoreToDayClosingTime(getdayInformation.time_periods[0].end_time);
+      setStoreCurrentOrNextDayClosingTime(updatedCloseTime);
+      setStoreCurrentOrNextDayOpeningTime(getdayInformation.time_periods[0].start_time);
+
+      setTimeout(() => {
+        setLoader(false)
+      }, 3000);
     } 
     catch (error) 
     {
     //  setIsMenuAvailable(false)
+      setLoader(false)
       setMenu([])
       setComingSoon(true)
     }
   }
 
-  function handleLocationSelect(storeGUID, storeName, storeTelephone, storeEmail, storeAddress) 
+  function handleLocationSelect(selectedOrderId,storeGUID, storeName, storeTelephone, storeEmail, storeDoor,storeAddress) 
   {
     setStoreName(storeName);
-    
+    setLoader(true)
     setAtFirstLoad(false);
     setDisplayFilterModal(true)
 
     setStoreGUID(storeGUID);
-    if (parseInt(availableStores.length) > parseInt(0)) {
-      for (const store of availableStores) {
-        if (storeGUID === store?.location_guid) {
-          setStreet1(store?.user_street1);
-          setStreet2(store?.user_street2);
-        }
+
+    if(selectedOrderId === DELIVERY_ID)
+    {
+      const getAddressFromLocalStorage = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}address`)
+      if(getAddressFromLocalStorage)
+      {
+        const filterAddress = JSON.parse(getAddressFromLocalStorage)
+        setStreet1(filterAddress.ukpostcode.street1)
+        setStreet2(filterAddress.ukpostcode.street2)
       }
     }
+    else
+    {
+      const findStore = availableStores?.find((store) => store.location_guid === storeGUID)
 
-    fetchMenu(storeGUID);
+      const filterAddress = findStore.address.replace(findStore.house_no_name, '').trim();
+      const [street1, ...rest] = filterAddress.split(',');
+      const street2 = rest.join(',').trim();
+      setCustomDoorNumberName(findStore.house_no_name)
+      setStreet1(street1.trim());
+      setStreet2(street2);
+    }
+
+    fetchMenu(storeGUID, selectedOrderId);
     const selectedStoreData = {
       display_id: storeGUID,
       store: storeName,
       telephone: storeTelephone,
       email: storeEmail,
       address: storeAddress,
+      storeDoor: storeDoor,
     };
+
+    setSelectedStoreDetails(selectedStoreData)
+
     setLocalStorage(`${BRAND_SIMPLE_GUID}user_selected_store`, selectedStoreData);
     route.push("/");
   }
@@ -169,32 +197,45 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
    const handleOrderType = (storeId, id) => 
   {
     // first check available store delivery matrix matched.
+    
     const findStore = availableStores?.find((store) => store?.location_guid === storeId)
     //  at first customer selected the delivery 
     
+    // This block of code only available for delivery one
     if(findStore && findStore?.orderType?.length > 0)
     {
-      const findDelivery = findStore?.orderType?.find((order) => order?.id === DELIVERY_ID)
+      const findDelivery = findStore?.orderType?.find((order) => order?.id === id)
 
-      if(findDelivery)
+      const findDeliveryMatrix = availableStores?.find((stores) => stores?.location_guid === storeId)
+
+
+      if(findDelivery?.id?.includes(DELIVERY_ID))
       {
         // now check the matrix
-        const matrixFind = findStore?.deliveryMatrixes?.delivery_matrix_rows?.find((matchPostcode) => matchPostcode?.postcode.toUpperCase().startsWith(validPostcode.toUpperCase()) || matchPostcode?.postcode?.toUpperCase().startsWith("STANDARD"))
+        const matrixFind = findStore?.deliveryMatrixes?.delivery_matrix_rows?.filter((matchPostcode) => matchPostcode?.postcode.toUpperCase().startsWith(validPostcode.toUpperCase()) || matchPostcode?.postcode?.toUpperCase().startsWith("STANDARD"))
+        
         if(! matrixFind)
         {
           setComingSoon(true)
-          setErrorMessage("We are currently unable to accept orders for delivery to your postcode from this store. Apologies for this. ")
+          setErrorMessage("Sorry, we do not deliver to your postcode from this store at the moment.")
           return
         }
-        
+        // This block for delivery depend on customer order type selection.
+        find_matching_postcode(findDeliveryMatrix.deliveryMatrixes.delivery_matrix_rows, validPostcode, setDeliveryMatrix);
+      }
+      else
+      {
+        // This block for collection depend on customer order type selection.
+        find_collection_matching_postcode(findDeliveryMatrix.deliveryMatrixes.collection_matrix_rows, validPostcode, setDeliveryMatrix);
       }
     }
     else
     {
       setComingSoon(true)
-      setErrorMessage("There must be at least one order type available.")
+      setErrorMessage("At least one order type must be selected.")
       return
     }
+    // This block of code only available for delivery one End
 
     const updateAvailableStores = availableStores?.map((stores) => {
       if(stores?.location_guid === storeId)
@@ -247,11 +288,7 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
       }
     }
 
-    const findDeliveryMatrix = availableStores?.find((stores) => stores?.location_guid === storeId)
-
-    find_matching_postcode(findDeliveryMatrix?.deliveryMatrixes?.delivery_matrix_rows, validPostcode, setDeliveryMatrix);
-
-    handleLocationSelect(findAvailableStores?.location_guid, findAvailableStores?.location_name, findAvailableStores?.telephone, findAvailableStores?.email, findAvailableStores?.address)
+    handleLocationSelect(id,findAvailableStores?.location_guid, findAvailableStores?.location_name, findAvailableStores?.telephone, findAvailableStores?.email, findAvailableStores?.house_no_name,findAvailableStores?.address)
   }
 
   useEffect(() => {
@@ -261,94 +298,74 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
       handleOrderType(availableStores?.[0]?.location_guid, "9BDF79F9-BD1E-4C77-A9E1-238DB7A59DC5")
     }
   }, [locationDetails]);
-
   
   return(
     <>
-      <h2 className="available-store-h2"> Available Stores </h2>
+      <h2 className="text-lg font-semibold mb-2 mt-3 text-center border-t border-b pb-2">
+        Available Stores
+      </h2>
 
-      <div className="deliver-to-body-content-nested-div-level-one" style={{
-          overflowY: "scroll",
-          height: '60vh'
-        }}
-      >
+      <div className="overflow-y-auto h-[60vh] space-y-4 px-2">
 
-        <label
-          id="location-typeahead-location-manager-label"
-          htmlFor="location-typeahead-location-manager-input"
-          className="deliver-to-body-content-nested-div-level-one-label"
-        >
-          When autocomplete results are available, use up and down
-          arrows to review and enter to select. Touch device users,
-          explore by touch or with swipe gestures.
-        </label>
+        {availableStores?.map((store, index) => (
+          <div
+            key={index}
+            className="bg-gray-100/90 border border-gray-300 rounded-lg p-4 shadow-sm cursor-pointer hover:bg-gray-200 transition-colors"
+          >
+            <div className="flex justify-between items-center text-blue-700 font-semibold">
+              <h6>
+                {store?.location_name} ({store?.postcode})
+              </h6>
+            </div>
 
-        {
-          availableStores?.map((stores, index) => {
-            return (
-              <div className="available-stores-show" style={{ cursor: "pointer" }} key={index} onClick={() => handleLocationSelect(stores.location_guid,stores.location_name,stores.telephone, stores.email, stores.address)}>
+            <p className="text-sm text-gray-700 break-words mt-1">
+              {store?.address} ({parseFloat(store?.ConvertDataPostFound?.[0]).toFixed(1)} miles)
+            </p>
 
-                <div className="spacer _16"></div>
+            <p className="text-xs text-gray-600 text-right mt-2">
+              {store?.storeTiming?.[0]?.day_name.slice(0, 3)}{" "}
+              {moment(store?.storeTiming?.[0]?.start_time, "HH:mm A").format("HH:mm A")} -{" "}
+              {moment(store?.storeTiming?.[0]?.end_time, "HH:mm A").format("HH:mm A")}
+            </p>
 
-                <div className="available-stores">
-                  <div style={{display:"flex", justifyContent:"space-between", color: "blue"}}>
-                    <h6>
-                      {stores?.location_name}
-                      &nbsp;({stores?.postcode})
-                    </h6>
-                  </div>
+            <div className="flex gap-2 mt-3">
+              {store?.orderType?.map((order, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  className="flex-1 text-sm font-medium py-2 rounded border text-center transition-colors"
+                  style={{
+                    background: order?.isClicked
+                      ? websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                          ?.buttonHoverBackgroundColor || WHITE_COLOR
+                      : websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                          ?.buttonBackgroundColor || LIGHT_BLACK_COLOR,
 
-                  <p style={{ wordBreak: "break-word", overflowWrap: "break-word",}}>
-                    {stores?.address} ({Math.round(parseInt(stores?.ConvertDataPostFound?.[0]))} miles)
-                  </p>
+                    color: order?.isClicked
+                      ? websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                          ?.buttonHoverColor || BLACK_COLOR
+                      : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor ||
+                        WHITE_COLOR,
 
-                      
-                  <p style={{float: "right", marginTop: "10px", marginBottom: "10px"}}>
-                    {stores?.storeTiming?.[0].day_name.slice(0, 3)} {moment(stores?.storeTiming?.[0]?.start_time, "HH:mm A").format("HH:mm A")} - {moment(stores?.storeTiming?.[0]?.end_time,"HH:mm A").format("HH:mm A")}
-                  </p>
-                    
-                  {/* order Type buttons */}
-                  <div style={{ display: "flex", justifyContent: "space-between", width: "100%", gap: "10px" }}>
-                    {
-                      stores?.orderType?.map((order, index) => (
-                        <button 
-                          key={index} 
-                          type="button" 
-                          style={{
-                            background: order?.isClicked 
-                              ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || WHITE_COLOR
-                              : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || LIGHT_BLACK_COLOR,
-                            
-                            color: order?.isClicked 
-                              ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor || BLACK_COLOR
-                              : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR,
-
-                            border: order?.isClicked 
-                              ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || LIGHT_BLACK_COLOR}` 
-                              : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || LIGHT_BLACK_COLOR}`,
-
-                            padding: "5px",
-                            flexGrow: 1, // Makes buttons equal width
-                            marginTop: "3px",
-                            marginBottom: "3px"
-                          }}
-                          onClick={() => handleOrderType(stores?.location_guid, order?.id)}
-                        >
-                          {order?.name}
-                        </button>
-                      ))
-                    }
-                  </div>
-
-                </div>
-
-                <div className="spacer _8"></div>
-                
-              </div>
-            );
-          })
-        }
+                    borderColor: order?.isClicked
+                      ? websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                          ?.buttonBackgroundColor || LIGHT_BLACK_COLOR
+                      : websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                          ?.buttonHoverBackgroundColor || LIGHT_BLACK_COLOR,
+                  }}
+                  onClick={() => handleOrderType(store?.location_guid, order?.id)}
+                >
+                  {order?.name}
+                </button>
+              ))}
+            </div>
+            <p className="text-sm text-red-700 mt-3">
+              {store.storeDeliveryMessage}
+            </p>
+          </div>
+        ))}
       </div>
     </>
+
   )
 }

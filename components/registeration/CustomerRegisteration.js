@@ -17,21 +17,13 @@ export default function CustomerRegisteration()
     useEffect(() => {
         if(websiteModificationData)
         {
-        const metaHeadingData = {
-            title: websiteModificationData?.brand?.name,
-            contentData: websiteModificationData?.brand?.name,
-            iconImage: IMAGE_URL_Without_Storage+"/"+websiteModificationData?.websiteModificationLive?.json_log?.[0]?.websiteFavicon,
-            singleItemsDetails: {
-            title: "",
-            description: "",
-            itemImage: "",
-            keywords: "",
-            url: ""
-            }
+            setMetaDataToDisplay((prevData) => ({
+                ...prevData,
+                title: `Registeration - ${websiteModificationData?.brand?.name}`,
+                contentData: "",
+            }))
         }
-        setMetaDataToDisplay(metaHeadingData)
-        }
-    }, [websiteModificationData]);
+    }, [websiteModificationData, setMetaDataToDisplay]);
 
     const [isHover, setIsHover] = useState(false);
     

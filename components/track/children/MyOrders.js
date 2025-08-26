@@ -16,44 +16,46 @@ export default function MyOrders({orderLine})
     
     
     return(
-        <div className="es-et-checkout">
-            <div className="al-d5-eg-bh-dd-et-eu-d1-checkout-edit-item d1">
-                <div className="bodgdfcheckout-qty">
-                    {parseInt(orderLine?.quantity)}
-                </div>
-                <div className="al-am-cj-ew-checkout">
-                    <span className="bo-bp-df-cv-checkout-item-header">{orderLine?.product_name}</span>
-                    <ul className="excheckout">
-                        
-                        {
-                            hasNotExtras?.order_line_modifier_group_products?.map((modifier, index) =>
-                            {
-                                return(
-                                    (parseInt(modifier?.default_option) === parseInt(0)) &&
-                                    <Modifiers key={`${index}.${modifier?.id}`} {...{modifier}} />
-                                )
-                            })
-                        }
+        <div className="max-w-3xl mx-auto">
+            {/* Order Item 1 */}
+            <div className="border-b pb-4 mb-1">
+                <div className="flex justify-between items-start text-sm sm:text-base font-semibold mb-1">
+                    <div className="bg-gray-200 px-2 py-1">{parseInt(orderLine?.quantity)}</div>
 
-                         
-                        {
-                            hasExtras?.order_line_modifier_group_products?.map((modifier, index) =>
-                            {
-                                return(
-                                    (parseInt(modifier?.default_option) === parseInt(0)) &&
-                                    <Modifiers key={`${index}.${modifier?.id}`} {...{modifier}} />
-                                )
-                            })
-                        }
+                    {/* Product Name + Modifiers */}
+                    <div className="flex-1 px-4 text-start">
+                        <span className="pl-4">{orderLine?.product_name}</span>
 
-                    </ul>
-                </div>
-                <div className="f1-al-am-checkout-item-qty">
-                    <span className="gy-e2-gz-checkout-item-qty-span">&pound;{getAmountConvertToFloatWithFixed(orderLine?.total,2)}</span>
+                        {/* Modifier List: aligned under product name */}
+                        <ul className="mt-1 pl-4 text-sm font-normal text-gray-700 space-y-1">
+                            {
+                                hasNotExtras?.order_line_modifier_group_products?.map((modifier, index) =>
+                                {
+                                    return(
+                                        (parseInt(modifier?.default_option) === parseInt(0)) &&
+                                        <Modifiers key={`${index}.${modifier?.id}`} {...{modifier}} />
+                                    )
+                                })
+                            }
+
+                            
+                            {
+                                hasExtras?.order_line_modifier_group_products?.map((modifier, index) =>
+                                {
+                                    return(
+                                        (parseInt(modifier?.default_option) === parseInt(0)) &&
+                                        <Modifiers key={`${index}.${modifier?.id}`} {...{modifier}} />
+                                    )
+                                })
+                            }
+                        </ul>
+                    </div>
+
+                    <div>&pound;{getAmountConvertToFloatWithFixed(orderLine?.total,2)}</div>
                 </div>
             </div>
 
-            <hr style={{marginBottom: "10px", marginTop: "10px"}}/>
         </div>
+
     )
 }

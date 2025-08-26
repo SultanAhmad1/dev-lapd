@@ -1,7 +1,7 @@
 "use client";
 import HomeContext from "@/contexts/HomeContext";
 import { BRAND_SIMPLE_GUID, BRAND_GUID, axiosPrivate } from "@/global/Axios";
-import { find_matching_postcode, setLocalStorage } from "@/global/Store";
+import { find_collection_matching_postcode, find_matching_postcode, setLocalStorage } from "@/global/Store";
 import { useRouter } from "next/navigation";
 import React, { useContext, useState } from "react";
 import { usePostMutationHook } from "../reactquery/useQueryHook";
@@ -24,7 +24,8 @@ function PostcodeModal() {
     setStreet2,
     setDeliveryMatrix,
     setIsCartBtnClicked,
-    setLoader
+    setLoader,
+    setSelectedStoreDetails
   } = useContext(HomeContext);
 
   // Boolean States
@@ -86,9 +87,20 @@ function PostcodeModal() {
 
   const onUkPostcodeSuccess = (data) => {
     setLoader(false)
-    const matrix = data.data?.data?.deliveryMartix?.delivery_matrix_rows;
-    
-    find_matching_postcode(matrix, updatedValidPostcode, setDeliveryMatrix);
+    const addressListFilter = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`))
+    if(addressListFilter !== null && addressListFilter !== undefined)
+    {
+        if(addressListFilter.id.includes(DELIVERY_ID))
+        {
+          const matrix = data.data?.data?.deliveryMartix?.delivery_matrix_rows;
+          find_matching_postcode(matrix, validPostcode, setDeliveryMatrix);
+        }
+        else
+        {
+            const matrix = data.data?.data?.deliveryMartix?.collection_matrix_rows;
+            find_collection_matching_postcode(matrix, validPostcode, setDeliveryMatrix);
+        }
+    }
 
     setTempAddress(data?.data?.data);
     setAvailableStores(data.data?.data?.availableStore);
@@ -113,7 +125,7 @@ function PostcodeModal() {
     return
   }
 
-  const handleLocationSelect = (storeGUID, storeName, storeTelephone) => {
+  const handleLocationSelect = (storeGUID, storeName, storeTelephone,storeEmail) => {
     setStoreName(storeName);
     if (parseInt(availableStores.length) > parseInt(0)) {
       for (const store of availableStores) {
@@ -141,6 +153,12 @@ function PostcodeModal() {
       telephone: storeTelephone,
     };
     setLocalStorage(`${BRAND_SIMPLE_GUID}user_selected_store`, selectedStoreData);
+
+    setSelectedStoreDetails({
+      email: storeEmail,
+      telephone: storeTelephone
+    })
+
     router.push("/");
     setIsCartBtnClicked(true);
     setIsDeliveryBtnClicked(false);
@@ -213,7 +231,7 @@ function PostcodeModal() {
                 {
                   availableStores?.map((stores, index) => {
                     return (
-                      <div className="available-stores-show" style={{ cursor: "pointer" }} key={index} onClick={() => handleLocationSelect(stores.location_guid,stores.location_name,stores.telephone)} >
+                      <div className="available-stores-show" style={{ cursor: "pointer" }} key={index} onClick={() => handleLocationSelect(stores.location_guid,stores.location_name,stores.telephone, stores.email)} >
                         <div className="deliver-to-body-content-nested-div-level-one-nested-svg-div-one">
                           <div className="deliver-to-body-content-nested-div-level-one-nested-svg-div-two">
                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" >
@@ -243,7 +261,7 @@ function PostcodeModal() {
 
         </div>
       </div>
-      {isLoading && <Loader loader={isLoading}/>}
+      {isLoading && <Loader/>}
     </>
   );
 }

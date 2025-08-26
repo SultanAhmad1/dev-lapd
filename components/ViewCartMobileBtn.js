@@ -1,112 +1,92 @@
 "use client";
 import React, { useContext, useEffect, useState } from 'react'
 import HomeContext from '../contexts/HomeContext'
-import { getAmountConvertToFloatWithFixed, getCountryCurrencySymbol } from '../global/Store'
-import { BRAND_SIMPLE_GUID } from '@/global/Axios'
+import { getAmountConvertToFloatWithFixed } from '../global/Store'
 
 export default function ViewCartMobileBtn() 
 {
-  const {isCartBtnClicked, setIsCartBtnClicked, cartData, websiteModificationData} = useContext(HomeContext)
+  const {isCartBtnClicked, setIsCartBtnClicked, cartData, websiteModificationData, deliveryMatrix, setLoader} = useContext(HomeContext)
 
-  const [totalordervalue, setTotalordervalue] = useState(0)
+  const [totalOrderValue, setTotalOrderValue] = useState(0)
   const [countTotalItems, setCountTotalItems] = useState(0);
 
-  const [isTotalGreatherThanMinimum, setIsTotalGreatherThanMinimum] = useState(false);
-  
   useEffect(() => {
     try {
       
   
-    let totalValue = 0
-    let totalQuantity = 0
+      let totalValue = 0
+      let totalQuantity = 0
 
-    if(parseInt(cartData?.length) > parseInt(0))
-    {
-      for(const total of cartData)
+      if(parseInt(cartData?.length) > parseInt(0))
       {
-        totalQuantity += total.quantity
-        totalValue = parseFloat(totalValue) + parseFloat(total?.total_order_amount)
+        for(const total of cartData)
+        {
+          totalQuantity += total.quantity
+          totalValue = parseFloat(totalValue) + parseFloat(total?.total_order_amount)
+        }
+        
+        setCountTotalItems(totalQuantity)
+        setTotalOrderValue(totalValue)
       }
-      
-      setCountTotalItems(totalQuantity)
-      setTotalordervalue(totalValue)
-    }
-    const deliveryMatrix = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_matrix`))
 
-    if(totalValue >= deliveryMatrix?.order_value)
-    {
-      setIsTotalGreatherThanMinimum(true)
-    }
-
-    return (() => {
-      setTotalordervalue(0)
-      setIsTotalGreatherThanMinimum(false)
-    })
+      return (() => {
+        setTotalOrderValue(0)
+      })
 
     } catch (error) {
-      window.alert("There is something went wrong. Please refresh and try again.")      
       return
     }
   }, [cartData])
   
+
+  const handleCheckoutClicked = () => {
+    if(parseInt(cartData?.length) > parseInt(0))
+    {
+      setLoader(true)
+      setIsCartBtnClicked(true)
+    }
+  }
+
   return (
     <>
-    {
-      !isCartBtnClicked &&
-      <div className="arcgatchl4h2view-cart">
-        <div className="coagatchascgl5cnl6view-cart"></div>
-        <div className="coagatchascgl5axl6view-cart"></div>
+      {!isCartBtnClicked && (
+        <div className="fixed bottom-4 left-0 right-0 z-40 px-4 sm:px-6 md:px-10">
+          <div className="relative max-w-md mx-auto">
+            {/* Optional background layers */}
+            <div className="absolute inset-0  blur-sm rounded-lg pointer-events-none"></div>
+            <div className="absolute inset-0  blur-md rounded-lg pointer-events-none"></div>
 
-        {
-          // check is there any item in cart then button background should be green
-          parseInt(cartData.length) > parseInt(0) ?
-          <button className="bllview-cart-btn" onClick={() => setIsCartBtnClicked(true)}>
-            <span 
-              style={{
-                border: "1px solid #fff",
-                width: "30px",
-                height: "30px",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                borderRadius: "5px",
-              }}
-            >{parseInt(countTotalItems)}</span>
-                {/* <span className='mobile-view-cart' style={{backgroundColor: !isTotalGreatherThanMinimum && `${websiteModificationData?.websiteModificationLive?.json_log[0]?.buttonBackgroundColor}`}} >Checkout</span> */}
-                <span className='mobile-view-cart' >Checkout</span>
-            
-            <span>&pound;{getAmountConvertToFloatWithFixed(totalordervalue, 2)}</span>
-          </button>
-
-          :
-
-            <button className="bllview-cart-btn">
-              <span 
-                style={{
-                  border: "1px solid #fff",
-                  width: "30px",
-                  height: "30px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  borderRadius: "5px",
-                }}
-              >
+            <button
+              type='button'
+              onClick={handleCheckoutClicked}
+              className="flex text-lg items-center justify-between w-full px-4 py-4 rounded-lg shadow-lg transition-colors duration-300 bg-black text-white"
+            >
+              {/* Cart count */}
+              <span className="flex items-center justify-center w-9 h-9 text-base font-bold border border-white rounded">
                 {parseInt(countTotalItems)}
               </span>
 
-              <span 
-                className='mobile-view-cart' 
-                style={{backgroundColor: "#000", color: "#fff", border: "1px solid #fff"}}
+              {/* Checkout text */}
+              <span
+                className={`px-4 py-2 text-lg font-bold rounded-3xl border border-white ${
+                  parseInt(cartData.length) > 0 ? 'bg-green-800 hover:bg-green-700' : 'bg-black'
+                } text-white`}
               >
                 Checkout
               </span>
-            
-            <span>&pound;{getAmountConvertToFloatWithFixed(totalordervalue, 2)}</span>
-          </button>
-        }
-      </div>
-    }
+
+              {/* Total price */}
+              <span className="text-lg font-bold whitespace-nowrap">
+                &pound;{getAmountConvertToFloatWithFixed(totalOrderValue, 2)}
+              </span>
+
+            </button>
+
+
+          </div>
+        </div>
+      )}
     </>
+
   )
 }
