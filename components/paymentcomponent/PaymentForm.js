@@ -420,7 +420,7 @@ const PaymentForm = ({orderId}) =>
   };
   
   useEffect(() => {
-    if (stripe && parseInt(totalOrderAmountValue) > parseInt(0)) 
+    if (stripe &&   totalOrderAmountValue && paymentRequest === null)
     {
       const orderTotalSimpleForm = parseFloat(totalOrderAmountValue) * 100
 
@@ -523,6 +523,7 @@ const PaymentForm = ({orderId}) =>
     }
   }, [stripe, totalOrderAmountValue]);
 
+  
   const handleCardNumberChange = (event) => {
     if (event.complete) {
       const expiryElement = elements?.getElement(CardExpiryElement)

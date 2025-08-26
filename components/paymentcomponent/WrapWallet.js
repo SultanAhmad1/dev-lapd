@@ -299,7 +299,7 @@ export default function WrapWallet({deliveryTime,customerDetailObj,due,setPaymen
         
       
   useEffect(() => {
-      if (stripe &&   totalOrderAmountValue && paymentRequest === null) 
+      if (stripe &&   totalOrderAmountValue && paymentRequest === null)
       {
         const orderTotalSimpleForm = parseFloat(totalOrderAmountValue) * 100
 
