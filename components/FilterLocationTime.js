@@ -88,7 +88,7 @@ function FilterLocationTime(props)
     }, [isDisplayFromModal]);
     
     return (
-        <div className="w-full bg-gray-100 py-1">
+        <div className="w-full py-1">
             <div className="flex gap-2 max-w-lg mx-auto">
                 {filters?.map((filter, index) => {
                 const isActive = filter?.id === selectedFilter?.id;

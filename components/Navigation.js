@@ -63,7 +63,7 @@ function Navigation()
                                         parseInt(category?.items?.length) > parseInt(0) &&
                                         <section className="navigation-div" key={index} style={{cursor: "pointer"}}>
                                             <div data-target={`section_${index}`}  className={`navigation-btn ${index === 0 ? "_nav_active" : ""}`} style={{color: (websiteModificationData?.websiteModificationLive !== null && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor !== null) && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor}}>
-                                                {category.title}
+                                                {category.title.toUpperCase()}
                                             </div>
                                         </section>
                                     )

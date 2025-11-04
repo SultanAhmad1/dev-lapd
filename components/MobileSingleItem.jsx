@@ -25,7 +25,11 @@ export const MobileSingleItem = (props) => {
     handleMobileAddToCart,
     handleNextClicked,
     websiteModificationData,
-    isAnyModifierHasExtras
+    isAnyModifierHasExtras,
+    checkPromotionActive,
+    getPromotionText,
+    getPromotionBgColor,
+    getPromotionTextColor,
   } = props;
 
   const isValidHttpsUrl = (url) => {
@@ -39,35 +43,63 @@ export const MobileSingleItem = (props) => {
         {/* Sticky Close Button — Overlapping on top of image */}
         <div className="absolute top-4 left-4 z-40">
           <a href="/" className="text-gray-600 hover:text-black">
-            <svg
-              width="24"
-              height="24"
-              viewBox="0 0 24 24"
-              fill="none"
-              className="text-white hover:text-black"
-            >
-              <path
-                d="m21.1 5.1-2.2-2.2-6.9 7-6.9-7-2.2 2.2 7 6.9-7 6.9 2.2 2.2 6.9-7 6.9 7 2.2-2.2-7-6.9 7-6.9Z"
-                fill="currentColor"
-              />
-            </svg>
+            {
+              singleItem?.image_url ?
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="text-white hover:text-black"
+                >
+                  <path
+                    d="m21.1 5.1-2.2-2.2-6.9 7-6.9-7-2.2 2.2 7 6.9-7 6.9 2.2 2.2 6.9-7 6.9 7 2.2-2.2-7-6.9 7-6.9Z"
+                    fill="currentColor"
+                  />
+                </svg>
+
+              :
+                <svg
+                  width="24"
+                  height="24"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  className="text-black hover:text-black"
+                >
+                  <path
+                    d="m21.1 5.1-2.2-2.2-6.9 7-6.9-7-2.2 2.2 7 6.9-7 6.9 2.2 2.2 6.9-7 6.9 7 2.2-2.2-7-6.9 7-6.9Z"
+                    fill="currentColor"
+                  />
+                </svg>
+            }
           </a>
         </div>
 
         {/* Full-bleed image with no spacing */}
-        {singleItem?.image_url && (
-          <Image
-            fill
-            role="presentation"
-            src={
-              isValidHttpsUrl(singleItem?.image_url)
-                ? singleItem?.image_url
-                : `${IMAGE_URL_Without_Storage}${singleItem?.image_url}`
+        <div className="">
+          {singleItem?.image_url && (
+            <Image
+              fill
+              role="presentation"
+              src={
+                isValidHttpsUrl(singleItem?.image_url)
+                  ? singleItem?.image_url
+                  : `${IMAGE_URL_Without_Storage}${singleItem?.image_url}`
+              }
+              alt={singleItem?.title}
+              className="object-cover w-full h-full transition-transform duration-500 ease-in-out scale-100"
+            />
+          )}
+           {
+              checkPromotionActive &&
+              <span
+                className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-bl-lg shadow-md"
+                style={{ backgroundColor: getPromotionBgColor, color: getPromotionTextColor }}
+              >
+                {getPromotionText}
+              </span>
             }
-            alt={singleItem?.title}
-            className="object-cover w-full h-full transition-transform duration-500 ease-in-out scale-100"
-          />
-        )}
+        </div>
       </div>
 
 

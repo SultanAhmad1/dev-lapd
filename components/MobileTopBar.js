@@ -62,14 +62,12 @@ function MobileTopBar() {
     return () => window.removeEventListener("scroll", handleScroll);
   }, [websiteModificationData]);
 
-
-
   return (
     <div
       className="top-bar navbar-div w-full sticky top-0 z-30 bg-[#444]"
       style={{
         background:
-          websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || "#444",
+          websiteModificationData?.websiteModificationLive?.json_log?.[0]?.navigationBackgroundColor || "#444",
       }}
     >
       <ul
@@ -77,7 +75,7 @@ function MobileTopBar() {
         className="navbar flex overflow-x-auto whitespace-nowrap no-scrollbar px-2 py-0 gap-2"
         style={{
           background:
-            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || "#444",
+            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.navigationBackgroundColor || "#444",
         }}
       >
       {navigationCategories?.map((category, index) => {
@@ -103,7 +101,7 @@ function MobileTopBar() {
               }`}
               style={styles}
             >
-              {category?.title}
+              {category?.title.toUpperCase()}
             </li>
           );
         })}

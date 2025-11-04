@@ -402,7 +402,7 @@ export default function WrapWallet({deliveryTime,customerDetailObj,due,setPaymen
                   customer:           customerAuth === null ? 0 : customerTemp?.id,
                   address:            customerAuth === null ? 0 : filterAddress?.id,
                   due:                due,
-                  
+                  asapOrRequested:    asapOrRequested,
                   email:              ev.payerEmail,
                   phone:              ev.payerPhone,
                   street1:            street1,

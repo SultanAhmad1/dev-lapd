@@ -5,7 +5,7 @@ import Banner from "./Banner";
 
 import ViewCartMobileBtn from "./ViewCartMobileBtn";
 import { IMAGE_URL_Without_Storage, itemHoverBackgroundColor, itemHoverColor } from "../global/Axios";
-import moment from "moment";
+import moment from "moment-timezone";
 import Header from "./Header";
 import Footer from "./Footer";
 import MobileTopBar from "./MobileTopBar";
@@ -53,15 +53,23 @@ export default function Products() {
     }
   }, [loader,setLoader]);
  
+  console.log("website color schema:", websiteModificationData);
+  
   return (
     <>
       <Header/>
       <MobileTopBar/>
       <Banner/>
 
-      <div className="w-full px-4 md:px-6 lg:px-10 mt-6">
-        <div className="flex justify-center w-full">
-          <div className="flex flex-col lg:flex-row gap-4 w-full max-w-screen-xl">
+      <div className="w-full px-4 md:px-6 lg:px-10 my-6" style={{
+        backgroundColor: "#fcfce4"
+        // backgroundImage: `url(${IMAGE_URL_Without_Storage}${websiteModificationData?.websiteModificationLive.json_log[0].websiteHeaderUrl})`,
+        // backgroundRepeat: "no-repeat",
+        // backgroundSize: "cover",
+        // backgroundPosition: "center",
+      }}>
+        <div className="flex justify-center w-full py-6">
+          <div className="flex flex-col lg:flex-row gap-6 w-full max-w-screen-xl">
             
             {/* Left Section */}
             <div className="w-full">
@@ -85,7 +93,7 @@ export default function Products() {
 
                         <ul className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
                           {category.items.map((item, itemIndex) => {
-                            const { title, price, description, image_url } = item;
+                            const { title, price, description, image_url, is_promotion, promotion_text, promotion_bg_color, promotion_text_color, days, start_time,end_time} = item;
 
                             // Skip suspended items
                             const isItemSuspend =
@@ -97,6 +105,41 @@ export default function Products() {
 
                             if (isItemSuspend) return null;
 
+                            // check the category promotion available, or item
+                            let isPromotionActive = false
+                            let promotionText = category.promotion_text
+                            let promotionBgColor = category.promotion_bg_color
+                            let promotionTextColor = category.promotion_text_color
+
+                            const dayNameAndTime = moment.tz("HH:mm", "Europe/London").format("HH:mm:ss");
+
+                            if(parseInt(category?.is_promotion) === parseInt(1))
+                            {
+                              const currentDay = moment().format("dddd")
+                              const findDay = category.days?.find((day) => day.label.toLowerCase() === currentDay?.toLocaleLowerCase())
+                              if(findDay)
+                              {
+                                if(dayNameAndTime >= moment(category.start_time, "HH:mm:ss").format("HH:mm:ss") && moment(category.end_time, "HH:mm:ss").format("HH:mm:ss") <= dayNameAndTime)
+                                {
+                                  isPromotionActive = true
+                                }
+                              }
+                            }
+                            else if(parseInt(is_promotion) === parseInt(1))
+                            {
+                              const currentDay = moment().format("dddd")
+                              const findDay = days?.find((day) => day.label.toLowerCase() === currentDay?.toLocaleLowerCase())
+                              if(findDay)
+                              {
+                                if(dayNameAndTime >= moment(start_time, "HH:mm:ss").format("HH:mm:ss") && moment(end_time, "HH:mm:ss").format("HH:mm:ss") <= dayNameAndTime)
+                                {
+                                  isPromotionActive = true
+                                  promotionText = promotion_text
+                                  promotionBgColor = promotion_bg_color
+                                  promotionTextColor = promotion_text_color
+                                }
+                              }
+                            }
                             return (
                               <li
                                 key={itemIndex}
@@ -112,8 +155,18 @@ export default function Products() {
                                     websiteModificationData?.websiteModificationLive
                                       ?.json_log?.[0]?.itemFontColor,
                                 }}
-                                className="bg-white rounded-lg shadow-lg p-3 cursor-pointer transition-colors duration-300 hover:bg-[var(--item-hover-background)] hover:text-[var(--item-hover-font-color)]"
+                                className="relative bg-white rounded-lg shadow-lg p-3 cursor-pointer transition-colors duration-300 text-[var(--font-color)] hover:bg-[var(--item-hover-background)] hover:text-[var(--item-hover-font-color)]"
                               >
+                                {/* 🔥 Hot Deal Badge */}
+                                {
+                                  isPromotionActive &&
+                                  <span
+                                    className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-bl-lg shadow-md"
+                                    style={{ backgroundColor: promotionBgColor, color: promotionTextColor }}
+                                  >
+                                    {promotionText}
+                                  </span>
+                                }
                                 <Link
                                   href={`/${storeName
                                     ?.replace(/ /g, "-")

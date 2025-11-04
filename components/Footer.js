@@ -13,8 +13,8 @@ function Footer() {
     <footer
       className="pt-8 px-4 bg-white border-t"
       style={{
-        borderTop: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
-        backgroundColor: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+        borderTop: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.navigationBackgroundColor,
+        backgroundColor: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.navigationBackgroundColor,
       }}
     >
       <div className="max-w-screen-xl mx-auto">
@@ -97,6 +97,15 @@ function Footer() {
                     style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
                   >
                     Allergens
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="/marketingpreferences"
+                    className="text-base font-medium hover:underline"
+                    style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                  >
+                    Marketing Preferences
                   </a>
                 </li>
               </ul>

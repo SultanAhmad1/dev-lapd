@@ -14,18 +14,20 @@ export const WebsiteSingleItem = (props) => {
     singleItem,
     quantity,
     itemPrice,
-    handleDisplayItemStates,
     handleRadioInput,
     handleCheckInput,
     handleDecrement,
     handleIncrement,
-    handleQuantity,
     handleAddOrNextClickedToCart,
-    handleNextClicked,
     websiteModificationData,
     handleMobileQuantityDecrement,
     handleMobileQuantityIncrement,
     isAnyModifierHasExtras,
+
+    checkPromotionActive,
+    getPromotionText,
+    getPromotionBgColor,
+    getPromotionTextColor,
   } = props;
   
   const isValidHttpsUrl = (url) => {
@@ -49,8 +51,9 @@ export const WebsiteSingleItem = (props) => {
               </a>
             </div>
 
-            {singleItem?.image_url && (
-              <div className="border rounded overflow-hidden">
+            
+            <div className="relative border rounded">
+              {singleItem?.image_url && (
                 <Image
                   alt={singleItem?.title}
                   src={
@@ -58,13 +61,24 @@ export const WebsiteSingleItem = (props) => {
                       ? singleItem.image_url
                       : `${IMAGE_URL_Without_Storage}/${singleItem.image_url}`
                   }
-                  className="w-full object-cover"
+                  className="w-full object-cover overflow-hidden"
                   loading="lazy"
-                  width={100}
-                  height={100}
+                  width={300}
+                  height={200}
                 />
+              )}
+
+                 
+                {
+                  checkPromotionActive &&
+                  <span
+                    className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-bl-lg shadow-md"
+                    style={{ backgroundColor: getPromotionBgColor, color: getPromotionTextColor }}
+                  >
+                    {getPromotionText}
+                  </span>
+                }
               </div>
-            )}
           </div>
 
           {/* Right Side */}

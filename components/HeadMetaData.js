@@ -1,4 +1,5 @@
 "use client";
+
 function HeadMetaData(props) {
 
   const {
@@ -7,6 +8,8 @@ function HeadMetaData(props) {
     singleItemsDetails
   } = props
 
+  console.log("single item:", singleItemsDetails);
+  
   return (
     <>
       <title>{dataTitle}</title>
