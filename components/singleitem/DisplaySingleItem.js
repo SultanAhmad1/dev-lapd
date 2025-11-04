@@ -4,7 +4,7 @@ import Header from "../Header";
 import { NestedModifiers } from "../NestedModifiers";
 import { useRouter } from "next/navigation";
 import HomeContext from "@/contexts/HomeContext";
-import moment from "moment";
+import moment from "moment-timezone";
 import { WebsiteSingleItem } from "../WebsiteSingleItem";
 import { MobileSingleItem } from "../MobileSingleItem";
 import { axiosPrivate, BRAND_GUID, BRAND_SIMPLE_GUID, IMAGE_URL_Without_Storage, PARTNER_ID } from "@/global/Axios";
@@ -49,6 +49,10 @@ export default function DisplaySingleItem({params})
         isHandleModalCheckInputParentItemID: 0,
         isHandleModalCheckInputClicked: false,
         handleModalCheckModifierId: 0,
+        checkPromotionActive: false,
+        getPromotionText: "",
+        getPromotionBgColor: "",
+        getPromotionTextColor: "",
     });
 
     const  {
@@ -68,6 +72,10 @@ export default function DisplaySingleItem({params})
         isHandleModalCheckInputParentItemID,
         isHandleModalCheckInputClicked,
         handleModalCheckModifierId,
+        checkPromotionActive,
+        getPromotionText,
+        getPromotionBgColor,
+        getPromotionTextColor,
     } = displaySingleItemObject
 
     const handleDisplayItemStates = (key, value = null) => {
@@ -105,6 +113,42 @@ export default function DisplaySingleItem({params})
             
             // count the modifier with isExtras checked.
             let isExtrasArray = []
+
+            let isPromotionActive = false
+            let promotionText = getSingleCategory.promotion_text
+            let promotionBgColor = getSingleCategory.promotion_bg_color
+            let promotionTextColor = getSingleCategory.promotion_text_color
+
+            const dayNameAndTime = moment.tz("HH:mm", "Europe/London").format("HH:mm:ss");
+
+            if(parseInt(getSingleCategory?.is_promotion) === parseInt(1))
+            {
+                const currentDay = moment().format("dddd")
+                const findDay = getSingleCategory.days?.find((day) => day.label.toLowerCase() === currentDay?.toLocaleLowerCase())
+                if(findDay)
+                {
+                if(dayNameAndTime >= moment(getSingleCategory.start_time, "HH:mm:ss").format("HH:mm:ss") && moment(getSingleCategory.end_time, "HH:mm:ss").format("HH:mm:ss") <= dayNameAndTime)
+                {
+                    isPromotionActive = true
+                }
+                }
+            }
+            else if(parseInt(getItemFromCategory?.is_promotion) === parseInt(1))
+            {
+                const currentDay = moment().format("dddd")
+                const findDay = getItemFromCategory?.days?.find((day) => day.label.toLowerCase() === currentDay?.toLocaleLowerCase())
+                if(findDay)
+                {
+                    if(dayNameAndTime >= moment(getItemFromCategory?.start_time, "HH:mm:ss").format("HH:mm:ss") && moment(getItemFromCategory?.end_time, "HH:mm:ss").format("HH:mm:ss") <= dayNameAndTime)
+                    {
+                        isPromotionActive = true
+                        promotionText = getItemFromCategory?.promotion_text
+                        promotionBgColor = getItemFromCategory?.promotion_bg_color
+                        promotionTextColor = getItemFromCategory?.promotion_text_color
+                    }
+                }
+            }
+            
             const updateModifier = getItemFromCategory?.modifier_group?.map((modifier) => 
             {
                 if(modifier?.isExtras)
@@ -461,6 +505,10 @@ export default function DisplaySingleItem({params})
                     singleItem: getItemFromCategory,
                     itemPrice: parseFloat(getItemFromCategory?.price).toFixed(2),
                     isAnyModifierHasExtras: parseInt(isExtrasArray?.length) > parseInt(0) ? true : false,
+                    checkPromotionActive: isPromotionActive,
+                    getPromotionText: promotionText,
+                    getPromotionBgColor: promotionBgColor,
+                    getPromotionTextColor: promotionTextColor,
                 }
             })
 
@@ -2573,6 +2621,10 @@ export default function DisplaySingleItem({params})
                         quantity,
                         itemPrice,
                         singleItem,
+                        checkPromotionActive,
+                        getPromotionText,
+                        getPromotionBgColor,
+                        getPromotionTextColor,
                         optionNumber,
                         isAnyModifierHasExtras,
 
@@ -2597,6 +2649,11 @@ export default function DisplaySingleItem({params})
                 {
                     ...{
                         singleItem,
+                        checkPromotionActive,
+                        getPromotionText,
+                        getPromotionBgColor,
+                        getPromotionTextColor,
+
                         quantity,
                         itemPrice,
                         handleRadioInput,

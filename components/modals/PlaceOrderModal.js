@@ -39,6 +39,8 @@ export default function PlaceOrderModal()
 
   const [deliveryTime, setDeliveryTime] = useState("");
   const [due, setDue] = useState("due");
+  const [asapOrRequested, setAsapOrRequested] = useState('ASAP');
+  
   const [customerDetailObj, setCustomerDetailObj] = useState({
     id: 0,
     email: "",
@@ -219,6 +221,8 @@ export default function PlaceOrderModal()
                 setDeliveryTime,
                 due,
                 setDue,
+                asapOrRequested,
+                setAsapOrRequested,
                 customerDetailObj,
                 setCustomerDetailObj,
                 setModalObject,

@@ -99,3 +99,14 @@ html {
     display: none;
   }
 }
+
+@media screen and (max-width: 768px) {
+  .mobile_view {
+    justify-content: center; /* center horizontally */
+  }
+
+  .mobile_button{
+    position: absolute;
+    left: 20px;
+  }
+}

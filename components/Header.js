@@ -37,16 +37,16 @@ export default function Header()
     const splitToArray = pathName.split("/").filter(segment => segment)
     
     return (
-        <header className="lg:flex md:block justify-between items-center px-4 py-2">
+        <header className="lg:flex md:block justify-between items-center px-4 py-2" style={{backgroundColor: "#fcfce4"}}>
             {/* Logo & Sandwich */}
-            <div className="flex items-center gap-x-16 px-4 sm:px-6 lg:px-8">
+            <div className="flex items-center gap-x-16 px-4 sm:px-6 lg:px-8 mobile_view">
                 {headerUserBtnDisplay && (
                     <button
                         type="button"
                         // onClick={() =>
                         //     handleBoolean(!booleanObj?.isCustomerCanvasOpen, "isCustomerCanvasOpen")
                         // }
-                        className="p-2 rounded hover:bg-gray-200 transition-all duration-200"
+                        className="p-2 rounded hover:bg-gray-200 transition-all duration-200 mobile_button"
                     >
                         <svg
                             viewBox="0 0 20 20"

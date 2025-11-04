@@ -474,7 +474,6 @@ export default function CustomLayout({ children })
   {
     setLoader(false)
     const { menu, orderExistOrNot} = data?.data
-
     if(orderExistOrNot)
     {
       setOrderGuid(orderExistOrNot?.external_order_id)

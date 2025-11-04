@@ -50,12 +50,16 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           {/* End Google Tag Manager */}
           <meta name="robots" content="index, follow" />
           {/* <link rel='icon' href={metaDataToDisplay?.iconImage ?? "favicon.ico"} type="image/x-icon" sizes="18x17"></link> */}
-          <link rel='icon' href={metaDataToDisplay?.iconImage} type="image/x-icon" sizes="18x17"></link>
+          <link rel='icon' href="favicon.ico" type="image/x-icon" sizes="18x17"></link>
           <HeadMetaData 
             dataTitle={metaDataToDisplay?.title}
             dataContent={metaDataToDisplay?.contentData}
             singleItemsDetails={metaDataToDisplay?.singleItemsDetails}
           />
+          {/* <meta property="og:image" content="favicon.ico" /> */}
+          <meta property="og:image" content="og-image.png" />
+          <meta property="og:type" content="website" />
+          <meta property="og:url" content="https://dunkedfood.co.uk/" />
         </head>
         <body className="body-tag">
             <noscript>
