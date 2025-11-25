@@ -119,7 +119,7 @@ export default function CustomModalCard()
             setTimeout(() => {
             setLoader(false);
             }, 3000);
-        }, 30 * 60 * 1000); 
+        }, 60 * 60 * 1000); 
 
         // Clear the timeout if the component is unmounted before 20 minutes
         return () => clearTimeout(timeoutId);
@@ -147,6 +147,7 @@ export default function CustomModalCard()
             setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,null)
             setCartData([])
             setLoader(false)
+            // window.alert("Your order has been received.")
             // if(response?.data?.status === "success")
             // {
             router.push(`/track-order/${orderId}`)

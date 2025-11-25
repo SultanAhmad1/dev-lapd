@@ -77,11 +77,11 @@ export default function ThankYouDetail()
                 <div className="space-y-4">
                     <h1 className="text-2xl font-bold">Thank You.</h1>
                     <p className="text-base font-medium">
-                        Your order has been received
+                        Your order has been received. You’ll get an email confirmation shortly.
                     </p>
-                    <p className="text-base font-medium">
+                    {/* <p className="text-base font-medium">
                     You’ll get an email confirmation shortly, and we’ll send you a text message as soon as your order is ready for collection.
-                    </p>
+                    </p> */}
                     <a 
                         onMouseEnter={() => setIsHover(true)}
                         onMouseLeave={() => setIsHover(false)}

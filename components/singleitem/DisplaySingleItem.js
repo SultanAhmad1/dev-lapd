@@ -1887,7 +1887,7 @@ export default function DisplaySingleItem({params})
                 setTimeout(() => {
                     setLoader(false);
                 }, 3000);
-            }, 30 * 60 * 1000); 
+            }, 60 * 60 * 1000); 
         
             // Clear the timeout if the component is unmounted before 20 minutes
             return () => clearTimeout(timeoutId);

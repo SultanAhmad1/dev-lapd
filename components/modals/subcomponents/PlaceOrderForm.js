@@ -482,7 +482,7 @@ export default function PlaceOrderForm({
         localStorage.clear();
         window.location.reload(true);
         window.location.href = "/"
-      }, 30 * 60 * 1000); 
+      }, 60 * 60 * 1000); 
       // Clear the timeout if the component is unmounted before 20 minutes
       return () => clearTimeout(timeoutId);
     }
@@ -619,6 +619,7 @@ export default function PlaceOrderForm({
       window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
       window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
       setCartData([])
+      // window.alert("Your order has been received.")
       // if(response?.data?.status === "success")
       // {
       // first check this is delivery order or collection order.
@@ -673,7 +674,27 @@ export default function PlaceOrderForm({
       const response = await axiosPrivate.post(`/update-order-after-successfully-payment-save`, data)
       // Here need to hit sms and email call.
       const orderData = response?.data?.data?.order
-      hitSmsAndEmailCall(orderId)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
+        setOrderGuid(null)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+        setCartData([])
+        // window.alert("Your order has been received.")
+        // if(response?.data?.status === "success")
+        // {
+        // first check this is delivery order or collection order.
+        const orderType = Number(orderData?.order_type_filter_id);
+        if (orderType === 4) {
+
+          window.location.href = `/track-order/${orderId}`
+          return
+        }
+        window.location.href = `/thank-you/${orderId}`
+      // hitSmsAndEmailCall(orderId)
         
     } 
     catch (error) 
@@ -1175,7 +1196,7 @@ export default function PlaceOrderForm({
       setTimeout(() => {
         setPaymentLoader(false);
       }, 3000);
-    }, 30 * 60 * 1000); 
+    }, 60 * 60 * 1000); 
 
     // Clear the timeout if the component is unmounted before 20 minutes
     return () => clearTimeout(timeoutId);
@@ -1200,6 +1221,9 @@ export default function PlaceOrderForm({
       cvcElement?.focus()
     }
   }
+
+  console.log("asapOrRequested", asapOrRequested);
+  
 
   return(
     <Fragment>
