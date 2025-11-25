@@ -60,7 +60,7 @@ const PaymentForm = ({orderId}) =>
   const [isGetErrorFromDatabase, setIsGetErrorFromDatabase] = useState(false)
   const [paymentRequest, setPaymentRequest] = useState(null);
   const [paymentFormObject, setPaymentFormObject] = useState({
-    orderType: "",
+    orderType: 0,
     orderMessage: "Invalid or expired url",
     orderConfidentialID: "",
   });
@@ -103,19 +103,11 @@ const PaymentForm = ({orderId}) =>
             emailError: order?.order_detail?.email ? "" : "Email is required",
             fullNameError: order?.order_detail?.first_name && order?.order_detail?.last_name ? "" : "Full name is required.",
           }))
-          let orderType = order.order_type_filter_id
-          if(order.source_id === 1)
-          {
-            orderType = order.order_type_filter_id === 4 ? "delivery" : "collection"
-          } 
-          else
-          {
-            orderType = order.website_order_filter_id === 1 ? "delivery" : "collection"
-          }
+          // let orderType = parseInt(order.order_type_filter_id) === parseInt(4) ? "delivery" : "collection"
   
           setPaymentFormObject((prevData) => ({
             ...prevData,
-            orderType: orderType,
+            orderType: order.order_type_filter_id,
             orderMessage: response?.data?.message ?? paymentFormObject?.orderMessage,
             orderConfidentialID: order.external_order_number,
           }))
@@ -203,7 +195,7 @@ const PaymentForm = ({orderId}) =>
       setTimeout(() => {
         setPaymentLoader(false);
       }, 3000);
-    }, 30 * 60 * 1000); 
+    }, 60 * 60 * 1000); 
 
     // Clear the timeout if the component is unmounted before 20 minutes
     return () => clearTimeout(timeoutId);
@@ -234,9 +226,9 @@ const PaymentForm = ({orderId}) =>
       window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
       window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
       setCartData([])
-
+      // window.alert("Your order has been received.")
       setPaymentLoader(false)
-      if(paymentFormObject.orderType === "delivery")
+      if(parseInt(paymentFormObject.orderType) === parseInt(4))
       {
         router.push(`/track-order/${orderId}`)
         return
@@ -260,7 +252,7 @@ const PaymentForm = ({orderId}) =>
       setCartData([])
 
       setCartData([])
-      if(paymentFormObject.orderType === "delivery")
+      if(parseInt(paymentFormObject.orderType) === parseInt(4))
       {
         router.push(`/track-order/${orderId}`)
         return
@@ -290,7 +282,30 @@ const PaymentForm = ({orderId}) =>
 
       if(response?.data?.status === "success")
       {
-        hitSmsAndEmailCall(orderId)
+        // here check the order type
+        
+        setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
+        setOrderGuid(null)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+        setCartData([])
+        // window.alert("Your order has been received.")
+        setPaymentLoader(false)
+        const orderType = Number(orderData?.order_type_filter_id);
+        if (orderType === 4) {
+          
+          router.push(`/track-order/${orderId}`)
+          return
+        }
+
+        router.push(`/thank-you/${orderId}`)
+
+        // hitSmsAndEmailCall(orderId)
+
         // router.push(`/track-order/${response?.data?.data?.order?.external_order_id}`)
       }
     } 

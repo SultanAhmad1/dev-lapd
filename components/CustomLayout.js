@@ -1037,6 +1037,8 @@ export default function CustomLayout({ children })
       {/* {isTimeToClosed && <StoreClosedModal />} */}
       {loaderState && <Loader />}
       {atFirstLoad && <AtLoadModalShow /> }
+
+        {/* <ShowExistsOrderDetailModal /> */}
       {/* <OtpVerifyModal /> */}
     </HomeContext.Provider>
   );

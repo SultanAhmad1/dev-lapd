@@ -129,7 +129,7 @@ const ModalPaymentForm = ({orderId}) =>
       setTimeout(() => {
         setLoader(false);
       }, 3000);
-    }, 30 * 60 * 1000); 
+    }, 60 * 60 * 1000); 
 
     // Clear the timeout if the component is unmounted before 20 minutes
     return () => clearTimeout(timeoutId);
@@ -162,6 +162,7 @@ const ModalPaymentForm = ({orderId}) =>
       setLoader(true)
       // if(response?.data?.status === "success")
       // {
+      // window.alert("Your order has been received.")
       const getFilterFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`))
       if(getFilterFromLocalStorage)
       {

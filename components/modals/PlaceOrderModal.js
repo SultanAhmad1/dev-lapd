@@ -191,6 +191,7 @@ export default function PlaceOrderModal()
                 </div>
 
                 <WrapWallet {...{
+                  asapOrRequested,
                   deliveryTime,
                   customerDetailObj,
                   due,

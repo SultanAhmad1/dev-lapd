@@ -57,6 +57,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
             singleItemsDetails={metaDataToDisplay?.singleItemsDetails}
           />
           {/* <meta property="og:image" content="favicon.ico" /> */}
+          <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0"/>
           <meta property="og:image" content="og-image.png" />
           <meta property="og:type" content="website" />
           <meta property="og:url" content="https://dunkedfood.co.uk/" />
