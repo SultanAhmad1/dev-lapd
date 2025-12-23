@@ -49,6 +49,7 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
           </Script>
           {/* End Google Tag Manager */}
           <meta name="robots" content="index, follow" />
+          {/* <meta name="robots" content="noindex, nofollow"/> */}
           {/* <link rel='icon' href={metaDataToDisplay?.iconImage ?? "favicon.ico"} type="image/x-icon" sizes="18x17"></link> */}
           <link rel='icon' href="favicon.ico" type="image/x-icon" sizes="18x17"></link>
           <HeadMetaData 
