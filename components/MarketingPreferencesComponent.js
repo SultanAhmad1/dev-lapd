@@ -11,6 +11,7 @@ import { usePostMutationHook } from "./reactquery/useQueryHook";
 export default function MarketingPreferencesComponent() 
 {
   const {
+    setAtFirstLoad,
     websiteModificationData,
     selectedStoreDetails,
   } = useContext(HomeContext);
@@ -40,6 +41,10 @@ export default function MarketingPreferencesComponent()
   const [errors, setErrors] = useState({});
   const [submitted, setSubmitted] = useState(false);
 
+  useEffect(() => {
+    setAtFirstLoad(false)
+  }, []);
+  
 
   const update = (patch) => setForm((f) => ({ ...f, ...patch }));
 

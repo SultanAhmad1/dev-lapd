@@ -12,7 +12,7 @@ import { ContextCheckApi } from "@/app/layout";
 
 export default function TrackOrderDetail({orderId}) 
 {
-    const { websiteModificationData, setSelectedStoreDetails } = useContext(HomeContext)
+    const { websiteModificationData, setSelectedStoreDetails, selectedStoreDetails} = useContext(HomeContext)
     const { setMetaDataToDisplay, metaDataToDisplay} = useContext(ContextCheckApi)
 
     const [isHover, setIsHover] = useState(false);
@@ -29,6 +29,7 @@ export default function TrackOrderDetail({orderId})
     
     // 0740225786
     const [getTrackOrderData, setGetTrackOrderData] = useState(null);
+    const [isOrderDelivered, setIsOrderDelivered] = useState(false);
     
     const [isDeliveryFree, setIsDeliveryFree] = useState(false);
     const [couponTotal, setCouponTotal] = useState(0);
@@ -41,10 +42,19 @@ export default function TrackOrderDetail({orderId})
         window.alert("There is something went wrong!. Please refresh and try again 9.", error)
     }
 
+    console.log("is order deliveries:", isOrderDelivered);
+    
     const onGetSuccess = (data) => {
 
-        const { trackOrder } = data?.data
+        const { trackOrder, isExpired } = data?.data
 
+        if(isExpired)
+        {
+            setIsOrderDelivered(data?.data?.isExpired || false)
+            return
+        }
+
+        
         const {location} = trackOrder
 
         const selectedStoreDetail = {
@@ -56,7 +66,10 @@ export default function TrackOrderDetail({orderId})
         }
 
         setSelectedStoreDetails(selectedStoreDetail)
+        console.log("check the track data:", data);
+        
         setGetTrackOrderData(data)
+        
         setOrderHash(data?.data?.trackOrder?.external_order_number)
 
         
@@ -132,6 +145,7 @@ export default function TrackOrderDetail({orderId})
         
         setGetTrackOrderData(data?.data)
         setOrderHash(data?.data?.data?.trackOrder?.external_order_number)
+        setIsOrderDelivered(data?.data?.data?.isExpired || false)
 
         const newUrl = `/track-order/${data.data.data.trackOrder.external_order_id}`;
         window.history.replaceState(null, '', newUrl);
@@ -139,11 +153,17 @@ export default function TrackOrderDetail({orderId})
 
     const { mutate: hashMutate, isLoading,isSuccess, reset, isError } = usePostMutationHook('track-by-hash', '/track-order-by-hash-order', onHashSuccess, onHashError)
 
-    if(isSuccess)
-    {
-        reset()
-        return
-    }
+    useEffect(() => {
+        
+        if(isSuccess || isError)
+        {
+            setTimeout(() => {
+                reset()
+            }, 3000);
+            return
+        }
+    }, [isSuccess, isError]);
+    
 
      const BLACK_COLOR = '#000';
     const WHITE_COLOR = '#fff';
@@ -169,10 +189,10 @@ export default function TrackOrderDetail({orderId})
     const activeButtonColor = websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR
     
     
-    if(!getTrackOrderData)
+    if(isOrderDelivered)
     {
         return(
-            <div className={`${getTrackOrderData ? "" : "h-[60vh]"} flex flex-col items-center justify-center bg-gray-100 px-1 py-3`}>
+            <div className={`${isOrderDelivered === true ? "" : "h-[60vh]"} flex flex-col items-center justify-center bg-gray-100 px-1 py-3`}>
                 <div className="w-full max-w-7xl">
                        <div className="mb-6 bg-white rounded-lg shadow-xl  p-8">
                     <h1 className="text-2xl font-semibold mb-4">Track Order</h1>
@@ -217,7 +237,7 @@ export default function TrackOrderDetail({orderId})
                 </div>
                 
                     <div className="bg-white p-4 rounded-md mb-6 text-center">
-                        <h2 className="text-lg font-semibold text-black mb-5">Order has been expired.</h2>
+                        <h2 className="text-lg font-semibold text-black mb-5">Order has been delivered.</h2>
                         <a 
                             href="/" 
                             className="px-4 py-3 rounded-md font-semibold transition-all duration-200 border text-center"
@@ -287,9 +307,9 @@ export default function TrackOrderDetail({orderId})
 
                 </div>
             
-                {getTrackOrderData?.data?.isExpired && (
+                {isOrderDelivered && (
                     <div className="bg-white p-4 rounded-md mb-6 text-center">
-                        <h1 className="text-lg font-semibold text-black mb-5">Order has been expired.</h1>
+                        <h1 className="text-lg font-semibold text-black mb-5">Order has been delivered.</h1>
                         <a 
                             href="/" 
                             className="px-4 py-3 rounded-md font-semibold transition-all duration-200 border text-center"
@@ -313,7 +333,7 @@ export default function TrackOrderDetail({orderId})
                 )}
                 
                 {
-                    getTrackOrderData?.data?.isExpired === false && (
+                    isOrderDelivered === false && (
                         <>
                         
                             <div className="w-full bg-white rounded-lg shadow-xl  p-8 mb-4">

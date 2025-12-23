@@ -312,7 +312,7 @@ export default function PlaceOrderForm({
    * User no need to redirect can save information related to order.
    */
   const onRegisterError = (error) => {
-    window.alert("There is something went wrong!. Please refresh and try again.")
+    window.alert("There is something went wrong place order form 1. Please refresh and try again.")
     return
   }
 
@@ -1003,7 +1003,7 @@ export default function PlaceOrderForm({
           setPaymentError("Your card has insufficient funds.");
         }
         else{
-          window.alert("There is something went wrong. Please refresh and try again.")
+          window.alert("There is something went wrong place order form 4. Please refresh and try again.")
         }
       }
     }
@@ -1023,7 +1023,7 @@ export default function PlaceOrderForm({
       setPaymentError("Your card has insufficient funds.");
     }
     else{
-      window.alert("There is something went wrong. Please refresh and try again.")
+      window.alert("There is something went wrong place order form 5. Please refresh and try again.")
     }
   }
 
@@ -1124,7 +1124,7 @@ export default function PlaceOrderForm({
           setPaymentError("Your card has insufficient funds.");
         }
         else{
-          window.alert("There is something went wrong. Please refresh and try again.")
+          window.alert("There is something went wrong place order form 3. Please refresh and try again.")
         }
         
         setIsPayNowClickAble(true)
@@ -1148,13 +1148,8 @@ export default function PlaceOrderForm({
       setPaymentError("Your card has insufficient funds.");
     }
     else{
-      window.alert("There is something went wrong. Please refresh and try again.")
+      window.alert("There is something went wrong place order form 2. Please refresh and try again.")
     }
-    
-    // setIsPayNowClickAble(true)
-    // set
-    // window.alert("There is something went wrong!. Please refresh and try again.")
-    // return
   }
 
   const {

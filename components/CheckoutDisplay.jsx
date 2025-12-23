@@ -670,7 +670,7 @@ export default function CheckoutDisplay()
           }
         }
       }
-
+      
       let discountedCoupon = 0;
       if(couponData?.discount_type === "P")
       {
@@ -715,11 +715,13 @@ export default function CheckoutDisplay()
           {
             // first get difference of discount and subtotal
             const differenceDiscountAndSubtotal = parseFloat(subtotalOrderAmount) - parseFloat(discountValue)
-            discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(differenceDiscountAndSubtotal) - parseFloat(couponData?.value),2)
+            // discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(differenceDiscountAndSubtotal) - parseFloat(couponData?.value),2)
+            discountedCoupon = parseFloat(couponData?.value).toFixed(2)
           }
           else
           {
-            discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(subtotalOrderAmount) - parseFloat(couponData?.value),2)
+            // discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(subtotalOrderAmount) - parseFloat(couponData?.value),2)
+            discountedCoupon = parseFloat(couponData?.value).toFixed(2)
           }
         }
         else
@@ -727,12 +729,14 @@ export default function CheckoutDisplay()
           if(getCouponCodeFromSession && parseInt(getCouponCodeFromSession.length) > parseInt(0))
           {
             // first get difference of discount and subtotal
-            const differenceDiscountAndSubtotal = parseFloat(subtotalOrderAmount) - parseFloat(discountValue)
-            discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(differenceDiscountAndSubtotal) - parseFloat(couponData?.value),2)
+            // const differenceDiscountAndSubtotal = parseFloat(subtotalOrderAmount) - parseFloat(discountValue)
+            // discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(differenceDiscountAndSubtotal) - parseFloat(couponData?.value),2)
+            discountedCoupon = parseFloat(couponData?.value).toFixed(2)
           }
           else
           {
-            discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(subtotalOrderAmount) - parseFloat(couponData?.value0),2)
+            // discountedCoupon = getAmountConvertToFloatWithFixed(parseFloat(subtotalOrderAmount) - parseFloat(couponData?.value0),2)
+            discountedCoupon = parseFloat(couponData?.value).toFixed(2)
           }
         }
       }
@@ -1146,7 +1150,7 @@ export default function CheckoutDisplay()
 
                       {/* Right detail (e.g., “2 x Classic Chicken Burger”) */}
                       <div className="flex-1 font-semibold break-words">
-                        {parseFloat(coupon?.value).toFixed(2)} {coupon?.discount_type === "P" ? "%" : "£"}
+                        {coupon?.discount_type === "M" && "£"} {parseFloat(coupon?.value).toFixed(2)} {coupon?.discount_type === "P" && "%"}
                       </div>
                     </div>
                   </div>

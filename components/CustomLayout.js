@@ -233,18 +233,20 @@ export default function CustomLayout({ children })
             howManyTimeCouponApplied += 1
             
           }
-          else
+          else if(coupon?.discount_type === "M")
           {
             if(parseInt(howManyTimeCouponApplied) === parseInt(1))
               {
-                const differenceDiscountAndSubtotal = parseFloat(totalValue) - parseFloat(firstCouponAppliedDiscount)
+                // const differenceDiscountAndSubtotal = parseFloat(totalValue) - parseFloat(firstCouponAppliedDiscount)
                                 
-                firstCouponAppliedDiscount = getAmountConvertToFloatWithFixed(parseFloat(differenceDiscountAndSubtotal) - parseFloat(couponData?.value),2)
+                // firstCouponAppliedDiscount = getAmountConvertToFloatWithFixed(parseFloat(differenceDiscountAndSubtotal) - parseFloat(coupon?.value),2)
+                firstCouponAppliedDiscount = getAmountConvertToFloatWithFixed(parseFloat(coupon?.value),2)
               }
               else
               {
                 // const differenceDiscountAndSubtotal = parseFloat(subtotalOrderAmount) - parseFloat(discountValue)
-                firstCouponAppliedDiscount = getAmountConvertToFloatWithFixed(parseFloat(totalValue) - parseFloat(couponData?.value),2)
+                // firstCouponAppliedDiscount = getAmountConvertToFloatWithFixed(parseFloat(totalValue) - parseFloat(coupon?.value),2)
+                firstCouponAppliedDiscount = getAmountConvertToFloatWithFixed(parseFloat(coupon?.value),2)
               }
 
             howManyTimeCouponApplied += 1
@@ -257,6 +259,8 @@ export default function CustomLayout({ children })
           }
         })
   
+        console.log("update coupon inside custom layout:", updateCoupon);
+        
         setCouponDiscountApplied(updateCoupon)
         setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`, updateCoupon)
       }
@@ -406,7 +410,9 @@ export default function CustomLayout({ children })
       }
 
     } catch (error) {
-        window.alert("There is something went wrong. Please refresh and try again.")
+        console.log("custom layout 1:", error);
+        
+        window.alert("There is something went wrong custom layout 1. Please refresh and try again.")
         return
     }
   }, []);
