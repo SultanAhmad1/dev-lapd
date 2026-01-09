@@ -12,7 +12,6 @@ import { getAmountConvertToFloatWithFixed, setLocalStorage } from "@/global/Stor
 import CustomerPersonal from "./CustomerPersonal";
 import MenuNotAvailableModal from "./modals/MenuNotAvailableModal";
 import PlaceOrderModal from "./modals/PlaceOrderModal";
-import { useSearchParams } from "next/navigation";
 import { UAParser } from "ua-parser-js";
 import { listtime } from "@/global/Time";
 import { ContextCheckApi } from "@/app/layout";
@@ -66,7 +65,7 @@ export default function CustomLayout({ children })
   
   // FilterLocationTime Component States
   const [storeGUID, setStoreGUID] = useState("57237242-C91A-4C3F-BCF1-5DAF5FE65D6E");
-  const [menuRequestBoolean, setMenuRequestBoolean] = useState(true);
+  // const [storeGUID, setStoreGUID] = useState(null);
   
   const [storeName, setStoreName] = useState("");
   const [storeToDayName, setStoreToDayName] = useState("");
@@ -123,7 +122,6 @@ export default function CustomLayout({ children })
   const [errorMessage, setErrorMessage] = useState("Coming Soon");
   
 
-  const [isDeliveryBtnClicked, setIsDeliveryBtnClicked] = useState(false);
   const [isDeliveryChangedBtnClicked, setIsDeliveryChangedBtnClicked] = useState(false);
 
   const [isCartFull, setIsCartFull] = useState(true);
@@ -270,7 +268,6 @@ export default function CustomLayout({ children })
       if (getSelectStore === null) 
       {
         // setStoreGUID(DEFAULT_LOCATION)
-        setMenuRequestBoolean(true)
         setSelectedPostcode("")
         setSelectedLocation("")
         if (pathnameArray?.[0] === "track-order" || pathnameArray?.[0] === "review-order" || pathnameArray?.[0] === "payment" || pathnameArray?.[0] === "place-order") 
@@ -281,6 +278,8 @@ export default function CustomLayout({ children })
         } 
         else 
         {
+          console.log("get the selected store:", getSelectStore);
+          
           setAtFirstLoad(true)
           setHeaderCartBtnDisplay(true);
           setHeaderPostcodeBtnDisplay(true);
@@ -289,7 +288,6 @@ export default function CustomLayout({ children })
       else 
       {
         setSelectedStoreDetails(JSON.parse(getSelectStore))
-        setMenuRequestBoolean(true)
         setPostcode(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_valid_postcode`)));
 
         const parseToJSobj = JSON.parse(getSelectStore);
@@ -418,16 +416,12 @@ export default function CustomLayout({ children })
   }, []);
   
   useEffect(() => {
-    if(storeGUID)
+    if(storeGUID !== null || storeGUID !== undefined)
     {
-      setMenuRequestBoolean(true)
       colorRefetch()
       menuRefetch()
-
     }
-    else{
-      setMenuRequestBoolean(true)
-    }
+ 
 
     if(ipAddressDetails !== null && ipAddressDetails !== undefined)
     {
@@ -480,6 +474,9 @@ export default function CustomLayout({ children })
   {
     setLoader(false)
     const { menu, orderExistOrNot} = data?.data
+
+    console.log("menu success:", data);
+    
     if(orderExistOrNot)
     {
       setOrderGuid(orderExistOrNot?.external_order_id)
@@ -776,6 +773,8 @@ export default function CustomLayout({ children })
       // }
     }
 
+    setLocalStorage(`${BRAND_SIMPLE_GUID}menus`, convertToJSobj);
+
     setMenu(convertToJSobj);
 
     const getFilterDataFromObj = (window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`) !== undefined ? JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`)) : null);
@@ -801,7 +800,7 @@ export default function CustomLayout({ children })
     isLoading: menuLoading, 
     isError: menuError, 
     refetch: menuRefetch 
-  } = useGetQueryAutoUpdate(['website-menu', storeGUID, BRAND_GUID], `/menu/${storeGUID}/${BRAND_GUID}`, onMenuSuccess, onMenuError, menuRequestBoolean )
+  } = useGetQueryAutoUpdate(`website-menu-${storeGUID}-${BRAND_GUID}`, `/menu/${storeGUID}/${BRAND_GUID}`, onMenuSuccess, onMenuError, Boolean(storeGUID) )
 
   const onWebsiteModificationSuccess = (data) => {
     setLoader(false)
@@ -1000,7 +999,6 @@ export default function CustomLayout({ children })
     setIsItemClicked,
     setDeliveryMatrix,
     setIsCartBtnClicked,
-    setIsDeliveryBtnClicked,
     setAmountDiscountApplied,
     setCouponDiscountApplied,
     setPostCodeForOrderAmount,
@@ -1046,6 +1044,7 @@ export default function CustomLayout({ children })
 
         {/* <ShowExistsOrderDetailModal /> */}
       {/* <OtpVerifyModal /> */}
+
     </HomeContext.Provider>
   );
 }

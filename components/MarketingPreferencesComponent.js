@@ -168,7 +168,7 @@ export default function MarketingPreferencesComponent()
                   type="checkbox"
                   checked={form.viaEmail}
                   onChange={(e) => update({ viaEmail: e.target.checked })}
-                  className="h-5 w-5 rounded border-slate-300 text-slate-700 focus:ring-slate-400"
+                  className="text-[16px] h-5 w-5 rounded border-slate-300 text-slate-700 focus:ring-slate-400"
                 />
                 <div>
                   <div className="font-medium text-slate-900">Email</div>
@@ -183,7 +183,7 @@ export default function MarketingPreferencesComponent()
                   type="checkbox"
                   checked={form.viaPhone}
                   onChange={(e) => update({ viaPhone: e.target.checked })}
-                  className="h-5 w-5 rounded border-slate-300 text-slate-700 focus:ring-slate-400"
+                  className="text-[16px] h-5 w-5 rounded border-slate-300 text-slate-700 focus:ring-slate-400"
                 />
                 <div>
                   <div className="font-medium text-slate-900">Phone</div>
@@ -205,7 +205,7 @@ export default function MarketingPreferencesComponent()
                   value={form.email}
                   // disabled={!form.viaEmail}
                   onChange={(e) => update({ email: e.target.value })}
-                  className={`${inputBase} ${errors.email ? "border-rose-300 focus:border-rose-500 focus:ring-rose-100" : ""}`}
+                  className={`text-[16px] ${inputBase} ${errors.email ? "border-rose-300 focus:border-rose-500 focus:ring-rose-100" : ""}`}
                 />
                 {errors.email && (
                   <p className="mt-1 text-xs text-rose-600">{errors.email}</p>
@@ -221,7 +221,7 @@ export default function MarketingPreferencesComponent()
                     value={form.phone}
                     // disabled={!form.viaPhone}
                     onChange={(e) => update({ phone: e.target.value })}
-                    className={`${inputBase} pr-10 ${errors.phone ? "border-rose-300 focus:border-rose-500 focus:ring-rose-100" : ""}`}
+                    className={`text-[16px] ${inputBase} pr-10 ${errors.phone ? "border-rose-300 focus:border-rose-500 focus:ring-rose-100" : ""}`}
                   />
                   <span className="pointer-events-none absolute inset-y-0 right-3 grid place-items-center text-slate-400">
                     {/* phone icon */}

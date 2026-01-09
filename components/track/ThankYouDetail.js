@@ -1,22 +1,18 @@
 "use client";
 import { useContext, useEffect, useState } from "react";
 import { useGetQueryAutoUpdate } from "../reactquery/useQueryHook";
-import { usePathname } from "next/navigation";
 import HomeContext from "@/contexts/HomeContext";
 import { ContextCheckApi } from "@/app/layout";
-import { IMAGE_URL_Without_Storage } from "@/global/Axios";
 
-export default function ThankYouDetail() 
+export default function ThankYouDetail({orderId}) 
 {
     const { websiteModificationData, setSelectedStoreDetails, setAtFirstLoad} = useContext(HomeContext)
     const { metaDataToDisplay, setMetaDataToDisplay } = useContext(ContextCheckApi)
-
-    const router = usePathname()
-    const stringToArray = router?.split('/').filter(segment => segment)
-
+    
     const [getTrackOrderData, setGetTrackOrderData] = useState(null);
     const [isHover, setIsHover] = useState(false);
     
+
     useEffect(() => {
         
         const handleBeforeUnload = (e) => {
@@ -61,7 +57,7 @@ export default function ThankYouDetail()
         setGetTrackOrderData(data)
     }
     
-    const {isLoading: getTrackLoading, isError: getTrackError} = useGetQueryAutoUpdate("track-order", `/website-track-order/${stringToArray?.[1]}`, onGetSuccess, onGetError, stringToArray?.[1] ? true : false)
+    const {isLoading: getTrackLoading, isError: getTrackError} = useGetQueryAutoUpdate("track-order", `/website-track-order/${orderId}`, onGetSuccess, onGetError, orderId ? true : false)
 
     return(
         <div className="h-[60vh] flex justify-center items-center px-4 bg-gray-300">
@@ -82,7 +78,7 @@ export default function ThankYouDetail()
                     {/* <p className="text-base font-medium">
                     You’ll get an email confirmation shortly, and we’ll send you a text message as soon as your order is ready for collection.
                     </p> */}
-                    <a 
+                    <a
                         onMouseEnter={() => setIsHover(true)}
                         onMouseLeave={() => setIsHover(false)}
                         href="/" 

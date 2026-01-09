@@ -148,7 +148,7 @@ export const MobileSingleItem = (props) => {
                   type="text"
                   value={quantity}
                   readOnly
-                  className="w-6 h-6 text-center text-black bg-white rounded"
+                  className="w-6 h-6 text-center text-[16px] text-black bg-white rounded"
                 />
                 <button
                   onClick={handleMobileQuantityIncrement}

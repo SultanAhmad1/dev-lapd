@@ -2,9 +2,8 @@
 import HomeContext from "@/contexts/HomeContext";
 
 import { usePostMutationHook } from "@/components/reactquery/useQueryHook";
-import { BRAND_SIMPLE_GUID, BRAND_GUID, PARTNER_ID, axiosPrivate, DELIVERY_ID } from "@/global/Axios";
+import { BRAND_SIMPLE_GUID, BRAND_GUID, PARTNER_ID, axiosPrivate } from "@/global/Axios";
 import { getAmountConvertToFloatWithFixed, setLocalStorage } from "@/global/Store";
-import { round15 } from "@/global/Time";
 import moment from "moment-timezone";
 import { Fragment, useContext, useEffect, useState } from "react";
 import { CardNumberElement, PaymentRequestButtonElement, useElements, useStripe } from "@stripe/react-stripe-js";
@@ -13,7 +12,6 @@ export default function WrapWallet({deliveryTime,customerDetailObj,due,setPaymen
 {
     const {
       asapOrRequested,
-      customDoorNumberName,
       setPaymentLoader,
       booleanObj,
       dayOpeningClosingTime,
@@ -41,83 +39,12 @@ export default function WrapWallet({deliveryTime,customerDetailObj,due,setPaymen
     const elements = useElements();
 
     const [paymentRequest, setPaymentRequest] = useState(null);
-    const [myCardElement, setMyCardElement] = useState(null);
-
-    // This submit send request to Database and stripe.
-    const hitSmsAndEmailCall = async (orderId, order) =>
-    {
-      const url = window.location.origin
-      const pathname = "track-order"
-      setPaymentLoader(true)
-      try 
-      {
-        const data = {
-          guid: orderId,
-          url: url,
-          pathname: pathname,
-          brandGuid: BRAND_GUID,
-        } 
-
-        const response = await axiosPrivate.post(`/send-sms-and-email`, data)
-        console.log("sms response:", response);
-        
-        setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
-        setOrderGuid(null)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-        setCartData([])
-
-        // window.alert("Your order has been received.")
-
-        const orderType = Number(order?.order_type_filter_id);
-        if (orderType === 4) {
-          console.log('Redirecting to TRACK ORDER try');
-          window.location.href = `/track-order/${orderId}`;
-        } else {
-          console.log('Redirecting to Thank You try');
-          window.location.href = `/thank-you/${orderId}`;
-        }
-
-      } 
-      catch (error) 
-      {
-
-        // return
-        
-        window.alert(error?.response?.data?.error)
-        setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
-        setOrderGuid(null)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-        setCartData([])
-
-        const orderType = Number(order?.order_type_filter_id);
-        if (orderType === 4) {
-          console.log('Redirecting to TRACK ORDER catch');
-          window.location.href = `/track-order/${orderId}`;
-        } else {
-          console.log('Redirecting to Thank You catch');
-          window.location.href = `/thank-you/${orderId}`;
-        }
-
-      }
-    }
         
     // This method will hit when payment successfully done, to send sms and email to user.
     const afterPaymentSavedOrderUpdate = async (orderId,paymentIntent, paymentIntentAmountPaid) =>
     {
       try 
       {
-        console.log("payment intent paid", paymentIntentAmountPaid);
-        
         setPaymentLoader(true)
         const visitorInfo = JSON.parse(window.localStorage.getItem('userInfo'))
         const data = {
@@ -131,13 +58,11 @@ export default function WrapWallet({deliveryTime,customerDetailObj,due,setPaymen
         }  
 
         const response = await axiosPrivate.post(`/update-order-after-successfully-payment-save`, data)
-        console.log("update after order successfully.", response);
         // return
         // Here need to hit sms and email call.
         const orderData = response?.data?.data?.order      
      
-        if(response?.data?.status === "success")
-        {
+        
           // hitSmsAndEmailCall(orderId, orderData)
 
           setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
@@ -154,14 +79,11 @@ export default function WrapWallet({deliveryTime,customerDetailObj,due,setPaymen
 
           const orderType = Number(orderData?.order_type_filter_id);
           if (orderType === 4) {
-            console.log('Redirecting to TRACK ORDER try');
             window.location.href = `/track-order/${orderId}`;
           } else {
-            console.log('Redirecting to Thank You try');
             window.location.href = `/thank-you/${orderId}`;
           }
 
-        }
       } 
       catch (error) 
       {
@@ -173,9 +95,6 @@ export default function WrapWallet({deliveryTime,customerDetailObj,due,setPaymen
 
     const onStoreSuccess = async (data) => {
       // first check the order guid id in localStorage if it is null then store information then update them.
-
-      console.log("store success data:", data);
-      
       const responseData = data?.data?.data?.order?.order_total;
       const { clientSecret, type, paymentIntentId, paymentIntentAmountPaid } = data?.data?.data;
 
@@ -195,62 +114,11 @@ export default function WrapWallet({deliveryTime,customerDetailObj,due,setPaymen
       {
         try
         {
-          // ✅ Confirm payment with Stripe
-          // const result = await stripe.confirmCardPayment(clientSecret); // No payment_method object needed
-          
-          
-
-          // console.log("wallet result error: ", result);
-          
-          // if (result.error) 
-          // {
-          //   setPaymentLoader(false)
-          //   setPaymentError(result.error.message);
-          //   return
-          // } else {
-          //   afterPaymentSavedOrderUpdate(orderGUID, result.paymentIntent);
-          // }
-
-
-          //  if (clientSecret) {
-              
-          //     const confirmResult = await stripe.confirmCardPayment(clientSecret);
-          //     // const result = await stripe.confirmCardPayment(clientSecret, {
-          //     //     payment_method: {
-          //     //       card: myCardElement, // Or payment request wallet token
-          //     //     },
-          //     //   });
-
-
-          //     if (confirmResult.error) {
-          //       ev.complete("fail");
-          //       setPaymentError(confirmResult.error.message || "Authentication failed");
-          //       return;
-          //     }
-
-          //     if (confirmResult.paymentIntent?.status === "succeeded") {
-          //       ev.complete("success");
-
-          //       log
-                afterPaymentSavedOrderUpdate(orderGuid, paymentIntentId, paymentIntentAmountPaid);
-            //     return;
-            //   } else {
-            //     ev.complete("fail");
-            //     setPaymentError("Payment not completed");
-            //     return;
-            //   }
-            // }
-
-            // --- Immediate success ---
-            // if (resp?.payment_intent_status === "succeeded") {
-            //   ev.complete("success");
-            //   afterPaymentSavedOrderUpdate(orderGUID, confirmResult.paymentIntent || null);
-            //   return;
-            // }
-
-            // --- Fallback failure ---
-            ev.complete("fail");
-            setPaymentError(resp?.error || "Payment failed ");
+         
+          afterPaymentSavedOrderUpdate(orderGuid, paymentIntentId, paymentIntentAmountPaid);
+          // --- Fallback failure ---
+          ev.complete("fail");
+          setPaymentError(resp?.error || "Payment failed ");
 
         } catch (err) {
           const errorMessage = err.response.data.error
@@ -278,182 +146,63 @@ export default function WrapWallet({deliveryTime,customerDetailObj,due,setPaymen
     const { isLoading: storeLoading, isError: storeError, reset: storeReset, isSuccess: storeSuccess, mutate: storeMutation } = usePostMutationHook('customer-store',`/store-customer-details`,onStoreSuccess, onStoreError)
 
     const onPatchSuccess = async (data) => {
-        const responseData = data?.data?.data?.order?.order_total;
-        const { clientSecret, type,paymentIntentId, paymentIntentAmountPaid } = data?.data?.data;
-        
-        console.log("client payment in patch success:", data);
-        const orderGUID = data?.data?.data?.order?.external_order_id
-        if (data?.data?.status === "success") 
-        {
-          setOrderGuid(orderGUID)
-          setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,orderGUID);
-    
-        }
-
-        if(type === "card")
-        {
-        
-        }
-        else
-        {
-            try
-            {
-              // ✅ Finish wallet UI prompt
-          
-              // ✅ Confirm payment with Stripe
-              // const result = await stripe.confirmCardPayment(clientSecret); // No payment_method object needed
-          
-              // const result = await stripe.confirmCardPayment(clientSecret, {
-              //   payment_method: {
-              //     card: myCardElement, // Or payment request wallet token
-              //   },
-              // });
-
-              // const result = await stripe.confirmCardPayment(clientSecret, {
-              //   payment_method: ev.paymentMethod.id, // ✅ use the wallet's PaymentMethod ID
-              // });
-
-              // console.log("wallet result error 2: ", result);
-
-              // if (result.error) 
-              // {
-              //   setPaymentLoader(false)
-              //   setPaymentError(result.error.message);
-              //   return
-              // } else {
-              //   afterPaymentSavedOrderUpdate(orderGUID, result.paymentIntent);
-              // }
-
-              // if (clientSecret) {
-              
-              //   const confirmResult = await stripe.confirmCardPayment(clientSecret);
-              //   // const result = await stripe.confirmCardPayment(clientSecret, {
-              //   //     payment_method: {
-              //   //       card: myCardElement, // Or payment request wallet token
-              //   //     },
-              //   //   });
-
-
-              //   if (confirmResult.error) {
-              //     ev.complete("fail");
-              //     setPaymentError(confirmResult.error.message || "Authentication failed");
-              //     return;
-              //   }
-
-              //   if (confirmResult.paymentIntent?.status === "succeeded") {
-              //     ev.complete("success");
-              //     afterPaymentSavedOrderUpdate(orderGuid, confirmResult.paymentIntent);
-              //     return;
-              //   } else {
-              //     ev.complete("fail");
-              //     setPaymentError("Payment not completed");
-              //     return;
-              //   }
-              // }
-
-              // // --- Immediate success ---
-              // // if (resp?.payment_intent_status === "succeeded") {
-              // //   ev.complete("success");
-              // //   afterPaymentSavedOrderUpdate(orderGUID, confirmResult.paymentIntent || null);
-              // //   return;
-              // // }
-
-              // // --- Fallback failure ---
-              // ev.complete("fail");
-              // setPaymentError(resp?.error || "Payment failed");
-
-
-    //           if (clientSecret) {
-    // const confirmResult = await stripe.confirmCardPayment(clientSecret);
-
-    // // ----------------------------
-    // // 1) SUCCESS PATH
-    // // ----------------------------
-    // if (confirmResult?.paymentIntent?.status === "succeeded") {
-
-    //     ev?.complete?.("success");
-
-        afterPaymentSavedOrderUpdate(orderGUID, paymentIntentId, paymentIntentAmountPaid);
-
-        // // REDIRECT
-        // window.location.href = `/thank-you/${orderGUID}`;
-
-        // return;
-    // }
-
-//     // ----------------------------
-//     // 2) PAYMENT ALREADY CONFIRMED AUTOMATICALLY
-//     // ----------------------------
-//     if (confirmResult?.error?.code === "payment_intent_unexpected_state") {
-
-//         // Stripe gives you the succeeded intent here
-//         const succeededIntent = confirmResult.error.payment_intent;
-
-//         ev?.complete?.("success");
-
-//         afterPaymentSavedOrderUpdate(orderGUID, succeededIntent);
-
-//         window.location.href = `/thank-you/${orderGUID}`;
-//         return;
-//     }
-
-//     // ----------------------------
-//     // 3) ANY OTHER ERROR
-//     // ----------------------------
-//     if (confirmResult?.error) {
-//         ev?.complete?.("fail");
-//         setPaymentError(confirmResult.error.message || "Authentication failed");
-//         return;
-//     }
-
-//     // Fallback
-//     ev?.complete?.("fail");
-//     setPaymentError("Payment not completed");
-// }
-
-
-
-            } catch (err) {
-                const errorMessage = err.response.data.error
-                if (errorMessage.toLowerCase().includes("minimum charge amount")) {
-                  setPaymentError("Amount is too low for this currency.");
-                }
-                else if (errorMessage.toLowerCase().includes("declined")) {
-                    setPaymentError("Your card was declined.");
-                }
-                else if (errorMessage.toLowerCase().includes("insufficient")) {
-                  setPaymentError("Your card has insufficient funds.");
-                }
-                else{
-                  window.alert("There is something went wrong. Please refresh and try again.")
-                }
-            }
-        }
-    }
-    
-    const onPatchError = (error) => {
-      // console.error("patch error:", error);
-      const errorMessage = err.response.data.error
-      if (errorMessage.toLowerCase().includes("minimum charge amount")) {
-        setPaymentError("Amount is too low for this currency.");
-      }
-      else if (errorMessage.toLowerCase().includes("declined")) {
-          setPaymentError("Your card was declined.");
-      }
-      else if (errorMessage.toLowerCase().includes("insufficient")) {
-        setPaymentError("Your card has insufficient funds.");
-      }
-      else{
-        window.alert("There is something went wrong. Please refresh and try again.")
-      }
-    }
-    
-    const {isLoading: patchLoading, isError: postError, isSuccess: postSuccess, reset: postReset, mutate: postMutation} = usePostMutationHook('customer-update',`/update-customer-details`, onPatchSuccess, onPatchError)
-    
-    const loadingState = patchLoading || storeLoading
-
+      const responseData = data?.data?.data?.order?.order_total;
+      const { clientSecret, type,paymentIntentId, paymentIntentAmountPaid } = data?.data?.data;
+      
+      const orderGUID = data?.data?.data?.order?.external_order_id
+      if (data?.data?.status === "success") 
+      {
+        setOrderGuid(orderGUID)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,orderGUID);
   
-            
+      }
+
+      if(type === "card")
+      {
+      
+      }
+      else
+      {
+          try
+          {
+            afterPaymentSavedOrderUpdate(orderGUID, paymentIntentId, paymentIntentAmountPaid);
+          } catch (err) {
+              const errorMessage = err.response.data.error
+              if (errorMessage.toLowerCase().includes("minimum charge amount")) {
+                setPaymentError("Amount is too low for this currency.");
+              }
+              else if (errorMessage.toLowerCase().includes("declined")) {
+                  setPaymentError("Your card was declined.");
+              }
+              else if (errorMessage.toLowerCase().includes("insufficient")) {
+                setPaymentError("Your card has insufficient funds.");
+              }
+              else{
+                window.alert("There is something went wrong. Please refresh and try again.")
+              }
+          }
+      }
+  }
+  
+  const onPatchError = (error) => {
+    // console.error("patch error:", error);
+    const errorMessage = err.response.data.error
+    if (errorMessage.toLowerCase().includes("minimum charge amount")) {
+      setPaymentError("Amount is too low for this currency.");
+    }
+    else if (errorMessage.toLowerCase().includes("declined")) {
+        setPaymentError("Your card was declined.");
+    }
+    else if (errorMessage.toLowerCase().includes("insufficient")) {
+      setPaymentError("Your card has insufficient funds.");
+    }
+    else{
+      window.alert("There is something went wrong. Please refresh and try again.")
+    }
+  }
+  
+  const {isLoading: patchLoading, isError: postError, isSuccess: postSuccess, reset: postReset, mutate: postMutation} = usePostMutationHook('customer-update',`/update-customer-details`, onPatchSuccess, onPatchError)
+          
   useEffect(() => {
     const checkTheCart = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}cart`))
 
@@ -593,7 +342,6 @@ export default function WrapWallet({deliveryTime,customerDetailObj,due,setPaymen
                 }
 
                 const cardElementNumber = elements.getElement(CardNumberElement)
-                setMyCardElement(cardElementNumber);
 
                 // Street2 can be made from the rest of addressParts (city, state, etc.)
                 const stripeStreet2 = addressParts.slice(1).join(', '); // Join back the rest
@@ -648,8 +396,6 @@ export default function WrapWallet({deliveryTime,customerDetailObj,due,setPaymen
                   is_paid_via_wallet: 1,
                 };
                 
-                console.log("wallet update data:", data);
-                
                 setLocalStorage(`${BRAND_SIMPLE_GUID}customer_storage_data_from_wallet`,data)
                 if (orderFromDatabaseGUID ?? orderGuid) { 
                   postMutation(data) 
@@ -685,146 +431,12 @@ export default function WrapWallet({deliveryTime,customerDetailObj,due,setPaymen
     scheduleMessage,
   ]);
 
-
-
-
-// useEffect(() => {
-//   let pr;
-
-//   if (!stripe || !totalOrderAmountValue || paymentRequest !== null) return;
-
-//   const orderTotalSimpleForm = Math.round(parseFloat(totalOrderAmountValue) * 100);
-
-//   pr = stripe.paymentRequest({
-//     country: "GB",
-//     currency: "gbp",
-//     total: { label: "Total", amount: orderTotalSimpleForm },
-//     requestPayerName: true,
-//     requestPayerEmail: true,
-//     requestBillingAddress: true,
-//     requestPayerPhone: true,
-//   });
-
-//   pr.canMakePayment().then(result => {
-//     if (result) setPaymentRequest(pr);
-//   }).catch(err => console.error("canMakePayment error:", err));
-
-//   const onPaymentMethod = async (ev) => {
-//     try {
-//       // --- Pre-checks for schedule / store closure ---
-//       if (!isScheduleClicked && isScheduleIsReady) {
-//         window.alert(`We are currently closed. To schedule your order for << ${scheduleMessage} >>, go to checkout.`);
-//         ev.complete("fail");
-//         return;
-//       }
-
-//       // --- Prepare order data ---
-//       const customerTemp = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempCustomer`)) || {};
-//       const customerAuth = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}websiteToken`));
-//       const filterAddress = customerTemp?.addresses?.find(a => a?.is_default_address === 1);
-
-//       let fullName = ev.payerName || "";
-//       const [firstName, ...lastNameParts] = fullName.trim().split(" ");
-//       const lastName = lastNameParts.join(" ");
-
-//       const billingLine1 = ev.paymentMethod?.billing_details?.address?.line1 || "";
-//       const addressParts = billingLine1.split(",").map(p => p.trim());
-//       const street1 = addressParts[0] || "";
-//       const street2 = addressParts.slice(1).join(", ");
-
-//       const orderFromDatabaseGUID = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_guid`));
-
-//       const payload = {
-//         customer: customerAuth === null ? 0 : customerTemp?.id,
-//         address: customerAuth === null ? 0 : filterAddress?.id,
-//         email: ev.payerEmail,
-//         phone: ev.payerPhone,
-//         street1,
-//         street2,
-//         postcode: ev.paymentMethod?.billing_details?.address?.postal_code || "",
-//         lastName,
-//         firstName,
-//         store: storeGUID,
-//         brand: BRAND_GUID,
-//         order: cartData,
-//         filterId: orderFilter?.id || selectedFilter?.id,
-//         filterName: orderFilter?.name || selectedFilter?.name,
-//         total_order: getAmountConvertToFloatWithFixed(totalOrderAmountValue, 2),
-//         order_guid: orderFromDatabaseGUID ?? orderGuid,
-//         order_total: getAmountConvertToFloatWithFixed(totalOrderAmountValue, 2) * 100,
-//         type: "wallet",
-//         payment_method: ev.paymentMethod.id,
-//         is_paid_via_wallet: 1,
-//       };
-
-//       // --- Send to backend for PaymentIntent confirmation ---
-//       const response = await axios.post("/api/checkout/wallet", payload);
-//       const resp = response.data;
-
-//       // --- Handle SCA / 3D Secure if required ---
-//       if (resp?.requires_action && resp?.client_secret) {
-        
-//         const confirmResult = await stripe.confirmCardPayment(resp.client_secret);
-
-//         if (confirmResult.error) {
-//           ev.complete("fail");
-//           setPaymentError(confirmResult.error.message || "Authentication failed");
-//           return;
-//         }
-
-//         if (confirmResult.paymentIntent?.status === "succeeded") {
-//           ev.complete("success");
-//           afterPaymentSavedOrderUpdate(resp.order_guid ?? orderGuid, confirmResult.paymentIntent);
-//           return;
-//         } else {
-//           ev.complete("fail");
-//           setPaymentError("Payment not completed");
-//           return;
-//         }
-//       }
-
-//       // --- Immediate success ---
-//       if (resp?.success || resp?.payment_intent_status === "succeeded") {
-//         ev.complete("success");
-//         afterPaymentSavedOrderUpdate(resp.order_guid ?? orderGuid, resp.payment_intent || null);
-//         return;
-//       }
-
-//       // --- Fallback failure ---
-//       ev.complete("fail");
-//       setPaymentError(resp?.error || "Payment failed");
-
-//     } catch (err) {
-//       console.error("Wallet payment error:", err);
-//       try { ev.complete("fail"); } catch (_) {}
-//       setPaymentError(err?.response?.data?.error || err.message || "Something went wrong");
-//     }
-//   };
-
-//   pr.on("paymentmethod", onPaymentMethod);
-
-//   return () => {
-//     try {
-//       if (pr && typeof pr.off === "function") pr.off("paymentmethod", onPaymentMethod);
-//     } catch (_) {}
-//   };
-// }, [
-//   stripe,
-//   totalOrderAmountValue,
-//   paymentRequest,
-//   isScheduleClicked,
-//   isScheduleIsReady,
-//   scheduleMessage,
-// ]);
-
-
   return(
-      <Fragment>
-
-          {paymentRequest && (
-          
-            <PaymentRequestButtonElement options={{ paymentRequest }} />
-          )}
-      </Fragment>
+    <Fragment>
+      {paymentRequest && (
+      
+        <PaymentRequestButtonElement options={{ paymentRequest }} />
+      )}
+    </Fragment>
   )
 }

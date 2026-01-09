@@ -1260,7 +1260,7 @@ export default function PlaceOrderForm({
                         value={customerDetailObj?.email}
                         ref={addDoorNumberRef} 
                         onChange={handleInputs}
-                        className={`w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
+                        className={`text-[16px] w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
                           parseInt(customerDetailObj?.email?.length) > 0
                             ? "border-green-500 focus:ring-green-300"
                             : customerDetailObj?.email?.length === 0
@@ -1287,7 +1287,7 @@ export default function PlaceOrderForm({
                           name="firstName"
                           onChange={handleInputs}
                           placeholder="Enter first name"
-                          className={`w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
+                          className={`text-[16px] w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
                             parseInt(customerDetailObj?.firstName?.length) > 0
                               ? "border-green-500 focus:ring-green-300"
                               : customerDetailObj?.firstName?.length === 0
@@ -1303,7 +1303,7 @@ export default function PlaceOrderForm({
                           id="fullName"
                           onChange={handleInputs}
                           placeholder="Enter last name"
-                          className={`w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
+                          className={`text-[16px] w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
                             parseInt(customerDetailObj?.lastName?.length) > 0
                               ? "border-green-500 focus:ring-green-300"
                               : customerDetailObj?.lastName?.length === 0
@@ -1330,7 +1330,7 @@ export default function PlaceOrderForm({
                         value={customerDetailObj?.phone}
                         onWheel={(e) => e.target.blur()}
                         onChange={handleInputs}
-                        className={`w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] ${
+                        className={`text-[16px] w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition appearance-none [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none [-moz-appearance:textfield] ${
                           parseInt(customerDetailObj?.phone?.length) > 0
                             ? "border-green-500 focus:ring-green-300"
                             : customerDetailObj?.phone?.length === 0
@@ -1363,7 +1363,7 @@ export default function PlaceOrderForm({
                         placeholder="Enter door number or name"
                         value={customerDetailObj?.doorHouseName}
                         onChange={handleInputs}
-                        className={`w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
+                        className={`text-[16px] w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
                           parseInt(customerDetailObj?.doorHouseName?.length) > 0
                             ? "border-green-500 focus:ring-green-300"
                             : customerDetailObj?.doorHouseName?.length === 0
@@ -1386,7 +1386,7 @@ export default function PlaceOrderForm({
                           type="text"
                           value={street1}
                           onClick={() => handleStreetAddress}
-                          className={`w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
+                          className={`text-[16px] w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
                             parseInt(customerDetailObj?.doorHouseName?.length) > 0
                               ? "border-green-500 focus:ring-green-300"
                               : customerDetailObj?.doorHouseName?.length === 0
@@ -1399,7 +1399,7 @@ export default function PlaceOrderForm({
                           type="text"
                           value={street2}
                           onClick={() => handleStreetAddress}
-                          className={`w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
+                          className={`text-[16px] w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
                             parseInt(customerDetailObj?.doorHouseName?.length) > 0
                               ? "border-green-500 focus:ring-green-300"
                               : customerDetailObj?.doorHouseName?.length === 0
@@ -1413,7 +1413,7 @@ export default function PlaceOrderForm({
                             type="text"
                             value={postcode}
                             onClick={() => handleStreetAddress}
-                            className={`w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
+                            className={`text-[16px] w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
                               parseInt(customerDetailObj?.doorHouseName?.length) > 0
                                 ? "border-green-500 focus:ring-green-300"
                                 : customerDetailObj?.doorHouseName?.length === 0
@@ -1624,7 +1624,7 @@ export default function PlaceOrderForm({
                     //           id="checkboxNoLabel"
                     //           type="checkbox"
                     //           checked={isSaveFasterDetailsClicked}
-                    //           className={`h-5 w-5 appearance-none border-2 border-gray-300 rounded 
+                    //           className={`text-[16px] h-5 w-5 appearance-none border-2 border-gray-300 rounded 
                     //             checked:bg-black checked:border-black 
                     //             checked:bg-[url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2016%2016'%3E%3Cpath%20fill='white'%20d='M6%2010.8L3.2%208l-0.93%200.93L6%2012.67%2014%204.67%2013.07%203.73%206%2010.8z'/%3E%3C/svg%3E")] 
                     //             bg-no-repeat bg-center bg-[length:12px_12px] 
@@ -1829,7 +1829,7 @@ export default function PlaceOrderForm({
                                 id="checkboxNoLabel"
                                 onChange={() => setIsBySmsClicked(true)}
                                 type="checkbox"
-                                className="h-8 w-8 text-blue-600 bg-white border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
+                                className="text-[16px] h-8 w-8 text-blue-600 bg-white border-gray-300 rounded focus:ring-2 focus:ring-blue-500 focus:outline-none transition-all"
                                 value=""
                                 aria-label="Select option"
                               />

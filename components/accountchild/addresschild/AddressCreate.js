@@ -344,7 +344,7 @@ export default function AddressCreate({handleCreateAddress})
 
                 <div className="form-group">
                     <label className="form-label">&nbsp; House Number / Name:</label>
-                    <input type="text" className="form-input" name="house" value={addressObj?.house} onChange={handleInputs} placeholder="Enter house name or number..." required/>
+                    <input type="text" className="text-[16px] form-input" name="house" value={addressObj?.house} onChange={handleInputs} placeholder="Enter house name or number..." required/>
                 </div>
                 
                 <div className="form-group">
@@ -383,12 +383,12 @@ export default function AddressCreate({handleCreateAddress})
 
                 <div className="form-group-address">
                     <label className="form-label">&nbsp; Address Detail:</label>
-                        <input type="text" className="form-input-address" name="street1" onChange={handleInputs} style={{borderTop: "1px solid #000", borderLeft: "1px solid #000", borderRight: "1px solid #000", borderTopRightRadius:"10px",borderTopLeftRadius:"10px"}} value={addressObj.street1} placeholder="Street 1" required/>
-                        <input type="text" className="form-input-address" name="street2" onChange={handleInputs} style={{borderLeft: "1px solid #000", borderRight: "1px solid #000"}} value={addressObj.street2} placeholder="Street 2" required/>
-                        <input type="text" className="form-input-address" name="postcode" onChange={handleInputs} style={{borderLeft: "1px solid #000", borderRight: "1px solid #000", borderBottom: "1px solid #000", borderBottomLeftRadius: "10px", borderBottomRightRadius: "10px"}} value={addressObj.postcode} placeholder="Postcode" required/>
+                        <input type="text" className="text-[16px] form-input-address" name="street1" onChange={handleInputs} style={{borderTop: "1px solid #000", borderLeft: "1px solid #000", borderRight: "1px solid #000", borderTopRightRadius:"10px",borderTopLeftRadius:"10px"}} value={addressObj.street1} placeholder="Street 1" required/>
+                        <input type="text" className="text-[16px] form-input-address" name="street2" onChange={handleInputs} style={{borderLeft: "1px solid #000", borderRight: "1px solid #000"}} value={addressObj.street2} placeholder="Street 2" required/>
+                        <input type="text" className="text-[16px] form-input-address" name="postcode" onChange={handleInputs} style={{borderLeft: "1px solid #000", borderRight: "1px solid #000", borderBottom: "1px solid #000", borderBottomLeftRadius: "10px", borderBottomRightRadius: "10px"}} value={addressObj.postcode} placeholder="Postcode" required/>
 
                         {/* <div className="account-address-input-button" style={{borderLeft: "1px solid #000", borderRight: "1px solid #000", borderBottom: "1px solid #000", borderBottomLeftRadius: "10px", borderBottomRightRadius: "10px"}}>
-                            <input type="text" className="form-input-postcode" name="postcode" value={addressObj.postcode} onChange={handleInputs} style={{borderBottomLeftRadius: "10px"}} placeholder="Postcode" required/>
+                            <input type="text" className="text-[16px] form-input-postcode" name="postcode" value={addressObj.postcode} onChange={handleInputs} style={{borderBottomLeftRadius: "10px"}} placeholder="Postcode" required/>
                             <button type="button" className="account-change-address" style={{borderBottomRightRadius: "10px"}}>Change Address</button>
                         </div> */}
                 </div>
@@ -400,7 +400,7 @@ export default function AddressCreate({handleCreateAddress})
 
                 {/* <div className="form-group">
                     <label className="form-label">&nbsp; Password:</label>
-                    <input type="password" className="form-input" name="firstName" placeholder="Enter first name..." required/>
+                    <input type="password" className="text-[16px] form-input" name="firstName" placeholder="Enter first name..." required/>
                 </div> */}
             </form>
             

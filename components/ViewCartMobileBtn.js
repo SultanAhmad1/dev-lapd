@@ -5,15 +5,13 @@ import { getAmountConvertToFloatWithFixed } from '../global/Store'
 
 export default function ViewCartMobileBtn() 
 {
-  const {isCartBtnClicked, setIsCartBtnClicked, cartData, websiteModificationData, deliveryMatrix, setLoader} = useContext(HomeContext)
+  const {isCartBtnClicked, setIsCartBtnClicked, cartData, setLoader} = useContext(HomeContext)
 
   const [totalOrderValue, setTotalOrderValue] = useState(0)
   const [countTotalItems, setCountTotalItems] = useState(0);
 
   useEffect(() => {
     try {
-      
-  
       let totalValue = 0
       let totalQuantity = 0
 
@@ -50,16 +48,16 @@ export default function ViewCartMobileBtn()
   return (
     <>
       {!isCartBtnClicked && (
-        <div className="fixed bottom-4 left-0 right-0 z-40 px-4 sm:px-6 md:px-10">
+        <div className="fixed bottom-3 left-0 right-0 z-40 px-4 sm:px-6 md:px-10">
           <div className="relative max-w-md mx-auto">
             {/* Optional background layers */}
             <div className="absolute inset-0  blur-sm rounded-lg pointer-events-none"></div>
             <div className="absolute inset-0  blur-md rounded-lg pointer-events-none"></div>
-
+            
             <button
               type='button'
               onClick={handleCheckoutClicked}
-              className="flex text-lg items-center justify-between w-full px-4 py-4 rounded-lg shadow-lg transition-colors duration-300 bg-black text-white"
+              className="flex text-lg items-center justify-between w-full px-4 py-2 rounded-lg shadow-lg transition-colors duration-300 bg-black text-white"
             >
               {/* Cart count */}
               <span className="flex items-center justify-center w-9 h-9 text-base font-bold border border-white rounded">
@@ -68,7 +66,7 @@ export default function ViewCartMobileBtn()
 
               {/* Checkout text */}
               <span
-                className={`px-4 py-2 text-lg font-bold rounded-3xl border border-white ${
+                className={`px-4 py-1 text-lg font-bold rounded-3xl border border-white ${
                   parseInt(cartData.length) > 0 ? 'bg-green-800 hover:bg-green-700' : 'bg-black'
                 } text-white`}
               >

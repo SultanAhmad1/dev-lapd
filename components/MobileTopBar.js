@@ -64,7 +64,7 @@ function MobileTopBar() {
 
   return (
     <div
-      className="top-bar navbar-div w-full sticky top-0 z-30 bg-[#444]"
+      className="w-full sticky top-0 z-30 bg-[#444]"
       style={{
         background:
           websiteModificationData?.websiteModificationLive?.json_log?.[0]?.navigationBackgroundColor || "#444",
@@ -72,7 +72,7 @@ function MobileTopBar() {
     >
       <ul
         id="navbar-categories"
-        className="navbar flex overflow-x-auto whitespace-nowrap no-scrollbar px-2 py-0 gap-2"
+        className="mx-auto max-w-[94vw] lg:max-w-[83vw] flex overflow-x-auto whitespace-nowrap scrollbar-none px-2 py-0 gap-2"
         style={{
           background:
             websiteModificationData?.websiteModificationLive?.json_log?.[0]?.navigationBackgroundColor || "#444",
@@ -96,7 +96,7 @@ function MobileTopBar() {
               key={index}
               data-target={`section_${index}`}
               onClick={(e) => handleClickScroll(index, e)}
-              className={`flex-shrink-0 text-sm px-2 font-bold py-6 rounded-md cursor-pointer select-none transition-all duration-200 ${
+              className={`flex-shrink-0 text-sm px-2 font-bold py-3 lg:py-6 cursor-pointer select-none transition-all duration-200 ${
                 isActive ? "font-semibold" : ""
               }`}
               style={styles}

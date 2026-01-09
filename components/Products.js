@@ -1,15 +1,14 @@
 "use client";
-import React, { useContext, useEffect, useRef } from "react";
+import React, { useContext, useEffect } from "react";
 import HomeContext from "../contexts/HomeContext";
 import Banner from "./Banner";
 
 import ViewCartMobileBtn from "./ViewCartMobileBtn";
-import { IMAGE_URL_Without_Storage, itemHoverBackgroundColor, itemHoverColor } from "../global/Axios";
+import { IMAGE_URL_Without_Storage, } from "../global/Axios";
 import moment from "moment-timezone";
 import Header from "./Header";
 import Footer from "./Footer";
 import MobileTopBar from "./MobileTopBar";
-import { ContextCheckApi } from "@/app/layout";
 import CheckoutDisplay from "./CheckoutDisplay";
 import Image from "next/image";
 import Link from "next/link";
@@ -17,22 +16,15 @@ import Link from "next/link";
 
 export default function Products() {
 
-  const { setMetaDataToDisplay } = useContext(ContextCheckApi)
-
   const {
     loader,
     setLoader,
     websiteModificationData,
     storeName,
     navigationCategories,
-    navMobileIndex,
     setSelectedCategoryId,
     setSelectedItemId,
-    setNavMobileIndex,
-    dayOpeningClosingTime,
   } = useContext(HomeContext);
-  
-  const scrollContainerRef = useRef(null);
 
   const handleProductSelect = (categoryId, itemId) => {
     setLoader(true);
@@ -52,8 +44,6 @@ export default function Products() {
       }, 3000);
     }
   }, [loader,setLoader]);
- 
-  console.log("website color schema:", websiteModificationData);
   
   return (
     <>
@@ -61,25 +51,25 @@ export default function Products() {
       <MobileTopBar/>
       <Banner/>
 
-      <div className="w-full px-4 md:px-6 lg:px-10 my-6" style={{
-        backgroundColor: "#fcfce4"
+      <div className="w-full px-4 md:px-6 lg:px-10 my-0" style={{
+        // backgroundColor: "#fcfce4" // active this color for dunked food.
         // backgroundImage: `url(${IMAGE_URL_Without_Storage}${websiteModificationData?.websiteModificationLive.json_log[0].websiteHeaderUrl})`,
         // backgroundRepeat: "no-repeat",
         // backgroundSize: "cover",
         // backgroundPosition: "center",
       }}>
-        <div className="flex justify-center w-full py-6">
+        <div className="flex justify-center w-full py-3">
           <div className="flex flex-col lg:flex-row gap-6 w-full max-w-screen-xl">
             
             {/* Left Section */}
-            <div className="w-full">
-              <ul className="space-y-6">
+            <div className="w-full space-y-6">
+              
                 {navigationCategories?.map(
                   (category, index) =>
                     category?.items?.length > 0 && (
-                      <li key={category.id}>
-                        <section id={`section_${index}`}>
-                          <h4
+                      <>
+                        <section key={category.id} id={`section_${index}`}>
+                          <h2
                             className="text-xl sm:text-2xl font-semibold"
                             style={{
                               color:
@@ -88,10 +78,10 @@ export default function Products() {
                             }}
                           >
                             {category.title}
-                          </h4>
+                          </h2>
                         </section>
 
-                        <ul className="mt-2 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4">
                           {category.items.map((item, itemIndex) => {
                             const { title, price, description, image_url, is_promotion, promotion_text, promotion_bg_color, promotion_text_color, days, start_time,end_time} = item;
 
@@ -141,9 +131,15 @@ export default function Products() {
                               }
                             }
                             return (
-                              <li
+                              <Link
+
+                                href={`/${storeName
+                                  ?.replace(/ /g, "-")
+                                  ?.toLowerCase()}/${category?.slug}/${item?.slug}`}
                                 key={itemIndex}
+
                                 onClick={() => handleProductSelect(category?.id, item?.id)}
+
                                 style={{
                                   "--item-hover-background":
                                     websiteModificationData?.websiteModificationLive
@@ -155,7 +151,7 @@ export default function Products() {
                                     websiteModificationData?.websiteModificationLive
                                       ?.json_log?.[0]?.itemFontColor,
                                 }}
-                                className="relative bg-white rounded-lg shadow-lg p-3 cursor-pointer transition-colors duration-300 text-[var(--font-color)] hover:bg-[var(--item-hover-background)] hover:text-[var(--item-hover-font-color)]"
+                                className="border border-default shadow-xs flex justify-between relative bg-white rounded-lg transition-colors duration-300 text-[var(--font-color)] hover:bg-[var(--item-hover-background)] hover:text-[var(--item-hover-font-color)]"
                               >
                                 {/* 🔥 Hot Deal Badge */}
                                 {
@@ -167,22 +163,17 @@ export default function Products() {
                                     {promotionText}
                                   </span>
                                 }
-                                <Link
-                                  href={`/${storeName
-                                    ?.replace(/ /g, "-")
-                                    ?.toLowerCase()}/${category?.slug}/${item?.slug}`}
-                                  className="flex flex-row justify-between items-start gap-3"
-                                >
+                               
                                   {/* Text */}
-                                  <div className="flex flex-col gap-1 flex-1 min-w-0">
+                                  <div className="py-1 px-2 flex flex-col gap-1 flex-1 min-w-0">
                                     <p className="text-base font-semibold break-words whitespace-normal">
                                       {title}
                                     </p>
 
 
-                                    <hr className="my-3 border-gray-300" />
+                                    <hr className="my-2 border-gray-300" />
 
-                                    <p className="text-sm leading-snug line-clamp-2">
+                                    <p className="h-5 text-sm leading-snug line-clamp-2 break-words whitespace-normal">
                                       {description}
                                     </p>
                                     <span className="text-base font-medium text-right block">
@@ -199,48 +190,26 @@ export default function Products() {
                                               ? image_url
                                               : `${IMAGE_URL_Without_Storage}${image_url}`
                                           }
-                                          className="object-contain w-[100px] h-[120px]"
+                                          className="object-cover w-32 h-full rounded-r-xl"
                                           alt={title}
-                                          width={200}
-                                          height={200}
+                                          width={120}
+                                          height={120}
                                         />
                                       :
-                                        <div className="object-contain w-[100px] h-[120px]"></div>
+                                        <div className="object-cover w-32 h-full rounded-r-xl"></div>
                                     }
-                                    
-                                    
-                                           {/* <Image
-                                  src={
-                                    isValidHttpsUrl(image_url)
-                                      ? image_url
-                                      : `${IMAGE_URL_Without_Storage}${image_url}`
-                                  }
-                                  alt={title}
-                                  width={200}
-                                  height={200}
-                                  className="
-                                    transition-transform duration-500 ease-in-out transform scale-100 
-                                    outline outline-[1px] outline-black/5 
-                                    h-[180px] sm:h-[200px] md:h-[220px] lg:h-[158px] 
-                                    w-full sm:w-[100px] md:w-[120px] lg:w-[140px] 
-                                    object-contain opacity-100 shrink-0
-                                  "
-                                /> */}
-                                       
 
-                                </Link>
-                              </li>
+                              </Link>
                             );
                           })}
-                        </ul>
-                      </li>
+                        </div>
+                      </>
                     )
                 )}
-              </ul>
             </div>
 
             {/* Right Panel */}
-            <div className="hidden lg:block max-w-[30vw] min-w-[28vw] bg-[#eaeaea] sticky top-[15vh] right-0 mt-[50px] rounded-[15px] block max-h-[80vh] overflow-y-auto overflow-y-auto border border-gray-300 p-[20px]">
+            <div className="hidden lg:block max-w-[30vw] min-w-[28vw] bg-[#eaeaea] sticky top-[15vh] right-0 mt-[50px] rounded-[15px] block max-h-[80vh] overflow-y-auto border border-gray-300 p-[20px]">
               <CheckoutDisplay />
             </div>
 

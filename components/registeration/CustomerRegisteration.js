@@ -2,7 +2,7 @@
 import React, { useContext, useEffect, useState } from "react";
 import OTP from "../otp/OTP";
 import { useLoginMutationHook } from "../reactquery/useQueryHook";
-import { BLACK_COLOR, BRAND_GUID, BRAND_SIMPLE_GUID, HOVER_COLOR, IMAGE_URL_Without_Storage, WHITE_COLOR } from "@/global/Axios";
+import { BLACK_COLOR, BRAND_GUID, BRAND_SIMPLE_GUID, HOVER_COLOR, WHITE_COLOR } from "@/global/Axios";
 import { formatPhoneNumber, passwordMessageData, setLocalStorage, validatePassword } from "@/global/Store";
 import HomeContext from "@/contexts/HomeContext";
 import { ContextCheckApi } from "@/app/layout";
@@ -198,22 +198,22 @@ export default function CustomerRegisteration()
 
                             <div className="form-group">
                                 <label className="form-label">&nbsp; First Name:</label>
-                                <input type="text" className="form-input" name="firstName" value={registerationObj?.firstName} onChange={handleInputs} placeholder="Enter first name..."/>
+                                <input type="text" className="text-[16px] form-input" name="firstName" value={registerationObj?.firstName} onChange={handleInputs} placeholder="Enter first name..."/>
                             </div>
                             
                             <div className="form-group">
                                 <label className="form-label">&nbsp; Last Name:</label>
-                                <input type="text" className="form-input" name="lastName" value={registerationObj?.lastName} onChange={handleInputs} placeholder="Enter last name..."/>
+                                <input type="text" className="text-[16px] form-input" name="lastName" value={registerationObj?.lastName} onChange={handleInputs} placeholder="Enter last name..."/>
                             </div>
                             
                             <div className="form-group">
                                 <label className="form-label">&nbsp; Email:</label>
-                                <input type="email" className="form-input" name="email" value={registerationObj?.email} onChange={handleInputs} placeholder="Enter email address.." required/>
+                                <input type="email" className="text-[16px] form-input" name="email" value={registerationObj?.email} onChange={handleInputs} placeholder="Enter email address.." required/>
                             </div>
                             
                             <div className="form-group">
                                 <label className="form-label">&nbsp; Phone:</label>
-                                <input type="number" className="form-input" name="phone" value={registerationObj?.phone} placeholder="Enter phone number..." onChange={handleInputs} required/>
+                                <input type="number" className="text-[16px] form-input" name="phone" value={registerationObj?.phone} placeholder="Enter phone number..." onChange={handleInputs} required/>
                             </div>
 
                             {
@@ -225,7 +225,7 @@ export default function CustomerRegisteration()
 
                             <div className="form-group">
                                 <label className="form-label">&nbsp; Password:</label>
-                                <input type="password" className="form-input" name="password" value={registerationObj?.password} onChange={handleInputs} placeholder="Enter password..."/>
+                                <input type="password" className="text-[16px] form-input" name="password" value={registerationObj?.password} onChange={handleInputs} placeholder="Enter password..."/>
                             </div>
 
                             <p style={{margin: "1vh"}}>
@@ -240,7 +240,7 @@ export default function CustomerRegisteration()
                             }
                             <div className="form-group">
                                 <label className="form-label">&nbsp; Confirm Password:</label>
-                                <input type="password" className="form-input" name="confirmPassword" value={confirmPassword} onChange={handleConfirmPassword} placeholder="Enter password..."/>
+                                <input type="password" className="text-[16px] form-input" name="confirmPassword" value={confirmPassword} onChange={handleConfirmPassword} placeholder="Enter password..."/>
                             </div>
 
                             {

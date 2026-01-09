@@ -651,7 +651,7 @@ const PaymentForm = ({orderId}) =>
                           value={customerDetailObj?.email}
                           ref={addDoorNumberRef}
                           onChange={handleInputs}
-                          className={`w-full px-4 py-2 rounded-md text-gray-700 border bg-gray-200 focus:outline-none focus:ring-2 transition ${
+                          className={`text-[16px] w-full px-4 py-2 rounded-md text-gray-700 border bg-gray-200 focus:outline-none focus:ring-2 transition ${
                             parseInt(customerDetailObj?.emailError?.length) === 0
                               ? "border-green-500 focus:ring-green-300"
                               : parseInt(customerDetailObj?.emailError?.length) > 0
@@ -680,7 +680,7 @@ const PaymentForm = ({orderId}) =>
                           name="firstName"
                           onChange={handleInputs}
                           placeholder="Enter first name"
-                          className={`w-full px-4 py-2 rounded-md text-gray-700 border bg-gray-200 focus:outline-none focus:ring-2 transition ${
+                          className={`text-[16px] w-full px-4 py-2 rounded-md text-gray-700 border bg-gray-200 focus:outline-none focus:ring-2 transition ${
                             parseInt(customerDetailObj?.fullNameError?.length) === 0
                               ? "border-green-500 focus:ring-green-300"
                               : parseInt(customerDetailObj?.fullNameError?.length) > 0
@@ -696,7 +696,7 @@ const PaymentForm = ({orderId}) =>
                           id="lastName"
                           onChange={handleInputs}
                           placeholder="Enter last name"
-                          className={`w-full px-4 py-2 rounded-md text-gray-700 border bg-gray-200 focus:outline-none focus:ring-2 transition ${
+                          className={`text-[16px] w-full px-4 py-2 rounded-md text-gray-700 border bg-gray-200 focus:outline-none focus:ring-2 transition ${
                             parseInt(customerDetailObj?.fullNameError?.length) === 0
                               ? "border-green-500 focus:ring-green-300"
                               : parseInt(customerDetailObj?.fullNameError?.length) > 0

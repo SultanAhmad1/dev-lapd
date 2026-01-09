@@ -35,13 +35,11 @@ function SubAtLoadLoadShow() {
   const postCodeRef = useRef(null)
 
   const {
-    setLoader,
     dayName,
     dayNumber,
     setPostcode,
     setPostCodeForOrderAmount,
     deliveryMatrix,
-    setDeliveryMatrix,
     websiteModificationData,
     setFilters,
     isChangePostcodeButtonClicked,
@@ -138,37 +136,9 @@ function SubAtLoadLoadShow() {
 
       const availableStores = response?.data?.data?.availableStore || [];
       const orderTypeFilters = response?.data?.data?.orderTypeFilters || [];
-
-     
-      // make cart empty.
-      // now make sure store is selected, and matched with already selected store. isChangePostcodeButtonClicked       
-      
-      // if(isChangePostcodeButtonClicked)
-      // {
-      //   const userSelectedStore = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
-      //   if(userSelectedStore)
-      //   {
-      //     const filterStore = availableStores.find((store) => store.location_guid === userSelectedStore.display_id)
-  
-      //     if(filterStore)
-      //     {
-      //       setLocalStorage(`${BRAND_SIMPLE_GUID}user_postcode_time`, currentDateTime)
-      //       setLocalStorage(`${BRAND_SIMPLE_GUID}address`, response?.data?.data);    
-      //       setLocalStorage(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validPostcode)
-  
-      //       responseNext.cookies.set(`${BRAND_SIMPLE_GUID}user_postcode_time`, currentDateTime)
-      //       responseNext.cookies.set(`${BRAND_SIMPLE_GUID}address`, response?.data?.data)
-      //       responseNext.cookies.set(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validPostcode)
-      //       setAtFirstLoad(false)
-      //       setIsLoading(!true)
-      //       return
-      //     }
-      //   }
-      // }
       
       if((isViaQr !== null && isViaQr !== undefined) && parseInt(isViaQr) === parseInt(0))
       {
-        // setLoader(true)
         setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[]);
         setCartData([])
         setLocalStorage(`${BRAND_SIMPLE_GUID}user_postcode_time`, currentDateTime)
@@ -309,8 +279,6 @@ function SubAtLoadLoadShow() {
           };
     
           const response = await axiosPrivate.post(`/qr-code-website`, data);
-          
-          const matrix = response.data?.data?.deliveryMartix?.collection_matrix_rows;
           
           const availableStores = response?.data?.data?.availableStore || [];
           const orderTypeFilters = response?.data?.data?.orderTypeFilters || [];
@@ -475,11 +443,8 @@ function SubAtLoadLoadShow() {
                   value={validPostcode}
                   onChange={handlePostCode}
                   placeholder="Enter postcode"
-                  className={`flex-1 text-lg px-3 py-2 text-sm outline-none bg-white rounded placeholder-opacity-100`}
+                  className={`flex-1 text-[16px] px-3 py-2 outline-none bg-white rounded placeholder-opacity-100`}
                 />
-
-
-
               </div>
 
               {postcodeerror && (
@@ -542,7 +507,7 @@ function SubAtLoadLoadShow() {
 
             {/* Available Stores */}
             {availableStores.length > 0 && (
-              <div className="mt-4 flex-1 overflow-y-auto max-h-90">
+              <div className="mt-4 flex-1 overflow-y-auto max-h-90 scrollbar-none">
                 <AvailableStore
                   {...{
                     availableStores,

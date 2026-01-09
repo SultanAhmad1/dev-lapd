@@ -129,27 +129,27 @@ export default function AccountInfo()
 
                 <div className="form-group">
                     <label className="form-label">&nbsp; First Name:</label>
-                        <input type="text" className="form-input" name="userFirstName" value={accountInfoObj?.userFirstName} onChange={handleInputs} placeholder="Enter first name..." required/>
+                        <input type="text" className="text-[16px] form-input" name="userFirstName" value={accountInfoObj?.userFirstName} onChange={handleInputs} placeholder="Enter first name..." required/>
                 </div>
 
                 <div className="form-group">
                     <label className="form-label">&nbsp; Last Name:</label>
-                    <input type="text" className="form-input" name="userLastName" value={accountInfoObj.userLastName} onChange={handleInputs} placeholder="Enter last name..." required/>
+                    <input type="text" className="text-[16px] form-input" name="userLastName" value={accountInfoObj.userLastName} onChange={handleInputs} placeholder="Enter last name..." required/>
                 </div>
 
                 <div className="form-group">
                     <label className="form-label">&nbsp; Email:</label>
-                    <input type="email" className="form-input" name="userEmail" value={accountInfoObj.userEmail} onChange={handleInputs} placeholder="Enter email address..." required/>
+                    <input type="email" className="text-[16px] form-input" name="userEmail" value={accountInfoObj.userEmail} onChange={handleInputs} placeholder="Enter email address..." required/>
                 </div>
 
                 <div className="form-group">
                     <label className="form-label">&nbsp; Phone:</label>
-                    <input type="number" className="form-input" name="userPhone" value={accountInfoObj.userPhone} onChange={handleInputs} placeholder="Enter phone number..." required/>
+                    <input type="number" className="text-[16px] form-input" name="userPhone" value={accountInfoObj.userPhone} onChange={handleInputs} placeholder="Enter phone number..." required/>
                 </div>
 
                 {/* <div className="form-group">
                     <label className="form-label">&nbsp; Password:</label>
-                    <input type="password" className="form-input" name="firstName" placeholder="Enter first name..." required/>
+                    <input type="password" className="text-[16px] form-input" name="firstName" placeholder="Enter first name..." required/>
                 </div> */}
             </form>
         </div>
