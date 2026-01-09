@@ -318,7 +318,7 @@ const OTPInput = ({ id, previousId, nextId, value, onValueChange, handleSubmit }
           id={id}
           name={id}
           type="text"
-          className="DigitInput"
+          className="text-[16px] DigitInput"
           value={value}
           maxLength="1"
           onChange={(e) => onValueChange(id, e.target.value)}

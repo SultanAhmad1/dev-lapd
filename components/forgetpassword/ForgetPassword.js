@@ -104,7 +104,7 @@ export default function ForgetPassword()
                         
                         <div className="form-group">
                             <label className="form-label">&nbsp;Enter Phone Number:</label>
-                            <input type="number" className="form-input" name="phone" value={phone} onChange={handlePhone} required/>
+                            <input type="number" className="text-[16px] form-input" name="phone" value={phone} onChange={handlePhone} required/>
                         </div>
 
                         {/* <button type="button" className="optional-button" onClick={handleOptionalBtnClicked}>Verify with {loginObj?.optionalText}?.</button>

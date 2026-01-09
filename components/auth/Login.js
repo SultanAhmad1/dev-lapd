@@ -209,19 +209,19 @@ export default function Login()
                         loginObj?.isLoginOptionClicked ?
                             <>
                                 <label className="form-label">&nbsp; Enter Email Address:</label>
-                                <input type="email" className="form-input" name="userEmail" value={loginObj?.userEmail} onChange={handleInput} required/>
+                                <input type="email" className="text-[16px] form-input" name="userEmail" value={loginObj?.userEmail} onChange={handleInput} required/>
                             </>
                         :
                             <>
                                 <label className="form-label">&nbsp;Enter Phone Number:</label>
-                                <input type="number" className="form-input" name="userPhone" value={loginObj?.userPhone} onChange={handleInput} required/>
+                                <input type="number" className="text-[16px] form-input" name="userPhone" value={loginObj?.userPhone} onChange={handleInput} required/>
                             </>
                     }
                     </div>
 
                     <div className="form-group">
                         <label className="form-label">&nbsp; Password:</label>
-                        <input type="password" className="form-input" name="userPassword" value={loginObj?.userPassword} onChange={handleInput} required/>
+                        <input type="password" className="text-[16px] form-input" name="userPassword" value={loginObj?.userPassword} onChange={handleInput} required/>
                     </div>
 
                     <button type="button" className="forget-password" onClick={handleForgetPasswordClicked}>Forget Password?.</button>

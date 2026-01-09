@@ -10,13 +10,16 @@ function Loader() {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-white">
       <div
-        className="w-8 h-8 border-4 border-t-transparent rounded-full animate-spin"
-        style={{ borderColor: `${loaderColor}`, borderTopColor: 'transparent' }}
+        className="h-8 w-8 rounded-full border-4 border-solid animate-spin"
+        style={{
+          borderColor: `${loaderColor} transparent transparent transparent`,
+        }}
         role="status"
       >
         <span className="sr-only">Loading...</span>
       </div>
     </div>
+
   );
 }
 

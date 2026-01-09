@@ -5,13 +5,11 @@ import Banner from "./Banner";
 import Footer from "./Footer";
 import HomeContext from "@/contexts/HomeContext";
 import { ContextCheckApi } from "@/app/layout";
-import { IMAGE_URL_Without_Storage } from "@/global/Axios";
 
 export default function AllergensComponent() 
 {
    const {
         websiteModificationData,
-        selectedStoreDetails,
     } = useContext(HomeContext);
 
     const {

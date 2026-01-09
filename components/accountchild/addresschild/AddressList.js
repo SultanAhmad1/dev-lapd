@@ -165,7 +165,7 @@ export default function AddressList({handleCreateAddress})
                     return(
                         <div key={index} className={`customer-address-list ${is_default_address && "active-customer-address"}`} onClick={() => handleDefaultAddress(id)}>
                             <div>
-                                <input type="radio" name="option" value="1" checked={is_default_address ? true : false} onChange={() => handleDefaultAddress(id)}/>
+                                <input type="radio" className="text-[16px]" name="option" value="1" checked={is_default_address ? true : false} onChange={() => handleDefaultAddress(id)}/>
                             </div>
                             <div>
                                 <h5>Address Type: {address_type}</h5>

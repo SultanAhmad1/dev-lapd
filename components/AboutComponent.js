@@ -5,7 +5,6 @@ import { ContextCheckApi } from "@/app/layout";
 import HomeContext from "@/contexts/HomeContext";
 import Header from "./Header";
 import Footer from "./Footer";
-import { IMAGE_URL_Without_Storage } from "@/global/Axios";
 
 export default function AboutComponent()
 {

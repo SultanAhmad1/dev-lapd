@@ -37,15 +37,17 @@ export default function Header()
     const splitToArray = pathName.split("/").filter(segment => segment)
     
     return (
-        <header className="lg:flex md:block justify-between items-center px-4 py-2" style={{backgroundColor: "#fcfce4"}}>
+        //  style={{backgroundColor: "#fcfce4"}} set this color for dunked
+        <header className="lg:flex md:block justify-between items-center px-4 py-2">
             {/* Logo & Sandwich */}
-            <div className="flex items-center gap-x-16 px-4 sm:px-6 lg:px-8 mobile_view">
-                {headerUserBtnDisplay && (
+            <div className="hidden lg:block px-4 sm:px-6 lg:px-8 mobile_view">
+
+                {/* {headerUserBtnDisplay && (
                     <button
                         type="button"
-                        // onClick={() =>
-                        //     handleBoolean(!booleanObj?.isCustomerCanvasOpen, "isCustomerCanvasOpen")
-                        // }
+                        onClick={() =>
+                            handleBoolean(!booleanObj?.isCustomerCanvasOpen, "isCustomerCanvasOpen")
+                        }
                         className="p-2 rounded hover:bg-gray-200 transition-all duration-200 mobile_button"
                     >
                         <svg
@@ -60,7 +62,7 @@ export default function Header()
                             <path d="M19.167 3.333H.833v2.5h18.334v-2.5zm0 5.834H.833v2.5h18.334v-2.5zM.833 15h18.334v2.5H.833V15z" />
                         </svg>
                     </button>
-                )}
+                )} */}
 
                 <a href="/" className="shrink-0">
                     {brandLogo !== null ? (
@@ -83,6 +85,50 @@ export default function Header()
                 </a>
             </div>
 
+              <div className="block lg:hidden mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+
+                {/* {headerUserBtnDisplay && (
+                    <button
+                        type="button"
+                        onClick={() =>
+                            handleBoolean(!booleanObj?.isCustomerCanvasOpen, "isCustomerCanvasOpen")
+                        }
+                        className="p-2 rounded hover:bg-gray-200 transition-all duration-200 mobile_button"
+                    >
+                        <svg
+                            viewBox="0 0 20 20"
+                            className="w-6 h-6"
+                            style={{
+                            color:
+                                websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                                ?.buttonBackgroundColor,
+                            }}
+                        >
+                            <path d="M19.167 3.333H.833v2.5h18.334v-2.5zm0 5.834H.833v2.5h18.334v-2.5zM.833 15h18.334v2.5H.833V15z" />
+                        </svg>
+                    </button>
+                )} */}
+
+                <a href="/" className="flex justify-center sm:justify-start">
+                    {brandLogo !== null ? (
+                    <Image
+                        src={`${IMAGE_URL_Without_Storage}${brandLogo}`}
+                        width={100}
+                        height={100}
+                        alt="Brand Name"
+                        className="w-[80px] sm:w-[90px] md:w-[100px] h-auto object-contain"
+                    />
+                    ) : (
+                    <Image
+                        src={brandLogoPath}
+                        width={100}
+                        height={100}
+                        alt="Brand Name"
+                        className="w-[80px] sm:w-[90px] md:w-[100px] h-auto object-contain"
+                    />
+                    )}
+                </a>
+            </div>
 
             {/* Location & Cart */}
             <div className="block items-center gap-4">
@@ -121,8 +167,8 @@ export default function Header()
                             }}
                         >
                             <svg 
-                                width="15px" 
-                                height="15px" 
+                                width="30" 
+                                height="30" 
                                 fill="none" 
                                 viewBox="0 0 24 24" 
                                 xmlns="http://www.w3.org/2000/svg" 
@@ -145,7 +191,7 @@ export default function Header()
                             {/* Store or Customer Address */}
                             <div
                                 className={`
-                                    flex flex-col items-center gap-2 px-2 py-1 rounded border text-sm font-medium
+                                    flex flex-col items-center gap-0 px-2 py-0 rounded border text-sm font-medium
                                     transition-colors duration-150 w-1/2
                                 `}
                                 style={{
@@ -173,7 +219,7 @@ export default function Header()
                                 onMouseLeave={() => setIsHeaderSandwichHover(false)}
                             >
                                 <p>Store:</p>
-                                <p className="uppercase break-words">{storeName}</p>
+                                <p className="break-words">{storeName}</p>
                             </div>
 
 
@@ -181,7 +227,7 @@ export default function Header()
 
                             <div
                                 className={`
-                                    flex flex-col items-center gap-2 px-2 py-1 rounded border text-sm font-medium
+                                    flex flex-col items-center gap-0 px-2 py-0 rounded border text-sm font-medium
                                     transition-colors duration-150 w-1/2
                                 `}
                                 style={{

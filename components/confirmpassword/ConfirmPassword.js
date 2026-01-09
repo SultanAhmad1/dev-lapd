@@ -102,7 +102,7 @@ export default function ConfirmPassword()
                 
                 <div className="form-group">
                     <label className="form-label">&nbsp; Password:</label>
-                    <input type="password" className="form-input" name="password" value={confirmObj?.password} onChange={handleInputs} placeholder="Enter password..." required/>
+                    <input type="password" className="text-[16px] form-input" name="password" value={confirmObj?.password} onChange={handleInputs} placeholder="Enter password..." required/>
                 </div>
 
                 <p style={{margin: "1vh"}}>
@@ -118,7 +118,7 @@ export default function ConfirmPassword()
                 }
                 <div className="form-group">
                     <label className="form-label">&nbsp; Confirm Password:</label>
-                    <input type="password" className="form-input" name="confirmPassword" value={confirmObj?.confirmPassword} onChange={handleInputs} placeholder="Enter password..." required/>
+                    <input type="password" className="text-[16px] form-input" name="confirmPassword" value={confirmObj?.confirmPassword} onChange={handleInputs} placeholder="Enter password..." required/>
                 </div>
 
                 <div className="form-group">

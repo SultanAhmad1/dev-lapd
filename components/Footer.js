@@ -4,7 +4,6 @@ import HomeContext from "../contexts/HomeContext";
 import moment from "moment";
 import { brandLogoPath, IMAGE_URL_Without_Storage } from "../global/Axios";
 import Image from "next/image";
-import Link from "next/link";
 
 function Footer() {
   const { websiteModificationData, brandLogo ,selectedStoreDetails} = useContext(HomeContext);
@@ -46,7 +45,7 @@ function Footer() {
           {/* Link Groups */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0 sm:gap-6 w-full">
             {/* Column 1 */}
-            <div className="text-center">
+            {/* <div className="text-center">
               <ul className="space-y-1">
                 <li>
                   <a
@@ -76,7 +75,7 @@ function Footer() {
                   </a>
                 </li>
               </ul>
-            </div>
+            </div> */}
 
             {/* Column 2 */}
             <div className="text-center">
@@ -90,7 +89,7 @@ function Footer() {
                     Track Order
                   </a>
                 </li>
-                <li>
+                {/* <li>
                   <a
                     href="/allergens"
                     className="text-base font-medium hover:underline"
@@ -98,7 +97,7 @@ function Footer() {
                   >
                     Allergens
                   </a>
-                </li>
+                </li> */}
                 <li>
                   <a
                     href="/marketingpreferences"
@@ -139,18 +138,19 @@ function Footer() {
             <div className="text-center">
               <ul className="space-y-1">
                 <li>
-                  <button
-                    type="button"
+                  <a
+                    href={`tel:${selectedStoreDetails?.telephone}`}
                     className="text-base font-medium hover:underline"
                     style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
                   >
-                    {selectedStoreDetails?.telephone?.replace(/^\d/, '+44')}
-                  </button>
+                    {/* {selectedStoreDetails?.telephone?.replace(/^\d/, '+44')} */}
+                    {selectedStoreDetails?.telephone}
+                  </a>
                 </li>
 
                 <li>
                   <a
-                    href={websiteModificationData?.brand?.brand_social_links?.[0]?.social_links}
+                    href={`mailto:${selectedStoreDetails?.email}`}
                     target="_blank"
                     className="text-base font-medium hover:underline"
                     style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
@@ -190,9 +190,9 @@ function Footer() {
         <div className="text-center text-sm sm:text-base" style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}>
           <p className="py-3"> 
             © All Rights Reserved. {websiteModificationData?.brand?.name} {moment().format('YYYY')}. Powered by{' '}
-            <Link href="https://cleartwo.co.uk/" target="_blank" className="underline hover:text-blue-600">
+            <a href="https://cleartwo.co.uk/" target="_blank" className="underline hover:text-blue-600">
               Cleartwo
-            </Link>
+            </a>
           </p>
         </div>
       </div>

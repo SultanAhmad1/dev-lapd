@@ -15,7 +15,6 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
     setIsTimeToClosed,
     setMenu,
     setSelectedStoreDetails,
-    selectedFilter,
     setSelectedFilter,
     filters,
     setFilters,

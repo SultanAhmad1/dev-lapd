@@ -1,5 +1,5 @@
 "use client";
-import { BRAND_GUID, IMAGE_URL_Without_Storage} from "@/global/Axios";
+import { BRAND_GUID } from "@/global/Axios";
 
 import React, { useContext, useEffect, useState } from "react";
 import { getAmountConvertToFloatWithFixed } from "@/global/Store";
@@ -12,7 +12,7 @@ import { ContextCheckApi } from "@/app/layout";
 
 export default function TrackOrderDetail({orderId}) 
 {
-    const { websiteModificationData, setSelectedStoreDetails, selectedStoreDetails} = useContext(HomeContext)
+    const { websiteModificationData, setSelectedStoreDetails } = useContext(HomeContext)
     const { setMetaDataToDisplay, metaDataToDisplay} = useContext(ContextCheckApi)
 
     const [isHover, setIsHover] = useState(false);
@@ -41,8 +41,6 @@ export default function TrackOrderDetail({orderId})
     const onGetError = (error) => {
         window.alert("There is something went wrong!. Please refresh and try again 9.", error)
     }
-
-    console.log("is order deliveries:", isOrderDelivered);
     
     const onGetSuccess = (data) => {
 
@@ -66,8 +64,6 @@ export default function TrackOrderDetail({orderId})
         }
 
         setSelectedStoreDetails(selectedStoreDetail)
-        console.log("check the track data:", data);
-        
         setGetTrackOrderData(data)
         
         setOrderHash(data?.data?.trackOrder?.external_order_number)
@@ -96,33 +92,10 @@ export default function TrackOrderDetail({orderId})
 
     const handleOrderHashTypeByUser = (event) =>
     {
-        const {value, name} = event.target
+        const {value } = event.target
         setOrderHash(value)
 
     }
-
-    // const getTrakcOrderDetailByOrderCode = async () =>
-    // {
-    //     try 
-    //     {
-    //         const data = {
-    //             orderHash: orderHash,
-    //             brandGUID: BRAND_GUID
-    //         }   
-    //         const response = await axiosPrivate.post(`/track-order-by-hash-order`,data)
-    //         setBrand(response?.data?.data?.trackOrder?.brand)
-    //         setLocation(response?.data?.data?.trackOrder?.location)
-    //         setAddress(response?.data?.data?.trackOrder?.address)
-    //         setOrderHash(response?.data?.data?.trackOrder?.order_hash)
-    //         setTrackorders(response?.data?.data?.trackOrder)
-
-    //         setDiscountamount((response?.data?.data?.trackOrder?.order_amount_discounts === null) ? 0 : response?.data?.data?.trackOrder?.order_amount_discounts?.amount_discount_applied)
-        
-    //     } 
-    //     catch (error) 
-    //     {
-    //     }
-    // }
 
     const handleSearchOrderCode = (e) =>
     {
@@ -163,20 +136,6 @@ export default function TrackOrderDetail({orderId})
             return
         }
     }, [isSuccess, isError]);
-    
-
-     const BLACK_COLOR = '#000';
-    const WHITE_COLOR = '#fff';
-    const LIGHT_BLACK_COLOR = '#444';
-
-    const buttonStyle = {
-        '--track-btn-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR,
-        '--track-btn-background': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR,
-        '--track-btn-hover-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor || BLACK_COLOR,
-        '--track-btn-hover-background': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || LIGHT_BLACK_COLOR,
-        '--track-btn-border-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR,
-        '--track-btn-hover-border-color': websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR,
-    };
 
     const orderSteps = ['created', 'live', 'out_for_delivery', 'complete'];
     
@@ -184,9 +143,6 @@ export default function TrackOrderDetail({orderId})
     const currentStep = orderSteps.findIndex((step) =>
         step.toLowerCase().includes(currentStatus)
     );
-
-    const activeColor = websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || LIGHT_BLACK_COLOR;
-    const activeButtonColor = websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR
     
     
     if(isOrderDelivered)
@@ -209,7 +165,7 @@ export default function TrackOrderDetail({orderId})
                                 placeholder="Enter your order code"
                                 value={orderHash}
                                 onChange={handleOrderHashTypeByUser}
-                                className="flex-1 px-4 py-2 focus:outline-none border-r border-gray-300 w-3/4"
+                                className="text-[16px] flex-1 px-4 py-2 focus:outline-none border-r border-gray-300 w-3/4"
                                 style={{
                                     backgroundColor: 'white',
                                 }}
@@ -262,6 +218,7 @@ export default function TrackOrderDetail({orderId})
             </div>
         )
     }
+
     return(
         <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 px-1 py-8">
             <div className="w-full max-w-7xl">
@@ -280,7 +237,7 @@ export default function TrackOrderDetail({orderId})
                                 placeholder="Enter your order code"
                                 value={orderHash}
                                 onChange={handleOrderHashTypeByUser}
-                                className="flex-1 px-4 py-2 focus:outline-none border-r border-gray-300 w-3/4"
+                                className="text-[16px] flex-1 px-4 py-2 focus:outline-none border-r border-gray-300 w-3/4"
                                 style={{
                                     backgroundColor: 'white',
                                 }}

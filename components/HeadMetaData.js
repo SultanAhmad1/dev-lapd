@@ -8,7 +8,7 @@ function HeadMetaData(props) {
     singleItemsDetails
   } = props
 
-  console.log("single item:", singleItemsDetails);
+  // console.log("single item:", singleItemsDetails);
   
   return (
     <>

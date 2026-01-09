@@ -4,7 +4,19 @@ const nextConfig = {
         ignoreDuringBuilds: true,
     },
     images: {
-        domains: ['api.jouleskitchen.co.uk','laravel-jouleskitchen.cleartwo.uk'],
+        // domains: ['api.jouleskitchen.co.uk','laravel-jouleskitchen.cleartwo.uk'],
+        remotePatterns: [
+            {
+                protocol: 'https',
+                hostname: 'api.jouleskitchen.co.uk',
+                pathname: '/**',
+            },
+            {
+                protocol: 'https',
+                hostname: 'laravel-jouleskitchen.cleartwo.uk',
+                pathname: '/**',
+            }
+        ]
     },
     env: {
         NEXT_PUBLIC_BASE_URL: process.env.NEXT_PUBLIC_BASE_URL, // Expose the BASE_URL (optional)

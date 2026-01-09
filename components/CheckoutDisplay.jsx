@@ -118,7 +118,7 @@ export default function CheckoutDisplay()
   }, []);
   
   useEffect(() => {
-    if((cartData && parseInt(cartData.length) > parseInt(0)) && selectedLocation, selectedPostcode)
+    if((cartData && parseInt(cartData.length) > parseInt(0)))
     {
       const checkOrderGuidExistsOrNot = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_guid`)
       const sharedGUID = (checkOrderGuidExistsOrNot) ? JSON.parse(checkOrderGuidExistsOrNot) : orderGuid
@@ -316,7 +316,7 @@ export default function CheckoutDisplay()
         dispatch({type: "SET_MINIMUM_ORDER_MESSAGE", payload: ""});
       } 
       else 
-        if(selectedCollectionMatrix !== null && selectedCollectionMatrix !== undefined)
+      if(selectedCollectionMatrix !== null && selectedCollectionMatrix !== undefined)
       {
         const textMessage = (
           <span style={{color: "red"}}>
@@ -349,14 +349,14 @@ export default function CheckoutDisplay()
       {
 
         try {
-          const getLocalStorageDetail = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`)
-
+          const getLocalStorageDetail = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
+          const getAvailableStore = getLocalStorageDetail ? getLocalStorageDetail.display_id : selectedLocation
           const getPostCode = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_valid_postcode`))
 
-          const getAvailableStore = getLocalStorageDetail ? JSON.parse(getLocalStorageDetail.display_id) : selectedLocation
 
           let filterPostcode = postCodeForOrderAmount
 
+          
           
           let grabPostcodeOutWard = "";
           if (getPostCode && parseInt(getPostCode.length) === parseInt(7)) 
@@ -374,18 +374,22 @@ export default function CheckoutDisplay()
             grabPostcodeOutWard = filterPostcode.substring(0, 2);
           }
 
+
+          const getSelectedFilter = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`))
+
           const filterData = {
             endData: moment().format("YYYY-MM-DD"),
             active: 1,
             partner: 2,
             brand: BRAND_GUID,
-            postcode: selectedPostcode ?? grabPostcodeOutWard,
+            postcode: grabPostcodeOutWard,
             location: getAvailableStore,
+            orderType: getSelectedFilter?.id,
           };
           
           const response = await axiosPrivate.post(`/apply-amount-discount`,filterData);
-          
           const amountDiscounts = response?.data?.data?.applyAmountDiscount;
+          
           let workingIndex = 0;
 
           if (parseInt(amountDiscounts.length) > parseInt(0)) 
@@ -414,10 +418,16 @@ export default function CheckoutDisplay()
               workingIndex -= 1;
             }
 
-            if (parseInt(subTotalArgument) >= parseInt(amountDiscounts[workingIndex].need_to_spend)) 
+            // console.log("sub total:", subTotalArgument, 'need to spend:', amountDiscounts[workingIndex].need_to_spend);
+            
+
+            if (parseFloat(subTotalArgument) >= parseFloat(amountDiscounts[workingIndex].need_to_spend)) 
             {
               setLocalStorage(`${BRAND_SIMPLE_GUID}order_amount_number`,amountDiscounts[workingIndex].amount_guid);
               setLocalStorage(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`,amountDiscounts[workingIndex])
+
+              console.log("amount discount applied:", amountDiscounts[workingIndex]);
+              
               setAmountDiscountApplied(amountDiscounts[workingIndex])
               if (amountDiscounts[workingIndex].discount_type === "P") 
               {
@@ -446,13 +456,47 @@ export default function CheckoutDisplay()
               );
               setAmountDiscountMessage(amountText);
               setDiscountValue(0);
+              // if index is greater than zero then get the previous index and show the amount discount related to it.
+              if(workingIndex > 0)
+              {
+                let previousIndex = workingIndex - 1;
+  
+                if (parseFloat(subTotalArgument) >= parseFloat(amountDiscounts[previousIndex].need_to_spend)) 
+                {
+                  setLocalStorage(`${BRAND_SIMPLE_GUID}order_amount_number`,amountDiscounts[previousIndex].amount_guid);
+                  setLocalStorage(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`,amountDiscounts[previousIndex])
+  
+                  // console.log("amount discount applied:", amountDiscounts[previousIndex]);
+                  
+                  setAmountDiscountApplied(amountDiscounts[previousIndex])
+                  if (amountDiscounts[previousIndex].discount_type === "P") 
+                  {
+                    const getThePercentage = amountDiscounts[previousIndex].value / 100;
+                    const getDiscount = parseFloat(subTotalArgument) * parseFloat(getThePercentage);
+                    setDiscountValue(getAmountConvertToFloatWithFixed(getDiscount, 2));
+                  } 
+                  else 
+                  {
+                    const getDiscount = parseFloat(subTotalArgument) - parseFloat(amountDiscounts[previousIndex].value);
+                    setDiscountValue(getAmountConvertToFloatWithFixed(getDiscount, 2));
+                  }
+                } 
+              }else {
+                window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+                setAmountDiscountApplied(null)
+              }
             }
+
           }
         } catch (error) {
+          console.log("amount discount error:", error);
+          
           // window.alert("There is something went wrong, please refresh and try again.")
         }
       };
 
+      // console.log("get order amount discount:", totalValue);
+      
       getOrderAmount(getAmountConvertToFloatWithFixed(totalValue, 2));
     }
     setLocalStorage(`${BRAND_SIMPLE_GUID}cart`, cartData);
@@ -530,72 +574,78 @@ export default function CheckoutDisplay()
       setAmountDiscountApplied(null)
       setDiscountValue(getAmountConvertToFloatWithFixed(couponDiscountValue,2))
     }
-  }
 
+    setTimeout(() => {
+      setLoader(false)
+    }, 3000);
+  }
+  
   const onDeliveryMatrixError = (error) => {
-
+    console.log("delivery matrix error:", error);
   }
 
-  function removeCartItem(id) 
+  const removeCartItem = (id)  =>
   {
     setLoader(true)
-    const filterItems = cartData?.filter((cart, index) => index !== id);
-    if(filterItems && parseInt(filterItems.length) === parseInt(0))
-    {
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
-      setCouponDiscountApplied([])
-    }
-    else if(parseInt(filterItems.length) > parseInt(0))
-    {
-      let totalValue = 0;
-      for (const total of filterItems)
-      {
-        totalValue = parseFloat(totalValue) + parseFloat(total?.total_order_amount);
-      }
 
-      if(parseInt(couponDiscountApplied.length) > parseInt(0))
-      {
-        
-        const updateCouponDiscountApplied = couponDiscountApplied?.map((appliedDiscount) => {  
-          let removeItemDiscountValue = 0;
-          if (appliedDiscount.discount_type === "P") 
-          {
-            const getThePercentage = appliedDiscount.value / 100;
-            removeItemDiscountValue = parseFloat(totalValue) * parseFloat(getThePercentage);
-            setDiscountValue(getAmountConvertToFloatWithFixed(removeItemDiscountValue, 2));
-          } 
-          else 
-          {
-            removeItemDiscountValue = parseFloat(totalValue) - parseFloat(appliedDiscount.value);
-            setDiscountValue(getAmountConvertToFloatWithFixed(removeItemDiscountValue, 2));
-          }
-          return {
-            ...appliedDiscount,
-            discount: removeItemDiscountValue
-          }
-        })
-
-        setCouponDiscountApplied(updateCouponDiscountApplied)
-        setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`, updateCouponDiscountApplied)
-      }
-    }
-
-    setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,filterItems)
-
-    setCartData(filterItems);
     const checkOrderGuidExistsOrNot = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_guid`)
     const sharedGUID = (checkOrderGuidExistsOrNot) ? JSON.parse(checkOrderGuidExistsOrNot) : orderGuid
-    deliveryMatrixMutate({
-      selectedLocation,
-      selectedPostcode,
-      brandGuid: BRAND_GUID,
-      orderId: sharedGUID,
-    })
+
+    const filterItems = cartData?.filter((cart, index) => index !== id);
+
+    setIsCartBtnClicked((parseInt(filterItems?.length) > 0) ? true : false)
+    setCartData(filterItems);
+    setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,filterItems)
+    
+    // if(filterItems && parseInt(filterItems.length) === parseInt(0))
+    // {
+    //   window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+    //   window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+    //   setCouponDiscountApplied([])
+    // }
+    // else if(parseInt(filterItems.length) > parseInt(0))
+    // {
+    //   let totalValue = 0;
+    //   for (const total of filterItems)
+    //   {
+    //     totalValue = parseFloat(totalValue) + parseFloat(total?.total_order_amount);
+    //   }
+
+    //   if(parseInt(couponDiscountApplied.length) > parseInt(0))
+    //   {
+        
+    //     const updateCouponDiscountApplied = couponDiscountApplied?.map((appliedDiscount) => {  
+    //       let removeItemDiscountValue = 0;
+    //       if (appliedDiscount.discount_type === "P") 
+    //       {
+    //         const getThePercentage = appliedDiscount.value / 100;
+    //         removeItemDiscountValue = parseFloat(totalValue) * parseFloat(getThePercentage);
+    //         setDiscountValue(getAmountConvertToFloatWithFixed(removeItemDiscountValue, 2));
+    //       } 
+    //       else 
+    //       {
+    //         removeItemDiscountValue = parseFloat(totalValue) - parseFloat(appliedDiscount.value);
+    //         setDiscountValue(getAmountConvertToFloatWithFixed(removeItemDiscountValue, 2));
+    //       }
+    //       return {
+    //         ...appliedDiscount,
+    //         discount: removeItemDiscountValue
+    //       }
+    //     })
+
+    //     setCouponDiscountApplied(updateCouponDiscountApplied)
+    //     setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`, updateCouponDiscountApplied)
+    //   }
+    // }
+    
+    
+    // deliveryMatrixMutate({
+    //   selectedLocation,
+    //   selectedPostcode,
+    //   brandGuid: BRAND_GUID,
+    //   orderId: sharedGUID,
+    // })
   }
-
-  
-
 
   // Handle Coupon Code functionality
   function handleCouponCode(event) 
@@ -1101,7 +1151,7 @@ export default function CheckoutDisplay()
 
                 {/* Amount Discount */}
               {amountDiscountApplied !== null && (
-                <li key={index} className="flex justify-between items-start px-2 py-3 border-b border-gray-300 text-sm text-gray-700">
+                <li className="flex justify-between items-start px-2 py-3 border-b border-gray-300 text-sm text-gray-700">
                   <div className="flex-[6] space-y-1">
                     <div className="flex flex-wrap sm:flex-nowrap gap-1">
                       <div className="w-[80px] flex-shrink-0 text-gray-500 font-medium break-words">
@@ -1120,7 +1170,7 @@ export default function CheckoutDisplay()
                   </div>
 
                   <div className="flex-[1] text-right pt-1">
-                    <button className="text-gray-500 hover:text-red-600 transition" onClick={() => handleRemoveCouponCode(index)}>
+                    {/* <button className="d-none text-gray-500 hover:text-red-600 transition" onClick={() => handleRemoveCouponCode(index)}>
                       <svg
                         aria-hidden="true"
                         focusable="false"
@@ -1133,7 +1183,7 @@ export default function CheckoutDisplay()
                           d="M10.667.667V2H14v2H2V2h3.333V.667h5.334zM3.333 5.333h9.334v10H3.333v-10z"
                         ></path>
                       </svg>
-                    </button>
+                    </button> */}
                   </div>
 
                 </li>
@@ -1184,11 +1234,6 @@ export default function CheckoutDisplay()
           </div>
 
           <div className="mt-[2vh] space-y-4">
-            {/* Success or info message */}
-            {amountDiscountMessage && (
-              <p className="text-green-600 font-medium">{amountDiscountMessage}</p>
-            )}
-
             {/* Coupon Input Section */}
             {couponCodeError !== "" && (
               <p className="text-red-600 text-sm">{couponCodeError}</p>
@@ -1200,7 +1245,7 @@ export default function CheckoutDisplay()
                 value={coupon}
                 onChange={handleCouponCode}
                 placeholder="Enter Discount Code"
-                className="flex-1 px-4 py-2 bg-[#eaeaea] text-sm outline-none border-none focus:ring-0"
+                className="flex-1 px-4 py-2 bg-[#eaeaea] text-[16px] outline-none border-none focus:ring-0"
               />
               <button
                 type="button"
@@ -1217,6 +1262,10 @@ export default function CheckoutDisplay()
           <div className="flex mt-4">
             {/* Messages */}
             <div className="w-40 text-sm text-gray-600 space-y-1">
+              {/* Success or info message */}
+              {amountDiscountMessage && (
+                <p className="text-green-600 font-medium">{amountDiscountMessage}</p>
+              )}
               {state.messagesObject.deliveryMessage && (
                 <p className="font-semibold text-medium">{state.messagesObject.deliveryMessage}</p>
               )}
