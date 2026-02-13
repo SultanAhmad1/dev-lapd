@@ -1,8 +1,8 @@
 "use client";
-import { BRAND_GUID } from "@/global/Axios";
+import { BRAND_GUID, BRAND_SIMPLE_GUID } from "@/global/Axios";
 
 import React, { useContext, useEffect, useState } from "react";
-import { getAmountConvertToFloatWithFixed } from "@/global/Store";
+import { getAmountConvertToFloatWithFixed, setLocalStorage } from "@/global/Store";
 import moment from "moment";
 import { useGetQueryAutoUpdate, usePostMutationHook } from "../reactquery/useQueryHook";
 import MyOrders from "./children/MyOrders";
@@ -12,18 +12,19 @@ import { ContextCheckApi } from "@/app/layout";
 
 export default function TrackOrderDetail({orderId}) 
 {
-    const { websiteModificationData, setSelectedStoreDetails } = useContext(HomeContext)
+    const { websiteModificationData, setSelectedStoreDetails,setOrderGuid } = useContext(HomeContext)
     const { setMetaDataToDisplay, metaDataToDisplay} = useContext(ContextCheckApi)
 
     const [isHover, setIsHover] = useState(false);
     
     useEffect(() => {
+    
         if (websiteModificationData) {
-        setMetaDataToDisplay((prevData) => ({
-            ...prevData,
-            title: `Track Order - ${websiteModificationData?.brand?.name}`,
-            contentData: "",
-        }));
+            setMetaDataToDisplay((prevData) => ({
+                ...prevData,
+                title: `Track Order - ${websiteModificationData?.brand?.name}`,
+                contentData: "",
+            }));
         }
     }, [metaDataToDisplay, setMetaDataToDisplay, websiteModificationData]);
     
@@ -45,6 +46,16 @@ export default function TrackOrderDetail({orderId})
     const onGetSuccess = (data) => {
 
         const { trackOrder, isExpired } = data?.data
+
+         setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
+        setOrderGuid(null)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
 
         if(isExpired)
         {
@@ -88,8 +99,15 @@ export default function TrackOrderDetail({orderId})
         setCouponTotal(minusAmount)
     }
 
-    const {isLoading: getTrackLoading, isError: getTrackError} = useGetQueryAutoUpdate("track-order", `/website-track-order/${orderId}`, onGetSuccess, onGetError, orderId ? true : false)
-
+    const {isLoading: getTrackLoading, isError: getTrackError, refetch: websiteTrackOrderRefetch} = useGetQueryAutoUpdate("track-order", `/website-track-order/${orderId?.[0]}`, onGetSuccess, onGetError, false)
+    
+    useEffect(() => {
+        if(orderId?.[0] && parseInt(orderId?.[0]?.length) > parseInt(0))
+        {
+            websiteTrackOrderRefetch()
+        }
+    }, [orderId]);
+    
     const handleOrderHashTypeByUser = (event) =>
     {
         const {value } = event.target
@@ -113,8 +131,15 @@ export default function TrackOrderDetail({orderId})
     }
 
     const onHashSuccess = (data) => {
-
-        console.log("track order detail:", data);
+        setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
+        setOrderGuid(null)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
         
         setGetTrackOrderData(data?.data)
         setOrderHash(data?.data?.data?.trackOrder?.external_order_number)

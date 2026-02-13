@@ -15,6 +15,7 @@ export const PARTNER_ID = 2;
 export const DELIVERY_ID = process.env.NEXT_PUBLIC_DELIVERY_ID;
 
 export const brandLogoPath = "/gallery/logo.svg";
+export const footLogoPath = "/gallery/footerLogo.svg"
 export const USER_IMAGE = "/gallery/user-image.jpeg"
 export const BANNER_IMAGE = "/gallery/banner.png"
 

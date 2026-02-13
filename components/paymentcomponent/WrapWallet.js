@@ -1,8 +1,7 @@
 "use client";
 import HomeContext from "@/contexts/HomeContext";
-
 import { usePostMutationHook } from "@/components/reactquery/useQueryHook";
-import { BRAND_SIMPLE_GUID, BRAND_GUID, PARTNER_ID, axiosPrivate } from "@/global/Axios";
+import { BRAND_SIMPLE_GUID, BRAND_GUID, PARTNER_ID, axiosPrivate, DELIVERY_ID } from "@/global/Axios";
 import { getAmountConvertToFloatWithFixed, setLocalStorage } from "@/global/Store";
 import moment from "moment-timezone";
 import { Fragment, useContext, useEffect, useState } from "react";
@@ -33,14 +32,17 @@ export default function WrapWallet({deliveryTime,customerDetailObj,due,setPaymen
       isScheduleForToday,
       orderGuid,
       setOrderGuid,
+      setBooleanObj
     } = useContext(HomeContext);
 
     const stripe = useStripe()
     const elements = useElements();
 
+    const [walletCompleted, setWalletCompleted] = useState(false);
     const [paymentRequest, setPaymentRequest] = useState(null);
         
     // This method will hit when payment successfully done, to send sms and email to user.
+    
     const afterPaymentSavedOrderUpdate = async (orderId,paymentIntent, paymentIntentAmountPaid) =>
     {
       try 
@@ -60,7 +62,7 @@ export default function WrapWallet({deliveryTime,customerDetailObj,due,setPaymen
         const response = await axiosPrivate.post(`/update-order-after-successfully-payment-save`, data)
         // return
         // Here need to hit sms and email call.
-        const orderData = response?.data?.data?.order      
+        // const orderData = response?.data?.data?.order      
      
         
           // hitSmsAndEmailCall(orderId, orderData)
@@ -76,19 +78,54 @@ export default function WrapWallet({deliveryTime,customerDetailObj,due,setPaymen
           setCartData([])
 
           // window.alert("Your order has been received.")
-
-          const orderType = Number(orderData?.order_type_filter_id);
-          if (orderType === 4) {
-            window.location.href = `/track-order/${orderId}`;
-          } else {
-            window.location.href = `/thank-you/${orderId}`;
-          }
+          // for error not able to send sms set value 2 for message is sent set value 1
+          // const orderType = Number(orderData?.order_type_filter_id);
+          setPaymentLoader(true)
+          const getFilter = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`));
+          setLocalStorage(`${BRAND_SIMPLE_GUID}isValidNumber`,0)
+          // setBooleanObj((prevData) => ({...prevData, isUnableToSendSms: 1, orderGuid: orderId, isPlaceOrderButtonClicked: false, isDeliveryOrder: String(DELIVERY_ID) === String(getFilter?.id) ? 1 : 2}))
+           if (String(DELIVERY_ID) === String(getFilter?.id)) {
+              window.location.href = `/track-order/${orderId}`
+            }
+            else
+            {
+              window.location.href = `/thank-you/${orderId}`
+            }
+          // const orderType = Number(orderData?.order_type_filter_id);
+          // if (orderType === 4) {
+          //   window.location.href = `/track-order/${orderId}`;
+          // } else {
+          //   window.location.href = `/thank-you/${orderId}`;
+          // }
 
       } 
       catch (error) 
       {
         console.log("show error update amounts:", error);
+        const unableToSendMessage = error?.response?.data?.error;
         
+        if(unableToSendMessage && unableToSendMessage.toLowerCase().includes("unable to send you sms"))
+        {
+          setPaymentLoader(true)
+          const getFilter = JSON.parse(window?.localStorage?.getItem(`${BRAND_SIMPLE_GUID}filter`));
+          setLocalStorage(`${BRAND_SIMPLE_GUID}isValidNumber`,1)
+          // check if order is delivery type then redirect to track-order page or thank-you page.
+          // setBooleanObj((prevData) => ({...prevData, isUnableToSendSms: 2, orderGuid: orderId, isPlaceOrderButtonClicked: false, isDeliveryOrder: String(DELIVERY_ID) === String(getFilter?.id) ? 1 : 2}))
+            if (String(DELIVERY_ID) === String(getFilter?.id)) {
+              window.location.href = `/track-order/${orderId}`
+            }
+            else
+            {
+              window.location.href = `/thank-you/${orderId}`
+            }
+
+          // return <SmsAlertOrderFailedModal {...{
+          //   isPaymentError: true,
+          //   setCustomerDetailObj,
+          //   orderId,
+          // }}/>
+          // window.alert("Order placed successfully, but SMS delivery failed due to an invalid phone number.");
+        }
         setPaymentLoader(false)
       }
     }
@@ -143,7 +180,7 @@ export default function WrapWallet({deliveryTime,customerDetailObj,due,setPaymen
       return
     }
     
-    const { isLoading: storeLoading, isError: storeError, reset: storeReset, isSuccess: storeSuccess, mutate: storeMutation } = usePostMutationHook('customer-store',`/store-customer-details`,onStoreSuccess, onStoreError)
+    const { isLoading: storeLoading, isError: storeError, reset: storeReset, isSuccess: storeSuccess, mutateAsync: storeMutation } = usePostMutationHook('customer-store',`/store-customer-details`,onStoreSuccess, onStoreError)
 
     const onPatchSuccess = async (data) => {
       const responseData = data?.data?.data?.order?.order_total;
@@ -201,7 +238,7 @@ export default function WrapWallet({deliveryTime,customerDetailObj,due,setPaymen
     }
   }
   
-  const {isLoading: patchLoading, isError: postError, isSuccess: postSuccess, reset: postReset, mutate: postMutation} = usePostMutationHook('customer-update',`/update-customer-details`, onPatchSuccess, onPatchError)
+  const {isLoading: patchLoading, isError: postError, isSuccess: postSuccess, reset: postReset, mutateAsync: postMutation} = usePostMutationHook('customer-update',`/update-customer-details`, onPatchSuccess, onPatchError)
           
   useEffect(() => {
     const checkTheCart = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}cart`))
@@ -397,17 +434,24 @@ export default function WrapWallet({deliveryTime,customerDetailObj,due,setPaymen
                 };
                 
                 setLocalStorage(`${BRAND_SIMPLE_GUID}customer_storage_data_from_wallet`,data)
+
+                ev.complete("success");
+                setWalletCompleted(true);
+                setPaymentLoader(true)
                 if (orderFromDatabaseGUID ?? orderGuid) { 
-                  postMutation(data) 
-                  return
+                  await postMutation(data) 
+                }
+                else  
+                {
+                  await storeMutation(data)
                 }
         
-                storeMutation(data)
-            
+                // storeMutation(data)
             } catch (err) {
                 console.error("Show wallet error here:",err);
+                setPaymentLoader(false)
                 ev.complete("fail");
-                const errorMessage = err.response.data.error
+                const errorMessage = err?.response?.data?.error
                 if (errorMessage.toLowerCase().includes("minimum charge amount")) {
                   setPaymentError("Amount is too low for this currency.");
                 }
@@ -433,7 +477,8 @@ export default function WrapWallet({deliveryTime,customerDetailObj,due,setPaymen
 
   return(
     <Fragment>
-      {paymentRequest && (
+
+      {paymentRequest && !walletCompleted && (
       
         <PaymentRequestButtonElement options={{ paymentRequest }} />
       )}

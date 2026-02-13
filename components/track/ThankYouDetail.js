@@ -3,10 +3,12 @@ import { useContext, useEffect, useState } from "react";
 import { useGetQueryAutoUpdate } from "../reactquery/useQueryHook";
 import HomeContext from "@/contexts/HomeContext";
 import { ContextCheckApi } from "@/app/layout";
+import { setLocalStorage } from "@/global/Store";
+import { BRAND_SIMPLE_GUID } from "@/global/Axios";
 
 export default function ThankYouDetail({orderId}) 
 {
-    const { websiteModificationData, setSelectedStoreDetails, setAtFirstLoad} = useContext(HomeContext)
+    const { websiteModificationData, setSelectedStoreDetails, setAtFirstLoad, setOrderGuid} = useContext(HomeContext)
     const { metaDataToDisplay, setMetaDataToDisplay } = useContext(ContextCheckApi)
     
     const [getTrackOrderData, setGetTrackOrderData] = useState(null);
@@ -14,7 +16,16 @@ export default function ThankYouDetail({orderId})
     
 
     useEffect(() => {
-        
+          setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
+        setOrderGuid(null)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+
         const handleBeforeUnload = (e) => {
             e.preventDefault();
             e.returnValue = "";
@@ -25,6 +36,17 @@ export default function ThankYouDetail({orderId})
     }, []);
 
     useEffect(() => {
+
+          setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
+        setOrderGuid(null)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+        
         if (websiteModificationData) {
             setMetaDataToDisplay((prevData) => ({
                 ...prevData,
@@ -41,24 +63,45 @@ export default function ThankYouDetail({orderId})
 
     const onGetSuccess = (data) => {
         const { trackOrder } = data?.data
+
+        setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
+        setOrderGuid(null)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+
         setAtFirstLoad(false)
-        const {location} = trackOrder
-
-        const selectedStoreDetail = {
-            address: location?.address,
-            display_id: location?.location_guid,
-            email: null,
-            store: location?.name,
-            telephone: location?.telephone
+        if(trackOrder !== null && trackOrder !== undefined)
+        {
+            const {location} = trackOrder
+    
+            const selectedStoreDetail = {
+                address: location?.address,
+                display_id: location?.location_guid,
+                email: null,
+                store: location?.name,
+                telephone: location?.telephone
+            }
+    
+            setSelectedStoreDetails(selectedStoreDetail)
         }
-
-        setSelectedStoreDetails(selectedStoreDetail)
 
         setGetTrackOrderData(data)
     }
     
-    const {isLoading: getTrackLoading, isError: getTrackError} = useGetQueryAutoUpdate("track-order", `/website-track-order/${orderId}`, onGetSuccess, onGetError, orderId ? true : false)
-
+    const {isLoading: getTrackLoading, isError: getTrackError, refetch: websiteTrackOrderRefetch} = useGetQueryAutoUpdate("track-order", `/website-track-order/${orderId?.[0]}`, onGetSuccess, onGetError, false)
+    
+    useEffect(() => {
+        if(orderId?.[0] && parseInt(orderId?.[0]?.length) > parseInt(0))
+        {
+            websiteTrackOrderRefetch();
+        }
+    }, [orderId]);
+    
     return(
         <div className="h-[60vh] flex justify-center items-center px-4 bg-gray-300">
             <div className="max-w-xl w-full text-center bg-white rounded-lg p-10">

@@ -158,6 +158,9 @@ export default function CustomLayout({ children })
     isOTPModalShow: false,
     isPlaceOrderButtonClicked: false,
     isChangePostcodeButtonClicked: false,
+    isUnableToSendSms: 0,
+    orderGuid: null,
+    isDeliveryOrder: 1,
   });
   
   const handleBoolean = useCallback((newValue, fieldName) => {
@@ -941,6 +944,7 @@ export default function CustomLayout({ children })
     isLocationBrandOnline,
 
     booleanObj,
+    setBooleanObj,
     comingSoon,
     cutOffSchedule,
     orderGuid,
@@ -1037,6 +1041,8 @@ export default function CustomLayout({ children })
 
       {isCartBtnClicked && <Cart />}
       {booleanObj.isPlaceOrderButtonClicked && <PlaceOrderModal />}
+      {/* {parseInt(booleanObj.isUnableToSendSms) === parseInt(2) && <SmsAlertOrderFailedModal />}
+      {parseInt(booleanObj.isUnableToSendSms) === parseInt(1) && <OrderPlacedSuccessfully />} */}
       {/* {isDeliveryBtnClicked && <DeliveryModal />} */}
       {/* {isTimeToClosed && <StoreClosedModal />} */}
       {loaderState && <Loader />}

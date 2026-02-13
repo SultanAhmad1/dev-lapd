@@ -117,19 +117,7 @@ export default function CheckoutDisplay()
     };
   }, []);
   
-  useEffect(() => {
-    if((cartData && parseInt(cartData.length) > parseInt(0)))
-    {
-      const checkOrderGuidExistsOrNot = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_guid`)
-      const sharedGUID = (checkOrderGuidExistsOrNot) ? JSON.parse(checkOrderGuidExistsOrNot) : orderGuid
-      deliveryMatrixMutate({
-        selectedLocation,
-        selectedPostcode,
-        brandGuid: BRAND_GUID,
-        orderId: sharedGUID,
-      })
-    }
-  }, [cartData,selectedLocation,selectedPostcode]);
+  
   
   const onDeliveryMatrixSuccess = (data) => {
 
@@ -178,7 +166,8 @@ export default function CheckoutDisplay()
       {
         if (selectedMatrix?.above_order_value === null || selectedMatrix?.above_order_value === 0) 
         {
-          const textMessage = <strong>Free Delivery</strong>;
+          // const textMessage = <strong>Free Delivery</strong>;
+          const textMessage = ""
           dispatch({ type: "SET_DELIVERY_MESSAGE", payload: textMessage });
           const fee = getAmountConvertToFloatWithFixed(0, 2);
           setDeliveryFee(fee);
@@ -201,7 +190,8 @@ export default function CheckoutDisplay()
             {
               if (deliveryMatrixRowValues?.above_minimum_order_value === null || deliveryMatrixRowValues?.above_minimum_order_value === 0)  
               {
-                const textMessage = <strong>Free Delivery</strong>;
+                // const textMessage = <strong>Free Delivery</strong>;
+                const textMessage = ""
                 dispatch({ type: "SET_DELIVERY_MESSAGE", payload: textMessage });
                 const fee = getAmountConvertToFloatWithFixed(0, 2);
                 setDeliveryFee(fee);
@@ -209,7 +199,8 @@ export default function CheckoutDisplay()
               } 
               else 
               {
-                const textMessage = <strong>Free Delivery</strong>;
+                // const textMessage = <strong>Free Delivery</strong>;
+                const textMessage = ""
                 dispatch({ type: "SET_DELIVERY_MESSAGE", payload: (deliveryMatrixRowValues?.above_minimum_order_value === 0) ? "" : textMessage });
 
                 const fee = parseFloat(deliveryMatrixRowValues?.above_minimum_order_value ?? 0 ).toFixed(2);
@@ -518,7 +509,8 @@ export default function CheckoutDisplay()
           let textMessage = "";
           if(getSelectedFilter.id === DELIVERY_ID)
           {
-            textMessage = <strong>Free Delivery</strong>;
+            // textMessage = <strong>Free Delivery</strong>;
+            textMessage = "";
           }
           dispatch({ type: "SET_DELIVERY_MESSAGE", payload:  textMessage});
         }
@@ -540,7 +532,8 @@ export default function CheckoutDisplay()
                   {
                     if (deliveryMatrixRowValues?.above_minimum_order_value === null || deliveryMatrixRowValues?.above_minimum_order_value === 0)  
                     {
-                      const textMessage = <strong>Free Delivery</strong>;
+                      // const textMessage = <strong>Free Delivery</strong>;
+                      const textMessage = ""
                       dispatch({ type: "SET_DELIVERY_MESSAGE", payload:  textMessage});
                       const fee = getAmountConvertToFloatWithFixed(0, 2);
                       setDeliveryFee(fee);
@@ -548,7 +541,8 @@ export default function CheckoutDisplay()
                     } 
                     else 
                     {
-                      const textMessage = <strong>Free Delivery</strong>;
+                      // const textMessage = <strong>Free Delivery</strong>;
+                      const textMessage = ""
                       dispatch({ type: "SET_DELIVERY_MESSAGE", payload:  (deliveryMatrixRowValues?.above_minimum_order_value === 0) ? "" : textMessage});
                       const fee = parseFloat(deliveryMatrixRowValues?.above_minimum_order_value ?? 0).toFixed(2);
                       setDeliveryFee(fee);
@@ -593,58 +587,58 @@ export default function CheckoutDisplay()
 
     const filterItems = cartData?.filter((cart, index) => index !== id);
 
-    setIsCartBtnClicked((parseInt(filterItems?.length) > 0) ? true : false)
+    // setIsCartBtnClicked((parseInt(filterItems?.length) > 0) ? true : false)
     setCartData(filterItems);
     setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,filterItems)
     
-    // if(filterItems && parseInt(filterItems.length) === parseInt(0))
-    // {
-    //   window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-    //   window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
-    //   setCouponDiscountApplied([])
-    // }
-    // else if(parseInt(filterItems.length) > parseInt(0))
-    // {
-    //   let totalValue = 0;
-    //   for (const total of filterItems)
-    //   {
-    //     totalValue = parseFloat(totalValue) + parseFloat(total?.total_order_amount);
-    //   }
+    if(filterItems && parseInt(filterItems.length) === parseInt(0))
+    {
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+      setCouponDiscountApplied([])
+    }
+    else if(parseInt(filterItems.length) > parseInt(0))
+    {
+      let totalValue = 0;
+      for (const total of filterItems)
+      {
+        totalValue = parseFloat(totalValue) + parseFloat(total?.total_order_amount);
+      }
 
-    //   if(parseInt(couponDiscountApplied.length) > parseInt(0))
-    //   {
+      if(parseInt(couponDiscountApplied.length) > parseInt(0))
+      {
         
-    //     const updateCouponDiscountApplied = couponDiscountApplied?.map((appliedDiscount) => {  
-    //       let removeItemDiscountValue = 0;
-    //       if (appliedDiscount.discount_type === "P") 
-    //       {
-    //         const getThePercentage = appliedDiscount.value / 100;
-    //         removeItemDiscountValue = parseFloat(totalValue) * parseFloat(getThePercentage);
-    //         setDiscountValue(getAmountConvertToFloatWithFixed(removeItemDiscountValue, 2));
-    //       } 
-    //       else 
-    //       {
-    //         removeItemDiscountValue = parseFloat(totalValue) - parseFloat(appliedDiscount.value);
-    //         setDiscountValue(getAmountConvertToFloatWithFixed(removeItemDiscountValue, 2));
-    //       }
-    //       return {
-    //         ...appliedDiscount,
-    //         discount: removeItemDiscountValue
-    //       }
-    //     })
+        const updateCouponDiscountApplied = couponDiscountApplied?.map((appliedDiscount) => {  
+          let removeItemDiscountValue = 0;
+          if (appliedDiscount.discount_type === "P") 
+          {
+            const getThePercentage = appliedDiscount.value / 100;
+            removeItemDiscountValue = parseFloat(totalValue) * parseFloat(getThePercentage);
+            setDiscountValue(getAmountConvertToFloatWithFixed(removeItemDiscountValue, 2));
+          } 
+          else 
+          {
+            removeItemDiscountValue = parseFloat(totalValue) - parseFloat(appliedDiscount.value);
+            setDiscountValue(getAmountConvertToFloatWithFixed(removeItemDiscountValue, 2));
+          }
+          return {
+            ...appliedDiscount,
+            discount: removeItemDiscountValue
+          }
+        })
 
-    //     setCouponDiscountApplied(updateCouponDiscountApplied)
-    //     setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`, updateCouponDiscountApplied)
-    //   }
-    // }
+        setCouponDiscountApplied(updateCouponDiscountApplied)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}applied_coupon`, updateCouponDiscountApplied)
+      }
+    }
     
     
-    // deliveryMatrixMutate({
-    //   selectedLocation,
-    //   selectedPostcode,
-    //   brandGuid: BRAND_GUID,
-    //   orderId: sharedGUID,
-    // })
+    deliveryMatrixMutate({
+      selectedLocation,
+      selectedPostcode,
+      brandGuid: BRAND_GUID,
+      orderId: sharedGUID,
+    })
   }
 
   // Handle Coupon Code functionality
@@ -797,7 +791,8 @@ export default function CheckoutDisplay()
         let textMessage = "";
         if(selectedFilter?.id === DELIVERY_ID)
         {
-          textMessage = <strong>Free Delivery</strong>;
+          // textMessage = <strong>Free Delivery</strong>;
+          textMessage = ""
         }
         dispatch({ type: "SET_DELIVERY_MESSAGE", payload:  textMessage});
         const couponFee = getAmountConvertToFloatWithFixed(0, 2);
@@ -822,7 +817,8 @@ export default function CheckoutDisplay()
                 {
                   if (deliveryMatrixRowValues?.above_minimum_order_value === null || deliveryMatrixRowValues?.above_minimum_order_value === 0)  
                   {
-                    const textMessage = <strong>Free Delivery</strong>;
+                    // const textMessage = <strong>Free Delivery</strong>;
+                    const textMessage = ""
                     dispatch({ type: "SET_DELIVERY_MESSAGE", payload:  textMessage});
                     const fee = getAmountConvertToFloatWithFixed(0, 2);
                     setDeliveryFee(fee);
@@ -830,7 +826,8 @@ export default function CheckoutDisplay()
                   } 
                   else 
                   {
-                    const textMessage = <strong>Free Delivery</strong>;
+                    // const textMessage = <strong>Free Delivery</strong>;
+                    const textMessage = ""
                     dispatch({ type: "SET_DELIVERY_MESSAGE", payload:  (deliveryMatrixRowValues?.above_minimum_order_value === 0) ? "" : textMessage});
                     const couponFee = getAmountConvertToFloatWithFixed(deliveryMatrixRowValues?.above_minimum_order_value ?? 0, 2);
                     setDeliveryFee(couponFee)
@@ -983,10 +980,25 @@ export default function CheckoutDisplay()
   }
  
   const {mutate: deliveryMatrixMutate} = usePostMutationHook('deliveryMatrixData',`/district-delivery-matrix`,onDeliveryMatrixSuccess, onDeliveryMatrixError)
+
+  useEffect(() => {
+    if((cartData && parseInt(cartData.length) > parseInt(0)))
+    {
+      const checkOrderGuidExistsOrNot = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_guid`)
+      const sharedGUID = (checkOrderGuidExistsOrNot) ? JSON.parse(checkOrderGuidExistsOrNot) : orderGuid
+      deliveryMatrixMutate({
+        selectedLocation,
+        selectedPostcode,
+        brandGuid: BRAND_GUID,
+        orderId: sharedGUID,
+      })
+    }
+  }, [cartData,selectedLocation,selectedPostcode,deliveryMatrixMutate,orderGuid]);
+
   return(
     <>
       {
-        cartData?.length > 0 &&
+        cartData?.length > 0 ?
         <>
           <h5 className="text-lg font-semibold">My Order</h5>
           
@@ -1347,6 +1359,35 @@ export default function CheckoutDisplay()
           }
           <div style={{marginBottom: "50px"}}></div>
         </>
+        :
+        <div className="flex flex-col items-center justify-center text-center py-16 px-6 my-10">
+          {/* Icon */}
+          <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-8 w-8 text-gray-400"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2 9m12-9l2 9m-5-4a1 1 0 11-2 0 1 1 0 012 0zm-6 0a1 1 0 11-2 0 1 1 0 012 0z"
+              />
+            </svg>
+          </div>
+
+          {/* Text */}
+          <h2 className="text-lg font-bold text-gray-800 uppercase">
+            Your cart is empty
+          </h2>
+
+          <p className="mt-1 text-sm text-gray-500 max-w-xs">
+            Looks like you haven’t added anything yet.
+          </p>
+        </div>
       }
     </>
   )
