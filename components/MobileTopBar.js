@@ -3,7 +3,7 @@ import React, { useContext, useEffect } from "react";
 import HomeContext from "../contexts/HomeContext";
 
 function MobileTopBar() {
-  const { navigationCategories, websiteModificationData } = useContext(HomeContext);
+  const { navigationCategories, websiteModificationData, booleanObj } = useContext(HomeContext);
 
   const handleClickScroll = (index, e) => {
     e.preventDefault();
@@ -64,7 +64,8 @@ function MobileTopBar() {
 
   return (
     <div
-      className="w-full sticky top-0 z-30 bg-[#444]"
+      className={`w-full sticky top-0 z-30 bg-[#444]`}
+      // className={`w-full sticky top-0 z-${parseInt(booleanObj?.isUnableToSendSms) > parseInt(0) ? "0" : "30"} bg-[#444]`}
       style={{
         background:
           websiteModificationData?.websiteModificationLive?.json_log?.[0]?.navigationBackgroundColor || "#444",
@@ -82,6 +83,7 @@ function MobileTopBar() {
           if (parseInt(category?.items?.length) <= 0) return null;
 
           const isActive = index === 0;
+          
           const styles = {
             backgroundColor: isActive
               ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.navigationActiveBackgroundColor
@@ -101,7 +103,7 @@ function MobileTopBar() {
               }`}
               style={styles}
             >
-              {category?.title.toUpperCase()}
+            {category?.title.toUpperCase()}
             </li>
           );
         })}

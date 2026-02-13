@@ -304,12 +304,12 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
         Available Stores
       </h2>
 
-      <div className="overflow-y-auto h-[60vh] space-y-4 px-2">
+      <div className="overflow-y-auto h-[60vh] space-y-4 px-0">
 
         {availableStores?.map((store, index) => (
           <div
             key={index}
-            className="bg-gray-100/90 border border-gray-300 rounded-lg p-4 shadow-sm cursor-pointer hover:bg-gray-200 transition-colors"
+            className="bg-gray-100/90 border border-gray-300 rounded-lg p-3 shadow-sm cursor-pointer hover:bg-gray-200 transition-colors"
           >
             <div className="flex justify-between items-center text-blue-700 font-semibold">
               <h6>

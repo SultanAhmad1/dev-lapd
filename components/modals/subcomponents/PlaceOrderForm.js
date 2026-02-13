@@ -1,14 +1,15 @@
 "use client";
 import HomeContext from "@/contexts/HomeContext";
 
-import { ContextCheckApi } from "@/app/layout";
+
 import { useLoginMutationHook, usePostMutationHook } from "@/components/reactquery/useQueryHook";
-import { BRAND_SIMPLE_GUID, BRAND_GUID, IMAGE_URL_Without_Storage, PARTNER_ID, axiosPrivate, DELIVERY_ID } from "@/global/Axios";
+import { BRAND_SIMPLE_GUID, BRAND_GUID, PARTNER_ID, axiosPrivate, DELIVERY_ID } from "@/global/Axios";
 import { getAmountConvertToFloatWithFixed, setLocalStorage, validatePhoneNumber } from "@/global/Store";
-import { listtime, round15 } from "@/global/Time";
+import { listtime, } from "@/global/Time";
 import moment from "moment-timezone";
 import { Fragment, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { CardCvcElement, CardExpiryElement, CardNumberElement, useElements, useStripe } from "@stripe/react-stripe-js";
+
 
 export default function PlaceOrderForm({
   deliveryTime,
@@ -16,7 +17,6 @@ export default function PlaceOrderForm({
   due,
   setDue,
   customerDetailObj,
-  setCustomerDetailObj,
   setModalObject, 
   handleBoolean, 
   sectionNumber,
@@ -27,6 +27,7 @@ export default function PlaceOrderForm({
   setPaymentError,
   asapOrRequested,
   setAsapOrRequested,
+  setCustomerDetailObj,
 }) 
 {
   const addDoorNumberRef = useRef(null);
@@ -121,7 +122,7 @@ export default function PlaceOrderForm({
   const [isPayNowClickAble, setIsPayNowClickAble] = useState(false);
     
   useEffect(() => {
-    if(selectedFilter.id === DELIVERY_ID)
+    if(String(selectedFilter?.id) === String(DELIVERY_ID))
     {
       if (
         (customerDetailObj?.email || "").length > 0 &&
@@ -491,7 +492,7 @@ export default function PlaceOrderForm({
 
   useEffect(() => {
     // First i need to check the selected order filter is deliver then if block otherwise else block for collection.
-    if(selectedFilter.id === DELIVERY_ID)
+    if(String(selectedFilter?.id) === String(DELIVERY_ID))
     {
       if(sectionNumber === 1)
       {
@@ -623,7 +624,7 @@ export default function PlaceOrderForm({
       // if(response?.data?.status === "success")
       // {
       // first check this is delivery order or collection order.
-      if (selectedFilter?.id === DELIVERY_ID)
+      if (String(selectedFilter?.id) === String(DELIVERY_ID))
       {
         window.location.href = `/track-order/${orderId}`
         return
@@ -646,7 +647,7 @@ export default function PlaceOrderForm({
       window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
       setCartData([])
       
-      if (selectedFilter?.id === DELIVERY_ID)
+      if (String(selectedFilter?.id) === String(DELIVERY_ID))
       {
         window.location.href = `/track-order/${orderId}`
         return
@@ -672,8 +673,11 @@ export default function PlaceOrderForm({
       }  
 
       const response = await axiosPrivate.post(`/update-order-after-successfully-payment-save`, data)
+
+      // console.log("update after order response:", response);
+      
       // Here need to hit sms and email call.
-      const orderData = response?.data?.data?.order
+      // const orderData = response?.data?.data?.order
         setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
         setOrderGuid(null)
         window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
@@ -687,19 +691,51 @@ export default function PlaceOrderForm({
         // if(response?.data?.status === "success")
         // {
         // first check this is delivery order or collection order.
-        const orderType = Number(orderData?.order_type_filter_id);
-        if (orderType === 4) {
+        // for error not able to send sms set value 2 for message is sent set value 1
+        
+        // isDeliveryOrder: 1,
+        // setPaymentLoader(false)
+        // const orderType = Number(orderData?.order_type_filter_id);
+        const getFilter = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`));
+        // setBooleanObj((prevData) => ({...prevData, isUnableToSendSms: 1, orderGuid: orderId, isPlaceOrderButtonClicked: false, isDeliveryOrder: String(DELIVERY_ID) === String(getFilter?.id) ? 1 : 2}))
+        // return
+        setLocalStorage(`${BRAND_SIMPLE_GUID}isValidNumber`,0)
+        
+        if (String(DELIVERY_ID) === String(getFilter?.id)) {
 
           window.location.href = `/track-order/${orderId}`
           return
         }
         window.location.href = `/thank-you/${orderId}`
       // hitSmsAndEmailCall(orderId)
-        
     } 
     catch (error) 
     {
-      setPaymentLoader(false)
+      
+      const unableToSendMessage = error?.response?.data?.error;
+      // setPaymentLoader(false)
+
+      if(unableToSendMessage && unableToSendMessage.toLowerCase().includes("unable to send you sms"))
+      {
+        // for error not able to send sms set value 2 for message is sent set value 1
+
+        const getFilter = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`));
+        setLocalStorage(`${BRAND_SIMPLE_GUID}isValidNumber`,1)
+        // check if order is delivery type then redirect to track-order page or thank-you page.
+        if (String(DELIVERY_ID) === String(getFilter?.id)) {
+
+          window.location.href = `/track-order/${orderId}`
+          return
+        }
+        window.location.href = `/thank-you/${orderId}`
+        // setBooleanObj((prevData) => ({...prevData, isUnableToSendSms: 2, orderGuid: orderId, isPlaceOrderButtonClicked: false, isDeliveryOrder: String(DELIVERY_ID) === String(getFilter?.id) ? 1 : 2}))
+        // return <SmsAlertOrderFailedModal {...{
+        //   isPaymentError: true,
+        //   setCustomerDetailObj,
+        //   orderId,
+        // }}/>
+        // window.alert("Order placed successfully, but SMS delivery failed due to an invalid phone number.");
+      }
     }
   }
 
@@ -795,7 +831,7 @@ export default function PlaceOrderForm({
       return;
     }
 
-    if(selectedFilter.id === DELIVERY_ID)
+    if(String(selectedFilter?.id) === String(DELIVERY_ID))
     {
       if (parseInt(customerDetailObj?.doorHouseName?.length) === parseInt(0)) 
       {
@@ -1217,8 +1253,6 @@ export default function PlaceOrderForm({
     }
   }
 
-  console.log("asapOrRequested", asapOrRequested);
-  
 
   return(
     <Fragment>
@@ -1233,7 +1267,7 @@ export default function PlaceOrderForm({
 
               <div className="mimjepmkmlmmcheckout-desk">
                 {
-                  (selectedFilter.id === DELIVERY_ID && (!isCreditCardButtonClicked && parseInt(sectionNumber) === parseInt(1)) || (isCreditCardButtonClicked && parseInt(sectionNumber) === parseInt(2))) &&
+                  ((String(selectedFilter?.id) === String(DELIVERY_ID)) && (!isCreditCardButtonClicked && parseInt(sectionNumber) === parseInt(1)) || (isCreditCardButtonClicked && parseInt(sectionNumber) === parseInt(2))) &&
                   <p style={{ color: "red", fontSize: "600", fontWeight: "bold", marginBottom: "8px"}}>
                     *Fields marked with an asterisk must be filled in to proceed.
                   </p>
@@ -1345,7 +1379,7 @@ export default function PlaceOrderForm({
                 }
 
                 {
-                  ((!isCreditCardButtonClicked && parseInt(sectionNumber) === parseInt(1)) && selectedFilter.id === DELIVERY_ID) &&
+                  ((!isCreditCardButtonClicked && parseInt(sectionNumber) === parseInt(1)) && String(selectedFilter?.id) === String(DELIVERY_ID)) &&
                   <>
                     
                     <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2 lg:gap-20 mb-4">
@@ -1560,12 +1594,12 @@ export default function PlaceOrderForm({
                       >
                         {
                           isScheduleClicked ?
-                              (selectedFilter.id === DELIVERY_ID) ?
+                              (String(selectedFilter?.id) === String(DELIVERY_ID)) ?
                                 "Schedule delivery time"
                               :
                               "Schedule collection time"
                             :
-                            (selectedFilter.id === DELIVERY_ID) ?
+                            (String(selectedFilter?.id) === String(DELIVERY_ID)) ?
                               "Estimated delivery time"  
                             :
                               "Estimated collection time"

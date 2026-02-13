@@ -2,11 +2,13 @@
 import React, {useContext} from "react";
 import HomeContext from "../contexts/HomeContext";
 import moment from "moment";
-import { brandLogoPath, IMAGE_URL_Without_Storage } from "../global/Axios";
+import { footLogoPath, IMAGE_URL_Without_Storage } from "../global/Axios";
 import Image from "next/image";
 
 function Footer() {
   const { websiteModificationData, brandLogo ,selectedStoreDetails} = useContext(HomeContext);
+  
+  console.log("websiteModificationData:",websiteModificationData);
   
   return (
     <footer
@@ -33,7 +35,7 @@ function Footer() {
             ) : (
               <Image
                 loading="lazy"
-                src={brandLogoPath}
+                src={footLogoPath}
                 width={200}
                 height={100}
                 alt="Brand Name"
@@ -161,19 +163,24 @@ function Footer() {
 
                 <li>
                   <div className="flex justify-center items-center gap-3">
-                    {websiteModificationData?.brand?.brand_social_links?.map((link, index) =>
-                      link?.social_links ? (
-                        <a
-                          key={index}
-                          href={link.social_links}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="text-xl"
-                          style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
-                        >
-                          <div dangerouslySetInnerHTML={{ __html: link.social_icons }} />
-                        </a>
-                      ) : null
+                    {websiteModificationData?.brand?.brand_social_links?.map((link, index) => {
+                        // link?.social_links !== null && (
+                        return(
+                          link?.social_links !== null &&
+                          <a
+                            key={index}
+                            href={link.social_links}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-xl"
+                            style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                          >
+                            <div dangerouslySetInnerHTML={{ __html: link.social_icons }} />
+                          </a>
+
+                        )
+                        // )
+                    }
                     )}
                   </div>
                 </li>

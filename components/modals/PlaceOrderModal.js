@@ -20,11 +20,11 @@ export default function PlaceOrderModal()
     websiteModificationData,
     handleBoolean,
     storeGUID,
-    customDoorNumberName
+    customDoorNumberName,
   } = useContext(HomeContext)
 
   const [paymentError, setPaymentError] = useState(null);
-
+  
   const [modalObject, setModalObject] = useState({
     isPaymentReady: false,
     orderGUI: "7DFF394B-B37A-433E-8107-96B1395ABDDC",
@@ -119,7 +119,10 @@ export default function PlaceOrderModal()
       }))
     }
   },[]);
+
+  console.log("place order form modal object:", modalObject);
   
+
   return(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 bg-opacity-60">
       <div className="relative w-full max-w-3xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden h-[90vh] flex flex-col">

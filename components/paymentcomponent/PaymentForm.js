@@ -4,12 +4,11 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import moment from 'moment-timezone';
-import { CardCvcElement, CardElement, CardExpiryElement, CardNumberElement, PaymentRequestButtonElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { BRAND_SIMPLE_GUID, BRAND_GUID, IMAGE_URL_Without_Storage, axiosPrivate } from '@/global/Axios';
+import { CardCvcElement, CardExpiryElement, CardNumberElement, PaymentRequestButtonElement, useElements, useStripe } from '@stripe/react-stripe-js';
+import { BRAND_SIMPLE_GUID, BRAND_GUID, axiosPrivate } from '@/global/Axios';
 import HomeContext from '@/contexts/HomeContext';
 import { useRouter } from "next/navigation";
 import { getAmountConvertToFloatWithFixed, setLocalStorage } from '@/global/Store';
-import { ContextCheckApi } from '@/app/layout';
 // import stripePromise from './stripe';
 
 const validateEmail = (email) => {
@@ -35,6 +34,7 @@ const PaymentForm = ({orderId}) =>
     setIsLocationBrandOnline,
     websiteModificationData,
     setAtFirstLoad,
+    setBooleanObj,
   } = useContext(HomeContext)
 
   const addDoorNumberRef = useRef(null);
@@ -228,18 +228,19 @@ const PaymentForm = ({orderId}) =>
       setCartData([])
       // window.alert("Your order has been received.")
       setPaymentLoader(false)
-      if(parseInt(paymentFormObject.orderType) === parseInt(4))
-      {
-        router.push(`/track-order/${orderId}`)
-        return
-      }
+      setBooleanObj((prevData) => ({...prevData, isUnableToSendSms: 1, orderGuid: orderId, isPlaceOrderButtonClicked: false, isDeliveryOrder: parseInt(paymentFormObject.orderType) === parseInt(4) ? 1 : 2}))
+      // if(parseInt(paymentFormObject.orderType) === parseInt(4))
+      // {
+      //   router.push(`/track-order/${orderId}`)
+      //   return
+      // }
 
-      router.push(`/thank-you/${orderId}`)
+      // router.push(`/thank-you/${orderId}`)
     } 
     catch (error) 
     {
       setPaymentLoader(false)
-      window.alert(error?.response?.data?.error)
+      // window.alert(error?.response?.data?.error)
       
       setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
       setOrderGuid(null)
@@ -252,12 +253,13 @@ const PaymentForm = ({orderId}) =>
       setCartData([])
 
       setCartData([])
-      if(parseInt(paymentFormObject.orderType) === parseInt(4))
-      {
-        router.push(`/track-order/${orderId}`)
-        return
-      }
-      router.push(`/thank-you/${orderId}`)
+      setBooleanObj((prevData) => ({...prevData, isUnableToSendSms: 1, orderGuid: orderId, isPlaceOrderButtonClicked: false, isDeliveryOrder: parseInt(paymentFormObject.orderType) === parseInt(4) ? 1 : 2}))
+      // if(parseInt(paymentFormObject.orderType) === parseInt(4))
+      // {
+      //   router.push(`/track-order/${orderId}`)
+      //   return
+      // }
+      // router.push(`/thank-you/${orderId}`)
     }
   }
 
@@ -296,13 +298,25 @@ const PaymentForm = ({orderId}) =>
         // window.alert("Your order has been received.")
         setPaymentLoader(false)
         const orderType = Number(orderData?.order_type_filter_id);
-        if (orderType === 4) {
-          
-          router.push(`/track-order/${orderId}`)
-          return
+        // setBooleanObj((prevData) => ({...prevData, isUnableToSendSms: 1, orderGuid: orderId, isPlaceOrderButtonClicked: false, isDeliveryOrder: parseInt(orderType) === parseInt(4) ? 1 : 2}))
+        setLocalStorage(`${BRAND_SIMPLE_GUID}isValidNumber`,0)
+        // 0 mean valid number
+        if(parseInt(orderType) === parseInt(4)) {
+          window.location.href = `/track-order/${orderId}`
+        }
+        else
+        {
+          window.location.href = `/thank-you/${orderId}`
         }
 
-        router.push(`/thank-you/${orderId}`)
+        // const orderType = Number(orderData?.order_type_filter_id);
+        // if (orderType === 4) {
+          
+        //   router.push(`/track-order/${orderId}`)
+        //   return
+        // }
+
+        // router.push(`/thank-you/${orderId}`)
 
         // hitSmsAndEmailCall(orderId)
 
@@ -311,7 +325,22 @@ const PaymentForm = ({orderId}) =>
     } 
     catch (error) 
     {
+      const unableToSendMessage = error?.response?.data?.error;
       
+      if(unableToSendMessage && unableToSendMessage.toLowerCase().includes("unable to send you sms"))
+      {
+        // orderType
+        // setBooleanObj((prevData) => ({...prevData, isUnableToSendSms: 2, orderGuid: orderId, isPlaceOrderButtonClicked: false, isDeliveryOrder: parseInt(paymentFormObject?.orderType) === parseInt(4) ? 1 : 2}))
+
+          setLocalStorage(`${BRAND_SIMPLE_GUID}isValidNumber`,1)
+            if(parseInt(paymentFormObject?.orderType) === parseInt(4)) {
+              window.location.href = `/track-order/${orderId}`
+            }
+            else
+            {
+              window.location.href = `/thank-you/${orderId}`
+            }
+      } 
     }
   }
 

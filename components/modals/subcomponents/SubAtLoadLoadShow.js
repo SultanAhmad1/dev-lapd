@@ -380,7 +380,7 @@ function SubAtLoadLoadShow() {
   return (
     <>
       {
-        <div className={`fixed inset-0 bg-black/90 z-40  justify-center px-2 overflow-y-auto pt-10 pb-10 ${locationDetails ? "hidden" : "flex"}`}>
+        <div className={`fixed inset-0 bg-black z-40  justify-center px-2 overflow-y-auto pt-10 pb-10 ${locationDetails ? "hidden" : "flex"}`}>
 
           <div
             className={`bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative flex flex-col transition-all duration-300 ${

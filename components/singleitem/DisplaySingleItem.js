@@ -84,443 +84,443 @@ export default function DisplaySingleItem({params})
         })
     }
     
-    // const filterItem = async () => {
-    //     try {
-    //         setLoader(true)
-    //         const getStoreIDFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`));
+    const filterItem = async () => {
+        try {
+            setLoader(true)
+            const getStoreIDFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`));
 
-    //         const visitorInfo = JSON.parse(window.localStorage.getItem('userInfo'));
+            const visitorInfo = JSON.parse(window.localStorage.getItem('userInfo'));
 
-    //         const data = {
-    //             location: getStoreIDFromLocalStorage !== null ? getStoreIDFromLocalStorage?.display_id : storeGUID,
-    //             brand: BRAND_GUID,
-    //             partner: PARTNER_ID,
-    //             visitorGUID: visitorInfo.visitorId,
-    //             landingPage: true,
-    //             orderPage: true,
-    //         };
+            const data = {
+                location: getStoreIDFromLocalStorage !== null ? getStoreIDFromLocalStorage?.display_id : storeGUID,
+                brand: BRAND_GUID,
+                partner: PARTNER_ID,
+                visitorGUID: visitorInfo.visitorId,
+                landingPage: true,
+                orderPage: true,
+            };
         
-    //         // const response = await axiosPrivate.post(`/menu`, data);
+            // const response = await axiosPrivate.post(`/menu`, data);
 
-    //         // const getMenus = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}menus`))
+            // const getMenus = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}menus`))
 
-    //         // const convertToJSobj = response.data?.data?.menu.menu_json_log;
-    //         const convertToJSobj = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}menus`))
+            // const convertToJSobj = response.data?.data?.menu.menu_json_log;
+            const convertToJSobj = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}menus`))
         
-    //         const getSingleCategory = convertToJSobj?.categories?.find((category) => category.slug === params.category);
+            const getSingleCategory = convertToJSobj?.categories?.find((category) => category.slug === params.category);
         
-    //         const getItemFromCategory = getSingleCategory?.items?.find((item) => item.slug === params.product);
+            const getItemFromCategory = getSingleCategory?.items?.find((item) => item.slug === params.product);
             
-    //         // count the modifier with isExtras checked.
-    //         let isExtrasArray = []
+            // count the modifier with isExtras checked.
+            let isExtrasArray = []
 
-    //         let isPromotionActive = false
-    //         let promotionText = getSingleCategory.promotion_text
-    //         let promotionBgColor = getSingleCategory.promotion_bg_color
-    //         let promotionTextColor = getSingleCategory.promotion_text_color
+            let isPromotionActive = false
+            let promotionText = getSingleCategory.promotion_text
+            let promotionBgColor = getSingleCategory.promotion_bg_color
+            let promotionTextColor = getSingleCategory.promotion_text_color
 
-    //         const dayNameAndTime = moment.tz("HH:mm", "Europe/London").format("HH:mm:ss");
+            const dayNameAndTime = moment.tz("HH:mm", "Europe/London").format("HH:mm:ss");
 
-    //         if(parseInt(getSingleCategory?.is_promotion) === parseInt(1))
-    //         {
-    //             const currentDay = moment().format("dddd")
-    //             const findDay = getSingleCategory.days?.find((day) => day.label.toLowerCase() === currentDay?.toLocaleLowerCase())
-    //             if(findDay)
-    //             {
-    //             if(dayNameAndTime >= moment(getSingleCategory.start_time, "HH:mm:ss").format("HH:mm:ss") && moment(getSingleCategory.end_time, "HH:mm:ss").format("HH:mm:ss") <= dayNameAndTime)
-    //             {
-    //                 isPromotionActive = true
-    //             }
-    //             }
-    //         }
-    //         else if(parseInt(getItemFromCategory?.is_promotion) === parseInt(1))
-    //         {
-    //             const currentDay = moment().format("dddd")
-    //             const findDay = getItemFromCategory?.days?.find((day) => day.label.toLowerCase() === currentDay?.toLocaleLowerCase())
-    //             if(findDay)
-    //             {
-    //                 if(dayNameAndTime >= moment(getItemFromCategory?.start_time, "HH:mm:ss").format("HH:mm:ss") && moment(getItemFromCategory?.end_time, "HH:mm:ss").format("HH:mm:ss") <= dayNameAndTime)
-    //                 {
-    //                     isPromotionActive = true
-    //                     promotionText = getItemFromCategory?.promotion_text
-    //                     promotionBgColor = getItemFromCategory?.promotion_bg_color
-    //                     promotionTextColor = getItemFromCategory?.promotion_text_color
-    //                 }
-    //             }
-    //         }
+            if(parseInt(getSingleCategory?.is_promotion) === parseInt(1))
+            {
+                const currentDay = moment().format("dddd")
+                const findDay = getSingleCategory.days?.find((day) => day.label.toLowerCase() === currentDay?.toLocaleLowerCase())
+                if(findDay)
+                {
+                if(dayNameAndTime >= moment(getSingleCategory.start_time, "HH:mm:ss").format("HH:mm:ss") && moment(getSingleCategory.end_time, "HH:mm:ss").format("HH:mm:ss") <= dayNameAndTime)
+                {
+                    isPromotionActive = true
+                }
+                }
+            }
+            else if(parseInt(getItemFromCategory?.is_promotion) === parseInt(1))
+            {
+                const currentDay = moment().format("dddd")
+                const findDay = getItemFromCategory?.days?.find((day) => day.label.toLowerCase() === currentDay?.toLocaleLowerCase())
+                if(findDay)
+                {
+                    if(dayNameAndTime >= moment(getItemFromCategory?.start_time, "HH:mm:ss").format("HH:mm:ss") && moment(getItemFromCategory?.end_time, "HH:mm:ss").format("HH:mm:ss") <= dayNameAndTime)
+                    {
+                        isPromotionActive = true
+                        promotionText = getItemFromCategory?.promotion_text
+                        promotionBgColor = getItemFromCategory?.promotion_bg_color
+                        promotionTextColor = getItemFromCategory?.promotion_text_color
+                    }
+                }
+            }
             
-    //         const updateModifier = getItemFromCategory?.modifier_group?.map((modifier) => 
-    //         {
-    //             if(modifier?.isExtras)
-    //             {   
-    //                 isExtrasArray.push({modifier_id: modifier?.id, modifier_name: modifier?.title, isExtras: modifier?.isExtras})
-    //             }
+            const updateModifier = getItemFromCategory?.modifier_group?.map((modifier) => 
+            {
+                if(modifier?.isExtras)
+                {   
+                    isExtrasArray.push({modifier_id: modifier?.id, modifier_name: modifier?.title, isExtras: modifier?.isExtras})
+                }
 
-    //             if (modifier?.select_single_option === 1 && modifier?.max_permitted === 1) 
-    //             {
-    //                 const modifier_secondary_items = modifier?.modifier_secondary_items?.map((modifierItem) => 
-    //                     { 
-    //                         if (parseInt(modifierItem?.secondary_item_modifiers.length) > parseInt(0)) {
-    //                             const updateNestedItems = modifierItem?.secondary_item_modifiers?.map((secondItemModifier) => 
-    //                             {
-    //                                 if (secondItemModifier?.select_single_option === 1 && secondItemModifier?.min_permitted > 0 && secondItemModifier?.max_permitted === 1)
-    //                                 {
-    //                                     const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
-    //                                     {
-    //                                         return {
-    //                                             ...secondItemModiItem,
-    //                                             activeClass: "ob",
-    //                                             total_price: 0,
-    //                                             is_item_select: secondItemModiItem?.default_option ? true : false,
-    //                                             item_select_to_sale: secondItemModiItem?.default_option ? true : false,
-    //                                         };
-    //                                     });
+                if (modifier?.select_single_option === 1 && modifier?.max_permitted === 1) 
+                {
+                    const modifier_secondary_items = modifier?.modifier_secondary_items?.map((modifierItem) => 
+                        { 
+                            if (parseInt(modifierItem?.secondary_item_modifiers.length) > parseInt(0)) {
+                                const updateNestedItems = modifierItem?.secondary_item_modifiers?.map((secondItemModifier) => 
+                                {
+                                    if (secondItemModifier?.select_single_option === 1 && secondItemModifier?.min_permitted > 0 && secondItemModifier?.max_permitted === 1)
+                                    {
+                                        const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
+                                        {
+                                            return {
+                                                ...secondItemModiItem,
+                                                activeClass: "ob",
+                                                total_price: 0,
+                                                is_item_select: secondItemModiItem?.default_option ? true : false,
+                                                item_select_to_sale: secondItemModiItem?.default_option ? true : false,
+                                            };
+                                        });
                                         
-    //                                     // Child Modifiers.
-    //                                     const selectedSoldItem = updateSecondaryItemModifierItem?.find((item) => item?.is_item_select)
-    //                                     return {
-    //                                         ...secondItemModifier,
-    //                                         valid_class:                     selectedSoldItem?.is_item_select ? "success_check": "default_check",
-    //                                         is_modifier_selected:            selectedSoldItem?.is_item_select ? true: false,
-    //                                         is_second_item_modifier_clicked: true,
-    //                                         secondary_items_modifier_items:  updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
-    //                                     };
-    //                                 } 
-    //                                 else if (secondItemModifier?.select_single_option === 1 && secondItemModifier?.max_permitted > 1) 
-    //                                 {
-    //                                     const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
-    //                                     {
-    //                                         return {
-    //                                             ...secondItemModiItem,
-    //                                             activeClass: "mche",
-    //                                             // total_price: secondItemModiItem?.price_info,
-    //                                             total_price: 0,
-    //                                             is_item_select: secondItemModiItem?.default_option ? true : false,
-    //                                             item_select_to_sale: secondItemModiItem?.default_option ? true : false,
-    //                                         };
-    //                                     });
+                                        // Child Modifiers.
+                                        const selectedSoldItem = updateSecondaryItemModifierItem?.find((item) => item?.is_item_select)
+                                        return {
+                                            ...secondItemModifier,
+                                            valid_class:                     selectedSoldItem?.is_item_select ? "success_check": "default_check",
+                                            is_modifier_selected:            selectedSoldItem?.is_item_select ? true: false,
+                                            is_second_item_modifier_clicked: true,
+                                            secondary_items_modifier_items:  updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
+                                        };
+                                    } 
+                                    else if (secondItemModifier?.select_single_option === 1 && secondItemModifier?.max_permitted > 1) 
+                                    {
+                                        const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
+                                        {
+                                            return {
+                                                ...secondItemModiItem,
+                                                activeClass: "mche",
+                                                // total_price: secondItemModiItem?.price_info,
+                                                total_price: 0,
+                                                is_item_select: secondItemModiItem?.default_option ? true : false,
+                                                item_select_to_sale: secondItemModiItem?.default_option ? true : false,
+                                            };
+                                        });
                                         
-    //                                     const selectedSoldItem = updateSecondaryItemModifierItem?.find((item) => item?.is_item_select)
+                                        const selectedSoldItem = updateSecondaryItemModifierItem?.find((item) => item?.is_item_select)
 
-    //                                     return {
-    //                                         ...secondItemModifier,
-    //                                         valid_class: selectedSoldItem?.is_item_select ? "success_check" : "default_check",
-    //                                         modifier_counter: 0,
-    //                                         is_modifier_clickable: false,
-    //                                         is_second_item_modifier_clicked:  true,
-    //                                         is_modifier_selected:   selectedSoldItem?.is_item_select ? true: false,
-    //                                         secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
-    //                                     };
-    //                                 }
-    //                                 else if(secondItemModifier?.select_single_option > 1 && secondItemModifier?.max_permitted >= 1){
-    //                                     const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => {
-    //                                         return {
-    //                                             ...secondItemModiItem,
-    //                                             counter: 0,
-    //                                             // total_price: secondItemModiItem?.price_info,
-    //                                             total_price: 0,
-    //                                             is_item_select: true,
-    //                                             item_select_to_sale: false,
-    //                                         };
-    //                                     });
+                                        return {
+                                            ...secondItemModifier,
+                                            valid_class: selectedSoldItem?.is_item_select ? "success_check" : "default_check",
+                                            modifier_counter: 0,
+                                            is_modifier_clickable: false,
+                                            is_second_item_modifier_clicked:  true,
+                                            is_modifier_selected:   selectedSoldItem?.is_item_select ? true: false,
+                                            secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
+                                        };
+                                    }
+                                    else if(secondItemModifier?.select_single_option > 1 && secondItemModifier?.max_permitted >= 1){
+                                        const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => {
+                                            return {
+                                                ...secondItemModiItem,
+                                                counter: 0,
+                                                // total_price: secondItemModiItem?.price_info,
+                                                total_price: 0,
+                                                is_item_select: true,
+                                                item_select_to_sale: false,
+                                            };
+                                        });
                                         
-    //                                     // Child Modifiers
-    //                                     // const selectedSoldItem = updateSecondaryItemModifierItem?.find((item) => item?.is_item_select)
-    //                                     return {
-    //                                         ...secondItemModifier,
-    //                                         // valid_class:                        selectedSoldItem?.is_item_select ? "success_check" : "default_check",
-    //                                         valid_class:                        "default_check",
-    //                                         modifier_counter:                   0,
-    //                                         is_modifier_clickable:              false,
-    //                                         // is_modifier_selected:               selectedSoldItem?.is_item_select,
-    //                                         is_modifier_selected:               false,
-    //                                         is_second_item_modifier_clicked:    true,
-    //                                         secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
-    //                                     };
-    //                             }
-    //                         });
+                                        // Child Modifiers
+                                        // const selectedSoldItem = updateSecondaryItemModifierItem?.find((item) => item?.is_item_select)
+                                        return {
+                                            ...secondItemModifier,
+                                            // valid_class:                        selectedSoldItem?.is_item_select ? "success_check" : "default_check",
+                                            valid_class:                        "default_check",
+                                            modifier_counter:                   0,
+                                            is_modifier_clickable:              false,
+                                            // is_modifier_selected:               selectedSoldItem?.is_item_select,
+                                            is_modifier_selected:               false,
+                                            is_second_item_modifier_clicked:    true,
+                                            secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
+                                        };
+                                }
+                            });
                 
-    //                         return {
-    //                             ...modifierItem,
-    //                             activeClass: "ob",
-    //                             is_item_select: false,
-    //                             // total_price: modifierItem?.price,
-    //                             total_price: 0,
-    //                             secondary_item_modifiers: updateNestedItems,
-    //                             item_select_to_sale: modifierItem?.default_option ? true : false,
-    //                         };
-    //                     }
+                            return {
+                                ...modifierItem,
+                                activeClass: "ob",
+                                is_item_select: false,
+                                // total_price: modifierItem?.price,
+                                total_price: 0,
+                                secondary_item_modifiers: updateNestedItems,
+                                item_select_to_sale: modifierItem?.default_option ? true : false,
+                            };
+                        }
 
-    //                     return {
-    //                         ...modifierItem,
-    //                         activeClass: "ob",
-    //                         // total_price: modifierItem?.price,
-    //                         total_price: 0,
-    //                         is_item_select: modifierItem?.default_option ? true : false,
-    //                         item_select_to_sale: modifierItem?.default_option ? true : false,
-    //                     };
-    //                 });
+                        return {
+                            ...modifierItem,
+                            activeClass: "ob",
+                            // total_price: modifierItem?.price,
+                            total_price: 0,
+                            is_item_select: modifierItem?.default_option ? true : false,
+                            item_select_to_sale: modifierItem?.default_option ? true : false,
+                        };
+                    });
                     
-    //                 // Parent Modifiers.
-    //                 const filterItem = modifier_secondary_items?.find((item) => item?.default_option)
-    //                 return {
-    //                     ...modifier,
-    //                     valid_class: filterItem?.default_option ? "success_check" : "default_check",
-    //                     is_toggle_active: true,
-    //                     is_modifier_selected: filterItem?.default_option ? true : false,
-    //                     modifier_secondary_items: modifier_secondary_items?.sort((a, b) => b?.default_option - a?.default_option),
-    //                 };
-    //             } 
-    //             else if (modifier?.select_single_option === 1 && modifier?.max_permitted > 1) 
-    //             {
-    //                 const modifier_secondary_items = modifier?.modifier_secondary_items?.map((modifierItem) => 
-    //                 {
-    //                     if (parseInt(modifierItem?.secondary_item_modifiers.length) > parseInt(0)) 
-    //                     {
-    //                         const updateNestedItems = modifierItem?.secondary_item_modifiers?.map((secondItemModifier) => 
-    //                         {
-    //                             if (secondItemModifier?.min_permitted > 0 && secondItemModifier?.max_permitted === 1) 
-    //                             {
-    //                                 const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
-    //                                 {
-    //                                     return {
-    //                                         ...secondItemModiItem,
-    //                                         activeClass: "ob",
-    //                                         total_price: 0,
-    //                                         is_item_select: false,
-    //                                         item_select_to_sale: false,
-    //                                     };
-    //                                 });
+                    // Parent Modifiers.
+                    const filterItem = modifier_secondary_items?.find((item) => item?.default_option)
+                    return {
+                        ...modifier,
+                        valid_class: filterItem?.default_option ? "success_check" : "default_check",
+                        is_toggle_active: true,
+                        is_modifier_selected: filterItem?.default_option ? true : false,
+                        modifier_secondary_items: modifier_secondary_items?.sort((a, b) => b?.default_option - a?.default_option),
+                    };
+                } 
+                else if (modifier?.select_single_option === 1 && modifier?.max_permitted > 1) 
+                {
+                    const modifier_secondary_items = modifier?.modifier_secondary_items?.map((modifierItem) => 
+                    {
+                        if (parseInt(modifierItem?.secondary_item_modifiers.length) > parseInt(0)) 
+                        {
+                            const updateNestedItems = modifierItem?.secondary_item_modifiers?.map((secondItemModifier) => 
+                            {
+                                if (secondItemModifier?.min_permitted > 0 && secondItemModifier?.max_permitted === 1) 
+                                {
+                                    const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
+                                    {
+                                        return {
+                                            ...secondItemModiItem,
+                                            activeClass: "ob",
+                                            total_price: 0,
+                                            is_item_select: false,
+                                            item_select_to_sale: false,
+                                        };
+                                    });
                                     
-    //                                 // Child Modifiers
-    //                                 return {
-    //                                     ...secondItemModifier,
-    //                                     valid_class: "default_check",
-    //                                     is_second_item_modifier_clicked: true,
-    //                                     is_modifier_selected: false,
-    //                                     secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
-    //                                 };
-    //                             } 
-    //                             else if (secondItemModifier?.max_permitted >= 1) 
-    //                             {
-    //                                 const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
-    //                                 {
-    //                                     return {
-    //                                             ...secondItemModiItem,
-    //                                             activeClass: "mche",
-    //                                             total_price: 0,
-    //                                             is_item_select: false,
-    //                                             item_select_to_sale: false,
-    //                                     };
-    //                                 });
+                                    // Child Modifiers
+                                    return {
+                                        ...secondItemModifier,
+                                        valid_class: "default_check",
+                                        is_second_item_modifier_clicked: true,
+                                        is_modifier_selected: false,
+                                        secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
+                                    };
+                                } 
+                                else if (secondItemModifier?.max_permitted >= 1) 
+                                {
+                                    const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
+                                    {
+                                        return {
+                                                ...secondItemModiItem,
+                                                activeClass: "mche",
+                                                total_price: 0,
+                                                is_item_select: false,
+                                                item_select_to_sale: false,
+                                        };
+                                    });
                                     
-    //                                 // Child Modifiers
-    //                                 return {
-    //                                     ...secondItemModifier,
-    //                                     valid_class: "default_check",
-    //                                     modifier_counter: 0,
-    //                                     is_modifier_clickable: false,
-    //                                     is_second_item_modifier_clicked: true,
-    //                                     is_modifier_selected: false,
-    //                                     secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
-    //                                 };
-    //                             } 
-    //                             // else {
-    //                             //   const updateSecondaryItemModifierItem =
-    //                             //     secondItemModifier?.secondary_items_modifier_items?.map(
-    //                             //       (secondItemModiItem) => {
-    //                             //         return {
-    //                             //           ...secondItemModiItem,
-    //                             //           counter: 0,
-    //                             //           total_price: 0,
-    //                             //           is_item_select: true,
-    //                             //           item_select_to_sale: false,
-    //                             //         };
-    //                             //       }
-    //                             //     );
+                                    // Child Modifiers
+                                    return {
+                                        ...secondItemModifier,
+                                        valid_class: "default_check",
+                                        modifier_counter: 0,
+                                        is_modifier_clickable: false,
+                                        is_second_item_modifier_clicked: true,
+                                        is_modifier_selected: false,
+                                        secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
+                                    };
+                                } 
+                                // else {
+                                //   const updateSecondaryItemModifierItem =
+                                //     secondItemModifier?.secondary_items_modifier_items?.map(
+                                //       (secondItemModiItem) => {
+                                //         return {
+                                //           ...secondItemModiItem,
+                                //           counter: 0,
+                                //           total_price: 0,
+                                //           is_item_select: true,
+                                //           item_select_to_sale: false,
+                                //         };
+                                //       }
+                                //     );
             
-    //                             //   return {
-    //                             //     ...secondItemModifier,
-    //                             //     valid_class: "default_check",
-    //                             //     modifier_counter: 0,
-    //                             //     is_modifier_clickable: false,
-    //                             //     is_second_item_modifier_clicked: true,
-    //                             //     is_modifier_selected: false,
-    //                             //     secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
-    //                             //   };
-    //                             // }
-    //                         });
+                                //   return {
+                                //     ...secondItemModifier,
+                                //     valid_class: "default_check",
+                                //     modifier_counter: 0,
+                                //     is_modifier_clickable: false,
+                                //     is_second_item_modifier_clicked: true,
+                                //     is_modifier_selected: false,
+                                //     secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
+                                //   };
+                                // }
+                            });
                 
-    //                         return {
-    //                             ...modifierItem,
-    //                             activeClass: "mche",
-    //                             // total_price: modifierItem?.price,
-    //                             total_price: 0,
-    //                             is_item_select: false,
-    //                             secondary_item_modifiers: updateNestedItems,
-    //                             item_select_to_sale: false,
-    //                         };
-    //                     }
-    //                     return {
-    //                         ...modifierItem,
-    //                         activeClass: "mche",
-    //                         // total_price: modifierItem?.price,
-    //                         total_price: 0,
-    //                         is_item_select: modifierItem?.default_option ? true : false,
-    //                         item_select_to_sale: modifierItem?.default_option ? true : false,
-    //                     };
-    //                 });
+                            return {
+                                ...modifierItem,
+                                activeClass: "mche",
+                                // total_price: modifierItem?.price,
+                                total_price: 0,
+                                is_item_select: false,
+                                secondary_item_modifiers: updateNestedItems,
+                                item_select_to_sale: false,
+                            };
+                        }
+                        return {
+                            ...modifierItem,
+                            activeClass: "mche",
+                            // total_price: modifierItem?.price,
+                            total_price: 0,
+                            is_item_select: modifierItem?.default_option ? true : false,
+                            item_select_to_sale: modifierItem?.default_option ? true : false,
+                        };
+                    });
                     
-    //                 // Parent Modifiers.
-    //                 const filterItem = modifier_secondary_items?.find((item) => item?.default_option)
-    //                 return {
-    //                     ...modifier,
-    //                     valid_class: filterItem?.default_option ? "success_check" : "default_check",
-    //                     is_toggle_active: true,
-    //                     modifier_counter: 0,
-    //                     is_modifier_clickable: false,
-    //                     is_modifier_selected: filterItem?.default_option ? true : false,
-    //                     modifier_secondary_items: modifier_secondary_items?.sort((a,b) => b?.default_option - a?.default_option),
-    //                 };
-    //             } 
-    //             else if(modifier?.select_single_option > 1 && modifier?.max_permitted >= 1)
-    //             {
-    //                 const modifier_secondary_items = modifier?.modifier_secondary_items?.map((modifierItem) => 
-    //                 {
-    //                   if (parseInt(modifierItem?.secondary_item_modifiers.length) > parseInt(0)) {
-    //                     const updateNestedItems = modifierItem?.secondary_item_modifiers?.map((secondItemModifier) => {
-    //                         if (secondItemModifier?.select_single_option === 1 && secondItemModifier?.max_permitted === 1) 
-    //                         {
-    //                             const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
-    //                             {
-    //                                 return {
-    //                                 ...secondItemModiItem,
-    //                                 activeClass: "ob",
-    //                                 total_price: 0,
-    //                                 is_item_select: false,
-    //                                 item_select_to_sale: false,
-    //                                 };
-    //                             });
+                    // Parent Modifiers.
+                    const filterItem = modifier_secondary_items?.find((item) => item?.default_option)
+                    return {
+                        ...modifier,
+                        valid_class: filterItem?.default_option ? "success_check" : "default_check",
+                        is_toggle_active: true,
+                        modifier_counter: 0,
+                        is_modifier_clickable: false,
+                        is_modifier_selected: filterItem?.default_option ? true : false,
+                        modifier_secondary_items: modifier_secondary_items?.sort((a,b) => b?.default_option - a?.default_option),
+                    };
+                } 
+                else if(modifier?.select_single_option > 1 && modifier?.max_permitted >= 1)
+                {
+                    const modifier_secondary_items = modifier?.modifier_secondary_items?.map((modifierItem) => 
+                    {
+                      if (parseInt(modifierItem?.secondary_item_modifiers.length) > parseInt(0)) {
+                        const updateNestedItems = modifierItem?.secondary_item_modifiers?.map((secondItemModifier) => {
+                            if (secondItemModifier?.select_single_option === 1 && secondItemModifier?.max_permitted === 1) 
+                            {
+                                const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
+                                {
+                                    return {
+                                    ...secondItemModiItem,
+                                    activeClass: "ob",
+                                    total_price: 0,
+                                    is_item_select: false,
+                                    item_select_to_sale: false,
+                                    };
+                                });
                                 
-    //                             // Child Modifiers.
-    //                             return {
-    //                               ...secondItemModifier,
-    //                               valid_class: "default_check",
-    //                               is_second_item_modifier_clicked: true,
-    //                               is_modifier_selected: false,
-    //                               secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
-    //                             };
+                                // Child Modifiers.
+                                return {
+                                  ...secondItemModifier,
+                                  valid_class: "default_check",
+                                  is_second_item_modifier_clicked: true,
+                                  is_modifier_selected: false,
+                                  secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
+                                };
 
-    //                         } 
-    //                         else if (secondItemModifier?.select_single_option === 1 && secondItemModifier?.max_permitted > 1) 
-    //                         {
-    //                             const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
-    //                             {
-    //                                 return {
-    //                                     ...secondItemModiItem,
-    //                                     total_price: 0,
-    //                                     activeClass: "mche",
-    //                                     is_item_select: false,
-    //                                     item_select_to_sale: false,
-    //                                 };
-    //                             });
+                            } 
+                            else if (secondItemModifier?.select_single_option === 1 && secondItemModifier?.max_permitted > 1) 
+                            {
+                                const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
+                                {
+                                    return {
+                                        ...secondItemModiItem,
+                                        total_price: 0,
+                                        activeClass: "mche",
+                                        is_item_select: false,
+                                        item_select_to_sale: false,
+                                    };
+                                });
                                 
-    //                             // Child Modifiers.
-    //                             return {
-    //                               ...secondItemModifier,
-    //                               valid_class: "default_check",
-    //                               modifier_counter: 0,
-    //                               is_modifier_clickable: false,
-    //                               is_second_item_modifier_clicked: true,
-    //                               is_modifier_selected: false,
-    //                               secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
-    //                             };
-    //                           } 
-    //                           else if (secondItemModifier?.select_single_option > 1 && secondItemModifier?.max_permitted >= 1) 
-    //                           {
-    //                             const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => {
-    //                                 return {
-    //                                 ...secondItemModiItem,
-    //                                 counter: 0,
-    //                                 total_price: 0,
-    //                                 is_item_select: true,
-    //                                 item_select_to_sale: false,
-    //                                 };
-    //                             });
+                                // Child Modifiers.
+                                return {
+                                  ...secondItemModifier,
+                                  valid_class: "default_check",
+                                  modifier_counter: 0,
+                                  is_modifier_clickable: false,
+                                  is_second_item_modifier_clicked: true,
+                                  is_modifier_selected: false,
+                                  secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
+                                };
+                              } 
+                              else if (secondItemModifier?.select_single_option > 1 && secondItemModifier?.max_permitted >= 1) 
+                              {
+                                const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => {
+                                    return {
+                                    ...secondItemModiItem,
+                                    counter: 0,
+                                    total_price: 0,
+                                    is_item_select: true,
+                                    item_select_to_sale: false,
+                                    };
+                                });
                                 
-    //                             // Child modifiers.
-    //                             return {
-    //                               ...secondItemModifier,
-    //                               valid_class: "default_check",
-    //                               modifier_counter: 0,
-    //                               is_modifier_clickable: false,
-    //                               is_second_item_modifier_clicked: true,
-    //                               is_modifier_selected: false,
-    //                               secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
-    //                             };
-    //                           }
-    //                         }
-    //                       );
+                                // Child modifiers.
+                                return {
+                                  ...secondItemModifier,
+                                  valid_class: "default_check",
+                                  modifier_counter: 0,
+                                  is_modifier_clickable: false,
+                                  is_second_item_modifier_clicked: true,
+                                  is_modifier_selected: false,
+                                  secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
+                                };
+                              }
+                            }
+                          );
         
-    //                     return {
-    //                       ...modifierItem,
-    //                       counter: 0,
-    //                       is_item_select: true,
-    //                       // total_price: modifierItem?.price,
-    //                       total_price: 0,
-    //                       secondary_item_modifiers: updateNestedItems,
-    //                       item_select_to_sale: false,
-    //                     };
-    //                   }
-    //                   return {
-    //                     ...modifierItem,
-    //                     counter: 0,
-    //                     // total_price: modifierItem?.price,
-    //                     total_price: 0,
-    //                     is_item_select: modifierItem?.default_option ? true : false,
-    //                     item_select_to_sale: modifierItem?.default_option ? true : false,
-    //                   };
-    //                 });
+                        return {
+                          ...modifierItem,
+                          counter: 0,
+                          is_item_select: true,
+                          // total_price: modifierItem?.price,
+                          total_price: 0,
+                          secondary_item_modifiers: updateNestedItems,
+                          item_select_to_sale: false,
+                        };
+                      }
+                      return {
+                        ...modifierItem,
+                        counter: 0,
+                        // total_price: modifierItem?.price,
+                        total_price: 0,
+                        is_item_select: modifierItem?.default_option ? true : false,
+                        item_select_to_sale: modifierItem?.default_option ? true : false,
+                      };
+                    });
 
-    //                 // Parent Modifiers.
-    //                 const filterItem = modifier_secondary_items?.find((item) => item?.default_option)
+                    // Parent Modifiers.
+                    const filterItem = modifier_secondary_items?.find((item) => item?.default_option)
 
-    //                 return {
-    //                     ...modifier,
-    //                     valid_class: filterItem?.default_option ? "success_check" : "default_check",
-    //                     is_toggle_active: true,
-    //                     modifier_counter: 0,
-    //                     is_modifier_clickable: false,
-    //                     is_modifier_selected: filterItem?.default_option ? true : false,
-    //                     modifier_secondary_items: modifier_secondary_items?.sort((a, b) => b.default_option - a.default_option),
-    //                 };
-    //             }
-    //         });
+                    return {
+                        ...modifier,
+                        valid_class: filterItem?.default_option ? "success_check" : "default_check",
+                        is_toggle_active: true,
+                        modifier_counter: 0,
+                        is_modifier_clickable: false,
+                        is_modifier_selected: filterItem?.default_option ? true : false,
+                        modifier_secondary_items: modifier_secondary_items?.sort((a, b) => b.default_option - a.default_option),
+                    };
+                }
+            });
             
-    //         getItemFromCategory.modifier_group = updateModifier;
+            getItemFromCategory.modifier_group = updateModifier;
 
-    //         setDisplaySingleItemObject((prevData) => {
-    //             return {
-    //                 ...prevData,
-    //                 singleItem: getItemFromCategory,
-    //                 itemPrice: parseFloat(getItemFromCategory?.price).toFixed(2),
-    //                 isAnyModifierHasExtras: parseInt(isExtrasArray?.length) > parseInt(0) ? true : false,
-    //                 checkPromotionActive: isPromotionActive,
-    //                 getPromotionText: promotionText,
-    //                 getPromotionBgColor: promotionBgColor,
-    //                 getPromotionTextColor: promotionTextColor,
-    //             }
-    //         })
+            setDisplaySingleItemObject((prevData) => {
+                return {
+                    ...prevData,
+                    singleItem: getItemFromCategory,
+                    itemPrice: parseFloat(getItemFromCategory?.price).toFixed(2),
+                    isAnyModifierHasExtras: parseInt(isExtrasArray?.length) > parseInt(0) ? true : false,
+                    checkPromotionActive: isPromotionActive,
+                    getPromotionText: promotionText,
+                    getPromotionBgColor: promotionBgColor,
+                    getPromotionTextColor: promotionTextColor,
+                }
+            })
 
-    //         setTimeout(() => {
-    //             setLoader(false);
-    //         }, 3000);
-    //     } catch (error) {
-    //         setTimeout(() => {
-    //             setLoader(false);
-    //         }, 3000);
-    //     }
-    // };
+            setTimeout(() => {
+                setLoader(false);
+            }, 3000);
+        } catch (error) {
+            setTimeout(() => {
+                setLoader(false);
+            }, 3000);
+        }
+    };
 
     useEffect(() => {
         const dayNumber = moment().day();
@@ -568,14 +568,14 @@ export default function DisplaySingleItem({params})
             return
         }
         
-        // filterItem();
+        filterItem();
 
         /**
          * Updated menu details
          * 
          */
 
-          const convertToJSobj = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}menus`))
+            const convertToJSobj = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}menus`))
         
             const getSingleCategory = convertToJSobj?.categories?.find((category) => category.slug === params.category);
         
