@@ -11,7 +11,6 @@ export default function AddressCreate({handleCreateAddress})
 {
     const {
         setDayOpeningClosingTime,
-        setIsTimeToClosed,
         setMenu,
         setSelectedFilter,
         setFilters,
@@ -244,7 +243,6 @@ export default function AddressCreate({handleCreateAddress})
             {
                 if (timePeriods?.[0]?.start_time >= dateTime && dateTime <= timePeriods?.[0]?.end_time) 
                 {
-                setIsTimeToClosed(true);
                 setAtFirstLoad(false);
                 }
             }
@@ -269,8 +267,8 @@ export default function AddressCreate({handleCreateAddress})
 
         setStoreToDayOpeningTime(getDayInformation.time_periods[0].start_time);
         setStoreToDayClosingTime(getDayInformation.time_periods[0].end_time);
-        setStoreCurrentOrNextDayClosingTime(getDayInformation.time_periods[0].end_time);
-        setStoreCurrentOrNextDayOpeningTime(getDayInformation.time_periods[0].start_time);
+        // setStoreCurrentOrNextDayClosingTime(getDayInformation.time_periods[0].end_time);
+        // setStoreCurrentOrNextDayOpeningTime(getDayInformation.time_periods[0].start_time);
     }
 
     const {mutate: authMenuMutate, isSuccess: authMenuSuccess, reset: authMenuReset} = usePostAfterAuthenticateMutationHook('auth-menu', `/menu-auth`, onAuthMenuSuccess, onAuthError)

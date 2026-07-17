@@ -17,10 +17,10 @@ export default function PlaceOrderModal()
     setIsLocationBrandOnline,
     scheduleTime,
     isScheduleForToday,
-    websiteModificationData,
     handleBoolean,
     storeGUID,
     customDoorNumberName,
+    setPaymentLoader,
   } = useContext(HomeContext)
 
   const [paymentError, setPaymentError] = useState(null);
@@ -34,6 +34,11 @@ export default function PlaceOrderModal()
   });
   
   const handleObject = (newValue, newField) => {
+    if(newValue === 1)
+    {
+      setModalObject((prevData) => ({...prevData, [newField]: newValue, isCreditCardButtonClicked: false}))
+      return
+    }
     setModalObject((prevData) => ({...prevData, [newField]: newValue}))
   }
 
@@ -74,20 +79,24 @@ export default function PlaceOrderModal()
         };
   
         const response = await axiosPrivate.post(`/website-delivery-time`, data);
-  
-        const { brandExists } = response?.data?.data
         
+        const { brandExists,brandDeliveryEstimatePartner } = response?.data?.data
+
         setIsLocationBrandOnline(brandExists)
 
-        var startTime   = moment.utc(response?.data?.data?.brandDeliveryEstimatePartner?.start_time,"HH:mm","Europe/London").format("HH:mm") ;
-        var deliveryTo  = response?.data?.data?.brandDeliveryEstimatePartner?.time_to;
-        var collectionAfter = response?.data?.data?.brandDeliveryEstimatePartner?.collection_after_opening_from;
+        var startTime   = moment.utc(brandDeliveryEstimatePartner?.start_time,"HH:mm","Europe/London").format("HH:mm") ;
+        var deliveryTo  = brandDeliveryEstimatePartner?.time_to;
+        var collectionAfter = brandDeliveryEstimatePartner?.collection_after_opening_from;
         
         var currentTime = moment().tz("Europe/London").format("HH:mm");
 
         let placeUpdateAddMinutes = (selectedFilter?.id === DELIVERY_ID) ? deliveryTo : collectionAfter
         let placedUpdateEndTime = moment.utc(currentTime, "HH:mm", "Europe/London").add(placeUpdateAddMinutes, 'minutes').format("HH:mm");
         
+        // Compare store opening time with the current system time.
+        /**
+         * If store opening time is lesser than the current time then use the current time stamp.
+         */
         if(startTime >= currentTime)
         {
           placeUpdateAddMinutes = (selectedFilter?.id === DELIVERY_ID) ? deliveryTo : collectionAfter
@@ -101,11 +110,9 @@ export default function PlaceOrderModal()
         );
         
         setDeliveryTime(nextAvailableTime?.time);
-
-
-    
+        setPaymentLoader(false)
       } catch (error) {
-        
+        setPaymentLoader(false)
       }
     }
     fetchLocationDeliveryEstimate()
@@ -119,9 +126,6 @@ export default function PlaceOrderModal()
       }))
     }
   },[]);
-
-  console.log("place order form modal object:", modalObject);
-  
 
   return(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 bg-opacity-60">
@@ -154,7 +158,6 @@ export default function PlaceOrderModal()
                     d="M15 19l-7-7 7-7M8 12h13"
                   />
                 </svg>
-
               </button>
             :
               <button
@@ -215,12 +218,13 @@ export default function PlaceOrderModal()
                 className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700"
                 onClick={() => handleObject(true, "isCreditCardButtonClicked")}
               >
-                Credit Card
+                Credit/Debit Card
               </button>
             )}
 
             <PlaceOrderForm
-              {...{                
+              {...{      
+                listtime,          
                 deliveryTime,
                 setDeliveryTime,
                 due,

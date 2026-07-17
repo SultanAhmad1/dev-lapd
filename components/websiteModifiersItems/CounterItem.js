@@ -49,9 +49,16 @@ export default function CounterItem({
                         <div key={indexSecondItem} className="flex flex-row gap-2 items-center justify-between mb-2 p-2 border border-gray-200 rounded-lg shadow-sm bg-white">
                             
                             {/* Product Title and Price */}
-                            <div className="mt-1">
-                                <div className="text-base font-semibold">{secondItems?.title} &pound;{parseFloat(secondItems?.price).toFixed(2)}</div>
-                            </div>
+                            {
+                                secondItems?.price > 0 ?
+                                <div className="mt-1">
+                                    <div className="text-base font-semibold">{secondItems?.title} &pound;{parseFloat(secondItems?.price).toFixed(2)}</div>
+                                </div>
+                                :
+                                <div className="mt-1">
+                                    <div className="text-base font-semibold">{secondItems?.title}</div>
+                                </div>
+                            }
 
                             {/* Increment / Decrement Controls */}
                             <div className="flex items-center space-x-1">

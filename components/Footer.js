@@ -4,18 +4,34 @@ import HomeContext from "../contexts/HomeContext";
 import moment from "moment";
 import { footLogoPath, IMAGE_URL_Without_Storage } from "../global/Axios";
 import Image from "next/image";
+import { FaFacebook, FaSnapchat, FaTiktok, FaYoutube } from "react-icons/fa";
+import { FaXTwitter } from "react-icons/fa6";
+import { useWebsite } from "@/app/providers/context/WebsiteContext";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
 
 function Footer() {
-  const { websiteModificationData, brandLogo ,selectedStoreDetails} = useContext(HomeContext);
+
+  const {layoutWebsiteModification} = useWebsite()
   
-  console.log("websiteModificationData:",websiteModificationData);
+  const { selectedStoreDetails} = useContext(HomeContext);
   
+  const pathName = usePathname()
+  const segments = pathName.split("/").filter(Boolean);
+  const firstSegment = segments[0];
+  let isJoinUsPage = firstSegment === "join-us";
+
+  if(isJoinUsPage)
+  {
+    return 
+  }
+
   return (
     <footer
       className="pt-8 px-4 bg-white border-t"
       style={{
-        borderTop: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.navigationBackgroundColor,
-        backgroundColor: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.navigationBackgroundColor,
+        borderTop: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.navigationBackgroundColor,
+        backgroundColor: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.navigationBackgroundColor,
       }}
     >
       <div className="max-w-screen-xl mx-auto">
@@ -23,10 +39,10 @@ function Footer() {
         <div className="flex flex-col lg:flex-row lg:justify-between items-center gap-6 text-center">
           
           {/* Brand Logo + Social */}
-          <a href="/" className="block">
-            {brandLogo ? (
+          <Link href="/" className="block">
+            {layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.websiteFLogoUrl ? (
               <Image
-                src={`${IMAGE_URL_Without_Storage}${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.websiteFLogoUrl}`}
+                src={`${IMAGE_URL_Without_Storage}${layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.websiteFLogoUrl}`}
                 width={200}
                 height={100}
                 alt="Brand Name"
@@ -42,7 +58,7 @@ function Footer() {
                 className="w-[200px] h-[100px] object-contain mx-auto"
               />
             )}
-          </a>
+          </Link>
 
           {/* Link Groups */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-0 sm:gap-6 w-full">
@@ -53,7 +69,7 @@ function Footer() {
                   <a
                     href="/about-us"
                     className="text-base font-medium hover:underline"
-                    style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                    style={{ color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
                   >
                     About Us
                   </a>
@@ -62,7 +78,7 @@ function Footer() {
                   <a
                     href="/contact-us"
                     className="text-base font-medium hover:underline"
-                    style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                    style={{ color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
                   >
                     Contact Us
                   </a>
@@ -71,7 +87,7 @@ function Footer() {
                   <a
                     href="/subscription"
                     className="text-base font-medium hover:underline"
-                    style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                    style={{ color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
                   >
                     Subscription
                   </a>
@@ -83,31 +99,41 @@ function Footer() {
             <div className="text-center">
               <ul className="space-y-1">
                 <li>
-                  <a
+                  <Link
                     href="/track-order"
                     className="text-base font-medium hover:underline"
-                    style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                    style={{ color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
                   >
                     Track Order
-                  </a>
+                  </Link>
                 </li>
                 {/* <li>
                   <a
                     href="/allergens"
                     className="text-base font-medium hover:underline"
-                    style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                    style={{ color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
                   >
                     Allergens
                   </a>
                 </li> */}
                 <li>
-                  <a
+                  <Link
                     href="/marketingpreferences"
                     className="text-base font-medium hover:underline"
-                    style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                    style={{ color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
                   >
                     Marketing Preferences
-                  </a>
+                  </Link>
+                </li>
+
+                <li>
+                  <Link
+                    href="/join-us"
+                    className="text-base font-medium hover:underline"
+                    style={{ color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                  >
+                    Join Us
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -116,22 +142,22 @@ function Footer() {
             <div className="text-center">
               <ul className="space-y-1">
                 <li>
-                  <a
+                  <Link
                     href="/terms-conditions"
                     className="text-base font-medium hover:underline"
-                    style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                    style={{ color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
                   >
                     Terms
-                  </a>
+                  </Link>
                 </li>
                 <li>
-                  <a
+                  <Link
                     href="/privacy-policy"
                     className="text-base font-medium hover:underline"
-                    style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                    style={{ color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
                   >
                     Privacy Policy
-                  </a>
+                  </Link>
                 </li>
               </ul>
             </div>
@@ -140,46 +166,126 @@ function Footer() {
             <div className="text-center">
               <ul className="space-y-1">
                 <li>
-                  <a
+                  <Link
                     href={`tel:${selectedStoreDetails?.telephone}`}
                     className="text-base font-medium hover:underline"
-                    style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                    style={{ color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
                   >
                     {/* {selectedStoreDetails?.telephone?.replace(/^\d/, '+44')} */}
                     {selectedStoreDetails?.telephone}
-                  </a>
+                  </Link>
                 </li>
 
                 <li>
-                  <a
+                  <Link
                     href={`mailto:${selectedStoreDetails?.email}`}
                     target="_blank"
                     className="text-base font-medium hover:underline"
-                    style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
+                    style={{ color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
                   >
-                    @{websiteModificationData?.brand?.name?.split(' ').join('').toLowerCase()}
-                  </a>
+                    @{layoutWebsiteModification?.brand?.name?.split(' ').join('').toLowerCase()}
+                  </Link>
                 </li>
+              </ul>
+            </div>
 
+            <div className="text-center">
+              <ul className="space-y-1">
                 <li>
-                  <div className="flex justify-center items-center gap-3">
-                    {websiteModificationData?.brand?.brand_social_links?.map((link, index) => {
-                        // link?.social_links !== null && (
+                  <div className="flex justify-center items-center gap-5">
+                    {layoutWebsiteModification?.brand?.brand_social_links?.map((link, index) => {
                         return(
-                          link?.social_links !== null &&
-                          <a
-                            key={index}
-                            href={link.social_links}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xl"
-                            style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}
-                          >
-                            <div dangerouslySetInnerHTML={{ __html: link.social_icons }} />
-                          </a>
-
+                          (link?.social_links !== null && link.name.includes('Facebook')) ?
+                              <Link
+                                key={index}
+                                href={link.social_links}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="[&>div>svg]:w-6 [&>div>svg]:h-6 [&>div>svg]:fill-current"
+                                style={{
+                                  color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor
+                                }}
+                              >
+                                <FaFacebook style={{ color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor }} className="text-blue-600 hover:scale-110 cursor-pointer" />                   
+                              </Link>
+                              :
+                              (link?.social_links !== null && link.name.includes('Twitter')) ?
+                               <Link
+                                key={index}
+                                href={link.social_links}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="[&>div>svg]:w-6 [&>div>svg]:h-6 [&>div>svg]:fill-current"
+                                style={{
+                                  color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor
+                                }}
+                              >
+                               <FaXTwitter style={{ color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor }} className="text-sky-400 hover:scale-110 cursor-pointer" />
+                              </Link>
+                              :
+                              (link?.social_links !== null && link.name.includes('instagram')) ?
+                               <Link
+                                key={index}
+                                href={link.social_links}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="[&>div>svg]:w-6 [&>div>svg]:h-6 [&>div>svg]:fill-current"
+                                style={{
+                                  color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor
+                                }}
+                              >
+                                <FaInstagram style={{ color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor }} className="text-pink-500 hover:scale-110 cursor-pointer" />
+                               
+                              </Link>
+                              :
+                              (link?.social_links !== null && link.name.includes('Snapchat')) ?
+                               <Link
+                                key={index}
+                                href={link.social_links}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="[&>div>svg]:w-6 [&>div>svg]:h-6 [&>div>svg]:fill-current"
+                                style={{
+                                  color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor
+                                }}
+                              >
+                                <FaSnapchat style={{ color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor }} className="text-white hover:scale-110 cursor-pointer" />
+                               
+                              </Link>
+                              :
+                              (link?.social_links !== null && link.name.includes('TikTok')) ?
+                               <Link
+                                key={index}
+                                href={link.social_links}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="[&>div>svg]:w-6 [&>div>svg]:h-6 [&>div>svg]:fill-current"
+                                style={{
+                                  color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor
+                                }}
+                              >
+                                <FaTiktok style={{ color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor }} className="text-white hover:scale-110 cursor-pointer" />
+                              </Link>
+                              :
+                              (link?.social_links !== null && link.name.includes('Youtube')) &&
+                               <Link
+                                key={index}
+                                href={link.social_links}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="[&>div>svg]:w-6 [&>div>svg]:h-6 [&>div>svg]:fill-current"
+                                style={{
+                                  color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor
+                                }}
+                              >
+                                {/* <div
+                                  dangerouslySetInnerHTML={{
+                                    __html: link.social_icons.replace(/^"|"$/g, "")
+                                  }}
+                                /> */}
+                               <FaYoutube style={{ color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor }} className="text-red-600 hover:scale-110 cursor-pointer" />
+                              </Link>
                         )
-                        // )
                     }
                     )}
                   </div>
@@ -194,12 +300,12 @@ function Footer() {
         <hr className="my-6 border-gray-300" />
 
         {/* Copyright */}
-        <div className="text-center text-sm sm:text-base" style={{ color: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor }}>
+        <div className="text-center text-sm sm:text-base" style={{ color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor }}>
           <p className="py-3"> 
-            © All Rights Reserved. {websiteModificationData?.brand?.name} {moment().format('YYYY')}. Powered by{' '}
-            <a href="https://cleartwo.co.uk/" target="_blank" className="underline hover:text-blue-600">
+            © All Rights Reserved. {layoutWebsiteModification?.brand?.name} {moment().format('YYYY')}. Powered by{' '}
+            <Link href="https://cleartwo.co.uk/" target="_blank" className="underline hover:text-blue-600">
               Cleartwo
-            </a>
+            </Link>
           </p>
         </div>
       </div>

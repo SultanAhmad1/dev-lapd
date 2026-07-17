@@ -182,7 +182,6 @@ export function find_matching_postcode(matrixArgument, postcodeArgument, setStat
 
     setLocalStorage(`${BRAND_SIMPLE_GUID}delivery_matrix`, finalMatch);
     setState(finalMatch);
-
 }
 
 export function find_collection_matching_postcode(matrixArgument, postcodeArgument, setState)
@@ -296,3 +295,33 @@ export function validatePhoneNumber(phoneNumber) {
     // Return the formatted phone number
     return formattedPhone;
 }
+
+export function removeLocalStorageAfterOrderPlaced()
+{
+    setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
+    window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
+    window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
+    window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+    window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+    window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
+    window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+}
+
+export function hexToRgba(hex, opacity = 0.7){
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+};
+
+export const splitAddress = (address) => {
+  const parts = address.split(",").map(part => part.trim());
+
+  const middle = Math.ceil(parts.length / 2);
+
+  return {
+    street1: parts.slice(0, middle).join(", "),
+    street2: parts.slice(middle).join(", "),
+  };
+};

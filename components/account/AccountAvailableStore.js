@@ -10,15 +10,12 @@ export default function AccountAvailableStore({availableStores})
 {
   const {
     setDayOpeningClosingTime,
-    setIsTimeToClosed,
     setMenu,
     setSelectedFilter,
     setFilters,
     setNavigationCategories,
     setNavMobileIndex,
     setStoreToDayName,
-    setStoreToDayOpeningTime,
-    setStoreToDayClosingTime,
     setIsMenuAvailable,
     storeGUID,
     setStoreGUID,
@@ -28,7 +25,6 @@ export default function AccountAvailableStore({availableStores})
     postcode,
     setPostcode,
     setAtFirstLoad,
-    setIsGoBtnClicked,
     setPostCodeForOrderAmount,
     deliveryMatrix,
     setDeliveryMatrix,

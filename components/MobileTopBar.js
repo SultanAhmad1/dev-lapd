@@ -1,9 +1,13 @@
 "use client";
 import React, { useContext, useEffect } from "react";
 import HomeContext from "../contexts/HomeContext";
+import { useWebsite } from "@/app/providers/context/WebsiteContext";
 
 function MobileTopBar() {
-  const { navigationCategories, websiteModificationData, booleanObj } = useContext(HomeContext);
+
+  const {layoutWebsiteModification} = useWebsite()
+
+  const { navigationCategories, selectedStoreDetails} = useContext(HomeContext);
 
   const handleClickScroll = (index, e) => {
     e.preventDefault();
@@ -40,15 +44,15 @@ function MobileTopBar() {
 
       lis?.forEach((li) => {
         li.classList.remove("active");
-        li.style.background = websiteModificationData?.websiteModificationLive?.json_log?.[0]?.navigationBackgroundColor || "#444";
-        li.style.color = websiteModificationData?.websiteModificationLive?.json_log?.[0]?.navigationFontColor || "#fff";
+        li.style.background = layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.navigationBackgroundColor || "#444";
+        li.style.color = layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.navigationFontColor || "#fff";
       });
 
       const activeLi = navbar?.querySelector(`li[data-target="${currentSection}"]`);
       if (activeLi) {
         activeLi.classList.add("active");
-        activeLi.style.background = websiteModificationData?.websiteModificationLive?.json_log?.[0]?.navigationActiveBackgroundColor || "#fff";
-        activeLi.style.color = websiteModificationData?.websiteModificationLive?.json_log?.[0]?.navigationActiveFontColor || "#000";
+        activeLi.style.background = layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.navigationActiveBackgroundColor || "#fff";
+        activeLi.style.color = layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.navigationActiveFontColor || "#000";
 
         // Scroll navbar smoothly to the active item
         navbar?.scrollTo({
@@ -60,15 +64,19 @@ function MobileTopBar() {
 
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  }, [websiteModificationData]);
+  }, [layoutWebsiteModification]);
 
   return (
     <div
-      className={`w-full sticky top-0 z-30 bg-[#444]`}
+      className={`w-full sticky ${
+        selectedStoreDetails === null
+          ? "top-[80px] lg:top-10"
+          : "top-0"
+      } z-30 bg-[#444]`}
       // className={`w-full sticky top-0 z-${parseInt(booleanObj?.isUnableToSendSms) > parseInt(0) ? "0" : "30"} bg-[#444]`}
       style={{
         background:
-          websiteModificationData?.websiteModificationLive?.json_log?.[0]?.navigationBackgroundColor || "#444",
+          layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.navigationBackgroundColor || "#444",
       }}
     >
       <ul
@@ -76,7 +84,7 @@ function MobileTopBar() {
         className="mx-auto max-w-[94vw] lg:max-w-[83vw] flex overflow-x-auto whitespace-nowrap scrollbar-none px-2 py-0 gap-2"
         style={{
           background:
-            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.navigationBackgroundColor || "#444",
+            layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.navigationBackgroundColor || "#444",
         }}
       >
       {navigationCategories?.map((category, index) => {
@@ -86,11 +94,11 @@ function MobileTopBar() {
           
           const styles = {
             backgroundColor: isActive
-              ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.navigationActiveBackgroundColor
-              : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.navigationBackgroundColor,
+              ? layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.navigationActiveBackgroundColor
+              : layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.navigationBackgroundColor,
             color: isActive
-              ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.navigationActiveFontColor
-              : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.navigationFontColor,
+              ? layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.navigationActiveFontColor
+              : layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.navigationFontColor,
           };
 
           return (

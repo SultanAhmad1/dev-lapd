@@ -3,10 +3,12 @@ import { useContext, useEffect } from "react";
 import CheckoutDisplay from "./CheckoutDisplay";
 import HomeContext from "@/contexts/HomeContext";
 import { BLACK_COLOR } from "@/global/Axios";
+import { useWebsite } from "@/app/providers/context/WebsiteContext";
 
 export default function Cart() {
   
-  const { websiteModificationData, setIsCartBtnClicked, setLoader, loader } = useContext(HomeContext)
+  const {layoutWebsiteModification} = useWebsite()
+  const { setIsCartBtnClicked, setLoader, loader } = useContext(HomeContext)
   
   useEffect(() => {
     setTimeout(() => {
@@ -36,7 +38,7 @@ export default function Cart() {
             >
               <path
                 d="m19.5831 6.24931-1.8333-1.83329-5.75 5.83328-5.75-5.83328-1.8333 1.83329 5.8333 5.74999-5.8333 5.75 1.8333 1.8333 5.75-5.8333 5.75 5.8333 1.8333-1.8333-5.8333-5.75z"
-                fill={websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR}
+                fill={layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR}
               />
             </svg>
           </button>

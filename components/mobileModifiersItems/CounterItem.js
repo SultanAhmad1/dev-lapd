@@ -82,9 +82,16 @@ export default function CounterItem({
                             <div key={`${index}.${mobileSecondItemsIndex}`} className="flex flex-row gap-2 items-center justify-between mb-2 p-2 border border-gray-200 rounded-lg shadow-sm bg-white">
                                 
                                 {/* Product Title and Price */}
-                                <div className="mt-1">
-                                    <div className="text-base font-semibold">{mobileSecondItems?.title} &pound;{parseFloat(mobileSecondItems?.price).toFixed(2)}</div>
-                                </div>
+                                {
+                                    mobileSecondItems?.price > 0 ?
+                                        <div className="mt-1">
+                                            <div className="text-base font-semibold">{mobileSecondItems?.title} &pound;{parseFloat(mobileSecondItems?.price).toFixed(2)}</div>
+                                        </div>
+                                    :
+                                        <div className="mt-1">
+                                            <div className="text-base font-semibold">{mobileSecondItems?.title}</div>
+                                        </div>
+                                }
 
                                 {/* Increment / Decrement Controls */}
                                 <div className="flex items-center space-x-1">

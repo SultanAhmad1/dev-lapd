@@ -10,7 +10,7 @@ export default function ChooseOneItemOneTime({
     selectedModifierItemId,
     handleModalCheckInput,
     handleModalModifierToggle,
-    websiteModificationData,
+    layoutWebsiteModification,
 })
 {
     return(
@@ -79,9 +79,9 @@ export default function ChooseOneItemOneTime({
                             if (isSuspended) return null;
             
                             const isSelected = item?.item_select_to_sale;
-                            const bgColor = isSelected && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR);
-                            const borderColor = isSelected && `1px solid ${(websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || WHITE_COLOR)}`;
-                            const textColor = isSelected && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR);
+                            const bgColor = isSelected && (layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR);
+                            const borderColor = isSelected && `1px solid ${(layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || WHITE_COLOR)}`;
+                            const textColor = isSelected && (layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR);
             
                             return (
                             <div

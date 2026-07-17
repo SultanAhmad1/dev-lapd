@@ -4,14 +4,15 @@ import HomeContext from "@/contexts/HomeContext";
 
 import { useLoginMutationHook, usePostMutationHook } from "@/components/reactquery/useQueryHook";
 import { BRAND_SIMPLE_GUID, BRAND_GUID, PARTNER_ID, axiosPrivate, DELIVERY_ID } from "@/global/Axios";
-import { getAmountConvertToFloatWithFixed, setLocalStorage, validatePhoneNumber } from "@/global/Store";
-import { listtime, } from "@/global/Time";
+import { getAmountConvertToFloatWithFixed, removeLocalStorageAfterOrderPlaced, setLocalStorage, validatePhoneNumber } from "@/global/Store";
 import moment from "moment-timezone";
 import { Fragment, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { CardCvcElement, CardExpiryElement, CardNumberElement, useElements, useStripe } from "@stripe/react-stripe-js";
+import { useRouter } from "next/navigation";
 
 
 export default function PlaceOrderForm({
+  listtime,
   deliveryTime,
   setDeliveryTime,
   due,
@@ -30,11 +31,14 @@ export default function PlaceOrderForm({
   setCustomerDetailObj,
 }) 
 {
+
+  const router = useRouter()
+
   const addDoorNumberRef = useRef(null);
 
   //   const {isauth, setIsauth} = useContext(AuthContext)
   const {
-    
+    paymentLoader,
     setPaymentLoader,
     loader,
     setLoader,
@@ -43,12 +47,13 @@ export default function PlaceOrderForm({
     couponDiscountApplied,
     totalOrderAmountValue,
     setTotalOrderAmountValue,
-    setIsTimeToClosed,
     storeGUID,
     cartData,
     postcode,
     street1,
     street2,
+    setStreet1,
+    setStreet2,
     isLocationBrandOnline,
 
     setIsLocationBrandOnline,
@@ -56,11 +61,11 @@ export default function PlaceOrderForm({
     setIsCartBtnClicked,
     setHeaderCartBtnDisplay,
     setHeaderPostcodeBtnDisplay,
-    websiteModificationData,
     setCartData,
     selectedFilter,
     isScheduleClicked,
     scheduleMessage,
+    isScheduleEnabled,
     isScheduleIsReady,
     isScheduleForToday,
     scheduleTime,
@@ -121,42 +126,42 @@ export default function PlaceOrderForm({
   const [saveMyDetailsError, setSaveMyDetailsError] = useState("");
   const [isPayNowClickAble, setIsPayNowClickAble] = useState(false);
     
-  useEffect(() => {
-    if(String(selectedFilter?.id) === String(DELIVERY_ID))
-    {
-      if (
-        (customerDetailObj?.email || "").length > 0 &&
-        (customerDetailObj?.firstName || "").length > 0 &&
-        (customerDetailObj?.lastName || "").length > 0 &&
-        (customerDetailObj?.phone || "").length > 0 &&
-        (customerDetailObj?.doorHouseName || "").length > 0 &&
-        isSaveFasterDetailsClicked === false
-      ) {
-        setIsPayNowClickAble(true);
-      } else {
-        setIsPayNowClickAble(false);
-      }
+  // useEffect(() => {
+  //   if(String(selectedFilter?.id) === String(DELIVERY_ID))
+  //   {
+  //     if (
+  //       (customerDetailObj?.email || "").length > 0 &&
+  //       (customerDetailObj?.firstName || "").length > 0 &&
+  //       (customerDetailObj?.lastName || "").length > 0 &&
+  //       (customerDetailObj?.phone || "").length > 0 &&
+  //       (customerDetailObj?.doorHouseName || "").length > 0 &&
+  //       isSaveFasterDetailsClicked === false
+  //     ) {
+  //       setIsPayNowClickAble(true);
+  //     } else {
+  //       setIsPayNowClickAble(false);
+  //     }
 
-    }
-    else
-    {
-      if (
-        (customerDetailObj?.email || "").length > 0 &&
-        (customerDetailObj?.firstName || "").length > 0 &&
-        (customerDetailObj?.lastName || "").length > 0 &&
-        (customerDetailObj?.phone || "").length > 0 &&
-        isSaveFasterDetailsClicked === false
-      ) {
-        setIsPayNowClickAble(true);
-      } else {
-        setIsPayNowClickAble(false);
-      }
-    }
-  }, [
-    customerDetailObj,
-    isSaveFasterDetailsClicked,
-    selectedFilter
-  ]);
+  //   }
+  //   else
+  //   {
+  //     if (
+  //       (customerDetailObj?.email || "").length > 0 &&
+  //       (customerDetailObj?.firstName || "").length > 0 &&
+  //       (customerDetailObj?.lastName || "").length > 0 &&
+  //       (customerDetailObj?.phone || "").length > 0 &&
+  //       isSaveFasterDetailsClicked === false
+  //     ) {
+  //       setIsPayNowClickAble(true);
+  //     } else {
+  //       setIsPayNowClickAble(false);
+  //     }
+  //   }
+  // }, [
+  //   customerDetailObj,
+  //   isSaveFasterDetailsClicked,
+  //   selectedFilter
+  // ]);
     
   const handleInputs = useCallback((event) => {
     const { value, name } = event.target
@@ -188,7 +193,6 @@ export default function PlaceOrderForm({
     setDue("requested");
     setAsapOrRequested('Requested')
   }
-      
       
   function handlePostcodeEdit() {
     setIsPostcodeEditClicked(!isPostcodeEditClicked);
@@ -395,9 +399,8 @@ export default function PlaceOrderForm({
 
     if(checkTheCart === null || checkTheCart === undefined || parseInt(checkTheCart.length) === parseInt(0))
     {
-      setPaymentLoader(true)
-      window.location.reload(true);
-      window.location.href = "/"
+      
+      router.push("/")
       return
     }
     // Check if the cart has not any item then back to home page.
@@ -426,7 +429,6 @@ export default function PlaceOrderForm({
       {
         if (timePeriods?.[0]?.start_time >= dateTime && dateTime <= timePeriods?.[0]?.end_time) 
         {
-          setIsTimeToClosed(true);
           return;
         }
       }
@@ -474,21 +476,19 @@ export default function PlaceOrderForm({
     }
   }, []);
 
-  useEffect(() => {
-    // Set a timeout to clear localStorage after 20 minutes (20 * 60 * 1000 milliseconds)
-    if(booleanObj?.isCustomerVerified === false)
-    {
-      const timeoutId = setTimeout(() => {
-        // Clear all items in localStorage
-        localStorage.clear();
-        window.location.reload(true);
-        window.location.href = "/"
-      }, 60 * 60 * 1000); 
-      // Clear the timeout if the component is unmounted before 20 minutes
-      return () => clearTimeout(timeoutId);
-    }
-
-  });
+  // useEffect(() => {
+  //   // Set a timeout to clear localStorage after 20 minutes (20 * 60 * 1000 milliseconds)
+  //   if(booleanObj?.isCustomerVerified === false)
+  //   {
+  //     const timeoutId = setTimeout(() => {
+  //       // Clear all items in localStorage
+  //       localStorage.clear();
+  //       router.push("/")
+  //     }, 60 * 60 * 1000); 
+  //     // Clear the timeout if the component is unmounted before 20 minutes
+  //     return () => clearTimeout(timeoutId);
+  //   }
+  // });
 
   useEffect(() => {
     // First i need to check the selected order filter is deliver then if block otherwise else block for collection.
@@ -502,19 +502,11 @@ export default function PlaceOrderForm({
         }
       }
     }
-    // else if(isScheduleClicked === false)
-    // {
-    //   handleObject(2,"sectionNumber")
-    //   handleObject(true, "isNextButtonReadyToClicked")
-    // }
     else
     {
-      // handleObject(1,"sectionNumber")
       handleObject(true, "isNextButtonReadyToClicked")
     }
   }, [sectionNumber, customerDetailObj?.doorHouseName, street1, street2, postcode, selectedFilter,isScheduleClicked]);
-  
-    
   /**
    * This useEffect reset all user information after a specific time End.
    */
@@ -571,295 +563,106 @@ export default function PlaceOrderForm({
   
   const {mutate: checkCustomerMutation, isSuccess: checkCustomerSuccess, reset: checkCustomerReset, isLoading: checkCustomerLoading, isError: checkCustomerError, } = usePostMutationHook("check-customer-detail",`/get-customer-account-details`, onCustomerSuccess, onCustomerError)
 
-  function handleSaveMyDetails(isActive) {
-    
-    if (customerDetailObj?.doorHouseName === "" || customerDetailObj?.email === "" || customerDetailObj?.phone === "" || customerDetailObj?.firstName === "" || customerDetailObj?.lastName === "") 
-    {
-      setSaveMyDetailsError("Please check * (asterisk) mark field and fill them.");
-      setIsSaveFasterDetailsClicked(false);
-      return;
-    }
-    
-    setSaveMyDetailsError("");
-    setIsSaveFasterDetailsClicked(isActive);
-    
-    setIsPayNowClickAble(false) // when save my details for faster checkout true
-    if(isActive === true)
-    {
-      checkCustomerMutation({
-        email: customerDetailObj?.email,
-        phone: customerDetailObj?.phone,
-      })
-    }
-  }
-
-  // This submit send request to Database and stripe.
-  const hitSmsAndEmailCall = async (orderId) =>
-  {
-    handleBoolean(false, "isPlaceOrderButtonClicked")
-    const url = window.location.origin
-    const pathname = "track-order"
-    try 
-    {
-      setPaymentLoader(true)
-      const data = {
-        guid: orderId,
-        url: url,
-        pathname: pathname,
-        brandGuid: BRAND_GUID,
-      } 
-
-      const response = await axiosPrivate.post(`/send-sms-and-email`, data)
-
-      setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
-      setOrderGuid(null)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-      setCartData([])
-      // window.alert("Your order has been received.")
-      // if(response?.data?.status === "success")
-      // {
-      // first check this is delivery order or collection order.
-      if (String(selectedFilter?.id) === String(DELIVERY_ID))
-      {
-        window.location.href = `/track-order/${orderId}`
-        return
-      }
-      window.location.href = `/thank-you/${orderId}`
-      
-      // }
-
-    } 
-    catch (error) 
-    {
-      window.alert(error?.response?.data?.error)
-      setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
-      setOrderGuid(null)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-      setCartData([])
-      
-      if (String(selectedFilter?.id) === String(DELIVERY_ID))
-      {
-        window.location.href = `/track-order/${orderId}`
-        return
-      }
-      window.location.href = `/thank-you/${orderId}`
-    }
-  }
-
   // This method will hit when payment successfully done, to send sms and email to user.
-  const afterPaymentSavedOrderUpdate = async (orderId,paymentIntent) =>
-  {
-    try 
-    {
-      setPaymentLoader(true)
-      const visitorInfo = JSON.parse(window.localStorage.getItem('userInfo'))
 
-      const data = {
-        guid: orderId,
-        amount_paid: getAmountConvertToFloatWithFixed(paymentIntent.amount / 100,2),
-        stripeid: paymentIntent.id,
-        visitorGUID: visitorInfo.visitorId,
-        placed: moment().tz("Europe/London").format("YYYY-MM-DD HH:mm:ss"),
-      }  
+  /**
+   * 
+   * @param {Get Card Token} event 
+   * @returns 
+  */
 
-      const response = await axiosPrivate.post(`/update-order-after-successfully-payment-save`, data)
+  // const stripeCard = async () => {
+  //   const cardElementNumber = elements.getElement(CardNumberElement)
+  //   setMyCardElement(cardElementNumber);
+  //   // Use this to generate a token from split fields
+  //   return await stripe.createToken(cardElementNumber);
+  // }
 
-      // console.log("update after order response:", response);
-      
-      // Here need to hit sms and email call.
-      // const orderData = response?.data?.data?.order
-        setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
-        setOrderGuid(null)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-        setCartData([])
-        // window.alert("Your order has been received.")
-        // if(response?.data?.status === "success")
-        // {
-        // first check this is delivery order or collection order.
-        // for error not able to send sms set value 2 for message is sent set value 1
-        
-        // isDeliveryOrder: 1,
-        // setPaymentLoader(false)
-        // const orderType = Number(orderData?.order_type_filter_id);
-        const getFilter = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`));
-        // setBooleanObj((prevData) => ({...prevData, isUnableToSendSms: 1, orderGuid: orderId, isPlaceOrderButtonClicked: false, isDeliveryOrder: String(DELIVERY_ID) === String(getFilter?.id) ? 1 : 2}))
-        // return
-        setLocalStorage(`${BRAND_SIMPLE_GUID}isValidNumber`,0)
-        
-        if (String(DELIVERY_ID) === String(getFilter?.id)) {
+  const stripeCard = async () => {
+    const cardElement = elements.getElement(CardNumberElement);
+    // setMyCardElement(cardElement);
+    return cardElement;
+  };
 
-          window.location.href = `/track-order/${orderId}`
-          return
+  const createStripePaymentMethod = async (card, payload) => {
+    return await stripe.createPaymentMethod({
+      type: "card",
+      card,
+      billing_details: {
+        name: `${payload.firstName} ${payload.lastName}`,
+        email: payload.email,
+      },
+    });
+  };
+
+  const createPaymentIntent = async (
+    payload,
+    paymentMethod
+  ) => {
+    const response =
+    await axiosPrivate.post(
+        "/create-payment-intent",
+        {
+
+          order:
+              payload.order_guid,
+
+          brand:
+              BRAND_GUID,
+
+          payment_method:
+              paymentMethod,
+
+          type:"card"
+
         }
-        window.location.href = `/thank-you/${orderId}`
-      // hitSmsAndEmailCall(orderId)
-    } 
-    catch (error) 
-    {
-      
-      const unableToSendMessage = error?.response?.data?.error;
-      // setPaymentLoader(false)
+    );
 
-      if(unableToSendMessage && unableToSendMessage.toLowerCase().includes("unable to send you sms"))
-      {
-        // for error not able to send sms set value 2 for message is sent set value 1
+    return response.data;
 
-        const getFilter = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`));
-        setLocalStorage(`${BRAND_SIMPLE_GUID}isValidNumber`,1)
-        // check if order is delivery type then redirect to track-order page or thank-you page.
-        if (String(DELIVERY_ID) === String(getFilter?.id)) {
+  };
 
-          window.location.href = `/track-order/${orderId}`
-          return
-        }
-        window.location.href = `/thank-you/${orderId}`
-        // setBooleanObj((prevData) => ({...prevData, isUnableToSendSms: 2, orderGuid: orderId, isPlaceOrderButtonClicked: false, isDeliveryOrder: String(DELIVERY_ID) === String(getFilter?.id) ? 1 : 2}))
-        // return <SmsAlertOrderFailedModal {...{
-        //   isPaymentError: true,
-        //   setCustomerDetailObj,
-        //   orderId,
-        // }}/>
-        // window.alert("Order placed successfully, but SMS delivery failed due to an invalid phone number.");
-      }
-    }
-  }
+  /**
+   * 
+   * @param {Payload method} event 
+   * @returns 
+  */
 
-  const handleSubmit = async (event) => 
-  {
-    event.preventDefault();
-    
-    setIsPayNowClickAble(false)
-    if(!isScheduleClicked && isScheduleIsReady)
-    {
-      window.alert(`We are currently closed. To schedule your order for << ${scheduleMessage} >>, go to checkout.`)
-      window.location.href = "/"
-      return
-    }
-    
-    
-    setPaymentLoader(true)
-
-
+  const buildCustomerPayload = (card) => {
     let cleanedTime = deliveryTime.replace(/ PM| AM/i, ''); // remove AM/PM (case-insensitive)
     // Parse the current date
-    let baseDate = moment().format("YYYY-MM-DD");
+    let baseDate = 
+      moment().format("YYYY-MM-DD");
 
-    // If isScheduleForToday === 2, add 1 day
     if (isScheduleForToday === 2) {
-      baseDate = moment().add(1, 'day').format("YYYY-MM-DD");
+      baseDate = 
+        moment().add(1, 'day').format("YYYY-MM-DD");
     }
 
-    // Combine date and time
-    let updatedDeliveryTime = moment(`${baseDate} ${cleanedTime}`, "YYYY-MM-DD HH:mm");
-
-    // Format the final result
+    let updatedDeliveryTime = 
+      moment(`${baseDate} ${cleanedTime}`, "YYYY-MM-DD HH:mm");
     updatedDeliveryTime = updatedDeliveryTime.format("YYYY-MM-DD HH:mm:ss");
 
-    // let cleanedTime = deliveryTime.replace(/ PM| AM/i, ''); // remove AM/PM
-    // let isPM = /PM/i.test(deliveryTime);
-    // let hour = parseInt(cleanedTime.split(':')[0]);
+    const subTotalOrderLocal        = 
+      JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)) === null ? null: getAmountConvertToFloatWithFixed(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)),2);
 
-    // // Adjust hour based on AM/PM
-    // if (isPM && hour !== 12) hour += 12;
-    // if (!isPM && hour === 12) hour = 0;
+    const localStorageTotal         = 
+      JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`)) === null? null: JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`));
 
-    // // Build full date-time string
-    // let today = moment();
-    // let fullTime = moment(`${today.format("YYYY-MM-DD")} ${hour}:${cleanedTime.split(':')[1]}`, "YYYY-MM-DD HH:mm");
+    const orderAmountDiscountValue  = 
+      JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_number`)) === null ? null: JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_number`));
 
-    // // Optional: Add 1 day if time is between midnight and 5 AM
-    // if (hour >= 0 && hour < 5) {
-    //   fullTime.add(1, 'day');
-    // }
+    const orderFilter               = 
+      JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`));
 
-    // let updatedDeliveryTime = fullTime.format("YYYY-MM-DD HH:mm:ss");
+    const deliveryFeeLocalStorage   = 
+      JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_fee`)) === null ? null : getAmountConvertToFloatWithFixed(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_fee`)),2);
 
+    const getCouponCode             = 
+    JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}applied_coupon`));
 
-    // const cardElement = elements.getElement(CardElement);
-    const cardElementNumber = elements.getElement(CardNumberElement)
-    setMyCardElement(cardElementNumber);
-    // setMyCardElement(cardElement)
-    // const { token, error,type } = await stripe.createToken(cardElement);
-    // const { token, error,type } = await stripe.createToken({type: 'card'});
-    // if(token)
-    // {
-    //   setMyCardElement(token)
-    // }
-
-    // if (error) 
-    // {
-    //   setPaymentError(error.message);
-    //   setLoader(false)
-    //   return
-    // }
-    // Use this to generate a token from split fields
-    const { token, error } = await stripe.createToken(cardElementNumber);
-
-    
-    if (error) {
-      setIsPayNowClickAble(false);
-      setPaymentError(error.message);
-      setPaymentLoader(false);
-      return;
-    }
-      
-    if(isSaveFasterDetailsClicked || isLocationBrandOnline === null)
-    {
-      setIsPayNowClickAble(false)
-      setPaymentLoader(false)
-      return
-    }
-  
-    if (!stripe || !elements) 
-    {
-      setPaymentLoader(false)
-      return;
-    }
-
-    if(String(selectedFilter?.id) === String(DELIVERY_ID))
-    {
-      if (parseInt(customerDetailObj?.doorHouseName?.length) === parseInt(0)) 
-      {
-        setIsPayNowClickAble(false)
-        setCustomerDetailObj((prevData) => ({...prevData, PayNowBottomError: "Please check * (asterisk) mark field and fill them."}))
-        return;
-      }
-    }
-    else
-    {
-      if (parseInt(customerDetailObj?.email?.length) === parseInt(0) || parseInt(customerDetailObj?.phone?.length) === parseInt(0) || parseInt(customerDetailObj?.firstName.length) === parseInt(0) ||parseInt(customerDetailObj?.lastName?.length) === parseInt(0)) 
-      {
-        setIsPayNowClickAble(false)
-        setCustomerDetailObj((prevData) => ({...prevData, PayNowBottomError: "Please check * (asterisk) mark field and fill them."}))
-        return;
-      }
-    }
-    
-    setCustomerDetailObj((prevData) => ({...prevData, PayNowBottomError: ""}))
-      
-    const subTotalOrderLocal        = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)) === null ? null: getAmountConvertToFloatWithFixed(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)),2);
-    const localStorageTotal         = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`)) === null? null: JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`));
-    const orderAmountDiscountValue  = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_number`)) === null ? null: JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_number`));
-    const orderFilter               = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`));
-    const deliveryFeeLocalStorage   = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_fee`)) === null ? null : getAmountConvertToFloatWithFixed(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_fee`)),2);
-    const getCouponCode             = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}applied_coupon`));
-
-    const couponCodes               = parseInt(getCouponCode?.length) > parseInt(0) ? getCouponCode : couponDiscountApplied;
+    const couponCodes               = 
+    parseInt(getCouponCode?.length) > parseInt(0) ? getCouponCode : couponDiscountApplied;
     
 
     let orderFromDatabaseGUID = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_guid`));
@@ -889,7 +692,7 @@ export default function PlaceOrderForm({
 
     const visitorInfo = JSON.parse(window.localStorage.getItem('userInfo'))
 
-    const data = {
+    return {
       customer:           customerAuth === null ? 0 : customerTemp?.id,
       address:            customerAuth === null ? 0 : filterAddress?.id,
       due:                due,
@@ -929,157 +732,269 @@ export default function PlaceOrderForm({
 
       
       order_total: getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) * 100, // replace with your desired amount
-      token: token.id,
+      // token: card,
       // order: orderId,
       brand: BRAND_GUID,
       type: "card",
       is_paid_via_wallet: 0,
       visitorGUID: visitorInfo.visitorId
-    };      
+    };   
+  }
 
-    setLocalStorage(`${BRAND_SIMPLE_GUID}card_data:`, data)
-    if (orderFromDatabaseGUID ?? orderGUID) { 
-      patchMutation(data) 
-      return
+  const saveCustomerOrder = async (
+    payload
+  ) => {
+    setLocalStorage(`${BRAND_SIMPLE_GUID}card_data`, payload)
+    if(payload.order_guid){
+      await patchMutation(payload);
     }
-
-    storeMutation(data)
+    else{
+      await storeMutation(payload);
+    }
   };
-  
-  const onStoreSuccess = async (data) => {
-    // first check the order guid id in localStorage if it is null then store information then update them.
-    const responseData = data?.data?.data?.order?.order_total;
-    const { clientSecret, type } = data?.data?.data;
-    
-    const orderGUID = data?.data?.data?.order?.external_order_id
 
-    setIsPayNowClickAble(false)
-    if (data?.data?.status === "success") 
-    {
-      setOrderGuid(orderGUID)
-      setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,orderGUID);
-      // if (parseFloat(responseData) === parseFloat(0.0)) 
-      // {
-      //   route.push(`/track-order/${orderGUID}`);
-      //   return;
-      // }
-      // route.push(`/payment/${orderGUID}`);
-      setModalObject((prevData) => ({
-          ...prevData, 
-          isPaymentReady: true,
-          orderGUI: orderGUID
-      }))
-    }
+  /**
+   * 
+   * @param {Confirm Payment} event 
+   * @returns 
+   */
+  const handleConfirmCardPayment = async (card,
+    clientSecret,
+    paymentIntent
+  ) => {
 
-    if(type === "card")
-    {
-      const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`))
-      const city = getCustomerInformation?.street2?.split(',')[0].trim();
-
-      const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: myCardElement,
-          billing_details: {
-            name: `${getCustomerInformation?.firstName} ${getCustomerInformation?.lastName}`,
-            email: getCustomerInformation?.email,
-            address: {
-              line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1} ${getCustomerInformation?.street1}`,
-              city: city,
-              postal_code: getCustomerInformation?.postcode,
-              country: 'GB',
-            },
+    const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`))
+    const city = getCustomerInformation?.street2?.split(',')[0].trim();
+        
+    const result = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: card,
+        billing_details: {
+          name: `${getCustomerInformation?.firstName} ${getCustomerInformation?.lastName}`,
+          email: getCustomerInformation?.email,
+          address: {
+            line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1} ${getCustomerInformation?.street1}`,
+            city: city,
+            postal_code: getCustomerInformation?.postcode,
+            country: 'GB',
           },
         },
-      });
+      },
+    });
+   
 
+    if(result.error)
+    throw result.error;
 
-      if (result.error) 
+    if(result.paymentIntent.status!=="succeeded")
+    throw new Error(
+      "Payment was not successful."
+    );
+
+    return result;
+  };
+
+  const mapStripeError = (error) => {
+    console.log("map stripe error:",error);
+    
+    const message =
+        error?.response?.data?.error ??
+        error?.message ??
+        "";
+
+    const text = message.toLowerCase();
+
+    if (text.includes("insufficient"))
+        return "Your bank declined the payment because there are insufficient funds available.";
+
+    if (text.includes("expired"))
+        return "Your card has expired. Please use another card.";
+
+    if (text.includes("incorrect cvc"))
+        return "The security code (CVC) is incorrect.";
+
+    if (text.includes("authentication"))
+        return "Your bank could not authenticate this payment.";
+
+    if (text.includes("declined"))
+        return "Your bank declined the payment. Please try another card.";
+
+    if (text.includes("processing"))
+        return "Your bank is still processing the payment. Please wait.";
+
+    if (text.includes("minimum"))
+        return "The payment amount is below the minimum allowed.";
+
+    return "Unable to process your payment. Please try again.";
+  };
+
+  const verifyPayment = async (
+    orderGuid,
+    paymentIntentId,
+    amountPaid
+  ) => {
+    try {
+
+        const { data } = await axiosPrivate.post(
+            "/update-order-after-successfully-payment-save",
+            {
+              guid: orderGuid,
+              stripeid: paymentIntentId,
+              amount_paid: amountPaid / 100,
+              placed: moment()
+                  .tz("Europe/London")
+                  .format("YYYY-MM-DD HH:mm:ss"),
+            }
+        );
+
+        return {
+            success: true,
+            data,
+        };
+
+    } catch (error) {
+      return {
+        success: false,
+        data: error?.response?.data,
+        message:
+            error?.response?.data?.error?.message ??
+            "Payment verification failed.",
+        status:
+            error?.response?.status ?? 500,
+      };
+    }
+  };
+
+  const handleSubmit = async (event) => 
+  {
+    event.preventDefault();
+    
+    setIsPayNowClickAble(false)
+    if(!isScheduleClicked && isScheduleIsReady)
+    {
+      window.alert(`We are currently closed. To schedule your order for << ${scheduleMessage} >>, go to checkout.`)
+      router.push("/")
+      return
+    }
+    
+    setPaymentLoader(true)
+    
+    const  card  = await stripeCard()
+      
+    if(isSaveFasterDetailsClicked || isLocationBrandOnline === null)
+    {
+      setIsPayNowClickAble(false)
+      setPaymentLoader(false)
+      return
+    }
+  
+    if (!stripe || !elements) 
+    {
+      setPaymentLoader(false)
+      return;
+    }
+
+    if(String(selectedFilter?.id) === String(DELIVERY_ID))
+    {
+      if (parseInt(customerDetailObj?.doorHouseName?.length) === parseInt(0)) 
       {
-        setPaymentLoader(false)
-        setPaymentError(result.error.message);
-        setIsPayNowClickAble(true)
-        return
-      } 
-      else 
-      {
-        afterPaymentSavedOrderUpdate(orderGUID, result.paymentIntent)
+        setIsPayNowClickAble(false)
+        setCustomerDetailObj((prevData) => ({...prevData, PayNowBottomError: "Please check * (asterisk) mark field and fill them."}))
+        return;
       }
     }
     else
     {
-      
-      try
+      if (parseInt(customerDetailObj?.email?.length) === parseInt(0) || parseInt(customerDetailObj?.phone?.length) === parseInt(0) || parseInt(customerDetailObj?.firstName.length) === parseInt(0) ||parseInt(customerDetailObj?.lastName?.length) === parseInt(0)) 
       {
-        // ✅ Finish wallet UI prompt
-        ev.complete("success");
-    
-        // ✅ Confirm payment with Stripe
-        const result = await stripe.confirmCardPayment(clientSecret); // No payment_method object needed
-        
-        if (result.error)  {
-          setPaymentLoader(false)
-          setPaymentError(result.error.message);
-          setIsPayNowClickAble(true)
-          return
-        } else {
-          afterPaymentSavedOrderUpdate(orderGUID, result.paymentIntent);
-        }
-      } catch (err) {
-        
-        setIsPayNowClickAble(true)
-        ev.complete("fail");
-        const errorMessage = err.response.data.error
-        if (errorMessage.toLowerCase().includes("minimum charge amount")) {
-          setPaymentError("Amount is too low for this currency.");
-        }
-        else if (errorMessage.toLowerCase().includes("declined")) {
-            setPaymentError("Your card was declined.");
-        }
-        else if (errorMessage.toLowerCase().includes("insufficient")) {
-          setPaymentError("Your card has insufficient funds.");
-        }
-        else{
-          window.alert("There is something went wrong place order form 4. Please refresh and try again.")
-        }
+        setIsPayNowClickAble(false)
+        setCustomerDetailObj((prevData) => ({...prevData, PayNowBottomError: "Please check * (asterisk) mark field and fill them."}))
+        return;
       }
     }
-  }
-  
-  const onStoreError = (error) => {
-    setPaymentLoader(false)
-    setIsPayNowClickAble(true)
-    const errorMessage = error.response.data.error
-    if (errorMessage.toLowerCase().includes("minimum charge amount")) {
-      setPaymentError("Amount is too low for this currency.");
-    }
-    else if (errorMessage.toLowerCase().includes("declined")) {
-        setPaymentError("Your card was declined.");
-    }
-    else if (errorMessage.toLowerCase().includes("insufficient")) {
-      setPaymentError("Your card has insufficient funds.");
-    }
-    else{
-      window.alert("There is something went wrong place order form 5. Please refresh and try again.")
-    }
-  }
-
-  const { 
-    isLoading: storeLoading, 
-    isError: storeError, 
-    reset: storeReset, 
-    isSuccess: storeSuccess, 
-    mutate: storeMutation 
-  } = usePostMutationHook('customer-store',`/store-customer-details`,onStoreSuccess, onStoreError)
-
-  const onPatchSuccess = async (data) => {
-    const responseData = data?.data?.data?.order?.order_total;
-    setIsPayNowClickAble(false)
     
-    const { clientSecret, type } = data?.data?.data;
+    setCustomerDetailObj((prevData) => ({...prevData, PayNowBottomError: ""}))
+
+    /** 
+     * 
+     * Before sending payment need to confirm the card.
+     * 
+     */
+    const payload = buildCustomerPayload(card)
     
-    const orderGUID = data?.data?.data?.order?.external_order_id
-    if (data?.data?.status === "success") 
+    await saveCustomerOrder(
+      payload
+    );
+
+    const { paymentMethod, error } = await createStripePaymentMethod(card, payload);
+
+    console.log("card payment method:", paymentMethod);
+    
+    const paymentIntent = await createPaymentIntent(
+      payload,
+      paymentMethod.id
+    );
+
+    try 
     {
+      const confirmation = await handleConfirmCardPayment(card
+        ,paymentIntent.clientSecret
+        ,paymentMethod.id
+      );
+
+      console.log("handle confirm amount:", confirmation);
+
+      const verifyResponse = await verifyPayment(
+        payload.order_guid,
+        paymentIntent.paymentIntentId,
+        getAmountConvertToFloatWithFixed(payload.totalOrderAmountValue,2)
+      );
+
+      if(!verifyResponse?.success)
+      {
+        setPaymentLoader(false)
+        setIsPayNowClickAble(true)
+        return
+      }
+
+      setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
+      setOrderGuid(null)
+      
+      const getFilter = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`));
+      setLocalStorage(`${BRAND_SIMPLE_GUID}isValidNumber`,0)
+      setCartData([])
+      removeLocalStorageAfterOrderPlaced()
+
+      if (String(DELIVERY_ID) === String(getFilter?.id)) {
+
+        window.location.href = `/track-order/${payload?.order_guid}`
+        return
+      }
+      window.location.href = `/thank-you/${payload?.order_guid}`
+    } catch (error) {
+      setPaymentError(mapStripeError(error));
+      await axiosPrivate.post("/wallet-payment-failed", {
+        order: payload.order_guid,
+        payment_intent: paymentIntent.paymentIntentId,
+        message: error.message,
+        code: error.code,
+        decline_code: error.decline_code,
+        type: error.type,
+      });
+    } finally {
+      setPaymentLoader(false);
+    }
+  };
+ 
+  const { 
+    mutateAsync: storeMutation 
+  } = 
+  usePostMutationHook(
+    'customer-store',
+    `/store-customer-details`,
+    (data) => {
+      const orderGUID = data?.data?.data?.order?.external_order_id
+      setIsPayNowClickAble(false)
       setOrderGuid(orderGUID)
       setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,orderGUID);
       setModalObject((prevData) => ({
@@ -1087,116 +1002,35 @@ export default function PlaceOrderForm({
           isPaymentReady: true,
           orderGUI: orderGUID
       }))
+    },
+    (error) => {
+      // setPaymentLoader(false)
+      setIsPayNowClickAble(true)
     }
-
-    if(type === "card")
-    {
-      try {
-          const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`))
-          const city = getCustomerInformation?.street2?.split(',')[0].trim();
-    
-          const result = await stripe.confirmCardPayment(clientSecret, {
-            payment_method: {
-              card: myCardElement,
-              billing_details: {
-                name: `${getCustomerInformation?.firstName} ${getCustomerInformation?.lastName}`,
-                email: getCustomerInformation?.email,
-                address: {
-                  line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1} ${getCustomerInformation?.street1}`,
-                  city: city,
-                  postal_code: getCustomerInformation?.postcode,
-                  country: 'GB',
-                },
-              },
-            },
-          });
-          
-          
-          if (result?.error) 
-          {
-            setPaymentLoader(false)
-            setPaymentError(result.error.message);
-            
-            setIsPayNowClickAble(true)
-            
-          } 
-          else 
-          {
-            afterPaymentSavedOrderUpdate(orderGUID, result.paymentIntent)
-          }
-        
-      } catch (error) {
-        
-      }
-    }
-    else
-    {
-      try
-      {
-        // ✅ Finish wallet UI prompt
-        ev.complete("success");
-    
-        // ✅ Confirm payment with Stripe
-        const result = await stripe.confirmCardPayment(clientSecret); // No payment_method object needed
-    
-        if (result.error)  {
-          setPaymentLoader(false)
-          setPaymentError(result.error.message);
-          setIsPayNowClickAble(true)
-          return
-        } else {
-          afterPaymentSavedOrderUpdate(orderGUID, result.paymentIntent);
-        }
-      } catch (err) {
-        ev.complete("fail");
-        const errorMessage = err.response.data.error
-        if (errorMessage.toLowerCase().includes("minimum charge amount")) {
-          setPaymentError("Amount is too low for this currency.");
-        }
-        else if (errorMessage.toLowerCase().includes("declined")) {
-            setPaymentError("Your card was declined.");
-        }
-        else if (errorMessage.toLowerCase().includes("insufficient")) {
-          setPaymentError("Your card has insufficient funds.");
-        }
-        else{
-          window.alert("There is something went wrong place order form 3. Please refresh and try again.")
-        }
-        
-        setIsPayNowClickAble(true)
-      }
-    }
-  }
-
-  const onPatchError = (error) => {
-
-    const errorMessage = error.response.data.error
-    setPaymentLoader(false)
-    setIsPayNowClickAble(true)
-
-    if (errorMessage.toLowerCase().includes("minimum charge amount")) {
-      setPaymentError("Amount is too low for this currency.");
-    }
-    else if (errorMessage.toLowerCase().includes("declined")) {
-        setPaymentError("Your card was declined.");
-    }
-    else if (errorMessage.toLowerCase().includes("insufficient")) {
-      setPaymentError("Your card has insufficient funds.");
-    }
-    else{
-      window.alert("There is something went wrong place order form 2. Please refresh and try again.")
-    }
-  }
+  )
 
   const {
-    isLoading: patchLoading, 
-    isError: postError, 
-    isSuccess: postSuccess, 
-    reset: postReset, 
-    mutate: patchMutation
-  } = usePostMutationHook('customer-update',`/update-customer-details`, onPatchSuccess, onPatchError)
-
-  const loadingState = patchLoading || storeLoading || loader
+    mutateAsync: patchMutation
+  } = 
+  usePostMutationHook(
+    'customer-update',
+    `/update-customer-details`, 
+    (data) => {
+      setIsPayNowClickAble(false)
+      const orderGUID = data?.data?.data?.order?.external_order_id
+      setOrderGuid(orderGUID)
+      setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,orderGUID);
+      setModalObject((prevData) => ({
+        ...prevData, 
+        isPaymentReady: true,
+        orderGUI: orderGUID
+      }))
+    },
+    (error) => {
+      // setPaymentLoader(false)
+      setIsPayNowClickAble(true)
+    }
+  )
 
   const [cardError, setCardError] = useState(null);
 
@@ -1213,25 +1047,34 @@ export default function PlaceOrderForm({
     setOtpCodeData(e.target.value)
   }
 
-  const handleStreetAddress = () => {
+  const handleStreet2Address = (value) => {
+    console.log("street 2 get the value:", value);
+    
+    setStreet2(value)
+  }
+
+  const handleStreet1Address = (value) => {
+    setStreet1(value)
+  }
+
+  const handleStreetPostcode = () => {
 
   }
   
-  useEffect(() => {
-    // Set a timeout to clear localStorage after 20 minutes (20 * 60 * 1000 milliseconds)
-    const timeoutId = setTimeout(() => {
-      // Clear all items in localStorage
-      localStorage.clear();
-      window.location.reload(true);
-      window.location.href = "/"
-      setTimeout(() => {
-        setPaymentLoader(false);
-      }, 3000);
-    }, 60 * 60 * 1000); 
+  // useEffect(() => {
+  //   // Set a timeout to clear localStorage after 20 minutes (20 * 60 * 1000 milliseconds)
+  //   const timeoutId = setTimeout(() => {
+  //     // Clear all items in localStorage
+  //     localStorage.clear();
+  //      router.push("/")
+  //     setTimeout(() => {
+  //       setPaymentLoader(false);
+  //     }, 3000);
+  //   }, 60 * 60 * 1000); 
 
-    // Clear the timeout if the component is unmounted before 20 minutes
-    return () => clearTimeout(timeoutId);
-  });
+  //   // Clear the timeout if the component is unmounted before 20 minutes
+  //   return () => clearTimeout(timeoutId);
+  // });
     
   const handleCardNumberChange = (event) => {
     if (event.complete) {
@@ -1250,10 +1093,12 @@ export default function PlaceOrderForm({
     if (event.complete) {
       const cvcElement = elements?.getElement(CardCvcElement)
       cvcElement?.focus()
+      setIsPayNowClickAble(true)
     }
   }
-
-
+  
+  console.log("place order form: ", deliveryTime, "store current or next day opening time: ", storeCurrentOrNextDayOpeningTime, "store current or next day closing time: " ,storeCurrentOrNextDayClosingTime);
+  
   return(
     <Fragment>
       {
@@ -1381,7 +1226,6 @@ export default function PlaceOrderForm({
                 {
                   ((!isCreditCardButtonClicked && parseInt(sectionNumber) === parseInt(1)) && String(selectedFilter?.id) === String(DELIVERY_ID)) &&
                   <>
-                    
                     <div className="flex flex-col lg:flex-row items-start lg:items-center gap-2 lg:gap-20 mb-4">
                       <label
                         htmlFor="doorNumber"
@@ -1419,7 +1263,7 @@ export default function PlaceOrderForm({
                         <input
                           type="text"
                           value={street1}
-                          onClick={() => handleStreetAddress}
+                          onChange={(e) => handleStreet1Address(e.target.value)}
                           className={`text-[16px] w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
                             parseInt(customerDetailObj?.doorHouseName?.length) > 0
                               ? "border-green-500 focus:ring-green-300"
@@ -1432,7 +1276,7 @@ export default function PlaceOrderForm({
                         <input
                           type="text"
                           value={street2}
-                          onClick={() => handleStreetAddress}
+                          onChange={(e) => handleStreet2Address(e.target.value)}
                           className={`text-[16px] w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
                             parseInt(customerDetailObj?.doorHouseName?.length) > 0
                               ? "border-green-500 focus:ring-green-300"
@@ -1446,7 +1290,7 @@ export default function PlaceOrderForm({
                           <input
                             type="text"
                             value={postcode}
-                            onClick={() => handleStreetAddress}
+                            onClick={() => handleStreetPostcode()}
                             className={`text-[16px] w-full px-4 py-2 text-gray-700 border bg-[#cfcfcfb5] focus:outline-none focus:ring-2 transition ${
                               parseInt(customerDetailObj?.doorHouseName?.length) > 0
                                 ? "border-green-500 focus:ring-green-300"
@@ -1580,8 +1424,6 @@ export default function PlaceOrderForm({
 
                     </>
                   </>
-
-
                 }
                 
                 {
@@ -1641,9 +1483,6 @@ export default function PlaceOrderForm({
                       {saveMyDetailsError}
                     </p>
                   }
-
-
-
 
 
                   {/* Need to work on these two commented parts later on. */}
@@ -1837,8 +1676,6 @@ export default function PlaceOrderForm({
                         </label>
                       </div>
 
-
-
                       {/* By SMS Option */}
                       <div className="mb-6">
                         <label className={`flex gap-6 items-center space-x-3`}>
@@ -1893,6 +1730,20 @@ export default function PlaceOrderForm({
             </div>
           </div>
         
+          {
+            isScheduleIsReady &&
+            <div className="ml-2.5 mb-1 mt-3 text-red-600">
+              {isScheduleEnabled > 0 ? (
+                <p className="text-sm">
+                  Please note that scheduled {selectedFilter?.id === DELIVERY_ID ? "delivery" : "collection"} will be available as usual on {scheduleMessage}.
+                </p>
+              ) : (
+                <p className="text-sm">
+                  To schedule your order for {scheduleMessage}, go to checkout.
+                </p>
+              )}
+            </div>
+          }
 
           <div className="flex justify-center items-center w-full">
             {
@@ -1910,9 +1761,12 @@ export default function PlaceOrderForm({
     
                   <button 
                     type="submit" 
-                      className="bg-green-700 hover:bg-green-800 text-white w-1/3 px-4 py-3 rounded-md font-semibold transition-all duration-200 border text-center mx-auto block"
+                    className="bg-green-700 hover:bg-green-800 text-white w-1/3 px-4 py-3 rounded-md font-semibold transition-all duration-200 border text-center mx-auto block"
+                    disabled={paymentLoader}
                   >
-                    Pay Now
+                    {
+                      paymentLoader ? "Processing" : "Pay Now"
+                    }
                   </button>
                   :
                   <button type="button" className="bg-black text-white w-1/3 px-4 py-3 rounded-md font-semibold transition-all duration-200 border text-center mx-auto block">

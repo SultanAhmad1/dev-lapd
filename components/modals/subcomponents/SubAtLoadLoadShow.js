@@ -10,6 +10,7 @@ import {
   WHITE_COLOR,
   LIGHT_BLACK_COLOR,
   DELIVERY_ID,
+  axiosV2Private,
 } from "@/global/Axios";
 import {
   check_is_delivery_available,
@@ -21,9 +22,12 @@ import AvailableStore from "@/components/AvailableStore";
 import moment from "moment";
 import { NextResponse } from "next/server";
 import { useSearchParams } from "next/navigation";
+import { useWebsite } from "@/app/providers/context/WebsiteContext";
 
 function SubAtLoadLoadShow() {
   
+  const {layoutWebsiteModification} = useWebsite()
+
   const searchParams = useSearchParams()
 
   const locationFiltered = searchParams.get('location')
@@ -40,7 +44,6 @@ function SubAtLoadLoadShow() {
     setPostcode,
     setPostCodeForOrderAmount,
     deliveryMatrix,
-    websiteModificationData,
     setFilters,
     isChangePostcodeButtonClicked,
     handleBoolean,
@@ -66,12 +69,54 @@ function SubAtLoadLoadShow() {
   const [availableStores, setAvailableStores] = useState([]);
 
   const [isStoreAvailable, setIsStoreAvailable] = useState(true);
-
   
   const handleFormCross = () => {
-    handleBoolean(false, "isChangePostcodeButtonClicked")
-    handleBoolean(true, "isPlaceOrderButtonClicked")
+    // handleBoolean(false, "isChangePostcodeButtonClicked")
+    // handleBoolean(true, "isPlaceOrderButtonClicked")
     setAtFirstLoad(false)
+
+    const bkUserPostcode = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_postcode_time`)
+
+    if(bkUserPostcode)
+    {
+      const jsObjPostcode = JSON.parse(bkUserPostcode)
+
+      setLocalStorage(`${BRAND_SIMPLE_GUID}user_postcode_time`, jsObjPostcode)
+      setLocalStorage(`${BRAND_SIMPLE_GUID}bk_user_postcode_time`, jsObjPostcode)
+    }else
+    {
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}user_postcode_time`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}bk_user_postcode_time`)
+    }
+
+    const bkAddress = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}address`)
+
+    if(bkAddress)
+    {
+      const jsObjAddress = JSON.parse(bkAddress)
+      setLocalStorage(`${BRAND_SIMPLE_GUID}address`, jsObjAddress);
+      setLocalStorage(`${BRAND_SIMPLE_GUID}bk_address`, jsObjAddress);
+      
+    } else
+    {
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}address`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}bk_address`)
+    }
+
+    const bkUserValidPostcode = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_valid_postcode`)
+
+    if(bkUserValidPostcode)
+    {
+      const jsObjValidPostcode = JSON.parse(bkUserValidPostcode)
+      setLocalStorage(`${BRAND_SIMPLE_GUID}user_valid_postcode`, jsObjValidPostcode)
+      setLocalStorage(`${BRAND_SIMPLE_GUID}bk_user_valid_postcode`, jsObjValidPostcode)
+    }
+    else
+    {
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}user_valid_postcode`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}bk_user_valid_postcode`)
+    }
+    
   }
 
   function handlePostCode(event) {
@@ -114,7 +159,6 @@ function SubAtLoadLoadShow() {
       }
 
       const userInfo = JSON.parse(window.localStorage.getItem('userInfo'));
-
       const data = {
         postcode: filterPostcode,
         brand_guid: BRAND_GUID,
@@ -123,56 +167,65 @@ function SubAtLoadLoadShow() {
         outwardString: grabPostcodeOutWard,
         visitorGUID: userInfo?.visitorId
       };
+      
+      const response = await axiosV2Private.post(`/ukpostcode-website`, data);
 
-      const response = await axiosPrivate.post(`/ukpostcode-website`, data);
+      console.log("response from postcode api:", response?.data?.data);
+     
 
-    
       const orderGuid = response?.data?.data?.order?.external_order_id
       setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`, orderGuid)
       setOrderGuid(orderGuid)
       const currentDateTime = moment().format('YYYY-MM-DD HH:mm:ss');
 
       const isViaQr = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}via_qr`))
-
+      
+      console.log("is via qr : ", isViaQr);
+      
       const availableStores = response?.data?.data?.availableStore || [];
       const orderTypeFilters = response?.data?.data?.orderTypeFilters || [];
       
-      if((isViaQr !== null && isViaQr !== undefined) && parseInt(isViaQr) === parseInt(0))
-      {
-        setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[]);
-        setCartData([])
-        setLocalStorage(`${BRAND_SIMPLE_GUID}user_postcode_time`, currentDateTime)
-        setLocalStorage(`${BRAND_SIMPLE_GUID}address`, response?.data?.data);
-        setLocalStorage(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validPostcode)
+      /** Commented that code at 15/07/2026 */
+      // if((isViaQr !== null && isViaQr !== undefined) && parseInt(isViaQr) === parseInt(0))
+      // {
+        // setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[]);
+        // setCartData([])
+        setLocalStorage(`${BRAND_SIMPLE_GUID}bk_user_postcode_time`, currentDateTime)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}bk_address`, response?.data?.data);
+        setLocalStorage(`${BRAND_SIMPLE_GUID}bk_user_valid_postcode`, validPostcode)
+
+        // responseNext.cookies.set("theme","dark")
+        // setNextCookies("theme", "dark")
   
-        responseNext.cookies.set("theme","dark")
-        setNextCookies("theme", "dark")
-  
-        responseNext.cookies.set(`${BRAND_SIMPLE_GUID}cart`,[]);
+        // responseNext.cookies.set(`${BRAND_SIMPLE_GUID}cart`,[]);
         responseNext.cookies.set(`${BRAND_SIMPLE_GUID}user_postcode_time`, currentDateTime)
         responseNext.cookies.set(`${BRAND_SIMPLE_GUID}address`, response?.data?.data);
         responseNext.cookies.set(`${BRAND_SIMPLE_GUID}user_valid_postcode`, validPostcode)
-      }
 
-      setFilters(response?.data?.data?.orderTypeFilters)
+        responseNext.cookies.set(`${BRAND_SIMPLE_GUID}bk_user_postcode_time`, currentDateTime)
+        responseNext.cookies.set(`${BRAND_SIMPLE_GUID}bk_address`, response?.data?.data);
+        responseNext.cookies.set(`${BRAND_SIMPLE_GUID}bk_user_valid_postcode`, validPostcode)
+      // }
+
+      // setFilters(response?.data?.data?.orderTypeFilters)
 
       setIsGoBtnClickAble(false);
       setPostcode(validPostcode);
       
-      if((isViaQr !== null && isViaQr !== undefined) && parseInt(isViaQr) === parseInt(0))
-      {
-        if(parseInt(availableStores?.length) === parseInt(0) || parseInt(orderTypeFilters?.length) === parseInt(0))
-        {
+      // if((isViaQr !== null && isViaQr !== undefined) && parseInt(isViaQr) === parseInt(0))
+      // {
+      //   if(parseInt(availableStores?.length) === parseInt(0) || parseInt(orderTypeFilters?.length) === parseInt(0))
+      //   {
   
-          setPostcodeerror("There is no store available.");
-          setIsGoBtnClickAble(false);
-          setPostcode(validPostcode);
-          setTimeout(() => {
-            setIsLoading(!true)
-          }, 1000);
+      //     setPostcodeerror("There is no store available.");
+      //     setIsGoBtnClickAble(false);
+      //     setPostcode(validPostcode);
+      //     setTimeout(() => {
+      //       setIsLoading(!true)
+      //     }, 1000);
           
-          return
-        }
+      //     return
+      //   }
         
         const availableStoreUpdate = availableStores?.map((store) => {
           // matching the delivery matrix code.
@@ -204,12 +257,12 @@ function SubAtLoadLoadShow() {
         });
         
         setAvailableStores(availableStoreUpdate);
-      }
-      else if((isViaQr !== null && isViaQr !== undefined) && parseInt(isViaQr) === parsefInt(1))
-      {
-        setAtFirstLoad(false)
-        handleBoolean(true, "isPlaceOrderButtonClicked")
-      }
+      // }
+      // else if((isViaQr !== null && isViaQr !== undefined) && parseInt(isViaQr) === parsefInt(1))
+      // {
+      //   setAtFirstLoad(false)
+      //   handleBoolean(true, "isPlaceOrderButtonClicked")
+      // }
 
     
       setTimeout(() => {
@@ -236,7 +289,6 @@ function SubAtLoadLoadShow() {
       }, 1000);
     }
   }
-
   
   useEffect(() => {
     if (deliveryMatrix !== null) 
@@ -249,7 +301,7 @@ function SubAtLoadLoadShow() {
   const handleGoBtn = (e) => 
   {
     e.preventDefault()
-    
+    handleBoolean(false, "isChangePostcodeButtonClicked")
     if (parseInt(validPostcode?.length) > parseInt(3)) 
     {
       setAvailableStores([])
@@ -380,8 +432,11 @@ function SubAtLoadLoadShow() {
   return (
     <>
       {
-        <div className={`fixed inset-0 bg-black z-40  justify-center px-2 overflow-y-auto pt-10 pb-10 ${locationDetails ? "hidden" : "flex"}`}>
-
+        <div
+          className={`fixed inset-0 bg-gray-500/70 z-40 justify-center px-2 overflow-y-auto pt-10 pb-10 ${
+            locationDetails ? "hidden" : "flex"
+          }`}
+        >
           <div
             className={`bg-white rounded-lg shadow-lg w-full max-w-lg p-6 relative flex flex-col transition-all duration-300 ${
               isStoreAvailable && availableStores.length > 0
@@ -395,7 +450,7 @@ function SubAtLoadLoadShow() {
             <div className="flex justify-between items-center mb-4">
               <h1 className="text-2xl font-semibold">Order Food Now</h1>
 
-              {isChangePostcodeButtonClicked && (
+              {/* {isChangePostcodeButtonClicked && ( */}
                 <button
                   onClick={handleFormCross}
                   className="text-gray-600 hover:bg-gray-100 rounded-full p-1"
@@ -407,17 +462,15 @@ function SubAtLoadLoadShow() {
                     />
                   </svg>
                 </button>
-              )}
+              {/* )} */}
             </div>
 
             {/* Form */}
             <form onSubmit={handleGoBtn} className="space-y-4">
               <div className="flex items-center rounded border-2 border-black overflow-hidden" 
-                  style={{
-                    borderColor:
-                      websiteModificationData?.websiteModificationLive?.json_log?.[0]
-                        ?.buttonBackgroundColor,
-                  }}>
+                style={{
+                borderColor:layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+              }}>
                 <div className="px-3 flex items-center bg-white">
                   <svg
                     width="20"
@@ -429,7 +482,7 @@ function SubAtLoadLoadShow() {
                       d="M17.58 5.17C14.5 2.08 9.5 2.08 6.42 5.17 3.33 8.25 3.33 13.33 6.42 16.42L12 22l5.58-5.67c3.09-3.09 3.09-8.17 0-11.16ZM12 12.42c-.92 0-1.67-.75-1.67-1.67s.75-1.67 1.67-1.67 1.67.75 1.67 1.67-.75 1.67-1.67 1.67Z"
                       style={{
                         fill:
-                          websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                          layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
                             ?.buttonBackgroundColor,
                       }}
                     />
@@ -458,12 +511,8 @@ function SubAtLoadLoadShow() {
                   type="submit"
                   className="w-full py-2 rounded text-white font-medium transition flex justify-center items-center gap-2"
                   style={{
-                    backgroundColor:
-                      websiteModificationData?.websiteModificationLive?.json_log?.[0]
-                        ?.buttonBackgroundColor || 'black',
-                    color:
-                      websiteModificationData?.websiteModificationLive?.json_log?.[0]
-                        ?.buttonColor || 'white',
+                    backgroundColor: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || 'black',
+                    color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor || 'white',
                   }}
                   disabled={isLoading}
                 >

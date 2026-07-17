@@ -1,44 +1,24 @@
 "use client"
-import { useContext, useEffect } from "react";
-import Footer from "./Footer";
-import Header from "./Header";
-import Banner from "./Banner";
+import { useContext } from "react";
 import HomeContext from "@/contexts/HomeContext";
-import { ContextCheckApi } from "@/app/layout";
-import { IMAGE_URL_Without_Storage } from "@/global/Axios";
 
 export default function ContactComponent() 
 {
+    const {layoutWebsiteModification} = useWebsite()
+
     const {
-        websiteModificationData,
         selectedStoreDetails,
     } = useContext(HomeContext);
 
-    const {
-        setMetaDataToDisplay, metaDataToDisplay
-    } = useContext(ContextCheckApi)
-
-    useEffect(() => {
-        if (websiteModificationData) {
-        setMetaDataToDisplay((prevData) => ({
-            ...prevData,
-            title: `Contact Us - ${websiteModificationData?.brand?.name}`,
-            contentData: "",
-        }));
-        }
-    }, [metaDataToDisplay, setMetaDataToDisplay, websiteModificationData]);
-
     return(
         <>
-            <Header />
-            <Banner />
             {/* Display Brand Contact details */}
             <div className="mt-10 mb-10 w-full flex flex-col md:flex-row items-center justify-center gap-6 text-center px-4">
                 {/* Order Now */}
                 <div className="flex justify-center items-center w-full">
                     <div className="w-full max-w-sm p-6 border-4 border-dotted rounded-lg bg-white text-center space-y-4" 
                         style={{
-                            borderColor: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                            borderColor: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
                         }}
                     >
                         
@@ -51,7 +31,7 @@ export default function ContactComponent()
                                 WebkitMaskRepeat: "no-repeat",
                                 WebkitMaskSize: "contain",
                                 backgroundColor:
-                                websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                                layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
                                     ?.buttonBackgroundColor || "orange",
                             }}
                         ></div>
@@ -75,7 +55,7 @@ export default function ContactComponent()
                 <div className="flex justify-center items-center w-full">
                     <div className="w-full max-w-sm p-6 border-4 border-dotted rounded-lg bg-white text-center space-y-4"
                         style={{
-                            borderColor: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                            borderColor: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
                         }}  
                     >
                         
@@ -87,7 +67,7 @@ export default function ContactComponent()
                                 WebkitMaskRepeat: "no-repeat",
                                 WebkitMaskSize: "contain",
                                 backgroundColor:
-                                websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                                layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
                                     ?.buttonBackgroundColor || "orange",
                             }}
                         ></div>
@@ -108,7 +88,7 @@ export default function ContactComponent()
                 <div className="flex justify-center items-center w-full">
                     <div className="w-full max-w-sm p-6 border-4 border-dotted rounded-lg bg-white text-center space-y-4"
                         style={{
-                            borderColor: websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                            borderColor: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
                         }}
                     >
                         
@@ -120,7 +100,7 @@ export default function ContactComponent()
                                 WebkitMaskRepeat: "no-repeat",
                                 WebkitMaskSize: "contain",
                                 backgroundColor:
-                                websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                                layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
                                     ?.buttonBackgroundColor || "orange",
                             }}
                         ></div>
@@ -137,9 +117,6 @@ export default function ContactComponent()
                     </div>
                 </div>
             </div>
-
-
-            <Footer />
         </>
     );
 }

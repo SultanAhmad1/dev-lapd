@@ -1,39 +1,37 @@
 "use client";
 import React, { useCallback, useContext, useEffect, useState } from "react";
-import Header from "../Header";
 import { NestedModifiers } from "../NestedModifiers";
-import { useRouter } from "next/navigation";
 import HomeContext from "@/contexts/HomeContext";
 import moment from "moment-timezone";
+import { axiosPrivate, BRAND_GUID, BRAND_SIMPLE_GUID,  PARTNER_ID } from "@/global/Axios";
+import { useWebsite } from "@/app/providers/context/WebsiteContext";
+import { useRouter } from "next/navigation";
 import { WebsiteSingleItem } from "../WebsiteSingleItem";
 import { MobileSingleItem } from "../MobileSingleItem";
-import { axiosPrivate, BRAND_GUID, BRAND_SIMPLE_GUID, IMAGE_URL_Without_Storage, PARTNER_ID } from "@/global/Axios";
-import { ContextCheckApi } from "@/app/layout";
-import Footer from "../Footer";
 
 export default function DisplaySingleItem({params}) 
 {
-    const router = useRouter();
-
-    const { setMetaDataToDisplay } = useContext(ContextCheckApi)
+    const router = useRouter()
+    
+    const {layoutWebsiteModification} = useWebsite()
+    
     const {
-        setLoader,
         storeGUID,
         isCartBtnClicked,
         setIsCartBtnClicked,
         setCartData,
         cartData,
         dayOpeningClosingTime,
-        setIsTimeToClosed,
         booleanObj,
-        websiteModificationData,
+        setLoader,
+        setAtFirstLoad,
+        setSelectedStoreDetails,
     } = useContext(HomeContext);
     
     const [displaySingleItemObject, setDisplaySingleItemObject] = useState({
         optionNumber: 1,
         isAnyModifierHasExtras: false,
 
-        isItemClicked: false,
         isModifierClicked: false,
         singleItem: null,
         quantity: 1,
@@ -73,6 +71,7 @@ export default function DisplaySingleItem({params})
         getPromotionText,
         getPromotionBgColor,
         getPromotionTextColor,
+        
     } = displaySingleItemObject
 
     const handleDisplayItemStates = (key, value = null) => {
@@ -86,7 +85,6 @@ export default function DisplaySingleItem({params})
     
     const filterItem = async () => {
         try {
-            setLoader(true)
             const getStoreIDFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`));
 
             const visitorInfo = JSON.parse(window.localStorage.getItem('userInfo'));
@@ -111,6 +109,9 @@ export default function DisplaySingleItem({params})
         
             const getItemFromCategory = getSingleCategory?.items?.find((item) => item.slug === params.product);
             
+            console.log("Get item from category :", convertToJSobj);
+            console.log("Get item from category item:", getItemFromCategory);
+            
             // count the modifier with isExtras checked.
             let isExtrasArray = []
 
@@ -498,7 +499,6 @@ export default function DisplaySingleItem({params})
             });
             
             getItemFromCategory.modifier_group = updateModifier;
-
             setDisplaySingleItemObject((prevData) => {
                 return {
                     ...prevData,
@@ -512,13 +512,10 @@ export default function DisplaySingleItem({params})
                 }
             })
 
-            setTimeout(() => {
-                setLoader(false);
-            }, 3000);
+            setLoader(false)
+            
         } catch (error) {
-            setTimeout(() => {
-                setLoader(false);
-            }, 3000);
+            setLoader(false)
         }
     };
 
@@ -533,7 +530,6 @@ export default function DisplaySingleItem({params})
           if (timePeriods) {
             if (timePeriods?.[0]?.start_time >= dateTime && dateTime <= timePeriods?.[0]?.end_time) 
             {
-              setIsTimeToClosed(true);
               return;
             }
           }
@@ -541,17 +537,12 @@ export default function DisplaySingleItem({params})
         
         if(params?.edit)
         {
-            setTimeout(() => {
-                setLoader(false);
-            }, 3000);
-
             const getIndex = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}set_index`);
             const getCart = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}cart`);
         
             const parseCart = JSON.parse(getCart);
             // const getFilterItem = parseCart?.find((cart, index) => index === JSON.parse(getIndex));
             const getFilterItem = parseCart?.find(cartItem => cartItem?.slug?.includes(params?.product))
-            
             const findAnyExtras = getFilterItem?.modifier_group?.filter((extras) => extras?.isExtras)
             
             setIsCartBtnClicked(false)
@@ -565,454 +556,28 @@ export default function DisplaySingleItem({params})
                     isAnyModifierHasExtras: (findAnyExtras && parseInt(findAnyExtras?.length) > parseInt(0)) ? true : false
                 }
             })
-            return
+        }
+        else
+        {
+            const storedData = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}menus`);
+    
+            if (!storedData) {
+                // window.location.href = "/";
+                setAtFirstLoad(true)
+                setSelectedStoreDetails(null)
+                router.push("/");
+            }
         }
         
         filterItem();
-
-        /**
-         * Updated menu details
-         * 
-         */
-
-            const convertToJSobj = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}menus`))
-        
-            const getSingleCategory = convertToJSobj?.categories?.find((category) => category.slug === params.category);
-        
-            const getItemFromCategory = getSingleCategory?.items?.find((item) => item.slug === params.product);
-            
-            // count the modifier with isExtras checked.
-            let isExtrasArray = []
-
-            let isPromotionActive = false
-            let promotionText = getSingleCategory.promotion_text
-            let promotionBgColor = getSingleCategory.promotion_bg_color
-            let promotionTextColor = getSingleCategory.promotion_text_color
-
-            const dayNameAndTime = moment.tz("HH:mm", "Europe/London").format("HH:mm:ss");
-
-            if(parseInt(getSingleCategory?.is_promotion) === parseInt(1))
-            {
-                const currentDay = moment().format("dddd")
-                const findDay = getSingleCategory.days?.find((day) => day.label.toLowerCase() === currentDay?.toLocaleLowerCase())
-                if(findDay)
-                {
-                if(dayNameAndTime >= moment(getSingleCategory.start_time, "HH:mm:ss").format("HH:mm:ss") && moment(getSingleCategory.end_time, "HH:mm:ss").format("HH:mm:ss") <= dayNameAndTime)
-                {
-                    isPromotionActive = true
-                }
-                }
-            }
-            else if(parseInt(getItemFromCategory?.is_promotion) === parseInt(1))
-            {
-                const currentDay = moment().format("dddd")
-                const findDay = getItemFromCategory?.days?.find((day) => day.label.toLowerCase() === currentDay?.toLocaleLowerCase())
-                if(findDay)
-                {
-                    if(dayNameAndTime >= moment(getItemFromCategory?.start_time, "HH:mm:ss").format("HH:mm:ss") && moment(getItemFromCategory?.end_time, "HH:mm:ss").format("HH:mm:ss") <= dayNameAndTime)
-                    {
-                        isPromotionActive = true
-                        promotionText = getItemFromCategory?.promotion_text
-                        promotionBgColor = getItemFromCategory?.promotion_bg_color
-                        promotionTextColor = getItemFromCategory?.promotion_text_color
-                    }
-                }
-            }
-            
-            const updateModifier = getItemFromCategory?.modifier_group?.map((modifier) => 
-            {
-                if(modifier?.isExtras)
-                {   
-                    isExtrasArray.push({modifier_id: modifier?.id, modifier_name: modifier?.title, isExtras: modifier?.isExtras})
-                }
-
-                if (modifier?.select_single_option === 1 && modifier?.max_permitted === 1) 
-                {
-                    const modifier_secondary_items = modifier?.modifier_secondary_items?.map((modifierItem) => 
-                        { 
-                            if (parseInt(modifierItem?.secondary_item_modifiers.length) > parseInt(0)) {
-                                const updateNestedItems = modifierItem?.secondary_item_modifiers?.map((secondItemModifier) => 
-                                {
-                                    if (secondItemModifier?.select_single_option === 1 && secondItemModifier?.min_permitted > 0 && secondItemModifier?.max_permitted === 1)
-                                    {
-                                        const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
-                                        {
-                                            return {
-                                                ...secondItemModiItem,
-                                                activeClass: "ob",
-                                                total_price: 0,
-                                                is_item_select: secondItemModiItem?.default_option ? true : false,
-                                                item_select_to_sale: secondItemModiItem?.default_option ? true : false,
-                                            };
-                                        });
-                                        
-                                        // Child Modifiers.
-                                        const selectedSoldItem = updateSecondaryItemModifierItem?.find((item) => item?.is_item_select)
-                                        return {
-                                            ...secondItemModifier,
-                                            valid_class:                     selectedSoldItem?.is_item_select ? "success_check": "default_check",
-                                            is_modifier_selected:            selectedSoldItem?.is_item_select ? true: false,
-                                            is_second_item_modifier_clicked: true,
-                                            secondary_items_modifier_items:  updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
-                                        };
-                                    } 
-                                    else if (secondItemModifier?.select_single_option === 1 && secondItemModifier?.max_permitted > 1) 
-                                    {
-                                        const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
-                                        {
-                                            return {
-                                                ...secondItemModiItem,
-                                                activeClass: "mche",
-                                                // total_price: secondItemModiItem?.price_info,
-                                                total_price: 0,
-                                                is_item_select: secondItemModiItem?.default_option ? true : false,
-                                                item_select_to_sale: secondItemModiItem?.default_option ? true : false,
-                                            };
-                                        });
-                                        
-                                        const selectedSoldItem = updateSecondaryItemModifierItem?.find((item) => item?.is_item_select)
-
-                                        return {
-                                            ...secondItemModifier,
-                                            valid_class: selectedSoldItem?.is_item_select ? "success_check" : "default_check",
-                                            modifier_counter: 0,
-                                            is_modifier_clickable: false,
-                                            is_second_item_modifier_clicked:  true,
-                                            is_modifier_selected:   selectedSoldItem?.is_item_select ? true: false,
-                                            secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
-                                        };
-                                    }
-                                    else if(secondItemModifier?.select_single_option > 1 && secondItemModifier?.max_permitted >= 1){
-                                        const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => {
-                                            return {
-                                                ...secondItemModiItem,
-                                                counter: 0,
-                                                // total_price: secondItemModiItem?.price_info,
-                                                total_price: 0,
-                                                is_item_select: true,
-                                                item_select_to_sale: false,
-                                            };
-                                        });
-                                        
-                                        // Child Modifiers
-                                        // const selectedSoldItem = updateSecondaryItemModifierItem?.find((item) => item?.is_item_select)
-                                        return {
-                                            ...secondItemModifier,
-                                            // valid_class:                        selectedSoldItem?.is_item_select ? "success_check" : "default_check",
-                                            valid_class:                        "default_check",
-                                            modifier_counter:                   0,
-                                            is_modifier_clickable:              false,
-                                            // is_modifier_selected:               selectedSoldItem?.is_item_select,
-                                            is_modifier_selected:               false,
-                                            is_second_item_modifier_clicked:    true,
-                                            secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
-                                        };
-                                }
-                            });
-                
-                            return {
-                                ...modifierItem,
-                                activeClass: "ob",
-                                is_item_select: false,
-                                // total_price: modifierItem?.price,
-                                total_price: 0,
-                                secondary_item_modifiers: updateNestedItems,
-                                item_select_to_sale: modifierItem?.default_option ? true : false,
-                            };
-                        }
-
-                        return {
-                            ...modifierItem,
-                            activeClass: "ob",
-                            // total_price: modifierItem?.price,
-                            total_price: 0,
-                            is_item_select: modifierItem?.default_option ? true : false,
-                            item_select_to_sale: modifierItem?.default_option ? true : false,
-                        };
-                    });
-                    
-                    // Parent Modifiers.
-                    const filterItem = modifier_secondary_items?.find((item) => item?.default_option)
-                    return {
-                        ...modifier,
-                        valid_class: filterItem?.default_option ? "success_check" : "default_check",
-                        is_toggle_active: true,
-                        is_modifier_selected: filterItem?.default_option ? true : false,
-                        modifier_secondary_items: modifier_secondary_items?.sort((a, b) => b?.default_option - a?.default_option),
-                    };
-                } 
-                else if (modifier?.select_single_option === 1 && modifier?.max_permitted > 1) 
-                {
-                    const modifier_secondary_items = modifier?.modifier_secondary_items?.map((modifierItem) => 
-                    {
-                        if (parseInt(modifierItem?.secondary_item_modifiers.length) > parseInt(0)) 
-                        {
-                            const updateNestedItems = modifierItem?.secondary_item_modifiers?.map((secondItemModifier) => 
-                            {
-                                if (secondItemModifier?.min_permitted > 0 && secondItemModifier?.max_permitted === 1) 
-                                {
-                                    const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
-                                    {
-                                        return {
-                                            ...secondItemModiItem,
-                                            activeClass: "ob",
-                                            total_price: 0,
-                                            is_item_select: false,
-                                            item_select_to_sale: false,
-                                        };
-                                    });
-                                    
-                                    // Child Modifiers
-                                    return {
-                                        ...secondItemModifier,
-                                        valid_class: "default_check",
-                                        is_second_item_modifier_clicked: true,
-                                        is_modifier_selected: false,
-                                        secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
-                                    };
-                                } 
-                                else if (secondItemModifier?.max_permitted >= 1) 
-                                {
-                                    const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
-                                    {
-                                        return {
-                                                ...secondItemModiItem,
-                                                activeClass: "mche",
-                                                total_price: 0,
-                                                is_item_select: false,
-                                                item_select_to_sale: false,
-                                        };
-                                    });
-                                    
-                                    // Child Modifiers
-                                    return {
-                                        ...secondItemModifier,
-                                        valid_class: "default_check",
-                                        modifier_counter: 0,
-                                        is_modifier_clickable: false,
-                                        is_second_item_modifier_clicked: true,
-                                        is_modifier_selected: false,
-                                        secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
-                                    };
-                                } 
-                                // else {
-                                //   const updateSecondaryItemModifierItem =
-                                //     secondItemModifier?.secondary_items_modifier_items?.map(
-                                //       (secondItemModiItem) => {
-                                //         return {
-                                //           ...secondItemModiItem,
-                                //           counter: 0,
-                                //           total_price: 0,
-                                //           is_item_select: true,
-                                //           item_select_to_sale: false,
-                                //         };
-                                //       }
-                                //     );
-            
-                                //   return {
-                                //     ...secondItemModifier,
-                                //     valid_class: "default_check",
-                                //     modifier_counter: 0,
-                                //     is_modifier_clickable: false,
-                                //     is_second_item_modifier_clicked: true,
-                                //     is_modifier_selected: false,
-                                //     secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
-                                //   };
-                                // }
-                            });
-                
-                            return {
-                                ...modifierItem,
-                                activeClass: "mche",
-                                // total_price: modifierItem?.price,
-                                total_price: 0,
-                                is_item_select: false,
-                                secondary_item_modifiers: updateNestedItems,
-                                item_select_to_sale: false,
-                            };
-                        }
-                        return {
-                            ...modifierItem,
-                            activeClass: "mche",
-                            // total_price: modifierItem?.price,
-                            total_price: 0,
-                            is_item_select: modifierItem?.default_option ? true : false,
-                            item_select_to_sale: modifierItem?.default_option ? true : false,
-                        };
-                    });
-                    
-                    // Parent Modifiers.
-                    const filterItem = modifier_secondary_items?.find((item) => item?.default_option)
-                    return {
-                        ...modifier,
-                        valid_class: filterItem?.default_option ? "success_check" : "default_check",
-                        is_toggle_active: true,
-                        modifier_counter: 0,
-                        is_modifier_clickable: false,
-                        is_modifier_selected: filterItem?.default_option ? true : false,
-                        modifier_secondary_items: modifier_secondary_items?.sort((a,b) => b?.default_option - a?.default_option),
-                    };
-                } 
-                else if(modifier?.select_single_option > 1 && modifier?.max_permitted >= 1)
-                {
-                    const modifier_secondary_items = modifier?.modifier_secondary_items?.map((modifierItem) => 
-                    {
-                      if (parseInt(modifierItem?.secondary_item_modifiers.length) > parseInt(0)) {
-                        const updateNestedItems = modifierItem?.secondary_item_modifiers?.map((secondItemModifier) => {
-                            if (secondItemModifier?.select_single_option === 1 && secondItemModifier?.max_permitted === 1) 
-                            {
-                                const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
-                                {
-                                    return {
-                                    ...secondItemModiItem,
-                                    activeClass: "ob",
-                                    total_price: 0,
-                                    is_item_select: false,
-                                    item_select_to_sale: false,
-                                    };
-                                });
-                                
-                                // Child Modifiers.
-                                return {
-                                  ...secondItemModifier,
-                                  valid_class: "default_check",
-                                  is_second_item_modifier_clicked: true,
-                                  is_modifier_selected: false,
-                                  secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
-                                };
-
-                            } 
-                            else if (secondItemModifier?.select_single_option === 1 && secondItemModifier?.max_permitted > 1) 
-                            {
-                                const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => 
-                                {
-                                    return {
-                                        ...secondItemModiItem,
-                                        total_price: 0,
-                                        activeClass: "mche",
-                                        is_item_select: false,
-                                        item_select_to_sale: false,
-                                    };
-                                });
-                                
-                                // Child Modifiers.
-                                return {
-                                  ...secondItemModifier,
-                                  valid_class: "default_check",
-                                  modifier_counter: 0,
-                                  is_modifier_clickable: false,
-                                  is_second_item_modifier_clicked: true,
-                                  is_modifier_selected: false,
-                                  secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
-                                };
-                              } 
-                              else if (secondItemModifier?.select_single_option > 1 && secondItemModifier?.max_permitted >= 1) 
-                              {
-                                const updateSecondaryItemModifierItem = secondItemModifier?.secondary_items_modifier_items?.map((secondItemModiItem) => {
-                                    return {
-                                    ...secondItemModiItem,
-                                    counter: 0,
-                                    total_price: 0,
-                                    is_item_select: true,
-                                    item_select_to_sale: false,
-                                    };
-                                });
-                                
-                                // Child modifiers.
-                                return {
-                                  ...secondItemModifier,
-                                  valid_class: "default_check",
-                                  modifier_counter: 0,
-                                  is_modifier_clickable: false,
-                                  is_second_item_modifier_clicked: true,
-                                  is_modifier_selected: false,
-                                  secondary_items_modifier_items: updateSecondaryItemModifierItem?.sort((a,b) => b?.default_option - a?.default_option),
-                                };
-                              }
-                            }
-                          );
-        
-                        return {
-                          ...modifierItem,
-                          counter: 0,
-                          is_item_select: true,
-                          // total_price: modifierItem?.price,
-                          total_price: 0,
-                          secondary_item_modifiers: updateNestedItems,
-                          item_select_to_sale: false,
-                        };
-                      }
-                      return {
-                        ...modifierItem,
-                        counter: 0,
-                        // total_price: modifierItem?.price,
-                        total_price: 0,
-                        is_item_select: modifierItem?.default_option ? true : false,
-                        item_select_to_sale: modifierItem?.default_option ? true : false,
-                      };
-                    });
-
-                    // Parent Modifiers.
-                    const filterItem = modifier_secondary_items?.find((item) => item?.default_option)
-
-                    return {
-                        ...modifier,
-                        valid_class: filterItem?.default_option ? "success_check" : "default_check",
-                        is_toggle_active: true,
-                        modifier_counter: 0,
-                        is_modifier_clickable: false,
-                        is_modifier_selected: filterItem?.default_option ? true : false,
-                        modifier_secondary_items: modifier_secondary_items?.sort((a, b) => b.default_option - a.default_option),
-                    };
-                }
-            });
-            
-            getItemFromCategory.modifier_group = updateModifier;
-
-            setDisplaySingleItemObject((prevData) => {
-                return {
-                    ...prevData,
-                    singleItem: getItemFromCategory,
-                    itemPrice: parseFloat(getItemFromCategory?.price).toFixed(2),
-                    isAnyModifierHasExtras: parseInt(isExtrasArray?.length) > parseInt(0) ? true : false,
-                    checkPromotionActive: isPromotionActive,
-                    getPromotionText: promotionText,
-                    getPromotionBgColor: promotionBgColor,
-                    getPromotionTextColor: promotionTextColor,
-                }
-            })
-
-            setTimeout(() => {
-                setLoader(false);
-            }, 3000);
     }, [params]);
     
-    useEffect(() => {
-        
-        if(websiteModificationData && singleItem)
-        {
-            const getSeoTitle = singleItem?.seo_title === null ? singleItem?.title : singleItem?.seo_title
-            const getSeoDescription = singleItem?.seo_description === null ? singleItem?.description : singleItem?.seo_description
-          
-            setMetaDataToDisplay((prevData) => ({
-                ...prevData,
-                title: `${singleItem.title} - ${websiteModificationData?.brand?.name}`,
-                contentData: `${singleItem.description}`,
-                singleItemsDetails: {
-                    title: getSeoTitle,
-                    description: getSeoDescription,
-                    itemImage: singleItem?.image_url,
-                    keywords: getSeoDescription,
-                    url: window.location.href
-                    //  url: {`${storeName.toLowerCase()}/${category?.slug}/${item?.slug}`}
-                }
-            }))
-        }
-    }, [singleItem, websiteModificationData]);
-    
     const handleMScroll = (event) => {
-        let element = document.querySelector(".ctascusingle-product");
-        element.style.position = event.deltaY === 100 ? "absolute" : "sticky";
+        const element = document.querySelector(".ctascusingle-product");
+
+        if (!element) return; // ✅ prevent crash
+
+        element.style.position = event.deltaY > 0 ? "absolute" : "sticky";
     };
     
     const handleRadioInput = useCallback((modifierId, itemId, itemName, secondaryItemModifierCounter) => {
@@ -1137,7 +702,6 @@ export default function DisplaySingleItem({params})
             }
         })
     },[itemPrice,singleItem,isModifierClicked,selectedModifierId,selectedModifierItemId,selectedModifierItemPrice,isModifierClicked]);
-    
     
     const handleCheckInput = useCallback((modifierId, itemId, secondaryItemModifierCounter) => {
         let totalAmount = itemPrice;
@@ -2298,11 +1862,10 @@ export default function DisplaySingleItem({params})
             const timeoutId = setTimeout(() => {
             // Clear all items in localStorage
                 localStorage.clear();
-                window.location.reload(true);
+                setAtFirstLoad(true)
+                setSelectedStoreDetails(null)
+                // router.push("/");
                 window.location.href = "/"
-                setTimeout(() => {
-                    setLoader(false);
-                }, 3000);
             }, 60 * 60 * 1000); 
         
             // Clear the timeout if the component is unmounted before 20 minutes
@@ -2448,7 +2011,6 @@ export default function DisplaySingleItem({params})
                         setCartData(filterCartFirst);
                     }
     
-                    setLoader(true);
                     const addTotalAmount = {
                         ...singleItem,
                         total_order_amount: parseFloat(quantity * itemPrice).toFixed(2),
@@ -2458,8 +2020,10 @@ export default function DisplaySingleItem({params})
                     };
     
                     setCartData((prevData) => [...prevData, addTotalAmount]);
-                    // router.push("/");
-                    window.location.href = "/";
+                    // setAtFirstLoad(true)
+                    // setSelectedStoreDetails(null)
+                    router.push("/");
+                    // window.location.href = "/";
                     // setIsCartBtnClicked(true);
                     setIsCartBtnClicked(false);
                 }
@@ -2615,8 +2179,6 @@ export default function DisplaySingleItem({params})
                 }
                 else {
     
-                    setLoader(true);
-    
                     if(params?.edit)
                     {
                         const filterCartFirst = cartData?.filter((cart) => !cart?.slug?.includes(params?.product));
@@ -2631,8 +2193,10 @@ export default function DisplaySingleItem({params})
                         is_cart_modal_clicked: false,
                     };
                     setCartData((prevData) => [...prevData, addTotalAmount]);
-                    // router.push("/");
-                    window.location.href = "/";
+                    // setAtFirstLoad(true)
+                    // setSelectedStoreDetails(null)
+                    router.push("/");
+                    // window.location.href = "/";
                     // setIsCartBtnClicked(true);
                     setIsCartBtnClicked(false);
                 }
@@ -2679,7 +2243,7 @@ export default function DisplaySingleItem({params})
                         }
                     }
                 }
-                setIsCartBtnClicked(true)
+                setIsCartBtnClicked(false) // converted from ture to false
             }
             else if(action === "next")
             {
@@ -3024,10 +2588,9 @@ export default function DisplaySingleItem({params})
             }
         } )
     },[singleItem, isModifierClicked, itemPrice]);
-
+    
     return(
     <>
-        <Header />
 
         <div className="hidden lg:block">
             <WebsiteSingleItem
@@ -3048,7 +2611,7 @@ export default function DisplaySingleItem({params})
                         handleIncrement,
                         handleRadioInput,
                         handleCheckInput,
-                        websiteModificationData,
+                        layoutWebsiteModification,
                         handleDisplayItemStates,
                         handleAddOrNextClickedToCart,
                         handleMobileQuantityDecrement,
@@ -3080,7 +2643,7 @@ export default function DisplaySingleItem({params})
                         handleMobileQuantityDecrement,
                         handleMobileQuantityIncrement,
                         handleMobileAddToCart,
-                        websiteModificationData,
+                        layoutWebsiteModification,
                         isAnyModifierHasExtras,
                         optionNumber,
                     }
@@ -3105,13 +2668,12 @@ export default function DisplaySingleItem({params})
                         handleModalDecrement,
                         handleModalCheckInput,
                         handleModalRadioInput,
-                        websiteModificationData,
+                        layoutWebsiteModification,
                         handleDisplayItemStates,
                         handleModalModifierToggle,
                     }   
                 }
             />
         }
-        <Footer />
     </>)
 }
