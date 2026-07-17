@@ -1,30 +1,14 @@
 "use client";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import OTP from "../otp/OTP";
 import { useLoginMutationHook } from "../reactquery/useQueryHook";
 import { BLACK_COLOR, BRAND_GUID, BRAND_SIMPLE_GUID, HOVER_COLOR, WHITE_COLOR } from "@/global/Axios";
 import { formatPhoneNumber, passwordMessageData, setLocalStorage, validatePassword } from "@/global/Store";
-import HomeContext from "@/contexts/HomeContext";
-import { ContextCheckApi } from "@/app/layout";
 
 export default function CustomerRegisteration() 
 {
-
-    const {websiteModificationData} = useContext(HomeContext)
-
-       
-    const { setMetaDataToDisplay} = useContext(ContextCheckApi)
-    useEffect(() => {
-        if(websiteModificationData)
-        {
-            setMetaDataToDisplay((prevData) => ({
-                ...prevData,
-                title: `Registeration - ${websiteModificationData?.brand?.name}`,
-                contentData: "",
-            }))
-        }
-    }, [websiteModificationData, setMetaDataToDisplay]);
-
+    const {layoutWebsiteModification} = useWebsite()
+    
     const [isHover, setIsHover] = useState(false);
     
     const [errorsObj, setErrorsObj] = useState({
@@ -256,19 +240,19 @@ export default function CustomerRegisteration()
                                     className="register-button"
                                     style={{
                                         background: isHover ? 
-                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || HOVER_COLOR
+                                            layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || HOVER_COLOR
                                         : 
-                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR
+                                            layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR
                                         ,
                                         color: isHover ? 
-                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor || WHITE_COLOR
+                                            layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor || WHITE_COLOR
                                         : 
-                                            websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR
+                                            layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR
                                         ,
                                         border: isHover ? 
-                                            `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR}` 
+                                            `1px solid ${layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR}` 
                                         : 
-                                            `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || BLACK_COLOR}`
+                                            `1px solid ${layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor || BLACK_COLOR}`
                                         ,
                                     }} 
                                     onMouseEnter={() => setIsHover(true)} 

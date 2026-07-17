@@ -1,13 +1,15 @@
 "use client";
-import React, { useContext, useEffect, useState } from 'react'
+import React, { useContext, useEffect } from 'react'
 import HomeContext from '../contexts/HomeContext'
-import moment from 'moment'
 import { find_collection_matching_postcode, find_matching_postcode, setLocalStorage, setNextCookies, setSessionStorage } from '../global/Store'
-import { BLACK_COLOR, BRAND_SIMPLE_GUID, DELIVERY_ID, LIGHT_BLACK_COLOR, WHITE_COLOR } from '../global/Axios'
+import { BRAND_SIMPLE_GUID, DELIVERY_ID, LIGHT_BLACK_COLOR, WHITE_COLOR } from '../global/Axios'
+import { useWebsite } from '@/app/providers/context/WebsiteContext';
 
 function FilterLocationTime(props) 
 {
+    const {layoutWebsiteModification} = useWebsite()
     const {isDisplayFromModal} = props
+
 
     const {
         setLoader,
@@ -15,13 +17,15 @@ function FilterLocationTime(props)
         setSelectedFilter,
         filters,
         setFilters,
-        websiteModificationData,
-        setDisplayFilterModal,
-        setDeliveryMatrix
+        setSelectedLocation,
+        setDeliveryMatrix,
     } = useContext(HomeContext)
 
     const handleOrderType = (id) => {
         const updateFilter = filters?.find((findFilter) => findFilter?.id === id && findFilter?.status)
+
+        console.log("header order type: ", id, "update filter: ", updateFilter );
+        
         if(updateFilter)
         {
             setLoader(true)
@@ -29,11 +33,17 @@ function FilterLocationTime(props)
             setLocalStorage(`${BRAND_SIMPLE_GUID}filter`,updateFilter)
             setNextCookies(`${BRAND_SIMPLE_GUID}filter`,updateFilter)
             document.cookie = `${BRAND_SIMPLE_GUID}filter=${updateFilter}`
+            const getSelectStore = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`);
+            const parseToJSobj = JSON.parse(getSelectStore);
+            setSelectedLocation(parseToJSobj?.display_id)
 
             // now set the delivery matrix.
 
             const getDeliveryMatrix = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}address`)
             const getSelectedStore = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`)
+            
+            console.log("get delivery matrix: ", getDeliveryMatrix, "get selected store: ", getSelectedStore );
+
             if(getDeliveryMatrix && getSelectedStore)
             {
                 const objStore = JSON.parse(getSelectedStore)
@@ -48,7 +58,6 @@ function FilterLocationTime(props)
                     if(id.includes(DELIVERY_ID))
                     {
                         const getValidPostcode = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_valid_postcode`)
-
                         if(getValidPostcode)
                         {
                             const objGetValidPostcode = JSON.parse(getValidPostcode)
@@ -60,7 +69,6 @@ function FilterLocationTime(props)
                         // for collection
                         const getValidPostcode = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_valid_postcode`)
                         
-                        
                         if(getValidPostcode)
                         {
                             const objGetValidPostcode = JSON.parse(getValidPostcode)
@@ -71,14 +79,7 @@ function FilterLocationTime(props)
                 }
 
             }
-
-            if(isDisplayFromModal)
-            {
-                setTimeout(() => {
-                    setDisplayFilterModal(false)
-                }, 3000);
-            }
-            window.location.href = '/'
+            // window.location.href = '/'
         }
     }
     
@@ -94,16 +95,16 @@ function FilterLocationTime(props)
                 const isActive = filter?.id === selectedFilter?.id;
 
                 const bgColor = isActive
-                    ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.activeButtonBackgroundColor || LIGHT_BLACK_COLOR
-                    : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || WHITE_COLOR;
+                    ? layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.activeButtonBackgroundColor || LIGHT_BLACK_COLOR
+                    : layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || WHITE_COLOR;
 
                 const textColor = isActive
-                    ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.activeButtonFontColor || WHITE_COLOR
-                    : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR;
+                    ? layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.activeButtonFontColor || WHITE_COLOR
+                    : layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR;
 
                 const borderColor = isActive
-                    ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.activeButtonBackgroundColor || LIGHT_BLACK_COLOR
-                    : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || LIGHT_BLACK_COLOR;
+                    ? layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.activeButtonBackgroundColor || LIGHT_BLACK_COLOR
+                    : layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || LIGHT_BLACK_COLOR;
 
                 return (
                     <button
@@ -111,9 +112,11 @@ function FilterLocationTime(props)
                         key={index}
                         onClick={() => handleOrderType(filter?.id)}
                         className="
+                            text-sm font-semibold shadow-md 
                             w-full
                             text-white px-2 py-1 rounded-3xl
-                            flex items-center justify-center gap-2 border transition-colors duration-200
+                            flex items-center justify-center gap-2 border
+                            transition-all duration-200 hover:scale-105 whitespace-nowrap
                         "
                         style={{
                             background: bgColor,
@@ -137,13 +140,8 @@ function FilterLocationTime(props)
                             />
                             </svg>
                         )}
-
-                       
                         {filter?.name}
-                        
-                        </button>
-
-
+                    </button>
                 );
                 })}
             </div>

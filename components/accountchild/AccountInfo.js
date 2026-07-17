@@ -3,7 +3,7 @@
 import { BRAND_SIMPLE_GUID, USER_IMAGE } from "@/global/Axios";
 import Image from "next/image";
 import React, { useEffect, useState } from "react";
-import { usePatchMutationHook, usePostMutationHook } from "../reactquery/useQueryHook";
+import { usePatchMutationHook } from "../reactquery/useQueryHook";
 import { setLocalStorage } from "@/global/Store";
 
 export default function AccountInfo() 
@@ -81,7 +81,7 @@ export default function AccountInfo()
         setLocalStorage(`${BRAND_SIMPLE_GUID}tempCustomer`, customer)
     }
 
-    const {mutate: patchMutation, isLoading, isSuccess, reset} = usePatchMutationHook("customer-update", `/customer-update/${accountInfoObj?.userGUID}`, onSuccess, onError)
+    const {mutate: patchMutation, isPending: isLoading, isSuccess, reset} = usePatchMutationHook("customer-update", `/customer-update/${accountInfoObj?.userGUID}`, onSuccess, onError)
 
     if(isSuccess)
     {

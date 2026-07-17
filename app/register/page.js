@@ -1,7 +1,21 @@
-'use client';
-
 import AuthHeader from "@/components/authheader/AuthHeader";
 import CustomerRegisteration from "@/components/registeration/CustomerRegisteration";
+
+
+export async function generateMetadata() {
+  const brandId = process.env.NEXT_PUBLIC_STORE_PUBLIC_KEYS
+  const res = await fetch(
+    `${process.env.NEXT_PUBLIC_BASE_URL}/brand-detail/${brandId}`,
+    { cache: "no-store" }
+  );
+
+  const data = await res.json();
+  const brand = data?.data?.brand;
+  return {
+    title: `Registeration - ${brand?.name || ""}`,
+    description: `Registeration ${brand?.name}`,
+  };
+}
 
 export default function page() 
 {
@@ -17,20 +31,3 @@ export default function page()
         </div>
     )
 }
-
-const validatePassword = (password) => {
-    const passwordRegex = /^(?=.*[A-Z])(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
-    return passwordRegex.test(password);
-};
-
-const formatPhoneNumber = (number) => {
-    // Ensure the number is treated as a string
-    const numStr = number.toString();
-
-    // Check if the first character is '0', if not, prepend '0'
-    if (numStr[0] !== '0') {
-      return '0' + numStr;
-    }
-    return numStr;
-  };
-

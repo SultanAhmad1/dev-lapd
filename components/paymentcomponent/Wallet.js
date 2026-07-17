@@ -1,10 +1,8 @@
 "use client";
 import HomeContext from '@/contexts/HomeContext';
 import { axiosPrivate } from '@/global/Axios';
-import { country, currency, getAmountConvertToFloatWithFixed } from '@/global/Store';
 import { PaymentRequestButtonElement, useStripe } from '@stripe/react-stripe-js';
 import React, {useState, useEffect, useContext} from 'react';
-
 
 export default function Wallet(props){
 
@@ -49,7 +47,6 @@ export default function Wallet(props){
       const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`))
 
       const city = getCustomerInformation?.street2?.split(',')[0].trim();
-      
 
       pr.on("paymentmethod", async (ev) => {
         try {

@@ -2,486 +2,534 @@
 import HomeContext from "@/contexts/HomeContext";
 import { usePostMutationHook } from "@/components/reactquery/useQueryHook";
 import { BRAND_SIMPLE_GUID, BRAND_GUID, PARTNER_ID, axiosPrivate, DELIVERY_ID } from "@/global/Axios";
-import { getAmountConvertToFloatWithFixed, setLocalStorage } from "@/global/Store";
+import { getAmountConvertToFloatWithFixed, removeLocalStorageAfterOrderPlaced, setLocalStorage } from "@/global/Store";
 import moment from "moment-timezone";
-import { Fragment, useContext, useEffect, useState } from "react";
+import { Fragment, useContext, useEffect, useRef, useState } from "react";
 import { CardNumberElement, PaymentRequestButtonElement, useElements, useStripe } from "@stripe/react-stripe-js";
 
 export default function WrapWallet({deliveryTime,customerDetailObj,due,setPaymentError})
 {
-    const {
-      asapOrRequested,
-      setPaymentLoader,
-      booleanObj,
-      dayOpeningClosingTime,
-      couponDiscountApplied,
-      totalOrderAmountValue,
-      setTotalOrderAmountValue,
-      setIsTimeToClosed,
-      storeGUID,
-      cartData,
-      postcode,
-      street1,
-      street2,
-      setCartData,
-      handleBoolean,
-      selectedFilter,
-      isScheduleClicked,
-      isScheduleIsReady,
-      scheduleMessage,
-      isScheduleForToday,
-      orderGuid,
-      setOrderGuid,
-      setBooleanObj
-    } = useContext(HomeContext);
-
-    const stripe = useStripe()
-    const elements = useElements();
-
-    const [walletCompleted, setWalletCompleted] = useState(false);
-    const [paymentRequest, setPaymentRequest] = useState(null);
-        
-    // This method will hit when payment successfully done, to send sms and email to user.
-    
-    const afterPaymentSavedOrderUpdate = async (orderId,paymentIntent, paymentIntentAmountPaid) =>
-    {
-      try 
-      {
-        setPaymentLoader(true)
-        const visitorInfo = JSON.parse(window.localStorage.getItem('userInfo'))
-        const data = {
-          guid: orderId,
-          // amount_paid: getAmountConvertToFloatWithFixed(paymentIntent.amount / 100,2),
-          amount_paid: getAmountConvertToFloatWithFixed(paymentIntentAmountPaid / 100,2),
-          // stripeid: paymentIntent.id,
-          stripeid: paymentIntent,
-          visitorGUID: visitorInfo.visitorId,
-          placed: moment().tz("Europe/London").format("YYYY-MM-DD HH:mm:ss"),
-        }  
-
-        const response = await axiosPrivate.post(`/update-order-after-successfully-payment-save`, data)
-        // return
-        // Here need to hit sms and email call.
-        // const orderData = response?.data?.data?.order      
-     
-        
-          // hitSmsAndEmailCall(orderId, orderData)
-
-          setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
-          window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
-          setOrderGuid(null)
-          window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
-          window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
-          window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-          window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
-          window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-          setCartData([])
-
-          // window.alert("Your order has been received.")
-          // for error not able to send sms set value 2 for message is sent set value 1
-          // const orderType = Number(orderData?.order_type_filter_id);
-          setPaymentLoader(true)
-          const getFilter = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`));
-          setLocalStorage(`${BRAND_SIMPLE_GUID}isValidNumber`,0)
-          // setBooleanObj((prevData) => ({...prevData, isUnableToSendSms: 1, orderGuid: orderId, isPlaceOrderButtonClicked: false, isDeliveryOrder: String(DELIVERY_ID) === String(getFilter?.id) ? 1 : 2}))
-           if (String(DELIVERY_ID) === String(getFilter?.id)) {
-              window.location.href = `/track-order/${orderId}`
-            }
-            else
-            {
-              window.location.href = `/thank-you/${orderId}`
-            }
-          // const orderType = Number(orderData?.order_type_filter_id);
-          // if (orderType === 4) {
-          //   window.location.href = `/track-order/${orderId}`;
-          // } else {
-          //   window.location.href = `/thank-you/${orderId}`;
-          // }
-
-      } 
-      catch (error) 
-      {
-        console.log("show error update amounts:", error);
-        const unableToSendMessage = error?.response?.data?.error;
-        
-        if(unableToSendMessage && unableToSendMessage.toLowerCase().includes("unable to send you sms"))
-        {
-          setPaymentLoader(true)
-          const getFilter = JSON.parse(window?.localStorage?.getItem(`${BRAND_SIMPLE_GUID}filter`));
-          setLocalStorage(`${BRAND_SIMPLE_GUID}isValidNumber`,1)
-          // check if order is delivery type then redirect to track-order page or thank-you page.
-          // setBooleanObj((prevData) => ({...prevData, isUnableToSendSms: 2, orderGuid: orderId, isPlaceOrderButtonClicked: false, isDeliveryOrder: String(DELIVERY_ID) === String(getFilter?.id) ? 1 : 2}))
-            if (String(DELIVERY_ID) === String(getFilter?.id)) {
-              window.location.href = `/track-order/${orderId}`
-            }
-            else
-            {
-              window.location.href = `/thank-you/${orderId}`
-            }
-
-          // return <SmsAlertOrderFailedModal {...{
-          //   isPaymentError: true,
-          //   setCustomerDetailObj,
-          //   orderId,
-          // }}/>
-          // window.alert("Order placed successfully, but SMS delivery failed due to an invalid phone number.");
-        }
-        setPaymentLoader(false)
-      }
-    }
-
-    const onStoreSuccess = async (data) => {
-      // first check the order guid id in localStorage if it is null then store information then update them.
-      const responseData = data?.data?.data?.order?.order_total;
-      const { clientSecret, type, paymentIntentId, paymentIntentAmountPaid } = data?.data?.data;
-
-      const orderGUID = data?.data?.data?.order?.external_order_id
-
-      if (data?.data?.status === "success") 
-      {
-        setOrderGuid(orderGUID)
-        setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,orderGUID);
-      }
-
-      if(type === "card")
-      {
-      
-      }
-      else
-      {
-        try
-        {
-         
-          afterPaymentSavedOrderUpdate(orderGuid, paymentIntentId, paymentIntentAmountPaid);
-          // --- Fallback failure ---
-          ev.complete("fail");
-          setPaymentError(resp?.error || "Payment failed ");
-
-        } catch (err) {
-          const errorMessage = err.response.data.error
-          if (errorMessage.toLowerCase().includes("minimum charge amount")) {
-            setPaymentError("Amount is too low for this currency.");
-          }
-          else if (errorMessage.toLowerCase().includes("declined")) {
-              setPaymentError("Your card was declined.");
-          }
-          else if (errorMessage.toLowerCase().includes("insufficient")) {
-            setPaymentError("Your card has insufficient funds.");
-          }
-          else{
-            window.alert("There is something went wrong. Please refresh and try again.")
-          }
-        }
-      }
-    }
-    
-    const onStoreError = (error) => {
-      window.alert("There is something went wrong!. Please refresh and try again.")
-      return
-    }
-    
-    const { isLoading: storeLoading, isError: storeError, reset: storeReset, isSuccess: storeSuccess, mutateAsync: storeMutation } = usePostMutationHook('customer-store',`/store-customer-details`,onStoreSuccess, onStoreError)
-
-    const onPatchSuccess = async (data) => {
-      const responseData = data?.data?.data?.order?.order_total;
-      const { clientSecret, type,paymentIntentId, paymentIntentAmountPaid } = data?.data?.data;
-      
-      const orderGUID = data?.data?.data?.order?.external_order_id
-      if (data?.data?.status === "success") 
-      {
-        setOrderGuid(orderGUID)
-        setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,orderGUID);
-  
-      }
-
-      if(type === "card")
-      {
-      
-      }
-      else
-      {
-          try
-          {
-            afterPaymentSavedOrderUpdate(orderGUID, paymentIntentId, paymentIntentAmountPaid);
-          } catch (err) {
-              const errorMessage = err.response.data.error
-              if (errorMessage.toLowerCase().includes("minimum charge amount")) {
-                setPaymentError("Amount is too low for this currency.");
-              }
-              else if (errorMessage.toLowerCase().includes("declined")) {
-                  setPaymentError("Your card was declined.");
-              }
-              else if (errorMessage.toLowerCase().includes("insufficient")) {
-                setPaymentError("Your card has insufficient funds.");
-              }
-              else{
-                window.alert("There is something went wrong. Please refresh and try again.")
-              }
-          }
-      }
-  }
-  
-  const onPatchError = (error) => {
-    // console.error("patch error:", error);
-    const errorMessage = err.response.data.error
-    if (errorMessage.toLowerCase().includes("minimum charge amount")) {
-      setPaymentError("Amount is too low for this currency.");
-    }
-    else if (errorMessage.toLowerCase().includes("declined")) {
-        setPaymentError("Your card was declined.");
-    }
-    else if (errorMessage.toLowerCase().includes("insufficient")) {
-      setPaymentError("Your card has insufficient funds.");
-    }
-    else{
-      window.alert("There is something went wrong. Please refresh and try again.")
-    }
-  }
-  
-  const {isLoading: patchLoading, isError: postError, isSuccess: postSuccess, reset: postReset, mutateAsync: postMutation} = usePostMutationHook('customer-update',`/update-customer-details`, onPatchSuccess, onPatchError)
-          
-  useEffect(() => {
-    const checkTheCart = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}cart`))
-
-    if(checkTheCart === null || checkTheCart === undefined || parseInt(checkTheCart.length) === parseInt(0))
-    {
-      window.location.reload(true);
-      window.location.href = "/"
-      return
-    }
-    // Check if the cart has not any item then back to home page.
-    // Check the brand is active or not.
-    const useAuthenticate = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}websiteToken`))
-
-    if(useAuthenticate !== null)
-    {
-      handleBoolean(true,'isCustomerVerified')
-    }
-
-
-    const dayNumber = moment().day();
-    const dateTime = moment().format("HH:mm");
-    const dayName = moment().format("dddd");
-
-    if (dayOpeningClosingTime?.day_of_week?.toLowerCase().includes(dayName.toLowerCase())) 
-    {
-      const timePeriods = dayOpeningClosingTime?.time_periods;
-      if (timePeriods) 
-      {
-        if (timePeriods?.[0]?.start_time >= dateTime && dateTime <= timePeriods?.[0]?.end_time) 
-        {
-          setIsTimeToClosed(true);
-          return;
-        }
-      }
-    }
-
-    const placeOrderLocalStorageTotal = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`));
-    setTotalOrderAmountValue(placeOrderLocalStorageTotal === null ? totalOrderAmountValue : getAmountConvertToFloatWithFixed(JSON.parse(placeOrderLocalStorageTotal),2));
-  }, []);
-        
-      
-  useEffect(() => {
-      if (stripe &&   totalOrderAmountValue && paymentRequest === null)
-      {
-        const orderTotalSimpleForm = parseFloat(totalOrderAmountValue) * 100
-
-        const pr = stripe.paymentRequest({
-                country: "GB",
-                currency: "gbp",
-                total: {
-                label: 'Total',
-                amount: parseInt(orderTotalSimpleForm),
-            },
-            requestPayerName: true, //👈 request wallet to send me customer name,
-            requestPayerEmail: true, //👈 request wallet to send me email address,
-            requestShipping: false, // 👈 this is the key to get physical address
-            requestBillingAddress: true, //👈 ✅ ADD THIS
-            requestPayerPhone: true,
-        });
-
-        pr.canMakePayment().then(result => {
-            if (result) 
-            {
-            setPaymentRequest(pr);
-            }
-        });
-
-        // const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`))
-
-        pr.on("paymentmethod", async (ev) => {
-            try {
-                
-                // store or update the data field
-                if(!isScheduleClicked && isScheduleIsReady)
-                {
-                  window.alert(`We are currently closed. To schedule your order for << ${scheduleMessage} >>, go to checkout.`)
-                  window.location.href = "/"
-                  return
-                }
-
-                const subTotalOrderLocal        = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)) === null ? null: getAmountConvertToFloatWithFixed(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)),2);
-                const localStorageTotal         = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`)) === null? null: JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`));
-                const orderAmountDiscountValue  = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_number`)) === null ? null: JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_number`));
-                const orderFilter               = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`));
-                const deliveryFeeLocalStorage   = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_fee`)) === null ? null : getAmountConvertToFloatWithFixed(JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_fee`)),2);
-                const getCouponCode             = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}applied_coupon`));
-            
-                const couponCodes               = parseInt(getCouponCode?.length) > parseInt(0) ? getCouponCode : couponDiscountApplied;
-
-                // let cleanedTime = deliveryTime.replace(/ PM| AM/, ''); // remove AM/PM
-                // let updatedDeliveryTime = moment(`${moment().format("YYYY-MM-DD")} ${cleanedTime}`, "YYYY-MM-DD HH:mm");
-                // updatedDeliveryTime = updatedDeliveryTime.format("YYYY-MM-DD HH:mm:ss");
-
-                let cleanedTime = deliveryTime.replace(/ PM| AM/i, ''); // remove AM/PM (case-insensitive)
-                // Parse the current date
-                let baseDate = moment().format("YYYY-MM-DD");
-          
-                // If isScheduleForToday === 2, add 1 day
-                if (isScheduleForToday === 2) {
-                  baseDate = moment().add(1, 'day').format("YYYY-MM-DD");
-                }
-          
-                // Combine date and time
-                let updatedDeliveryTime = moment(`${baseDate} ${cleanedTime}`, "YYYY-MM-DD HH:mm");
-          
-                // Format the final result
-                updatedDeliveryTime = updatedDeliveryTime.format("YYYY-MM-DD HH:mm:ss");
-                
-                      
-                let orderFromDatabaseGUID = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}order_guid`));
-
-                const customerAuth = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}websiteToken`))
-                const customerTemp = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}tempCustomer`))
-            
-                const filterAddress = customerTemp?.addresses?.find(address => address?.is_default_address === 1)
-
-                const fullName = ev.payerName ;
-
-                const [firstName, ...lastNameParts] = fullName.trim().split(' ');
-                const lastName = lastNameParts.join(' ');
-
-                // Split and trim
-                const addressParts = ev.paymentMethod.billing_details.address.line1.split(',').map(part => part.trim());
-
-                // Further split the first part (e.g., "123 Monmouth st")
-                const firstPart = addressParts[0] || "";
-                const firstPartWords = firstPart.split(' ');
-
-                let houseNameOrNumber = ev.paymentMethod.billing_details.address.line1;
-                let myStreet1 = "";
-                
-                if (firstPartWords.length > 1) {
-                    houseNameOrNumber = firstPartWords[0]; // Assume first word is house no
-                    myStreet1 = firstPartWords.slice(1).join(' '); // Rest is the street name
-                } else {
-                    myStreet1 = firstPart; // Only street name available
-                }
-
-                const cardElementNumber = elements.getElement(CardNumberElement)
-
-                // Street2 can be made from the rest of addressParts (city, state, etc.)
-                const stripeStreet2 = addressParts.slice(1).join(', '); // Join back the rest
-
-                const data = {
-                  customer:           customerAuth === null ? 0 : customerTemp?.id,
-                  address:            customerAuth === null ? 0 : filterAddress?.id,
-                  due:                due,
-                  asapOrRequested:    asapOrRequested,
-                  email:              ev.payerEmail,
-                  phone:              ev.payerPhone,
-                  street1:            street1,
-                  street2:            street2,
-                  postcode:           postcode,
-
-                  lastName:           lastName,
-                  firstName:          firstName,
-                  password:           null,
-                  store:              storeGUID,
-                  brand:              BRAND_GUID,
-                  order:              cartData,
-                  filterId:           orderFilter === null ? selectedFilter?.id : orderFilter.id,
-                  filterName:         orderFilter === null ? selectedFilter?.name : orderFilter.name,
-                  partner:            PARTNER_ID,
-                  total_order:        localStorageTotal === null? getAmountConvertToFloatWithFixed(totalOrderAmountValue, 2): getAmountConvertToFloatWithFixed(JSON.parse(localStorageTotal),2),
-                  deliveryTime:       deliveryTime,
-                  doorHouseName:      customerDetailObj?.doorHouseName,
-                  isBySmsClicked:     0,
-                  
-                  isByEmailClicked:   0,
-                  driverInstruction:  customerDetailObj?.driverInstruction ?? "",
-                  sub_total_order:    subTotalOrderLocal,
-                  
-                  
-                  orderAmountDiscount_guid: orderAmountDiscountValue,
-                  is_schedule_order: parseInt(isScheduleForToday) > parseInt(0) ? true : false,
-                  delivery_estimate_time: updatedDeliveryTime,
-                  
-                  delivery_fee:             deliveryFeeLocalStorage,
-                  coupons:                  couponCodes,
-                  order_guid:               orderFromDatabaseGUID ?? orderGuid,
-                  is_verified:              booleanObj?.isCustomerVerified,
-          
-                  
-                  order_total: getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) * 100, // replace with your desired amount
-                  // order: orderId,
-                  brand: BRAND_GUID,
-
-                  // for wallet,
-                  type: "wallet",
-                  payment_method: ev.paymentMethod.id,
-                  is_paid_via_wallet: 1,
-                };
-                
-                setLocalStorage(`${BRAND_SIMPLE_GUID}customer_storage_data_from_wallet`,data)
-
-                ev.complete("success");
-                setWalletCompleted(true);
-                setPaymentLoader(true)
-                if (orderFromDatabaseGUID ?? orderGuid) { 
-                  await postMutation(data) 
-                }
-                else  
-                {
-                  await storeMutation(data)
-                }
-        
-                // storeMutation(data)
-            } catch (err) {
-                console.error("Show wallet error here:",err);
-                setPaymentLoader(false)
-                ev.complete("fail");
-                const errorMessage = err?.response?.data?.error
-                if (errorMessage.toLowerCase().includes("minimum charge amount")) {
-                  setPaymentError("Amount is too low for this currency.");
-                }
-                else if (errorMessage.toLowerCase().includes("declined")) {
-                    setPaymentError("Your card was declined.");
-                }
-                else if (errorMessage.toLowerCase().includes("insufficient")) {
-                  setPaymentError("Your card has insufficient funds.");
-                }    
-                else{
-                  window.alert("There is something went wrong. Please refresh and try again.")
-                }
-            }
-        });
-      }
-  }, [stripe,
-    totalOrderAmountValue, 
-    paymentRequest,
+  const paymentLock = useRef(false);
+  const [walletBusy, setWalletBusy] = useState(false);
+  const {
+    asapOrRequested,
+    setPaymentLoader,
+    booleanObj,
+    dayOpeningClosingTime,
+    couponDiscountApplied,
+    totalOrderAmountValue,
+    setTotalOrderAmountValue,
+    storeGUID,
+    cartData,
+    postcode,
+    street1,
+    street2,
+    setCartData,
+    handleBoolean,
+    selectedFilter,
     isScheduleClicked,
     isScheduleIsReady,
     scheduleMessage,
+    isScheduleForToday,
+    orderGuid,
+    setOrderGuid,
+    setBooleanObj
+  } = useContext(HomeContext);
+
+  const stripe = useStripe()
+  const elements = useElements();
+
+  const [walletCompleted, setWalletCompleted] = useState(false);
+  const [paymentRequest, setPaymentRequest] = useState(null);
+      
+  // This method will hit when payment successfully done, to send sms and email to user.
+  
+  const { 
+    mutateAsync: storeMutation 
+  } 
+  = 
+  usePostMutationHook(
+    'customer-store',
+    `/store-customer-details`,
+    (data) => {
+      const orderGUID = data?.data?.data?.order?.external_order_id
+      setOrderGuid(orderGUID)
+      setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,orderGUID);
+    }, 
+    (error) => {
+      console.log("store amount error:", error);
+    }
+  )
+  
+  const {
+    mutateAsync: postMutation
+  } 
+  = 
+  usePostMutationHook(
+    'customer-update',
+    `/update-customer-details`,
+     (data) => {
+      const orderGUID = data?.data?.data?.order?.external_order_id
+      setOrderGuid(orderGUID)
+      setLocalStorage(`${BRAND_SIMPLE_GUID}order_guid`,orderGUID);
+     }, 
+    (error) => {
+      console.log("patch amount error:", error);
+      
+    }
+  )
+  const [wallets, setWallets] = useState(null);
+
+  const buildCustomerPayload = (ev) => {
+
+    const subTotalOrderLocal =
+        JSON.parse(localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`));
+
+    const localStorageTotal =
+        JSON.parse(localStorage.getItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`));
+
+    const orderAmountDiscountValue =
+        JSON.parse(localStorage.getItem(`${BRAND_SIMPLE_GUID}order_amount_number`));
+
+    const orderFilter =
+        JSON.parse(localStorage.getItem(`${BRAND_SIMPLE_GUID}filter`));
+
+    const deliveryFee =
+        JSON.parse(localStorage.getItem(`${BRAND_SIMPLE_GUID}delivery_fee`));
+
+    const couponLocal =
+        JSON.parse(localStorage.getItem(`${BRAND_SIMPLE_GUID}applied_coupon`));
+
+    const coupons =
+        couponLocal?.length
+            ? couponLocal
+            : couponDiscountApplied;
+
+    const orderGuidLocal =
+        JSON.parse(localStorage.getItem(`${BRAND_SIMPLE_GUID}order_guid`));
+
+    const customerAuth =
+        JSON.parse(localStorage.getItem(`${BRAND_SIMPLE_GUID}websiteToken`));
+
+    const customer =
+        JSON.parse(localStorage.getItem(`${BRAND_SIMPLE_GUID}tempCustomer`));
+
+    const address =
+        customer?.addresses?.find(a => a.is_default_address === 1);
+
+    const names = ev.payerName.trim().split(" ");
+
+    const firstName = names.shift();
+
+    const lastName = names.join(" ");
+
+    let baseDate = moment().format("YYYY-MM-DD");
+
+    if (isScheduleForToday === 2)
+        baseDate = moment().add(1, "day").format("YYYY-MM-DD");
+
+    const cleanedTime =
+        deliveryTime.replace(/ PM| AM/i, "");
+
+    const deliveryEstimate =
+        moment(
+            `${baseDate} ${cleanedTime}`,
+            "YYYY-MM-DD HH:mm"
+        ).format("YYYY-MM-DD HH:mm:ss");
+
+    return {
+
+        customer: customerAuth ? customer?.id : 0,
+
+        address: customerAuth ? address?.id : 0,
+
+        due,
+
+        asapOrRequested,
+
+        email: ev.payerEmail,
+
+        phone: ev.payerPhone,
+
+        firstName,
+
+        lastName,
+
+        street1,
+
+        street2,
+
+        postcode,
+
+        password: null,
+
+        store: storeGUID,
+
+        brand: BRAND_GUID,
+
+        order: cartData,
+
+        filterId:
+            orderFilter?.id ?? selectedFilter.id,
+
+        filterName:
+            orderFilter?.name ?? selectedFilter.name,
+
+        partner: PARTNER_ID,
+
+        total_order:
+            localStorageTotal ??
+            getAmountConvertToFloatWithFixed(totalOrderAmountValue,2),
+
+        deliveryTime,
+
+        doorHouseName:
+            customerDetailObj?.doorHouseName,
+
+        driverInstruction:
+            customerDetailObj?.driverInstruction ?? "",
+
+        sub_total_order:
+            subTotalOrderLocal,
+
+        orderAmountDiscount_guid:
+            orderAmountDiscountValue,
+
+        delivery_fee:
+            deliveryFee,
+
+        coupons,
+
+        is_schedule_order:
+            isScheduleForToday > 0,
+
+        delivery_estimate_time:
+            deliveryEstimate,
+
+        order_guid:
+            orderGuidLocal ?? orderGuid,
+
+        is_verified:
+            booleanObj.isCustomerVerified,
+
+        is_paid_via_wallet:1,
+
+        type:"wallet"
+
+    };
+
+  };
+
+  const createPaymentIntent = async (
+    payload,
+    paymentMethod
+  ) => {
+
+      const response =
+          await axiosPrivate.post(
+              "/create-payment-intent",
+              {
+
+                  order:
+                      payload.order_guid,
+
+                  brand:
+                      BRAND_GUID,
+
+                  payment_method:
+                      paymentMethod,
+
+                  type:"wallet"
+
+              }
+          );
+
+      return response.data;
+
+  };
+
+  
+  /**
+   * First Heler
+   * @returns 
+   */
+  const mapStripeError = (error) => {
+
+    const message =
+        error?.response?.data?.error ??
+        error?.message ??
+        "";
+
+    const text = message.toLowerCase();
+
+    if (text.includes("insufficient"))
+        return "Your bank declined the payment because there are insufficient funds available.";
+
+    if (text.includes("expired"))
+        return "Your card has expired. Please use another card.";
+
+    if (text.includes("incorrect cvc"))
+        return "The security code (CVC) is incorrect.";
+
+    if (text.includes("authentication"))
+        return "Your bank could not authenticate this payment.";
+
+    if (text.includes("declined"))
+        return "Your bank declined the payment. Please try another card.";
+
+    if (text.includes("processing"))
+        return "Your bank is still processing the payment. Please wait.";
+
+    if (text.includes("minimum"))
+        return "The payment amount is below the minimum allowed.";
+
+    return "Unable to process your payment. Please try again.";
+  };
+
+  const validateCheckout = () => {
+    if (!cartData.length) throw new Error("Your basket is empty.");
+
+    if (!isScheduleClicked && isScheduleIsReady)
+    throw new Error(
+        `We are currently closed. To schedule your order for ${scheduleMessage}, please return to checkout.`
+    );
+
+    return true;
+  };
+
+  const confirmWalletPayment = async (
+    clientSecret,
+    ev
+  ) => {
+
+    const result =
+      await stripe.confirmCardPayment(
+          clientSecret,
+          {
+              payment_method:
+                  ev.paymentMethod.id
+          }
+      );
+
+    if(result.error)
+    throw result.error;
+
+    if(result.paymentIntent.status!=="succeeded")
+    throw new Error(
+        "Payment was not successful."
+    );
+
+    return result;
+
+  };
+  
+  const verifyPayment = async (
+    orderGuid,
+    paymentIntentId,
+    amountPaid
+  ) => {
+    try {
+
+        const { data } = await axiosPrivate.post(
+            "/update-order-after-successfully-payment-save",
+            {
+                guid: orderGuid,
+                stripeid: paymentIntentId,
+                amount_paid: amountPaid / 100,
+                placed: moment()
+                    .tz("Europe/London")
+                    .format("YYYY-MM-DD HH:mm:ss"),
+            }
+        );
+
+        return {
+            success: true,
+            data,
+        };
+
+    } catch (error) {
+      return {
+        success: false,
+        data: error?.response?.data,
+        message:
+            error?.response?.data?.error?.message ??
+            "Payment verification failed.",
+        status:
+            error?.response?.status ?? 500,
+      };
+    }
+  };
+
+  const saveCustomerOrder = async (
+      payload
+  ) => {
+      if(payload.order_guid){
+        await postMutation(payload);
+      }
+      else{
+        await storeMutation(payload);
+      }
+
+  };
+
+  const handleWalletPayment = async (ev) => {
+    // Prevent duplicate Apple Pay / Google Pay submissions
+    if (paymentLock.current) {
+      ev.complete("fail");
+      return;
+    }
+
+      paymentLock.current = true;
+      setWalletBusy(true);
+
+    try {
+      validateCheckout();
+
+      setPaymentLoader(true);
+
+      const payload = buildCustomerPayload(ev);
+      
+      await saveCustomerOrder(
+        payload
+      );
+
+      const paymentIntent = await createPaymentIntent(
+          payload,
+          ev.paymentMethod.id
+      );
+
+      try{
+        const confirmation = await confirmWalletPayment(
+          paymentIntent.clientSecret,
+          ev
+        );
+
+        const verifyResponse = await verifyPayment(
+          payload.order_guid,
+          paymentIntent.paymentIntentId,
+          confirmation.paymentIntent.amount_received
+        );
+
+        if(!verifyResponse?.success)
+        {
+          ev.complete("fail");
+          return
+        }
+
+        ev.complete("success");
+
+        // redirect to track-order page
+        setCartData([])
+        removeLocalStorageAfterOrderPlaced()
+      
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
+        setOrderGuid(null)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}isValidNumber`,0)
+
+        if (String(DELIVERY_ID) === String(payload?.filterId)) {
+          window.location.href = `/track-order/${payload?.order_guid}`
+        }
+        else
+        {
+          window.location.href = `/thank-you/${payload?.order_guid}`
+        }
+      } catch (error) {
+
+        await axiosPrivate.post("/wallet-payment-failed", {
+            order: payload.order_guid,
+            payment_intent: paymentIntent.paymentIntentId,
+            message: error.message,
+            code: error.code,
+            decline_code: error.decline_code,
+            type: error.type,
+        });
+
+        throw error;
+    }
+    
+
+    } catch (error) {
+
+        ev.complete("fail");
+
+        setPaymentError(mapStripeError(error));
+
+    } finally {
+      setPaymentLoader(false);
+      paymentLock.current = false;
+      setWalletBusy(false);
+    }
+  };
+
+  useEffect(() => {
+    if (!stripe || !totalOrderAmountValue || paymentRequest) return;
+
+
+    const pr = stripe.paymentRequest({
+        country: "GB",
+        currency: "gbp",
+        total: {
+            label: "Total",
+            amount: Math.round(parseFloat(totalOrderAmountValue) * 100),
+        },
+        requestPayerName: true,
+        requestPayerEmail: true,
+        requestPayerPhone: true,
+        // requestBillingAddress: true,
+        requestShipping: false,
+    });
+    
+
+    pr.canMakePayment().then((result) => {
+        if (!result) return;
+
+        setWallets(result);
+
+        if (result.applePay || result.googlePay) {
+            setPaymentRequest(pr);
+        }
+    });
+
+    pr.on("paymentmethod", handleWalletPayment);
+
+    // return () => {
+    //     pr.off?.("paymentmethod", handleWalletPayment);
+    // };
+
+  }, [
+      stripe,
+      totalOrderAmountValue,
+      paymentRequest,
+      isScheduleClicked,
+      isScheduleIsReady,
+      scheduleMessage,
   ]);
 
   return(
     <Fragment>
 
-      {paymentRequest && !walletCompleted && (
-      
-        <PaymentRequestButtonElement options={{ paymentRequest }} />
-      )}
+      { 
+        // ((paymentRequest && !walletCompleted) && wallets) && (wallets.applePay || wallets.googlePay) && (
+        // (!walletBusy && paymentRequest) && (
+        
+        //   <PaymentRequestButtonElement options={{ paymentRequest }} />
+        // )
+        <div
+            style={{
+                opacity: walletBusy ? 0.5 : 1,
+                pointerEvents: walletBusy ? "none" : "auto",
+            }}
+        >
+          {
+            ((paymentRequest && !walletCompleted) && wallets) && (wallets.applePay || wallets.googlePay) &&
+            <>
+              <PaymentRequestButtonElement
+                  options={{ paymentRequest }}
+              />
+            </>
+          }
+        </div>
+      }
     </Fragment>
   )
 }

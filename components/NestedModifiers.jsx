@@ -4,9 +4,11 @@ import React, { Fragment } from "react";
 import ChooseOnlyOne from "./nestedModifierItems/ChooseOnlyOne";
 import ChooseOneItemOneTime from "./nestedModifierItems/ChooseOneItemOneTime";
 import CounterItem from "./nestedModifierItems/CounterItem";
+import { useWebsite } from "@/app/providers/context/WebsiteContext";
 
 export const NestedModifiers = (props) => 
 {
+  const {layoutWebsiteModification} = useWebsite()
   const {
     handleModalIncrement,
     handleModalDecrement,
@@ -14,13 +16,11 @@ export const NestedModifiers = (props) =>
     selectedModifierId,
     selectedModifierItemId,
     singleItem,
-    handleBackArrow,
     handleModalModifierToggle,
     handleSaveBtn,
     handleModalCheckInput,
     handleModalRadioInput,
     handleDisplayItemStates,
-    websiteModificationData,
   } = props;
 
   return (
@@ -70,7 +70,7 @@ export const NestedModifiers = (props) =>
                               selectedModifierId,
                               selectedModifierItemId,
                               secondItemModifierIndex,
-                              websiteModificationData,
+                              layoutWebsiteModification,
                               handleModalModifierToggle,
                             };
 
@@ -127,9 +127,9 @@ export const NestedModifiers = (props) =>
                           className="inline-flex w-full justify-center items-center px-5 py-2 rounded-lg font-medium text-white text-center"
                           style={{
                             backgroundColor:
-                              websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                              layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
                             color:
-                              websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                              layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor,
                           }}
                           onClick={() => handleSaveBtn(selectedModifierId, selectedModifierItemId)}
                         >

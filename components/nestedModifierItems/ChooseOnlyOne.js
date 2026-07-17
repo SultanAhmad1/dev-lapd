@@ -10,7 +10,7 @@ export default function ChooseOnlyOne({
     handleModalRadioInput,
     selectedModifierItemId,
     handleModalModifierToggle,
-    websiteModificationData,
+    layoutWebsiteModification,
 }) 
 {
     return(
@@ -86,10 +86,10 @@ export default function ChooseOnlyOne({
                 const isSelected = item?.item_select_to_sale;
                 const bgColor =
                   isSelected &&
-                  (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR);
+                  (layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR);
                 const textColor =
                   isSelected &&
-                  (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR);
+                  (layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR);
                 const borderColor = isSelected ? `1px solid ${bgColor}` : '1px solid #e5e7eb';
 
                 return (

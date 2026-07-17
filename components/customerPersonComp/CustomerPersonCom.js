@@ -5,11 +5,13 @@ import React, { useContext, useEffect, useRef } from "react";
 import { useCheckAuthMutationHook, useLogoutMutationHook } from "../reactquery/useQueryHook";
 import HomeContext from "@/contexts/HomeContext";
 import { BRAND_SIMPLE_GUID, USER_IMAGE } from "@/global/Axios";
+import { useWebsite } from "@/app/providers/context/WebsiteContext";
 
 export default function CustomerPersonCom() 
 {
+    const {layoutWebsiteModification} = useWebsite()
     
-    const {handleBoolean,websiteModificationData} = useContext(HomeContext)
+    const {handleBoolean } = useContext(HomeContext)
     
     const asideRef = useRef(null);
 
@@ -111,13 +113,13 @@ export default function CustomerPersonCom()
                                     className="border rounded-lg px-4 py-3 rounded text-center font-medium transition-colors"
                                     style={{
                                     borderColor:
-                                        websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                                        layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
                                         ?.buttonBackgroundColor || 'black',
                                     backgroundColor:
-                                        websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                                        layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
                                         ?.buttonBackgroundColor || 'black',
                                     color:
-                                        websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                                        layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
                                         ?.buttonColor || 'white',
                                     }}
                                 >

@@ -4,10 +4,9 @@ import HomeContext from "@/contexts/HomeContext";
 import React, { Fragment, useCallback, useContext, useEffect, useState } from "react";
 
 import { useLoginMutationHook } from "@/components/reactquery/useQueryHook";
-import { BRAND_GUID, BRAND_SIMPLE_GUID, IMAGE_URL_Without_Storage} from "@/global/Axios";
+import { BRAND_GUID, BRAND_SIMPLE_GUID } from "@/global/Axios";
 import ForgetPassword from "../forgetpassword/ForgetPassword";
-import { ContextCheckApi } from "@/app/layout";
-
+import { useWebsite } from "@/app/providers/context/WebsiteContext";
 
 function validatePhoneNumber(phoneNumber) {
     let formattedPhone = phoneNumber.replace(/[^0-9]/g, '');
@@ -24,11 +23,12 @@ function validatePhoneNumber(phoneNumber) {
     return formattedPhone;
 }
 
-
 export default function Login() 
 {
+    const {layoutWebsiteModification} = useWebsite()
+    
     const homeContext = useContext(HomeContext) || {};
-    const { brandLogo , handleBoolean, websiteModificationData} = homeContext
+    const { handleBoolean } = homeContext
 
     const [isHover, setIsHover] = useState(false);
     
@@ -42,11 +42,6 @@ export default function Login()
         isLoginOptionClicked: true,
         isForgetPasswordClicked: false,
     });
-    
-    
-    const contextApi = useContext(ContextCheckApi) || {};
-    const { setMetaDataToDisplay } = contextApi;
-
     
     const validPhoneNumber = (phone) => {
         
@@ -71,17 +66,6 @@ export default function Login()
             }
         }
     }
-
-    useEffect(() => {
-        if(websiteModificationData)
-        {
-            setMetaDataToDisplay((prevData) => ({
-                ...prevData,
-                title: `Login - ${websiteModificationData?.brand?.name}`,
-                contentData: "",
-            }))
-        }
-    }, [websiteModificationData]);
 
     const handleInput = useCallback((event) => {
         const { value, name } = event.target
@@ -234,9 +218,9 @@ export default function Login()
                                 type="submit" 
                                 className="login-button" 
                                 style={{
-                                    background: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
-                                    color: isHover ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
-                                    border: isHover ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}` : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
+                                    background: isHover ? layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor : layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                                    color: isHover ? layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor : layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                                    border: isHover ? `1px solid ${layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}` : `1px solid ${layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
                                 }} 
                                 onMouseEnter={() => setIsHover(true)} 
                                 onMouseLeave={() => setIsHover(false)} 

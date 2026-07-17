@@ -1,10 +1,12 @@
 "use client";
 import React, { Fragment, useContext, useEffect } from 'react'
 import HomeContext from '../contexts/HomeContext'
+import { useWebsite } from '@/app/providers/context/WebsiteContext';
 
 function Navigation() 
 {
-    const {websiteModificationData,navigationCategories} = useContext(HomeContext)
+    const {layoutWebsiteModification} = useWebsite()
+    const {navigationCategories} = useContext(HomeContext)
 
     useEffect(() => {
         const navbarCategories = window.document.getElementById("navbar-categories");
@@ -62,7 +64,7 @@ function Navigation()
                                     return(
                                         parseInt(category?.items?.length) > parseInt(0) &&
                                         <section className="navigation-div" key={index} style={{cursor: "pointer"}}>
-                                            <div data-target={`section_${index}`}  className={`navigation-btn ${index === 0 ? "_nav_active" : ""}`} style={{color: (websiteModificationData?.websiteModificationLive !== null && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor !== null) && websiteModificationData?.websiteModificationLive?.json_log[0]?.categoryFontColor}}>
+                                            <div data-target={`section_${index}`}  className={`navigation-btn ${index === 0 ? "_nav_active" : ""}`} style={{color: (layoutWebsiteModification?.websiteModificationLive !== null && layoutWebsiteModification?.websiteModificationLive?.json_log[0]?.categoryFontColor !== null) && layoutWebsiteModification?.websiteModificationLive?.json_log[0]?.categoryFontColor}}>
                                                 {category.title.toUpperCase()}
                                             </div>
                                         </section>

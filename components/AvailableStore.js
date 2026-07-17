@@ -1,18 +1,18 @@
 "use client";
 import HomeContext from "@/contexts/HomeContext";
 import { axiosPrivate, BLACK_COLOR, BRAND_GUID, BRAND_SIMPLE_GUID, DELIVERY_ID, LIGHT_BLACK_COLOR, PARTNER_ID, WHITE_COLOR } from "@/global/Axios";
-import { find_collection_matching_postcode, find_matching_postcode, setLocalStorage } from "@/global/Store";
+import { check_is_delivery_available, find_collection_matching_postcode, find_matching_postcode, setLocalStorage, splitAddress } from "@/global/Store";
 import React, { useContext, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import moment from "moment";
+import { useWebsite } from "@/app/providers/context/WebsiteContext";
 
 export default function AvailableStore({availableStores, setAvailableStores,validPostcode, locationDetails}) 
 {
-
+  const {layoutWebsiteModification} = useWebsite()
   const {
     setLoader,
     setDayOpeningClosingTime,
-    setIsTimeToClosed,
     setMenu,
     setSelectedStoreDetails,
     setSelectedFilter,
@@ -34,8 +34,7 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
     setStreet2,
     setComingSoon,
     setErrorMessage,
-    setDisplayFilterModal,
-    websiteModificationData,
+    handleBoolean,
   } = useContext(HomeContext);
 
   const route = useRouter();
@@ -86,7 +85,6 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
         {
           if (timePeriods?.[0]?.start_time >= dateTime && dateTime <= timePeriods?.[0]?.end_time) 
           {
-            setIsTimeToClosed(true);
             setAtFirstLoad(false);
           }
         }
@@ -115,10 +113,19 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
       let addedTime = (selectedOrderId === DELIVERY_ID) ? getdayInformation.time_periods[0].time_to : getdayInformation.time_periods[0].collection_after_opening_from;
       const updatedCloseTime = moment.utc(getdayInformation.time_periods[0].end_time,'HH:mm','Europe/London').add(addedTime, 'minutes').format('HH:mm');
       // if it is delivery then  delivery time otherwise collection time.
+
+      // const db = new Dexie('storeDatabase');
+
+      // db.version(1).stores({
+      //   'time': getdayInformation
+      // })
+
       setStoreToDayOpeningTime(getdayInformation.time_periods[0].start_time);
       setStoreToDayClosingTime(getdayInformation.time_periods[0].end_time);
-      setStoreCurrentOrNextDayClosingTime(updatedCloseTime);
-      setStoreCurrentOrNextDayOpeningTime(getdayInformation.time_periods[0].start_time);
+      // setStoreCurrentOrNextDayClosingTime(updatedCloseTime);
+      // setStoreCurrentOrNextDayOpeningTime(getdayInformation.time_periods[0].start_time);
+      // console.log("avaiable at 6: ",getdayInformation.time_periods[0].start_time);
+      
 
       setTimeout(() => {
         setLoader(false)
@@ -138,22 +145,39 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
     setStoreName(storeName);
     setLoader(true)
     setAtFirstLoad(false);
-    setDisplayFilterModal(true)
 
     setStoreGUID(storeGUID);
 
     if(selectedOrderId === DELIVERY_ID)
     {
+      /**
+       * Only if when order is delivery then customer address will be shown.
+      */
       const getAddressFromLocalStorage = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}address`)
       if(getAddressFromLocalStorage)
       {
         const filterAddress = JSON.parse(getAddressFromLocalStorage)
-        setStreet1(filterAddress.ukpostcode.street1)
-        setStreet2(filterAddress.ukpostcode.street2)
+        console.log("get the delivery details:", filterAddress, "google:", filterAddress?.google?.destination_addresses?.[0]);
+
+        const getUkPostcodes = filterAddress?.ukpostcode
+        if(getUkPostcodes !== null && getUkPostcodes !== undefined && getUkPostcodes !== "")
+        {
+          setStreet1(getUkPostcodes?.street1);
+          setStreet2(getUkPostcodes?.street2);
+        }
+        else
+        {
+          const {street1, street2} = splitAddress(filterAddress?.google?.destination_addresses?.[0])
+          setStreet1(street1)
+          setStreet2(street2)
+        }
       }
     }
     else
     {
+      /**
+       * Only if when order is collection then store address will be shown.
+      */
       const findStore = availableStores?.find((store) => store.location_guid === storeGUID)
 
       const filterAddress = findStore.address.replace(findStore.house_no_name, '').trim();
@@ -177,117 +201,163 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
     setSelectedStoreDetails(selectedStoreData)
 
     setLocalStorage(`${BRAND_SIMPLE_GUID}user_selected_store`, selectedStoreData);
-    route.push("/");
+
+    const checkIsJoinClicked = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}isJoinModalClickedAtFirstLoad`) || 'false')
+
+    if(checkIsJoinClicked)
+    {
+      route.push('/join-us')
+      return
+    }
+    // route.push("/");
+    window.location.href = "/"
   }
 
-  // useEffect(() => {
-  //   setTimeout(() => {
-  //     if (parseInt(availableStores.length) === parseInt(1)) {
-  //       handleLocationSelect(
-  //         availableStores[0]?.location_guid,
-  //         availableStores[0]?.location_name,
-  //         availableStores[0]?.telephone
-  //       );
-  //     }
-  //   }, 2000);
-  // }, [availableStores]);
-  // code is working
-  
    const handleOrderType = (storeId, id) => 
   {
-    // first check available store delivery matrix matched.
-    
-    const findStore = availableStores?.find((store) => store?.location_guid === storeId)
-    //  at first customer selected the delivery 
-    
-    // This block of code only available for delivery one
-    if(findStore && findStore?.orderType?.length > 0)
-    {
-      const findDelivery = findStore?.orderType?.find((order) => order?.id === id)
+    try {
+      console.log("handle order type: ",storeId, id);
+      
+      // first check available store delivery matrix matched.
+      document.cookie = `cookieSelectedLocation=${storeId}; path=/`;
 
-      const findDeliveryMatrix = availableStores?.find((stores) => stores?.location_guid === storeId)
+      const findStore = availableStores?.find((store) => store?.location_guid === storeId)
 
+      /**
+       * Reset everything when store is changed.
+      */
+      
+      const getTheStore = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}user_selected_store`))
 
-      if(findDelivery?.id?.includes(DELIVERY_ID))
+      if(getTheStore && (getTheStore?.display_id !== storeId))
       {
-        // now check the matrix
-        const matrixFind = findStore?.deliveryMatrixes?.delivery_matrix_rows?.filter((matchPostcode) => matchPostcode?.postcode.toUpperCase().startsWith(validPostcode.toUpperCase()) || matchPostcode?.postcode?.toUpperCase().startsWith("STANDARD"))
-        
-        if(! matrixFind)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+      }
+
+      const bkUserPostcode = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}bk_user_postcode_time`)
+      if(bkUserPostcode)
+      {
+        const userPostcode = JSON.parse(bkUserPostcode)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}bk_user_postcode_time`, userPostcode)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}user_postcode_time`, userPostcode)
+      }
+
+      const getAddress = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}bk_address`)
+    
+      if(getAddress)
+      {
+        const jsObjAddress = JSON.parse(getAddress)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}address`, jsObjAddress);
+        setLocalStorage(`${BRAND_SIMPLE_GUID}bk_address`, jsObjAddress);
+      }
+
+      const UserValidPostcode = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}bk_user_valid_postcode`)
+      
+      if(UserValidPostcode)
+      {
+        const jsObjValidPostcode = JSON.parse(UserValidPostcode)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}user_valid_postcode`, jsObjValidPostcode)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}bk_user_valid_postcode`, jsObjValidPostcode)
+      }
+     
+      /** Reset everything when store is changed ended. */
+
+      //  at first customer selected the delivery 
+      
+      // This block of code only available for delivery one
+      if(findStore && findStore?.orderType?.length > 0)
+      {
+        const findDelivery = findStore?.orderType?.find((order) => order?.id === id)
+
+        const findDeliveryMatrix = availableStores?.find((stores) => stores?.location_guid === storeId)
+
+
+        if(findDelivery?.id?.includes(DELIVERY_ID))
         {
-          setComingSoon(true)
-          setErrorMessage("Sorry, we do not deliver to your postcode from this store at the moment.")
-          return
+          // now check the matrix
+          const matrixFind = findStore?.deliveryMatrixes?.delivery_matrix_rows?.filter((matchPostcode) => matchPostcode?.postcode.toUpperCase().startsWith(validPostcode.toUpperCase()) || matchPostcode?.postcode?.toUpperCase().startsWith("STANDARD"))
+          
+          if(! matrixFind)
+          {
+            setComingSoon(true)
+            setErrorMessage("Sorry, we do not deliver to your postcode from this store at the moment.")
+            return
+          }
+          // This block for delivery depend on customer order type selection.
+          find_matching_postcode(findDeliveryMatrix.deliveryMatrixes.delivery_matrix_rows, validPostcode, setDeliveryMatrix);
         }
-        // This block for delivery depend on customer order type selection.
-        find_matching_postcode(findDeliveryMatrix.deliveryMatrixes.delivery_matrix_rows, validPostcode, setDeliveryMatrix);
+        else
+        {
+          // This block for collection depend on customer order type selection.
+          find_collection_matching_postcode(findDeliveryMatrix.deliveryMatrixes.collection_matrix_rows, validPostcode, setDeliveryMatrix);
+        }
       }
       else
       {
-        // This block for collection depend on customer order type selection.
-        find_collection_matching_postcode(findDeliveryMatrix.deliveryMatrixes.collection_matrix_rows, validPostcode, setDeliveryMatrix);
+        setComingSoon(true)
+        setErrorMessage("At least one order type must be selected.")
+        return
       }
-    }
-    else
-    {
-      setComingSoon(true)
-      setErrorMessage("At least one order type must be selected.")
-      return
-    }
-    // This block of code only available for delivery one End
+      // This block of code only available for delivery one End
 
-    const updateAvailableStores = availableStores?.map((stores) => {
-      if(stores?.location_guid === storeId)
-      {
-        return {
-          ...stores,
-          orderType: stores?.orderType?.map((order) => {
-            if(order?.id === id)
-            {
+      const updateAvailableStores = availableStores?.map((stores) => {
+        if(stores?.location_guid === storeId)
+        {
+          return {
+            ...stores,
+            orderType: stores?.orderType?.map((order) => {
+              if(order?.id === id)
+              {
+                return {
+                  ...order,
+                  isClicked: true
+                }
+              }
+
               return {
                 ...order,
-                isClicked: true
+                isClicked: false
               }
-            }
-
-            return {
-              ...order,
-              isClicked: false
-            }
-          })
+            })
+          }
         }
-      }
-      return stores
-    })
+        return stores
+      })
 
-    setAvailableStores(updateAvailableStores)
-    
-    const findAvailableStores = updateAvailableStores?.find((checkStores) => checkStores?.location_guid === storeId)
-    setLocalStorage(`${BRAND_SIMPLE_GUID}filtersList`, findAvailableStores?.orderType);
+      setAvailableStores(updateAvailableStores)
+      
+      const findAvailableStores = updateAvailableStores?.find((checkStores) => checkStores?.location_guid === storeId)
+      setLocalStorage(`${BRAND_SIMPLE_GUID}filtersList`, findAvailableStores?.orderType);
 
-    const getSelectedFilter = findAvailableStores?.orderType?.find((findActiveType) => findActiveType?.isClicked)
-    
-    setSelectedFilter(getSelectedFilter)
-    setLocalStorage(`${BRAND_SIMPLE_GUID}filter`,getSelectedFilter)
+      const getSelectedFilter = findAvailableStores?.orderType?.find((findActiveType) => findActiveType?.isClicked)
+      
+      setSelectedFilter(getSelectedFilter)
+      setLocalStorage(`${BRAND_SIMPLE_GUID}filter`,getSelectedFilter)
 
-    setFilters(findAvailableStores?.orderType)
-    const updateFilter = filters?.find((findFilter) => findFilter?.id === id && findFilter?.status)
-    if(updateFilter)
-    {
-      setSelectedFilter(updateFilter)
-      setLocalStorage(`${BRAND_SIMPLE_GUID}filter`,updateFilter)
-      setNextCookies(`${BRAND_SIMPLE_GUID}filter`,updateFilter)
-      document.cookie = `${BRAND_SIMPLE_GUID}filter=${updateFilter}`
-
-      if(isDisplayFromModal)
+      setFilters(findAvailableStores?.orderType)
+      const updateFilter = filters?.find((findFilter) => findFilter?.id === id && findFilter?.status)
+      if(updateFilter)
       {
-        setTimeout(() => {
-          setDisplayFilterModal(false)
-        }, 3000);
+        setSelectedFilter(updateFilter)
+        setLocalStorage(`${BRAND_SIMPLE_GUID}filter`,updateFilter)
+        setNextCookies(`${BRAND_SIMPLE_GUID}filter`,updateFilter)
+        document.cookie = `${BRAND_SIMPLE_GUID}filter=${updateFilter}`
       }
-    }
 
-    handleLocationSelect(id,findAvailableStores?.location_guid, findAvailableStores?.location_name, findAvailableStores?.telephone, findAvailableStores?.email, findAvailableStores?.house_no_name,findAvailableStores?.address)
+      // copy from subAtLoadLoadShow
+
+      handleLocationSelect(id,findAvailableStores?.location_guid, findAvailableStores?.location_name, findAvailableStores?.telephone, findAvailableStores?.email, findAvailableStores?.house_no_name,findAvailableStores?.address)   
+    } catch (error) {
+      console.log("handle order type: ", error);
+      
+    }
+   
   }
 
   useEffect(() => {
@@ -332,24 +402,24 @@ export default function AvailableStore({availableStores, setAvailableStores,vali
                 <button
                   key={idx}
                   type="button"
-                  className="flex-1 text-sm font-medium py-2 rounded border text-center transition-colors"
+                  className="flex-1 text-sm font-medium py-2 rounded border text-center transition-all duration-200 hover:scale-105"
                   style={{
                     background: order?.isClicked
-                      ? websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                      ? layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
                           ?.buttonHoverBackgroundColor || WHITE_COLOR
-                      : websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                      : layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
                           ?.buttonBackgroundColor || LIGHT_BLACK_COLOR,
 
                     color: order?.isClicked
-                      ? websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                      ? layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
                           ?.buttonHoverColor || BLACK_COLOR
-                      : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor ||
+                      : layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor ||
                         WHITE_COLOR,
 
                     borderColor: order?.isClicked
-                      ? websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                      ? layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
                           ?.buttonBackgroundColor || LIGHT_BLACK_COLOR
-                      : websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                      : layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
                           ?.buttonHoverBackgroundColor || LIGHT_BLACK_COLOR,
                   }}
                   onClick={() => handleOrderType(store?.location_guid, order?.id)}

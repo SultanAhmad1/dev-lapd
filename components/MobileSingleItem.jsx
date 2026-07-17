@@ -7,8 +7,15 @@ import ChooseOnlyOne from "./mobileModifiersItems/ChooseOnlyOne";
 import ChooseOneItemOneTime from "./mobileModifiersItems/ChooseOneItemOneTime";
 import CounterItem from "./mobileModifiersItems/CounterItem";
 import Image from "next/image";
+import Link from "next/link";
+import { useContext } from "react";
+import HomeContext from "@/contexts/HomeContext";
+import moment from "moment/moment";
+import { memo } from "react";
 
-export const MobileSingleItem = (props) => {
+export const MobileSingleItem = memo((props) => {
+
+  const { selectedStoreDetails, setAtFirstLoad } = useContext(HomeContext);
   const {
     optionNumber,
     itemPrice,
@@ -24,7 +31,7 @@ export const MobileSingleItem = (props) => {
     handleMobileQuantityIncrement,
     handleMobileAddToCart,
     handleNextClicked,
-    websiteModificationData,
+    layoutWebsiteModification,
     isAnyModifierHasExtras,
     checkPromotionActive,
     getPromotionText,
@@ -36,13 +43,43 @@ export const MobileSingleItem = (props) => {
     return url.startsWith('https://');
   };
   
+  let isPromotionActive = false
+  let promotionText = singleItem?.promotion_text
+  let promotionBgColor = singleItem?.promotion_bg_color
+  let promotionTextColor = singleItem?.promotion_text_color
+
+  const dayNameAndTime = moment.tz("HH:mm", "Europe/London").format("HH:mm:ss");
+
+  if(parseInt(singleItem?.is_promotion) === parseInt(1))
+  {
+    const currentDay = moment().format("dddd")
+    const findDay = singleItem?.days?.find((day) => day.label.toLowerCase() === currentDay?.toLocaleLowerCase())
+    if(findDay)
+    {
+      if(dayNameAndTime >= moment(singleItem?.start_time, "HH:mm:ss").format("HH:mm:ss") && moment(singleItem?.end_time, "HH:mm:ss").format("HH:mm:ss") <= dayNameAndTime)
+      {
+        isPromotionActive = true
+        promotionText = singleItem?.promotion_text
+        promotionBgColor = singleItem?.promotion_bg_color
+        promotionTextColor = singleItem?.promotion_text_color
+      }
+    }
+  }
+  else if(singleItem?.is_coming_soon === 1 && moment(singleItem?.coming_soon_start_date).format('YYYY-MM-DD') >= moment().format('YYYY-MM-DD'))
+  {
+    isPromotionActive = true
+    promotionText = "Coming soon"
+    promotionBgColor = "#ffc107"
+    promotionTextColor = "212529"
+  }
+
   return (
 
     <div onWheel={handleMScroll} className="fixed inset-0 z-40 bg-white overflow-y-auto">
       <div className="relative w-screen h-64">
         {/* Sticky Close Button — Overlapping on top of image */}
         <div className="absolute top-4 left-4 z-40">
-          <a href="/" className="text-gray-600 hover:text-black">
+          <Link href="/" className="text-gray-600 hover:text-black">
             {
               singleItem?.image_url ?
                 <svg
@@ -72,33 +109,75 @@ export const MobileSingleItem = (props) => {
                   />
                 </svg>
             }
-          </a>
+          </Link>
         </div>
 
         {/* Full-bleed image with no spacing */}
+        {/* <div className="">
+          {singleItem?.image_url && (
+            <>
+              {
+                isPromotionActive &&
+                <span
+                  className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-bl-lg shadow-md"
+                  style={{ backgroundColor: promotionBgColor, color: promotionTextColor }}
+                >
+                  {promotionText}
+                </span>
+              }
+              <Image
+                fill
+                role="presentation"
+                src={
+                  isValidHttpsUrl(singleItem?.image_url)
+                    ? singleItem?.image_url
+                    : `${IMAGE_URL_Without_Storage}${singleItem?.image_url}`
+                }
+                alt={singleItem?.title}
+                className="object-cover w-full h-full transition-transform duration-500 ease-in-out scale-100"
+              />
+            </>
+          )}
+          {
+            // !singleItem?.display_at_banner && checkPromotionActive &&
+            // <span
+            //   className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-bl-lg shadow-md"
+            //   style={{ backgroundColor: getPromotionBgColor, color: getPromotionTextColor }}
+            // >
+            //   {getPromotionText}
+            // </span>
+          }
+        </div> */}
+
+        {/* <div className="relative"> */}
         <div className="">
           {singleItem?.image_url && (
-            <Image
-              fill
-              role="presentation"
-              src={
-                isValidHttpsUrl(singleItem?.image_url)
-                  ? singleItem?.image_url
-                  : `${IMAGE_URL_Without_Storage}${singleItem?.image_url}`
-              }
-              alt={singleItem?.title}
-              className="object-cover w-full h-full transition-transform duration-500 ease-in-out scale-100"
-            />
+            <>
+              {isPromotionActive && (
+                <span
+                  className="absolute top-0 right-0 z-20 text-white text-xs font-bold px-2 py-3 rounded-bl-lg shadow-md z-20"
+                  style={{
+                    backgroundColor: promotionBgColor,
+                    color: promotionTextColor,
+                  }}
+                >
+                  {promotionText}
+                </span>
+              )}
+
+              <Image
+                fill
+                role="presentation"
+                src={
+                  isValidHttpsUrl(singleItem?.image_url)
+                    ? singleItem?.image_url
+                    : `${IMAGE_URL_Without_Storage}${singleItem?.image_url}`
+                }
+                alt={singleItem?.title}
+                className="object-cover w-full h-full transition-transform duration-500 ease-in-out"
+              />
+            </>
           )}
-           {
-              checkPromotionActive &&
-              <span
-                className="absolute top-0 right-0 bg-red-500 text-white text-xs font-bold px-2 py-1 rounded-bl-lg shadow-md"
-                style={{ backgroundColor: getPromotionBgColor, color: getPromotionTextColor }}
-              >
-                {getPromotionText}
-              </span>
-            }
         </div>
       </div>
 
@@ -109,7 +188,7 @@ export const MobileSingleItem = (props) => {
 
           <h2 className="text-xl font-semibold m-0">{singleItem?.title}</h2>
           <span className="text-lg text-black font-bold">&pound;{parseFloat(singleItem?.price).toFixed(2)}</span>
-          <p className="text-sm text-gray-700">{singleItem?.description}</p>
+          <p className="text-sm text-gray-700 whitespace-pre-line">{singleItem?.description}</p>
 
           <ul className="space-y-4 pb-32">
             {[1, 2].includes(optionNumber) &&
@@ -118,9 +197,9 @@ export const MobileSingleItem = (props) => {
                 if (!shouldShow || parseInt(modifier?.modifier_secondary_items?.length) === 0) return null;
 
                 if (modifier?.select_single_option === 1 && modifier?.min_permitted > 0 && modifier?.max_permitted === 1) {
-                  return <ChooseOnlyOne key={index} {...{ index, modifier, handleRadioInput, websiteModificationData, handleMobileModifierToggle }} />;
+                  return <ChooseOnlyOne key={index} {...{ index, modifier, handleRadioInput, layoutWebsiteModification, handleMobileModifierToggle }} />;
                 } else if (modifier?.select_single_option === 1 && modifier?.max_permitted > 1) {
-                  return <ChooseOneItemOneTime key={index} {...{ index, modifier, handleCheckInput, websiteModificationData, handleMobileModifierToggle }} />;
+                  return <ChooseOneItemOneTime key={index} {...{ index, modifier, handleCheckInput, layoutWebsiteModification, handleMobileModifierToggle }} />;
                 } else if (modifier?.select_single_option > 1 && modifier?.max_permitted >= 1) {
                   return <CounterItem key={index} {...{ index, modifier, handleDecrement, handleIncrement, handleMobileModifierToggle }} />;
                 }
@@ -179,13 +258,33 @@ export const MobileSingleItem = (props) => {
                     Back
                   </button>
                 }
-                <button
-                  type="button"
-                  onClick={() => handleMobileAddToCart("addToCart")}
-                  className="h-8 px-4 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white text-sm font-bold rounded-md shadow-md transition duration-200"
-                >
-                  ADD TO CART
-                </button>
+
+                {
+                  singleItem?.is_coming_soon === 1 && moment(singleItem?.coming_soon_start_date,"YYYY-MM-DD").format("YYYY-MM-DD") >= moment().format("YYYY-MM-DD") ?
+                    <button
+                      type="button"
+                      className="uppercase h-8 px-4 bg-[#ffc107] hover:bg-[#ffca2c] active:bg-[#e0a800] text-[#212529] text-sm font-bold rounded-md shadow-md transition duration-200"
+                    >
+                      Coming Soon
+                    </button>
+                  :
+                  selectedStoreDetails === null ?
+                    <button
+                      type="button"
+                      onClick={() => setAtFirstLoad(true)}
+                      className="uppercase h-8 px-4 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white text-sm font-bold rounded-md shadow-md transition duration-200"
+                    >
+                      Order Now
+                    </button>
+                  :
+                    <button
+                      type="button"
+                      onClick={() => handleMobileAddToCart("addToCart")}
+                      className="uppercase h-8 px-4 bg-green-600 hover:bg-green-700 active:bg-green-800 text-white text-sm font-bold rounded-md shadow-md transition duration-200"
+                    >
+                      ADD TO CART
+                    </button>
+                }
               </div>
             }
                 
@@ -197,4 +296,4 @@ export const MobileSingleItem = (props) => {
       </div>
     </div>
   );
-}
+})

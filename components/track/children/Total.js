@@ -2,7 +2,7 @@
 import { getAmountConvertToFloatWithFixed } from "@/global/Store";
 import React from "react";
 
-export default function Total({subtotal, deliveryCharge,serviceCharge,discountAmount})
+export default function Total({subtotal, deliveryCharge,serviceCharge,discountAmount,orderTotal})
 {
     return(
         <>
@@ -14,12 +14,12 @@ export default function Total({subtotal, deliveryCharge,serviceCharge,discountAm
                     </span>
                 </li>
 
-                <li className="flex justify-between items-center pb-1 font-medium">
+                {/* <li className="flex justify-between items-center pb-1 font-medium">
                     <span className="text-md font-medium text-gray-700">Service</span>
                     <span className="text-md font-medium text-gray-800">
                         &pound;{getAmountConvertToFloatWithFixed(serviceCharge, 2)}
                     </span>
-                </li>
+                </li> */}
 
                 <li className="flex justify-between items-center pb-1 font-medium">
                     <span className="text-md font-medium text-gray-700">Discount</span>
@@ -38,16 +38,7 @@ export default function Total({subtotal, deliveryCharge,serviceCharge,discountAm
 
             <div className="mt-2 flex justify-between items-center text-lg font-semibold text-gray-900">
                 <span>Total</span>
-                <span>
-                    &pound;
-                    {getAmountConvertToFloatWithFixed(
-                        parseFloat(subtotal) +
-                        parseFloat(deliveryCharge) +
-                        parseFloat(serviceCharge) -
-                        parseFloat(discountAmount),
-                        2
-                    )}
-                </span>
+                <span>&pound;{getAmountConvertToFloatWithFixed(orderTotal,2)}</span>
             </div>
         </>
     )    

@@ -1,221 +1,139 @@
 "use client";
-import { BRAND_GUID, BRAND_SIMPLE_GUID } from "@/global/Axios";
+import { BRAND_SIMPLE_GUID } from "@/global/Axios";
 
 import React, { useContext, useEffect, useState } from "react";
 import { getAmountConvertToFloatWithFixed, setLocalStorage } from "@/global/Store";
 import moment from "moment";
-import { useGetQueryAutoUpdate, usePostMutationHook } from "../reactquery/useQueryHook";
 import MyOrders from "./children/MyOrders";
 import Total from "./children/Total";
 import HomeContext from "@/contexts/HomeContext";
-import { ContextCheckApi } from "@/app/layout";
+import { useFormState } from "react-dom";
+import { useWebsite } from "@/app/providers/context/WebsiteContext";
+import CompletePayment from "./children/CompletePayment";
 
-export default function TrackOrderDetail({orderId}) 
+const initialState = {
+  success: null,
+  orderHashError: null,
+  data: null,
+};
+
+export default function TrackOrderDetail({data: initialData, postTrackOrder}) 
 {
-    const { websiteModificationData, setSelectedStoreDetails,setOrderGuid } = useContext(HomeContext)
-    const { setMetaDataToDisplay, metaDataToDisplay} = useContext(ContextCheckApi)
+    const [state, formAction, pending] = useFormState(postTrackOrder, {
+        ...initialState,
+        data: initialData,
+    });
+    
+    console.log("state for track order", state);
+    
+    const {layoutWebsiteModification} = useWebsite()
+
+    const { setSelectedStoreDetails,setOrderGuid, setPaymentLoader,setLoader } = useContext(HomeContext)
 
     const [isHover, setIsHover] = useState(false);
-    
-    useEffect(() => {
-    
-        if (websiteModificationData) {
-            setMetaDataToDisplay((prevData) => ({
-                ...prevData,
-                title: `Track Order - ${websiteModificationData?.brand?.name}`,
-                contentData: "",
-            }));
-        }
-    }, [metaDataToDisplay, setMetaDataToDisplay, websiteModificationData]);
-    
     // 0740225786
-    const [getTrackOrderData, setGetTrackOrderData] = useState(null);
-    const [isOrderDelivered, setIsOrderDelivered] = useState(false);
-    
-    const [isDeliveryFree, setIsDeliveryFree] = useState(false);
-    const [couponTotal, setCouponTotal] = useState(0);
-    
-    
-    const [orderHash, setOrderHash] = useState("")
-   
-    
-    const onGetError = (error) => {
-        window.alert("There is something went wrong!. Please refresh and try again 9.", error)
-    }
-    
-    const onGetSuccess = (data) => {
-
-        const { trackOrder, isExpired } = data?.data
-
-         setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
-        setOrderGuid(null)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-
-        if(isExpired)
-        {
-            setIsOrderDelivered(data?.data?.isExpired || false)
-            return
-        }
-
-        
-        const {location} = trackOrder
-
-        const selectedStoreDetail = {
-            address: location?.address,
-            display_id: location?.location_guid,
-            email: null,
-            store: location?.name,
-            telephone: location?.telephone
-        }
-
-        setSelectedStoreDetails(selectedStoreDetail)
-        setGetTrackOrderData(data)
-        
-        setOrderHash(data?.data?.trackOrder?.external_order_number)
-
-        
-        let minusAmount = 0
-
-        for(let orderCoupon of data?.data?.trackOrder?.order_coupons)
-        {
-            if(orderCoupon?.coupon?.free_delivery === 1)
-            {
-                setIsDeliveryFree(true)
-            }
-            else
-            {
-                setIsDeliveryFree(false)
-            }
-            minusAmount = parseFloat(minusAmount) + parseFloat(orderCoupon?.coupon_discount_applied)
-        }
-
-        
-        setCouponTotal(minusAmount)
-    }
-
-    const {isLoading: getTrackLoading, isError: getTrackError, refetch: websiteTrackOrderRefetch} = useGetQueryAutoUpdate("track-order", `/website-track-order/${orderId?.[0]}`, onGetSuccess, onGetError, false)
-    
-    useEffect(() => {
-        if(orderId?.[0] && parseInt(orderId?.[0]?.length) > parseInt(0))
-        {
-            websiteTrackOrderRefetch()
-        }
-    }, [orderId]);
-    
-    const handleOrderHashTypeByUser = (event) =>
-    {
-        const {value } = event.target
-        setOrderHash(value)
-
-    }
-
-    const handleSearchOrderCode = (e) =>
-    {
-        e.preventDefault()
-        
-        const hashData = {
-            orderHash: orderHash,
-            brandGUID: BRAND_GUID
-        } 
-
-        hashMutate(hashData)
-    }
-
-    const onHashError = (error) => {
-    }
-
-    const onHashSuccess = (data) => {
-        setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
-        setOrderGuid(null)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
-        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-        
-        setGetTrackOrderData(data?.data)
-        setOrderHash(data?.data?.data?.trackOrder?.external_order_number)
-        setIsOrderDelivered(data?.data?.data?.isExpired || false)
-
-        const newUrl = `/track-order/${data.data.data.trackOrder.external_order_id}`;
-        window.history.replaceState(null, '', newUrl);
-    }
-
-    const { mutate: hashMutate, isLoading,isSuccess, reset, isError } = usePostMutationHook('track-by-hash', '/track-order-by-hash-order', onHashSuccess, onHashError)
 
     useEffect(() => {
-        
-        if(isSuccess || isError)
+        if(state?.data?.trackOrder)
         {
-            setTimeout(() => {
-                reset()
-            }, 3000);
-            return
+            const { trackOrder, isExpired } = state?.data
+
+            setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
+            window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`)
+            window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
+            window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
+            window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+            window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+            window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
+            window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+
+            const {location} = trackOrder
+
+            const selectedStoreDetail = {
+                address: location?.address,
+                display_id: location?.location_guid,
+                email: null,
+                store: location?.name,
+                telephone: location?.telephone
+            }
+
+            setSelectedStoreDetails(selectedStoreDetail)
         }
-    }, [isSuccess, isError]);
+        setPaymentLoader(false)
+        setLoader(false)
+    }, [state?.data])
 
     const orderSteps = ['created', 'live', 'out_for_delivery', 'complete'];
     
-    const currentStatus = getTrackOrderData?.data?.trackOrder?.status;
+    const currentStatus = state?.data?.trackOrder?.status;
     const currentStep = orderSteps.findIndex((step) =>
         step.toLowerCase().includes(currentStatus)
     );
     
-    
-    if(isOrderDelivered)
+    const amountDiscount = parseFloat((parseFloat(state?.data?.trackOrder?.delivery_charge) + parseFloat(state?.data?.trackOrder?.order_subtotal)) - parseFloat(state?.data?.trackOrder?.order_total)).toFixed(2)
+
+    if(state?.data?.trackOrder?.stripe_charge_id === null)
     {
         return(
-            <div className={`${isOrderDelivered === true ? "" : "h-[60vh]"} flex flex-col items-center justify-center bg-gray-100 px-1 py-3`}>
+            <CompletePayment {...{
+                external_order_number: state?.data?.trackOrder?.external_order_number, 
+                external_order_id: state?.data?.trackOrder?.external_order_id,
+                source: state?.data?.trackOrder?.source_id,
+            }}
+            />
+        )
+    }
+
+
+    if(state?.data?.isExpired)
+    {
+        return(
+            <div className={`${state?.data?.isExpired ? "" : "h-[60vh]"} flex flex-col items-center justify-center bg-gray-100 px-1 py-3`}>
                 <div className="w-full max-w-7xl">
-                       <div className="mb-6 bg-white rounded-lg shadow-xl  p-8">
-                    <h1 className="text-2xl font-semibold mb-4">Track Order</h1>
-                    <hr className="border-gray-300" />
-                    
-                    <form
-                        onSubmit={handleSearchOrderCode}
-                        className="flex w-full mt-4"
+                    <div className="mb-6 bg-white rounded-lg shadow-xl  p-8">
+                        <h1 className="text-2xl font-semibold mb-4">Track Order</h1>
+                        <hr className="border-gray-300" />
+                        
+                        <form
+                            action={formAction}
+                            className="mt-4"
                         >
-                        <div className="flex w-full flex-nowrap rounded-md overflow-hidden border border-gray-300 focus-within:ring-2 focus-within:ring-cyan-500">
-                            <input
-                                type="text"
-                                name="orderHash"
-                                placeholder="Enter your order code"
-                                value={orderHash}
-                                onChange={handleOrderHashTypeByUser}
-                                className="text-[16px] flex-1 px-4 py-2 focus:outline-none border-r border-gray-300 w-3/4"
-                                style={{
-                                    backgroundColor: 'white',
-                                }}
-                            />
-                            <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="shrink-0 bg-black text-white px-6 py-2 font-medium transition duration-200 hover:bg-gray-900 disabled:opacity-50"
-                            style={{
-                                backgroundColor:
-                                websiteModificationData?.websiteModificationLive?.json_log?.[0]
-                                    ?.buttonBackgroundColor || 'black',
-                                color:
-                                websiteModificationData?.websiteModificationLive?.json_log?.[0]
-                                    ?.buttonColor || 'white',
-                            }}
-                            >
-                            Search
-                            </button>
-                        </div>
-                    </form>
+                            <div className="flex w-full flex-nowrap rounded-md overflow-hidden border border-gray-300 focus-within:ring-2 focus-within:ring-cyan-500">
+                                <input
+                                    type="text"
+                                    name="orderHash"
+                                    placeholder="Enter your order code"
+                                    // value={orderHash}
+                                    // onChange={handleOrderHashTypeByUser}
+                                    className="text-[16px] flex-1 px-4 py-2 focus:outline-none border-r border-gray-300 w-3/4"
+                                    style={{
+                                        backgroundColor: 'white',
+                                    }}
+                                />
+                                <button
+                                    type="submit"
+                                    disabled={pending}
+                                    className="shrink-0 bg-black text-white px-6 py-2 font-medium transition duration-200 hover:bg-gray-900 disabled:opacity-50"
+                                    style={{
+                                        backgroundColor:
+                                        layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
+                                            ?.buttonBackgroundColor || 'black',
+                                        color:
+                                        layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
+                                            ?.buttonColor || 'white',
+                                    }}
+                                >
+                                    {pending ? "Searching..." : "Search"}
+                                </button>
+                            </div>
 
-`
-
-                </div>
+                            {state?.orderHashError && (
+                                <div className="mt-3 rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
+                                    {state?.orderHashError}
+                                </div>
+                            )}
+                        </form>
+                    </div>
                 
                     <div className="bg-white p-4 rounded-md mb-6 text-center">
                         <h2 className="text-lg font-semibold text-black mb-5">Order has been delivered.</h2>
@@ -226,16 +144,16 @@ export default function TrackOrderDetail({orderId})
                             onMouseEnter={() => setIsHover(true)}
                             style={{
                             backgroundColor: isHover
-                                ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor
-                                : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                                ? layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor
+                                : layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
 
                             color: isHover
-                                ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor
-                                : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                                ? layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor
+                                : layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor,
 
                             border: isHover
-                                ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`
-                                : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
+                                ? `1px solid ${layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`
+                                : `1px solid ${layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
                             }}
                         >Continue to menu</a>
                     </div>
@@ -250,9 +168,8 @@ export default function TrackOrderDetail({orderId})
                 <div className="mb-6 bg-white rounded-lg shadow-xl  p-8">
                     <h1 className="text-2xl font-semibold mb-4">Track Order</h1>
                     <hr className="border-gray-300" />
-                    
                     <form
-                        onSubmit={handleSearchOrderCode}
+                        action={formAction}
                         className="flex w-full mt-4"
                         >
                         <div className="flex w-full flex-nowrap rounded-md overflow-hidden border border-gray-300 focus-within:ring-2 focus-within:ring-cyan-500">
@@ -260,36 +177,37 @@ export default function TrackOrderDetail({orderId})
                                 type="text"
                                 name="orderHash"
                                 placeholder="Enter your order code"
-                                value={orderHash}
-                                onChange={handleOrderHashTypeByUser}
                                 className="text-[16px] flex-1 px-4 py-2 focus:outline-none border-r border-gray-300 w-3/4"
                                 style={{
                                     backgroundColor: 'white',
                                 }}
                             />
                             <button
-                            type="submit"
-                            disabled={isLoading}
-                            className="shrink-0 bg-black text-white px-6 py-2 font-medium transition duration-200 hover:bg-gray-900 disabled:opacity-50"
-                            style={{
-                                backgroundColor:
-                                websiteModificationData?.websiteModificationLive?.json_log?.[0]
-                                    ?.buttonBackgroundColor || 'black',
-                                color:
-                                websiteModificationData?.websiteModificationLive?.json_log?.[0]
-                                    ?.buttonColor || 'white',
-                            }}
+                                type="submit"
+                                disabled={pending}
+                                className="shrink-0 bg-black text-white px-6 py-2 font-medium transition duration-200 hover:bg-gray-900 disabled:opacity-50"
+                                style={{
+                                    backgroundColor:
+                                    layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
+                                        ?.buttonBackgroundColor || 'black',
+                                    color:
+                                    layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
+                                        ?.buttonColor || 'white',
+                                }}
                             >
-                            Search
+                                {pending ? "Searching..." : "Search"}
                             </button>
                         </div>
+
+                        {state?.orderHashError && (
+                            <div className="mt-3 rounded-md border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
+                                {state?.orderHashError}
+                            </div>
+                        )}  
                     </form>
-
-`
-
                 </div>
             
-                {isOrderDelivered && (
+                {state?.data?.isExpired && (
                     <div className="bg-white p-4 rounded-md mb-6 text-center">
                         <h1 className="text-lg font-semibold text-black mb-5">Order has been delivered.</h1>
                         <a 
@@ -299,25 +217,24 @@ export default function TrackOrderDetail({orderId})
                             onMouseEnter={() => setIsHover(true)}
                             style={{
                             backgroundColor: isHover
-                                ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor
-                                : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                                ? layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor
+                                : layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
 
                             color: isHover
-                                ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor
-                                : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                                ? layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor
+                                : layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor,
 
                             border: isHover
-                                ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`
-                                : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
+                                ? `1px solid ${layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`
+                                : `1px solid ${layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
                             }}
                         >Continue to menu</a>
                     </div>
                 )}
                 
                 {
-                    isOrderDelivered === false && (
+                    !state?.data?.isExpired && (
                         <>
-                        
                             <div className="w-full bg-white rounded-lg shadow-xl  p-8 mb-4">
                                 <div className="relative flex items-center justify-between">
                                     {/* Line Behind Circles */}
@@ -329,11 +246,11 @@ export default function TrackOrderDetail({orderId})
                                         style={{
                                             width: `${(currentStep / (orderSteps.length - 1)) * 100}%`,
                                             transform: 'translateY(-50%)',
-                                            backgroundColor: websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                                            backgroundColor: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
                                             ?.buttonBackgroundColor ?? "#E5E7EB", // gray-200
-                                                borderColor: websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                                                borderColor: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
                                             ?.buttonBackgroundColor ?? "#D1D5DB",     // gray-300
-                                                color: websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                                                color: layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
                                             ?.buttonColor ?? "#9CA3AF"              // white or gray-400
                                         }}
                                     />
@@ -381,11 +298,11 @@ export default function TrackOrderDetail({orderId})
                                                 <div
                                                     className="w-12 h-12 flex items-center justify-center rounded-full transition-all duration-500 shadow-md"
                                                     style={{
-                                                        backgroundColor: isActive ? websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                                                        backgroundColor: isActive ? layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
                                                     ?.buttonBackgroundColor : "#E5E7EB", // gray-200
-                                                        borderColor: isActive ? websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                                                        borderColor: isActive ? layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
                                                     ?.buttonBackgroundColor : "#D1D5DB",     // gray-300
-                                                        color: isActive ? websiteModificationData?.websiteModificationLive?.json_log?.[0]
+                                                        color: isActive ? layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]
                                                     ?.buttonColor : "#9CA3AF"              // white or gray-400
                                                     }}
                                                 >
@@ -452,11 +369,11 @@ export default function TrackOrderDetail({orderId})
                                 <div className="w-full md:w-2/3 bg-white shadow-md rounded-lg p-6 mb-6 md:mb-0">
                                     <h3 className="text-xl font-semibold mb-4">My Order</h3>
                                     <div className="space-y-4">
-                                    {getTrackOrderData?.data?.trackOrder?.order_lines?.map((orderLine) => (
+                                    {state?.data?.trackOrder?.order_lines?.map((orderLine) => (
                                         <MyOrders key={orderLine?.id} orderLine={orderLine} />
                                     ))}
 
-                                    {getTrackOrderData?.data?.trackOrder?.order_coupons?.map((record, index) => (
+                                    {state?.data?.trackOrder?.order_coupons?.map((record, index) => (
                                         <div key={index} className="pt-2">
                                         <div className="flex justify-between items-center">
                                             <span className="font-medium">
@@ -473,18 +390,12 @@ export default function TrackOrderDetail({orderId})
 
                                     <div className="mt-6">
                                     <Total
-                                        subtotal={getTrackOrderData?.data?.trackOrder?.order_subtotal}
-                                        deliveryCharge={
-                                        isDeliveryFree
-                                            ? parseFloat(0).toFixed(2)
-                                            : getTrackOrderData?.data?.trackOrder?.delivery_charge
-                                        }
-                                        serviceCharge={getTrackOrderData?.data?.trackOrder?.service_charge}
-                                        discountAmount={parseFloat(
-                                        couponTotal ||
-                                            getTrackOrderData?.data.trackOrder?.order_amount_discounts?.amount_discount_applied ||
-                                            0
-                                        ).toFixed(2)}
+                                        subtotal={state?.data?.trackOrder?.order_subtotal}
+                                        deliveryCharge={parseFloat(state?.data?.trackOrder?.delivery_charge || 0).toFixed(2)}
+                                        serviceCharge={state?.data?.trackOrder?.service_charge}
+                                        // discountAmount={parseFloat(couponTotal || state?.data?.trackOrder?.order_amount_discounts?.amount_discount_applied || 0).toFixed(2)}
+                                        discountAmount={parseFloat(amountDiscount || 0).toFixed(2)}
+                                        orderTotal = {parseFloat(state?.data?.trackOrder?.order_total).toFixed(2) || 0}
                                     />
                                     </div>
                                 </div>
@@ -504,20 +415,20 @@ export default function TrackOrderDetail({orderId})
                                                 >
                                                 <g data-name="Building Store">
                                                     <path 
-                                                    d="M42 2a1 1 0 0 0-1-1H23a1 1 0 0 0-1 1v15h20zM30 15a1 1 0 1 1 1-1 1.003 1.003 0 0 1-1 1zm4 0a1 1 0 1 1 1-1 1.003 1.003 0 0 1-1 1zm3.93-8.63-2 5A1 1 0 0 1 35 12h-6a1.002 1.002 0 0 1-.99-.86l-.71-4.98v-.03L27.13 5H26a1 1 0 0 1 0-2h2a.993.993 0 0 1 .99.86L29.16 5H37a.999.999 0 0 1 .83.44 1.02 1.02 0 0 1 .1.93z" 
-                                                    style={{ fill: "#232328" }} 
+                                                        d="M42 2a1 1 0 0 0-1-1H23a1 1 0 0 0-1 1v15h20zM30 15a1 1 0 1 1 1-1 1.003 1.003 0 0 1-1 1zm4 0a1 1 0 1 1 1-1 1.003 1.003 0 0 1-1 1zm3.93-8.63-2 5A1 1 0 0 1 35 12h-6a1.002 1.002 0 0 1-.99-.86l-.71-4.98v-.03L27.13 5H26a1 1 0 0 1 0-2h2a.993.993 0 0 1 .99.86L29.16 5H37a.999.999 0 0 1 .83.44 1.02 1.02 0 0 1 .1.93z" 
+                                                        style={{ fill: "#232328" }} 
                                                     />
                                                     <path 
-                                                    style={{ fill: "#232328" }} 
-                                                    d="M29.87 10h4.45l1.2-3h-6.08l.43 3z" 
+                                                        style={{ fill: "#232328" }} 
+                                                        d="M29.87 10h4.45l1.2-3h-6.08l.43 3z" 
                                                     />
                                                     <path 
-                                                    d="M53 10c0-1.55-.45-2-1-2h-8v10a1.003 1.003 0 0 1-1 1H21a1.003 1.003 0 0 1-1-1V8h-8a1.003 1.003 0 0 0-1 1v14h42zM12 35a3.999 3.999 0 0 0 4-4 1 1 0 0 1 2 0 4 4 0 0 0 8 0 1 1 0 0 1 2 0 4 4 0 0 0 8 0 1 1 0 0 1 2 0 4 4 0 0 0 8 0 1 1 0 0 1 2 0 4.002 4.002 0 0 0 8 .19L53.34 25H10.66L8 31.19A4.016 4.016 0 0 0 12 35zM44 44h3v2h-3zM39 48h3v2h-3zM39 44h3v2h-3zM44 48h3v2h-3z" 
-                                                    style={{ fill: "#232328" }} 
+                                                        d="M53 10c0-1.55-.45-2-1-2h-8v10a1.003 1.003 0 0 1-1 1H21a1.003 1.003 0 0 1-1-1V8h-8a1.003 1.003 0 0 0-1 1v14h42zM12 35a3.999 3.999 0 0 0 4-4 1 1 0 0 1 2 0 4 4 0 0 0 8 0 1 1 0 0 1 2 0 4 4 0 0 0 8 0 1 1 0 0 1 2 0 4 4 0 0 0 8 0 1 1 0 0 1 2 0 4.002 4.002 0 0 0 8 .19L53.34 25H10.66L8 31.19A4.016 4.016 0 0 0 12 35zM44 44h3v2h-3zM39 48h3v2h-3zM39 44h3v2h-3zM44 48h3v2h-3z" 
+                                                        style={{ fill: "#232328" }} 
                                                     />
                                                     <path 
-                                                    d="M55 61h-2V36.91a5.47 5.47 0 0 1-1 .09 6.01 6.01 0 0 1-5-2.69 5.992 5.992 0 0 1-10 0 5.992 5.992 0 0 1-10 0 5.992 5.992 0 0 1-10 0A6.01 6.01 0 0 1 12 37a5.47 5.47 0 0 1-1-.09V61H9a1 1 0 0 0 0 2h46a1 1 0 0 0 0-2zM37 43a1.003 1.003 0 0 1 1-1h10a1.003 1.003 0 0 1 1 1v8a1.003 1.003 0 0 1-1 1H38a1.003 1.003 0 0 1-1-1zm-6 18V44h-5v17h-2V44h-5v17h-2V43a1.003 1.003 0 0 1 1-1h14a1.003 1.003 0 0 1 1 1v18z" 
-                                                    style={{ fill: "#232328" }} 
+                                                        d="M55 61h-2V36.91a5.47 5.47 0 0 1-1 .09 6.01 6.01 0 0 1-5-2.69 5.992 5.992 0 0 1-10 0 5.992 5.992 0 0 1-10 0 5.992 5.992 0 0 1-10 0A6.01 6.01 0 0 1 12 37a5.47 5.47 0 0 1-1-.09V61H9a1 1 0 0 0 0 2h46a1 1 0 0 0 0-2zM37 43a1.003 1.003 0 0 1 1-1h10a1.003 1.003 0 0 1 1 1v8a1.003 1.003 0 0 1-1 1H38a1.003 1.003 0 0 1-1-1zm-6 18V44h-5v17h-2V44h-5v17h-2V43a1.003 1.003 0 0 1 1-1h14a1.003 1.003 0 0 1 1 1v18z" 
+                                                        style={{ fill: "#232328" }} 
                                                     />
                                                 </g>
                                             </svg>
@@ -525,7 +436,7 @@ export default function TrackOrderDetail({orderId})
                                             <span className="text-lg font-bold">Store</span>
                                         </p>
                                         <p className="text-gray-600">
-                                        {getTrackOrderData?.data?.trackOrder?.location?.name}
+                                        {state?.data?.trackOrder?.location?.name}
                                         </p>
                                     </div>
 
@@ -541,10 +452,10 @@ export default function TrackOrderDetail({orderId})
                                                     </clipPath>
                                                 </defs>
                                             </svg>
-                                            <span className="text-lg font-bold">{getTrackOrderData?.data?.trackOrder?.order_type?.replace(/^\w/,(c) => c.toUpperCase())} Address</span>
+                                            <span className="text-lg font-bold">{state?.data?.trackOrder?.order_type?.replace(/^\w/,(c) => c.toUpperCase())} Address</span>
                                         </p>
                                         <p className="text-gray-600">
-                                        {`${getTrackOrderData?.data?.trackOrder?.address?.house_no_name} ${getTrackOrderData?.data?.trackOrder?.address?.street1}, ${getTrackOrderData?.data?.trackOrder?.address?.street2}`}
+                                        {`${state?.data?.trackOrder?.address?.house_no_name} ${state?.data?.trackOrder?.address?.street1}, ${state?.data?.trackOrder?.address?.street2}`}
                                         </p>
                                     </div>
 
@@ -553,10 +464,10 @@ export default function TrackOrderDetail({orderId})
                                             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width={24} height={24}>
                                                 <path d="M6.108 20H4a1 1 0 0 0 0 2h16a1 1 0 0 0 0-2h-2.108c-.247-2.774-1.071-7.61-3.826-9 2.564-1.423 3.453-4.81 3.764-7H20a1 1 0 0 0 0-2H4a1 1 0 0 0 0 2h2.17c.311 2.19 1.2 5.577 3.764 7-2.755 1.39-3.579 6.226-3.826 9zM9 16.6c0-1.2 3-3.6 3-3.6s3 2.4 3 3.6V20H9z" />
                                             </svg>
-                                            <span className="text-lg font-bold">Estimated {getTrackOrderData?.data?.trackOrder?.order_type?.replace(/^\w/,(c) => c.toUpperCase())} Time</span>
+                                            <span className="text-lg font-bold">Estimated {state?.data?.trackOrder?.order_type?.replace(/^\w/,(c) => c.toUpperCase())} Time</span>
                                         </p>
                                         <p className="text-gray-600">
-                                        {moment(getTrackOrderData?.data?.trackOrder?.estimated_delivery_time).format("HH:mm A")}
+                                            {moment(state?.data?.trackOrder?.estimated_delivery_time).format("HH:mm A")}
                                         </p>
                                     </div>
 
@@ -567,7 +478,7 @@ export default function TrackOrderDetail({orderId})
                                             <span className="text-lg font-bold">Driver Instructions</span>
                                         </p>
                                         <p className="text-gray-600">
-                                        {getTrackOrderData?.data?.trackOrder?.address?.driver_instructions || 'No instruction provided'}
+                                            {state?.data?.trackOrder?.address?.driver_instructions || 'No instruction provided'}
                                         </p>
                                     </div>
                                     </div>

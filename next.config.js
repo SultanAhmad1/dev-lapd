@@ -4,7 +4,7 @@ const nextConfig = {
         ignoreDuringBuilds: true,
     },
     images: {
-        // domains: ['api.jouleskitchen.co.uk','laravel-jouleskitchen.cleartwo.uk'],
+        // domains: ['api.jouleskitchen.co.uk','laravel-api.jouleskitchen.co.uk'],
         remotePatterns: [
             {
                 protocol: 'https',
@@ -13,7 +13,7 @@ const nextConfig = {
             },
             {
                 protocol: 'https',
-                hostname: 'laravel-jouleskitchen.cleartwo.uk',
+                hostname: 'laravel-api.jouleskitchen.co.uk',
                 pathname: '/**',
             }
         ]
@@ -28,7 +28,7 @@ const nextConfig = {
             headers: [
             {
                 key: 'X-Robots-Tag',
-                value: 'index, follow',
+                value: 'noindex, nofollow',
             },
             ],
         },

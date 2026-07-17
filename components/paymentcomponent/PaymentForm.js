@@ -5,10 +5,11 @@ import React, { useContext, useEffect, useRef, useState } from 'react';
 
 import moment from 'moment-timezone';
 import { CardCvcElement, CardExpiryElement, CardNumberElement, PaymentRequestButtonElement, useElements, useStripe } from '@stripe/react-stripe-js';
-import { BRAND_SIMPLE_GUID, BRAND_GUID, axiosPrivate } from '@/global/Axios';
+import { BRAND_SIMPLE_GUID, BRAND_GUID, axiosPrivate, DELIVERY_ID } from '@/global/Axios';
 import HomeContext from '@/contexts/HomeContext';
 import { useRouter } from "next/navigation";
 import { getAmountConvertToFloatWithFixed, setLocalStorage } from '@/global/Store';
+import { useWebsite } from '@/app/providers/context/WebsiteContext';
 // import stripePromise from './stripe';
 
 const validateEmail = (email) => {
@@ -20,19 +21,20 @@ const PaymentForm = ({orderId}) =>
 {
 
   const router = useRouter()
-  
+  const {layoutWebsiteModification} = useWebsite()
+
   const {
     setSelectedStoreDetails,
     setOrderGuid,
+    setLoader,
+    paymentLoader,
     setPaymentLoader,
     setCartData,
-    setIsTimeToClosed,
     totalOrderAmountValue,
     dayOpeningClosingTime,
     setTotalOrderAmountValue,
     isLocationBrandOnline,
     setIsLocationBrandOnline,
-    websiteModificationData,
     setAtFirstLoad,
     setBooleanObj,
   } = useContext(HomeContext)
@@ -51,6 +53,7 @@ const PaymentForm = ({orderId}) =>
 
   const [isHover, setIsHover] = useState(false);
   
+  const [isPaymentButtonReady, setIsPaymentButtonReady] = useState(false)
   const stripe = useStripe();
   const elements = useElements();
   const [paymentError, setPaymentError] = useState(null);
@@ -74,9 +77,9 @@ const PaymentForm = ({orderId}) =>
    * Check the Brand is active for a location.
   */
   useEffect(() => {
-    
     if(orderId)
     {
+      setLoader(false)
       if(addDoorNumberRef.current)
       {
         addDoorNumberRef.current.focus();
@@ -131,24 +134,6 @@ const PaymentForm = ({orderId}) =>
         }
       }
   
-      // Fetch Order Price related to Order GUID.
-      // const forceFullyGetOrderPriceFromDatabase = async () =>
-      // {
-      //   try 
-      //   {
-      //     const data = {guid: orderId,}  
-      //     const response = await axiosPrivate.post(`/order-price-to-payable-get`, data)
-          
-      //     setIsGetErrorFromDatabase(response.data.data?.orderAmountDetails === null ? true : false)
-  
-      //     setTotalOrderAmountValue(response.data.data?.orderAmountDetails === null ? 0 : response.data.data?.orderAmountDetails?.order_total)
-  
-      //   } 
-      //   catch (error) 
-      //   {
-      //   }
-      // }
-  
       setAtFirstLoad(false)
       const dayNumber = moment().day();
       const dateTime  = moment().format('HH:mm')
@@ -162,106 +147,28 @@ const PaymentForm = ({orderId}) =>
         {
           if(timePeriods?.[0]?.start_time >=dateTime && dateTime <= timePeriods?.[0]?.end_time )
           {
-            setIsTimeToClosed(true)
             return
           }
         }
       }
-  
-      // const orderTotalFromLocalStorage = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}total_order_value_storage`))
-  
-      // if(orderTotalFromLocalStorage)
-      // {
-      //   setTotalOrderAmountValue(orderTotalFromLocalStorage === null ? 
-      //     getAmountConvertToFloatWithFixed(totalOrderAmountValue,2) 
-      //   : 
-      //     getAmountConvertToFloatWithFixed(JSON.parse(orderTotalFromLocalStorage),2))
-      // }
-      // else
-      // {
-        forceFullyCheckBrandLocationTrue()
-        // forceFullyGetOrderPriceFromDatabase()
-      // }/
+      forceFullyCheckBrandLocationTrue()
     }
   }, [orderId])
   
-  useEffect(() => {
-    // Set a timeout to clear localStorage after 20 minutes (20 * 60 * 1000 milliseconds)
-    const timeoutId = setTimeout(() => {
-      // Clear all items in localStorage
-      localStorage.clear();
-      window.location.reload(true);
-      window.location.href = "/"
-      setTimeout(() => {
-        setPaymentLoader(false);
-      }, 3000);
-    }, 60 * 60 * 1000); 
+  // useEffect(() => {
+  //   // Set a timeout to clear localStorage after 20 minutes (20 * 60 * 1000 milliseconds)
+  //   const timeoutId = setTimeout(() => {
+  //     // Clear all items in localStorage
+  //     localStorage.clear();
+  //     router.push("/")
+  //     setTimeout(() => {
+  //       setPaymentLoader(false);
+  //     }, 3000);
+  //   }, 60 * 60 * 1000); 
 
-    // Clear the timeout if the component is unmounted before 20 minutes
-    return () => clearTimeout(timeoutId);
-  });
-
-  const hitSmsAndEmailCall = async () =>
-  {
-    setPaymentLoader(true)
-    const url = window.location.origin
-    const pathname = "track-order"
-    try 
-    {
-      const data = {
-        guid: orderId,
-        url: url,
-        pathname: pathname,
-        brandGuid: BRAND_GUID,
-      } 
-
-      const response = await axiosPrivate.post(`/send-sms-and-email`, data)
-
-      setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
-      setOrderGuid(null)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-      setCartData([])
-      // window.alert("Your order has been received.")
-      setPaymentLoader(false)
-      setBooleanObj((prevData) => ({...prevData, isUnableToSendSms: 1, orderGuid: orderId, isPlaceOrderButtonClicked: false, isDeliveryOrder: parseInt(paymentFormObject.orderType) === parseInt(4) ? 1 : 2}))
-      // if(parseInt(paymentFormObject.orderType) === parseInt(4))
-      // {
-      //   router.push(`/track-order/${orderId}`)
-      //   return
-      // }
-
-      // router.push(`/thank-you/${orderId}`)
-    } 
-    catch (error) 
-    {
-      setPaymentLoader(false)
-      // window.alert(error?.response?.data?.error)
-      
-      setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
-      setOrderGuid(null)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
-      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
-      setCartData([])
-
-      setCartData([])
-      setBooleanObj((prevData) => ({...prevData, isUnableToSendSms: 1, orderGuid: orderId, isPlaceOrderButtonClicked: false, isDeliveryOrder: parseInt(paymentFormObject.orderType) === parseInt(4) ? 1 : 2}))
-      // if(parseInt(paymentFormObject.orderType) === parseInt(4))
-      // {
-      //   router.push(`/track-order/${orderId}`)
-      //   return
-      // }
-      // router.push(`/thank-you/${orderId}`)
-    }
-  }
+  //   // Clear the timeout if the component is unmounted before 20 minutes
+  //   return () => clearTimeout(timeoutId);
+  // });
 
   // This method will hit when payment successfully done, to send sms and email to user.
   const afterPaymentSavedOrderUpdate = async (paymentIntent) =>
@@ -282,8 +189,8 @@ const PaymentForm = ({orderId}) =>
       // Here need to hit sms and email call.
       const orderData = response?.data?.data?.order
 
-      if(response?.data?.status === "success")
-      {
+      // if(response?.data?.status === "success")
+      // {
         // here check the order type
         
         setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
@@ -302,54 +209,228 @@ const PaymentForm = ({orderId}) =>
         setLocalStorage(`${BRAND_SIMPLE_GUID}isValidNumber`,0)
         // 0 mean valid number
         if(parseInt(orderType) === parseInt(4)) {
-          window.location.href = `/track-order/${orderId}`
+          // window.location.href = `/track-order/${orderId}`
+          router.push(`/track-order/${orderId}`)
         }
         else
         {
-          window.location.href = `/thank-you/${orderId}`
+          // window.location.href = `/thank-you/${orderId}`
+          router.push(`/thank-you/${orderId}`)
         }
-
-        // const orderType = Number(orderData?.order_type_filter_id);
-        // if (orderType === 4) {
-          
-        //   router.push(`/track-order/${orderId}`)
-        //   return
-        // }
-
-        // router.push(`/thank-you/${orderId}`)
-
-        // hitSmsAndEmailCall(orderId)
-
-        // router.push(`/track-order/${response?.data?.data?.order?.external_order_id}`)
-      }
+      // }
     } 
     catch (error) 
     {
-      const unableToSendMessage = error?.response?.data?.error;
+      window.alert("Your payment has been failed. Please try again or contact support.")
+      setPaymentLoader(false)
+      // const unableToSendMessage = error?.response?.data?.error;
       
-      if(unableToSendMessage && unableToSendMessage.toLowerCase().includes("unable to send you sms"))
-      {
-        // orderType
-        // setBooleanObj((prevData) => ({...prevData, isUnableToSendSms: 2, orderGuid: orderId, isPlaceOrderButtonClicked: false, isDeliveryOrder: parseInt(paymentFormObject?.orderType) === parseInt(4) ? 1 : 2}))
-
-          setLocalStorage(`${BRAND_SIMPLE_GUID}isValidNumber`,1)
-            if(parseInt(paymentFormObject?.orderType) === parseInt(4)) {
-              window.location.href = `/track-order/${orderId}`
-            }
-            else
-            {
-              window.location.href = `/thank-you/${orderId}`
-            }
-      } 
+      // if(unableToSendMessage && unableToSendMessage.toLowerCase().includes("unable to send you sms"))
+      // {
+      //   setLocalStorage(`${BRAND_SIMPLE_GUID}isValidNumber`,1)
+      //   if(parseInt(paymentFormObject?.orderType) === parseInt(4)) {
+      //     // window.location.href = `/track-order/${orderId}`
+      //     router.push(`/track-order/${orderId}`)
+      //   }
+      //   else
+      //   {
+      //     // window.location.href = `/thank-you/${orderId}`
+      //     router.push(`/thank-you/${orderId}`)
+      //   }
+      // } 
     }
   }
 
-  // This submit send request to Database and stripe.
+  const stripeCard = async () => {
+    const cardElement = elements.getElement(CardNumberElement);
+    // setMyCardElement(cardElement);
+    return cardElement;
+  };
+  
+  const createStripePaymentMethod = async (card, payload) => {
+    return await stripe.createPaymentMethod({
+      type: "card",
+      card,
+      billing_details: {
+        name: `${payload.firstName} ${payload.lastName}`,
+        email: payload.email,
+      },
+    });
+  };
+  
+  const createPaymentIntent = async (
+    payload,
+    paymentMethod,
+    type = "card"
+  ) => {
+    const response =
+    await axiosPrivate.post(
+        "/payment-form-payment-intent",
+        {
+          order: 
+            payload.order_guid,
+
+          brand:
+            BRAND_GUID,
+
+          payment_method:
+            paymentMethod,
+
+          type:
+            type,
+
+          email: 
+            payload.email,
+
+          firstName: 
+            payload.firstName,
+
+        }
+    );
+
+    return response.data;
+
+  };
+  
+  /**
+   * 
+   * @param {Payload method} event 
+   * @returns 
+  */
+  
+  const buildCustomerPayload = async (isCard, ev = null) => {
+    const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`))
+
+    const getTotalFromLocalStorage = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
+
+    let orderTotalToSend = totalOrderAmountValue
+
+    if(getTotalFromLocalStorage)
+    {
+      orderTotalToSend = JSON.parse(getTotalFromLocalStorage)
+    }
+    const city = getCustomerInformation?.street2?.split(',')[0].trim();
+  
+    return {
+      city,
+      orderTotalToSend,
+      order_total: getAmountConvertToFloatWithFixed(orderTotalToSend,2) * 100, // replace with your desired amount
+      order: orderId,
+      order_guid: orderId,
+      brand: BRAND_GUID,
+      email: isCard ? customerDetailObj?.email : ev.payerName,
+      firstName: isCard ? customerDetailObj?.firstName : ev.payerEmail,
+      lastName: customerDetailObj?.lastName
+    }
+  }
+
+  const verifyPayment = async (
+    orderGuid,
+    paymentIntentId,
+    amountPaid
+  ) => {
+    
+    try {
+
+      const { data } = await axiosPrivate.post(
+        "/update-order-after-successfully-payment-save",
+        {
+          guid: orderGuid,
+          stripeid: paymentIntentId,
+          amount_paid: amountPaid / 100,
+          placed: moment()
+              .tz("Europe/London")
+              .format("YYYY-MM-DD HH:mm:ss"),
+        }
+      );
+
+      return {
+        success: true,
+        data,
+      };
+
+    } catch (error) {
+
+      console.log("verify payment data error: ", error);
+      
+      return {
+        success: false,
+        data: error?.response?.data,
+        message:
+          error?.response?.data?.error?.message ??
+          "Payment verification failed.",
+        status:
+          error?.response?.status ?? 500,
+      };
+    }
+  };
+
+  const mapStripeError = (error) => {
+    
+    const message =
+        error?.response?.data?.error ??
+        error?.message ??
+        "";
+
+    const text = message.toLowerCase();
+
+    if (text.includes("insufficient"))
+        return "Your bank declined the payment because there are insufficient funds available.";
+
+    if (text.includes("expired"))
+        return "Your card has expired. Please use another card.";
+
+    if (text.includes("incorrect cvc"))
+        return "The security code (CVC) is incorrect.";
+
+    if (text.includes("authentication"))
+        return "Your bank could not authenticate this payment.";
+
+    if (text.includes("declined"))
+        return "Your bank declined the payment. Please try another card.";
+
+    if (text.includes("processing"))
+        return "Your bank is still processing the payment. Please wait.";
+
+    if (text.includes("minimum"))
+        return "The payment amount is below the minimum allowed.";
+
+    return "Unable to process your payment. Please try again.";
+  };
+
+
+  const handleConfirmCardPayment = async (card,
+    clientSecret,
+    paymentIntent
+  ) => {
+        
+    const result = await stripe.confirmCardPayment(clientSecret, {
+      payment_method: {
+        card: card,
+        billing_details: {
+          email: customerDetailObj.email,
+          name: customerDetailObj.firstName,
+          // lastName: customerDetailObj?.lastName
+        },
+      },
+    });
+   
+
+    if(result.error)
+    throw result.error;
+
+    if(result.paymentIntent.status!=="succeeded")
+    throw new Error(
+      "Payment was not successful."
+    );
+
+    return result;
+  };
+
+  // This submit send request to Database and stripe. /update-order-after-successfully-payment-save
   const handleSubmit = async (event) => 
   {
     event.preventDefault();
-
-
     setPaymentLoader(true)
 
     // first check the email is valid, first and last name is exists.
@@ -376,198 +457,247 @@ const PaymentForm = ({orderId}) =>
       setPaymentLoader(false)
       return;
     }
+
+    const payload = await buildCustomerPayload(true)
+    const  card  = await stripeCard()
+
+    /** New payment controll way. */
+    const { paymentMethod, error } = await createStripePaymentMethod(card, payload);
+    
+    const paymentIntent = await createPaymentIntent(
+      payload,
+      paymentMethod.id
+    );
+
+    console.log("payment intent check here:", paymentIntent);
+    
     try 
     {
-      // const cardElement = elements.getElement(CardElement);\
-      const cardElement = elements.getElement(CardNumberElement);
-
-      const { token, error,type } = await stripe.createToken(cardElement);
-
-      if (error) 
-      {
-        setPaymentError(error.message);
-        setPaymentLoader(false)
-        return
-      } 
-      
-      setPaymentLoader(true)
-
-      const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`))
-
-      const getTotalFromLocalStorage = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
-
-      let orderTotalToSend = totalOrderAmountValue
-
-      if(getTotalFromLocalStorage)
-      {
-        orderTotalToSend = JSON.parse(getTotalFromLocalStorage)
-      }
-      const city = getCustomerInformation?.street2?.split(',')[0].trim();
-      const response = await axiosPrivate.post('/payment-form-payment-intent', 
-        {
-          order_total: getAmountConvertToFloatWithFixed(orderTotalToSend,2) * 100, // replace with your desired amount
-          token: token.id,
-          order: orderId,
-          brand: BRAND_GUID,
-          email: customerDetailObj?.email,
-          firstName: customerDetailObj?.firstName,
-          lastName: customerDetailObj?.lastName
-        }
+      const confirmation = await handleConfirmCardPayment(
+        card,
+        paymentIntent.clientSecret,
+        paymentMethod.id
       );
 
-      const { clientSecret } = response.data;
+      console.log("handle confirm amount:", confirmation);
 
-      const result = await stripe.confirmCardPayment(clientSecret, {
-        payment_method: {
-          card: cardElement,
-          billing_details: {
-            name: `${customerDetailObj?.firstName} ${customerDetailObj?.lastName}`,
-            email: customerDetailObj?.email,
-            address: {
-              line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1} ${getCustomerInformation?.street1}`,
-              city: city,
-              postal_code: getCustomerInformation?.postcode,
-              country: 'GB',
-            },
-          },
-        },
-      });
-      if (result.error) 
+      const verifyResponse = await verifyPayment(
+        payload.order_guid,
+        paymentIntent.paymentIntentId,
+        getAmountConvertToFloatWithFixed(totalOrderAmountValue,2)
+      );
+
+      if(!verifyResponse?.success)
       {
         setPaymentLoader(false)
-        setPaymentError(result.error.message);
+        setIsPaymentButtonReady(true)
         return
-      } 
-      else 
-      {
-        setPaymentLoader(true)
-        afterPaymentSavedOrderUpdate(result.paymentIntent)
       }
-    } catch (error) {
 
+      setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
+      setOrderGuid(null)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
+      window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+      setCartData([])
+      // window.alert("Your order has been received.")
       
-      setPaymentLoader(false)
-      const errorMessage = error.response.data.error
-      if (errorMessage.toLowerCase().includes("minimum charge amount")) {
-        setPaymentError("Amount is too low for this currency.");
+      setLocalStorage(`${BRAND_SIMPLE_GUID}isValidNumber`,0)
+      // 0 mean valid number
+
+      if (Number(4) === Number(paymentIntent?.order?.order_type_filter_id)) {
+
+        window.location.href = `/track-order/${payload?.order_guid}`
+        return
       }
-      else if (errorMessage.toLowerCase().includes("declined")) {
-          setPaymentError("Your card was declined.");
-      }
-      else if (errorMessage.toLowerCase().includes("insufficient")) {
-        setPaymentError("Your card has insufficient funds.");
-      }
-      else{
-        window.alert("There is something went wrong. Please refresh and try again.")
-      }
+
+      window.location.href = `/thank-you/${payload?.order_guid}`
+    } catch (error) {
+      await axiosPrivate.post("/wallet-payment-failed", {
+        order: payload.order_guid,
+        payment_intent: paymentIntent.paymentIntentId,
+        message: error.message,
+        code: error.code,
+        decline_code: error.decline_code,
+        type: error.type,
+      });
+
+      // throw error;
+      setPaymentError(mapStripeError(error));
+    } finally {
+      setPaymentLoader(false);
     }
   };
-  
+
+  /**
+   * Wallet payment start
+  */
+  const [wallets, setWallets] = useState(null);
+  const paymentLock = useRef(false);
+  const [walletBusy, setWalletBusy] = useState(false);
+
+  const confirmWalletPayment = async (
+    clientSecret,
+    ev
+  ) => {
+
+    const result =
+      await stripe.confirmCardPayment(
+          clientSecret,
+          {
+              payment_method:
+                  ev.paymentMethod.id
+          }
+      );
+
+    if(result.error)
+    throw result.error;
+
+    if(result.paymentIntent.status!=="succeeded")
+    throw new Error(
+        "Payment was not successful."
+    );
+
+    return result;
+
+  };
+
+  const handleWalletPayment = async (ev) => {
+    // Prevent duplicate Apple Pay / Google Pay submissions
+    if (paymentLock.current) {
+      ev.complete("fail");
+      return;
+    }
+
+      paymentLock.current = true;
+      setWalletBusy(true);
+
+    try {
+      setPaymentLoader(true);
+
+      const payload = await buildCustomerPayload(false,ev);
+     
+      console.log("wallet payload:", payload);
+      
+      const paymentIntent = await createPaymentIntent(
+          payload,
+          ev.paymentMethod.id,
+          "wallet"
+      );
+
+      try{
+        const confirmation = await confirmWalletPayment(
+          paymentIntent.clientSecret,
+          ev
+        );
+
+        const verifyResponse = await verifyPayment(
+          payload.order_guid,
+          paymentIntent.paymentIntentId,
+          getAmountConvertToFloatWithFixed(totalOrderAmountValue,2)
+        );
+
+        if(!verifyResponse?.success)
+        {
+          ev.complete("fail");
+          return
+        }
+
+        ev.complete("success");
+
+        setLocalStorage(`${BRAND_SIMPLE_GUID}cart`,[])
+        setOrderGuid(null)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_guid`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_number`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}order_amount_discount_applied`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
+        window.localStorage.removeItem(`${BRAND_SIMPLE_GUID}applied_coupon`)
+        setCartData([])
+        // window.alert("Your order has been received.")
+        
+        setLocalStorage(`${BRAND_SIMPLE_GUID}isValidNumber`,0)
+        // 0 mean valid number
+        if (Number(4) === Number(paymentIntent?.order?.order_type_filter_id)) {
+          window.location.href = `/track-order/${payload?.order_guid}`
+        }
+        else
+        {
+          window.location.href = `/thank-you/${payload?.order_guid}`
+        }
+      } catch (error) {
+
+        await axiosPrivate.post("/wallet-payment-failed", {
+          order: payload.order_guid,
+          payment_intent: paymentIntent.paymentIntentId,
+          message: error.message,
+          code: error.code,
+          decline_code: error.decline_code,
+          type: error.type,
+        });
+
+        throw error;
+    }
+    
+
+    } catch (error) {
+
+      console.log("payment intent erro:", error);
+      
+        ev.complete("fail");
+
+        setPaymentError(mapStripeError(error));
+
+    } finally {
+      setPaymentLoader(false);
+      paymentLock.current = false;
+      setWalletBusy(false);
+    }
+  };
+
   useEffect(() => {
     if (stripe &&   totalOrderAmountValue && paymentRequest === null)
     {
-      const orderTotalSimpleForm = parseFloat(totalOrderAmountValue) * 100
-
+      /** Wallet Payment started */
       const pr = stripe.paymentRequest({
         country: "GB",
         currency: "gbp",
         total: {
-          label: 'Total',
-          amount: parseInt(orderTotalSimpleForm),
+            label: "Total",
+            amount: Math.round(parseFloat(totalOrderAmountValue) * 100),
         },
         requestPayerName: true,
         requestPayerEmail: true,
+        requestPayerPhone: true,
+        // requestBillingAddress: true,
         requestShipping: false,
-        requestBillingAddress: true, // ✅ ADD THIS
       });
+    
 
-      pr.canMakePayment().then(result => {
-        if (result) 
-        {
+      pr.canMakePayment().then((result) => {
+        // if (!result) return;
+        
+        setWallets(result);
+
+        // if (result.applePay || result.googlePay) {
           setPaymentRequest(pr);
-        }
+        // }
       });
 
       const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`))
 
       const city = getCustomerInformation?.street2?.split(',')[0].trim();
 
-      pr.on("paymentmethod", async (ev) => {
-        try {
-          const getCustomerInformation = JSON.parse(window.localStorage.getItem(`${BRAND_SIMPLE_GUID}customer_information`));
-          const city = getCustomerInformation?.street2?.split(',')[0].trim();
-      
-          const customerName = ev.payerName || `${customerDetailObj?.firstName} ${customerDetailObj?.lastName ?? ""}`;
-          const customerEmail = ev.payerEmail || customerDetailObj?.email;
-      
-          const customerAddress = ev.billingDetails?.address || {
-            line1: `${getCustomerInformation?.doorHouseName} ${getCustomerInformation?.street1}`,
-            city,
-            postal_code: getCustomerInformation?.postcode,
-            country: "GB",
-          };
-      
-          // ✅ Send all billing info to backend
-          
-          const getTotalFromLocalStorage = window.localStorage.getItem(`${BRAND_SIMPLE_GUID}sub_order_total_local`)
-
-          let orderTotalToSend = totalOrderAmountValue
-
-          if(getTotalFromLocalStorage)
-          {
-            orderTotalToSend = JSON.parse(getTotalFromLocalStorage)
-          }
-
-          const response = await axiosPrivate.post("/payment-form-payment-intent", {
-            order_total: Math.round(parseFloat(orderTotalToSend) * 100),
-            type: "wallet",
-            payment_method: ev.paymentMethod.id,
-            order: orderId,
-            brand: BRAND_GUID,
-            billing_details: {
-              name: customerName,
-              email: customerEmail,
-              address: customerAddress,
-            },
-          });
-      
-          const { clientSecret } = response.data;
-      
-          // ✅ Finish wallet UI prompt
-          ev.complete("success");
-      
-          // ✅ Confirm payment with Stripe
-          const result = await stripe.confirmCardPayment(clientSecret); // No payment_method object needed
-      
-          if (result.error || result.paymentIntent?.status !== "succeeded") 
-          {
-            setPaymentLoader(false)
-            setPaymentError(result.error.message);
-            return
-          } else {
-            afterPaymentSavedOrderUpdate(result.paymentIntent);
-          }
-        } catch (err) {
-          ev.complete("fail");
-          const errorMessage = err.response.data.error
-          if (errorMessage.toLowerCase().includes("minimum charge amount")) {
-            setPaymentError("Amount is too low for this currency.");
-          }
-          else if (errorMessage.toLowerCase().includes("declined")) {
-              setPaymentError("Your card was declined.");
-          }
-          else if (errorMessage.toLowerCase().includes("insufficient")) {
-            setPaymentError("Your card has insufficient funds.");
-          }
-          else{
-            window.alert("There is something went wrong. Please refresh and try again.")
-          }
-        }
-      });
+      pr.on("paymentmethod", handleWalletPayment);
     }
   }, [stripe, totalOrderAmountValue]);
-
   
+  /**
+   * Wallet payment end
+  */
   const handleCardNumberChange = (event) => {
     if (event.complete) {
       const expiryElement = elements?.getElement(CardExpiryElement)
@@ -579,6 +709,7 @@ const PaymentForm = ({orderId}) =>
     if (event.complete) {
       const cvcElement = elements?.getElement(CardCvcElement)
       cvcElement?.focus()
+      setIsPaymentButtonReady(true)
     }
   }
   
@@ -606,16 +737,16 @@ const PaymentForm = ({orderId}) =>
                   className="px-4 py-3 rounded-md font-semibold transition-all duration-200 border text-center block"
                   style={{
                     backgroundColor: isHover
-                      ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor
-                      : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
+                      ? layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor
+                      : layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor,
 
                     color: isHover
-                      ? websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor
-                      : websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor,
+                      ? layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonHoverColor
+                      : layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor,
 
                     border: isHover
-                      ? `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`
-                      : `1px solid ${websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
+                      ? `1px solid ${layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor}`
+                      : `1px solid ${layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonHoverBackgroundColor}`,
                   }}
                 >
                   Continue to menu
@@ -639,8 +770,9 @@ const PaymentForm = ({orderId}) =>
                 </div>
 
                 {
-                  paymentRequest && (
-                  <PaymentRequestButtonElement options={{ paymentRequest }} />
+                  // (paymentRequest && wallets) && (wallets.applePay || wallets.googlePay) && (
+                  (paymentRequest) && (
+                    <PaymentRequestButtonElement options={{ paymentRequest }} />
                   )
                 }
 
@@ -657,7 +789,7 @@ const PaymentForm = ({orderId}) =>
                     className="w-full bg-red-600 text-white py-3 rounded-lg font-semibold hover:bg-red-700"
                     onClick={() => setIsCardDetailShow(false)}
                   >
-                    Credit Card
+                    Credit/Debit Card
                   </button>
                   :
                     // {/* Credit Card Details */}
@@ -717,7 +849,7 @@ const PaymentForm = ({orderId}) =>
                           }`}
                         />
 
-                        <input
+                        {/* <input
                           required
                           type="text"
                           value={customerDetailObj?.lastName}
@@ -731,7 +863,7 @@ const PaymentForm = ({orderId}) =>
                               : parseInt(customerDetailObj?.fullNameError?.length) > 0
                               && "border-red-500 focus:ring-red-300"
                           }`}
-                        />
+                        /> */}
                       </div>
                     </div>
 
@@ -807,13 +939,25 @@ const PaymentForm = ({orderId}) =>
                     )}
 
                     {/* Submit */}
-                    <button
-                      type="submit"
-                      disabled={!stripe}
-                      className="mt-5 mb-10 inline-block bg-green-700 text-white px-6 py-3 rounded-md shadow hover:bg-green-800 transition disabled:opacity-50"
-                    >
-                      Submit Payment
-                    </button>
+                    {
+                      isPaymentButtonReady ?
+                        <button
+                          type="submit"
+                          disabled={!stripe}
+                          className="mt-5 mb-10 inline-block bg-green-700 text-white px-6 py-3 rounded-md shadow hover:bg-green-800 transition disabled:opacity-50"
+                        >
+                          {
+                            paymentLoader ? "Processing" : "Pay Now"
+                          }
+                        </button>
+                      :
+                        <button
+                          type='button'
+                          className="mt-5 mb-10 inline-block bg-gray-700 text-white px-6 py-3 rounded-md shadow hover:bg-green-800 transition disabled:opacity-50"
+                        >
+                          Submit Payment
+                        </button>
+                    }
                   </form>
                 }
 

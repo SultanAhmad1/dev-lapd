@@ -1,52 +1,32 @@
 "use client"
-import { ContextCheckApi } from "@/app/layout";
+import { useWebsite } from "@/app/providers/context/WebsiteContext";
 import HomeContext from "@/contexts/HomeContext";
-import React, { useContext, useEffect } from "react";
-import Header from "./Header";
-import Banner from "./Banner";
-import Footer from "./Footer";
-import { IMAGE_URL_Without_Storage } from "@/global/Axios";
+import { useContext, useEffect } from "react";
 
 export default function PrivacyComponent() 
 {
-    const {
-        websiteModificationData,
-        selectedStoreDetails,
-    } = useContext(HomeContext);
-
-    const {
-        setMetaDataToDisplay, metaDataToDisplay
-    } = useContext(ContextCheckApi)
+    const {layoutWebsiteModification} = useWebsite()
+    const {setLoader } = useContext(HomeContext)
 
     useEffect(() => {
-        if (websiteModificationData) {
-        setMetaDataToDisplay((prevData) => ({
-            ...prevData,
-            title: `Privacy Policy - ${websiteModificationData?.brand?.name}`,
-            contentData: "",
-        }));
-        }
-    }, [metaDataToDisplay, setMetaDataToDisplay, websiteModificationData]);
-    
+        setLoader(false)
+    }, [])
+
     return(
         <>
-            <Header />
-            <Banner />
-
-            <div className={`w-full flex items-center justify-center ${websiteModificationData?.privacy ? "" : "h-[40vh]"}`}>
+            <div className={`w-full flex items-center justify-center ${layoutWebsiteModification?.privacy ? "" : "h-[40vh]"}`}>
                 {
-                    websiteModificationData?.privacy === null ?
+                    layoutWebsiteModification?.privacy === null ?
                         <h1 className="font-bold text-lg">
                             Privacy policy Text...,
                         </h1>
                     :
                     <div className="w-full max-w-1xl mx-auto mt-6 mb-12 px-4 sm:px-5 text-left leading-relaxed prose prose-base">
-                        <div dangerouslySetInnerHTML={{ __html: websiteModificationData?.privacy?.privacy_policy }} />
+                        <div dangerouslySetInnerHTML={{ __html: layoutWebsiteModification?.privacy?.privacy_policy }} />
                     </div>
 
                 }
             </div>
-            <Footer />
         </>
     )
 }

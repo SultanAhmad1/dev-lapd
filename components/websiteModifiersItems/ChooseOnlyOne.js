@@ -1,18 +1,14 @@
 import { BLACK_COLOR, WHITE_COLOR } from "@/global/Axios";
 import { getAmountConvertToFloatWithFixed } from "@/global/Store";
 import moment from "moment";
-import React, { Fragment } from "react";
 
 export default function ChooseOnlyOne({
   index,
   modifier,
   handleRadioInput,
-  websiteModificationData,
+  layoutWebsiteModification,
 }) 
 {
-
-  const currentDate = moment()
-
   
   return(
     <li className={`section${index} mb-3 space-y-2`}>
@@ -49,9 +45,9 @@ export default function ChooseOnlyOne({
           }
 
           const isSelected = item?.item_select_to_sale;
-          const bgColor = isSelected && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR);
-          const borderColor = isSelected && `1px solid ${(websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || WHITE_COLOR)}`;
-          const textColor = isSelected && (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR);
+          const bgColor = isSelected && (layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || BLACK_COLOR);
+          const borderColor = isSelected && `1px solid ${(layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonBackgroundColor || WHITE_COLOR)}`;
+          const textColor = isSelected && (layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR);
 
           return (
             <div
@@ -84,9 +80,12 @@ export default function ChooseOnlyOne({
                   <p className="text-left" style={{ color: textColor }}>
                     {item?.title}
                   </p>
-                  <p className="text-sm text-right whitespace-nowrap font-bold" style={{ color: textColor }}>
-                    &pound;{getAmountConvertToFloatWithFixed(item?.price, 2)}
-                  </p>
+                  {
+                    item.price > 0 &&
+                    <p className="text-sm text-right whitespace-nowrap font-bold" style={{ color: textColor }}>
+                      &pound;{getAmountConvertToFloatWithFixed(item?.price, 2)}
+                    </p>
+                  }
                 </div>
               </div>
 
@@ -102,7 +101,7 @@ export default function ChooseOnlyOne({
                 >
                   <path
                     d="M17 11.7494V14.916L12 11.0827L7 14.916V11.7494L12 7.91602L17 11.7494Z"
-                    fill={`${item?.item_select_to_sale ? (websiteModificationData?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR): "#AFAFAF"}`}
+                    fill={`${item?.item_select_to_sale ? (layoutWebsiteModification?.websiteModificationLive?.json_log?.[0]?.buttonColor || WHITE_COLOR): "#AFAFAF"}`}
                     transform="rotate(90, 12, 12)"
                   />
                 </svg>

@@ -2,7 +2,8 @@ import React from "react";
 
 const loading = () => {
     return(
-        <div className="loader-details">
+        <>
+        {/* <div className="loader-details">
             <div className="loader-div">
                 <div className="loader-height"></div>
 
@@ -12,7 +13,9 @@ const loading = () => {
 
                 <div className="loader-height"></div>
             </div>
-        </div>
+        </div> */}
+        
+        </>
     )
 };
 
